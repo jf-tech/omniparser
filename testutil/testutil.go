@@ -1,0 +1,3 @@
+package testutil
+
+func AreEqualSnapshot() {}
