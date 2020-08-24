@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/bradleyjkemp/cupaloy"
-	"github.com/jf-tech/goft/jsonutil"
+	"github.com/jf-tech/omniparser/jsonutil"
 	"github.com/stretchr/testify/assert"
 )
 
