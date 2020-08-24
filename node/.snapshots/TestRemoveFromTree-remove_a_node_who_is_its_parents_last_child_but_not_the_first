@@ -1,0 +1,112 @@
+{
+	"Parent": "(nil)",
+	"FirstChild": "(ELEM prefix_c1:child1)",
+	"LastChild": "(ELEM prefix_c2:child2)",
+	"PrevSibling": "(nil)",
+	"NextSibling": "(nil)",
+	"Type": "DocumentNode",
+	"Data": "root",
+	"Prefix": "prefix_r",
+	"NamespaceURI": "namespace_r",
+	"Attrs": [
+		{
+			"Name": {
+				"Space": "ns",
+				"Local": "r"
+			},
+			"Value": "r"
+		}
+	],
+	"Level": 0,
+	"#children": [
+		{
+			"Parent": "(ROOT)",
+			"FirstChild": "(TEXT 'grandChild11')",
+			"LastChild": "(TEXT 'grandChild12')",
+			"PrevSibling": "(nil)",
+			"NextSibling": "(ELEM prefix_c2:child2)",
+			"Type": "ElementNode",
+			"Data": "child1",
+			"Prefix": "prefix_c1",
+			"NamespaceURI": "namespace_c1",
+			"Attrs": [
+				{
+					"Name": {
+						"Space": "",
+						"Local": "c1"
+					},
+					"Value": "c1"
+				}
+			],
+			"Level": 1,
+			"#children": [
+				{
+					"Parent": "(ELEM prefix_c1:child1)",
+					"FirstChild": "(nil)",
+					"LastChild": "(nil)",
+					"PrevSibling": "(nil)",
+					"NextSibling": "(TEXT 'grandChild12')",
+					"Type": "TextNode",
+					"Data": "grandChild11",
+					"Prefix": "",
+					"NamespaceURI": "",
+					"Attrs": null,
+					"Level": 2,
+					"#children": null
+				},
+				{
+					"Parent": "(ELEM prefix_c1:child1)",
+					"FirstChild": "(nil)",
+					"LastChild": "(nil)",
+					"PrevSibling": "(TEXT 'grandChild11')",
+					"NextSibling": "(nil)",
+					"Type": "TextNode",
+					"Data": "grandChild12",
+					"Prefix": "",
+					"NamespaceURI": "",
+					"Attrs": null,
+					"Level": 2,
+					"#children": null
+				}
+			]
+		},
+		{
+			"Parent": "(ROOT)",
+			"FirstChild": "(TEXT 'grandChild21')",
+			"LastChild": "(TEXT 'grandChild21')",
+			"PrevSibling": "(ELEM prefix_c1:child1)",
+			"NextSibling": "(nil)",
+			"Type": "ElementNode",
+			"Data": "child2",
+			"Prefix": "prefix_c2",
+			"NamespaceURI": "namespace_c2",
+			"Attrs": [
+				{
+					"Name": {
+						"Space": "",
+						"Local": "c2"
+					},
+					"Value": "c2"
+				}
+			],
+			"Level": 1,
+			"#children": [
+				{
+					"Parent": "(ELEM prefix_c2:child2)",
+					"FirstChild": "(nil)",
+					"LastChild": "(nil)",
+					"PrevSibling": "(nil)",
+					"NextSibling": "(nil)",
+					"Type": "TextNode",
+					"Data": "grandChild21",
+					"Prefix": "",
+					"NamespaceURI": "",
+					"Attrs": null,
+					"Level": 2,
+					"#children": null
+				}
+			]
+		}
+	]
+}
+
