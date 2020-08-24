@@ -1,3 +1,3 @@
-module github.com/jf-tech/goft
+module github.com/jf-tech/omniparser
 
 go 1.13
