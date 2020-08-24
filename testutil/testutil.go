@@ -1,3 +1,0 @@
-package testutil
-
-func AreEqualSnapshot() {}
