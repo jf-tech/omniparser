@@ -1,0 +1,127 @@
+{
+	"#children": [
+		{
+			"#children": [
+				{
+					"#children": null,
+					"Attr": null,
+					"Data": "grandChild11",
+					"FirstChild": "(nil)",
+					"LastChild": "(nil)",
+					"NamespaceURI": "",
+					"NextSibling": "(CDATA 'grandChild12')",
+					"Parent": "(ELEM prefix_c1:child1)",
+					"Prefix": "",
+					"PrevSibling": "(nil)",
+					"Type": "CharDataNode"
+				},
+				{
+					"#children": null,
+					"Attr": null,
+					"Data": "grandChild12",
+					"FirstChild": "(nil)",
+					"LastChild": "(nil)",
+					"NamespaceURI": "",
+					"NextSibling": "(nil)",
+					"Parent": "(ELEM prefix_c1:child1)",
+					"Prefix": "",
+					"PrevSibling": "(CDATA 'grandChild11')",
+					"Type": "CharDataNode"
+				}
+			],
+			"Attr": [
+				{
+					"Name": {
+						"Local": "c1",
+						"Space": ""
+					},
+					"Value": "c1"
+				}
+			],
+			"Data": "child1",
+			"FirstChild": "(CDATA 'grandChild11')",
+			"LastChild": "(CDATA 'grandChild12')",
+			"NamespaceURI": "namespace_c1",
+			"NextSibling": "(ELEM prefix_c2:child2)",
+			"Parent": "(ROOT)",
+			"Prefix": "prefix_c1",
+			"PrevSibling": "(nil)",
+			"Type": "ElementNode"
+		},
+		{
+			"#children": [
+				{
+					"#children": null,
+					"Attr": null,
+					"Data": "grandChild21",
+					"FirstChild": "(nil)",
+					"LastChild": "(nil)",
+					"NamespaceURI": "",
+					"NextSibling": "(nil)",
+					"Parent": "(ELEM prefix_c2:child2)",
+					"Prefix": "",
+					"PrevSibling": "(nil)",
+					"Type": "CharDataNode"
+				}
+			],
+			"Attr": [
+				{
+					"Name": {
+						"Local": "c2",
+						"Space": ""
+					},
+					"Value": "c2"
+				}
+			],
+			"Data": "child2",
+			"FirstChild": "(CDATA 'grandChild21')",
+			"LastChild": "(CDATA 'grandChild21')",
+			"NamespaceURI": "namespace_c2",
+			"NextSibling": "(ELEM prefix_c3:child3)",
+			"Parent": "(ROOT)",
+			"Prefix": "prefix_c2",
+			"PrevSibling": "(ELEM prefix_c1:child1)",
+			"Type": "ElementNode"
+		},
+		{
+			"#children": null,
+			"Attr": [
+				{
+					"Name": {
+						"Local": "c3",
+						"Space": ""
+					},
+					"Value": "c3"
+				}
+			],
+			"Data": "child3",
+			"FirstChild": "(nil)",
+			"LastChild": "(nil)",
+			"NamespaceURI": "namespace_c3",
+			"NextSibling": "(nil)",
+			"Parent": "(ROOT)",
+			"Prefix": "prefix_c3",
+			"PrevSibling": "(ELEM prefix_c2:child2)",
+			"Type": "ElementNode"
+		}
+	],
+	"Attr": [
+		{
+			"Name": {
+				"Local": "r",
+				"Space": "ns"
+			},
+			"Value": "r"
+		}
+	],
+	"Data": "root",
+	"FirstChild": "(ELEM prefix_c1:child1)",
+	"LastChild": "(ELEM prefix_c3:child3)",
+	"NamespaceURI": "namespace_r",
+	"NextSibling": "(nil)",
+	"Parent": "(nil)",
+	"Prefix": "prefix_r",
+	"PrevSibling": "(nil)",
+	"Type": "DocumentNode"
+}
+
