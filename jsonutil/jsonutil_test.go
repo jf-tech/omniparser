@@ -3,6 +3,7 @@ package jsonutil
 import (
 	"testing"
 
+	"github.com/bradleyjkemp/cupaloy"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -79,4 +80,23 @@ func TestBestEffortPrettyMarshal_Failure(t *testing.T) {
 			Name:           "John",
 			Unmarshallable: func() bool { return true },
 		}))
+}
+
+func TestBPMInSnapshot(t *testing.T) {
+	cupaloy.SnapshotT(t, BPM(struct {
+		Name   string
+		IntV   int
+		StrV   string
+		SliceV []float64
+		MapV   map[string]interface{}
+	}{
+		Name:   "a snapshot",
+		IntV:   123,
+		StrV:   `a string with "quotes"`,
+		SliceV: []float64{3.14159, 2.71828},
+		MapV: map[string]interface{}{
+			"pi":    3.14159,
+			"linux": "Linux Is Not UniX",
+		},
+	}))
 }

@@ -1,0 +1,14 @@
+{
+	"Name": "a snapshot",
+	"IntV": 123,
+	"StrV": "a string with \"quotes\"",
+	"SliceV": [
+		3.14159,
+		2.71828
+	],
+	"MapV": {
+		"linux": "Linux Is Not UniX",
+		"pi": 3.14159
+	}
+}
+
