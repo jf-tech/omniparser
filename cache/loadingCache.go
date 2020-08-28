@@ -57,3 +57,16 @@ func (c *LoadingCache) Get(key interface{}, load LoadFunc) (interface{}, error) 
 	c.cache.Add(key, v)
 	return v, nil
 }
+
+// DumpForTest returns all the entries in the cache. Not thread-safe and should
+// really only be used in tests as the function name suggests.
+func (c *LoadingCache) DumpForTest() map[interface{}]interface{} {
+	m := make(map[interface{}]interface{})
+	keys := c.cache.Keys()
+	for _, k := range keys {
+		if v, found := c.cache.Get(k); found {
+			m[k] = v
+		}
+	}
+	return m
+}

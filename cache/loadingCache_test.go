@@ -66,7 +66,7 @@ func TestLoadingCache_Get(t *testing.T) {
 		load          LoadFunc
 		expectedError error
 		expectedVal   string
-		expectedKVs   map[string]string
+		expectedCache map[interface{}]interface{}
 	}{
 		{
 			name:          "cache hit",
@@ -75,7 +75,7 @@ func TestLoadingCache_Get(t *testing.T) {
 			load:          nil,
 			expectedError: nil,
 			expectedVal:   "two",
-			expectedKVs:   map[string]string{"1": "one", "2": "two"},
+			expectedCache: map[interface{}]interface{}{"1": "one", "2": "two"},
 		},
 		{
 			name:  "cache miss, loading error",
@@ -86,7 +86,7 @@ func TestLoadingCache_Get(t *testing.T) {
 			},
 			expectedError: errors.New("test error"),
 			expectedVal:   "",
-			expectedKVs:   map[string]string{"1": "one", "2": "two"},
+			expectedCache: map[interface{}]interface{}{"1": "one", "2": "two"},
 		},
 		{
 			name:  "cache miss, loading okay, no eviction",
@@ -97,7 +97,7 @@ func TestLoadingCache_Get(t *testing.T) {
 			},
 			expectedError: nil,
 			expectedVal:   "three",
-			expectedKVs:   map[string]string{"1": "one", "2": "two", "3": "three"},
+			expectedCache: map[interface{}]interface{}{"1": "one", "2": "two", "3": "three"},
 		},
 		{
 			name:  "cache miss, loading okay, eviction",
@@ -108,7 +108,7 @@ func TestLoadingCache_Get(t *testing.T) {
 			},
 			expectedError: nil,
 			expectedVal:   "three",
-			expectedKVs:   map[string]string{"2": "two", "3": "three"},
+			expectedCache: map[interface{}]interface{}{"2": "two", "3": "three"},
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -125,14 +125,7 @@ func TestLoadingCache_Get(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, test.expectedVal, val.(string))
 			}
-			// Do post Get() call cache check.
-			kvs := make(map[string]string)
-			for _, k := range test.cache.cache.Keys() {
-				v, found := test.cache.cache.Get(k)
-				assert.True(t, found)
-				kvs[k.(string)] = v.(string)
-			}
-			assert.Equal(t, test.expectedKVs, kvs)
+			assert.Equal(t, test.expectedCache, test.cache.DumpForTest())
 		})
 	}
 }
