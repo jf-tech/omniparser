@@ -9,6 +9,7 @@ const (
 	prettyIndent = "\t"
 )
 
+// PrettyMarshal does a JSON marshaling of 'v' with human readable output.
 func PrettyMarshal(v interface{}) (string, error) {
 	valueBuf := new(bytes.Buffer)
 	enc := json.NewEncoder(valueBuf)
@@ -21,6 +22,9 @@ func PrettyMarshal(v interface{}) (string, error) {
 	return valueBuf.String(), nil
 }
 
+// BestEffortPrettyMarshal does a best effort JSON marshaling of 'v' with human
+// readable output. '{}' will be produced if there is any JSON marshal error. This
+// function never fails.
 func BestEffortPrettyMarshal(v interface{}) string {
 	jsonStr, err := PrettyMarshal(v)
 	if err != nil {
@@ -28,3 +32,6 @@ func BestEffortPrettyMarshal(v interface{}) string {
 	}
 	return jsonStr
 }
+
+// BPM is a shortcut (mostly used ing tests) to BestEffortPrettyMarshal.
+var BPM = BestEffortPrettyMarshal

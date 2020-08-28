@@ -1,6 +1,0 @@
-([]string) (len=4) {
-  (string) (len=12) "DocumentNode",
-  (string) (len=11) "ElementNode",
-  (string) (len=8) "TextNode",
-  (string) (len=13) "AttributeNode"
-}
