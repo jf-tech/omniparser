@@ -37,4 +37,7 @@ jobs:
       run: go test -v ./... -race -coverprofile=coverage.txt -covermode=atomic
 
     - name: Codecov
-      uses: codecov/codecov-action@v1.0.7
+      uses: codecov/codecov-action@v1.0.13
+      with:
+        # Repository upload token - get it from codecov.io. Required only for private repositories
+        token: b5b56be5-5c41-4e4f-b789-eb6d39d53b51
