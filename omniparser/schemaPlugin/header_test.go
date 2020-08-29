@@ -9,8 +9,8 @@ import (
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/jf-tech/omniparser/jsonutil"
-	"github.com/jf-tech/omniparser/testutil"
+	"github.com/jf-tech/omniparser/jsons"
+	"github.com/jf-tech/omniparser/testlib"
 )
 
 func TestSupportedEncodingMappingsDump(t *testing.T) {
@@ -19,7 +19,7 @@ func TestSupportedEncodingMappingsDump(t *testing.T) {
 		supported = append(supported, k)
 	}
 	sort.Strings(supported)
-	cupaloy.SnapshotT(t, jsonutil.BPM(supported))
+	cupaloy.SnapshotT(t, jsons.BPM(supported))
 }
 
 func TestSupportedEncodingMappings(t *testing.T) {
@@ -34,13 +34,13 @@ func TestSupportedEncodingMappings(t *testing.T) {
 
 func TestGetEncoding(t *testing.T) {
 	assert.Equal(
-		t, EncodingUTF8, (ParserSettings{Encoding: testutil.StrPtr(EncodingUTF8)}).GetEncoding())
+		t, EncodingUTF8, (ParserSettings{Encoding: testlib.StrPtr(EncodingUTF8)}).GetEncoding())
 	assert.Equal(
-		t, EncodingISO8859_1, (ParserSettings{Encoding: testutil.StrPtr(EncodingISO8859_1)}).GetEncoding())
+		t, EncodingISO8859_1, (ParserSettings{Encoding: testlib.StrPtr(EncodingISO8859_1)}).GetEncoding())
 	assert.Equal(
-		t, EncodingWindows1252, (ParserSettings{Encoding: testutil.StrPtr(EncodingWindows1252)}).GetEncoding())
+		t, EncodingWindows1252, (ParserSettings{Encoding: testlib.StrPtr(EncodingWindows1252)}).GetEncoding())
 	assert.Equal(
 		t, EncodingUTF8, (ParserSettings{}).GetEncoding())
 	assert.Equal(
-		t, "whatever", (ParserSettings{Encoding: testutil.StrPtr("whatever")}).GetEncoding())
+		t, "whatever", (ParserSettings{Encoding: testlib.StrPtr("whatever")}).GetEncoding())
 }

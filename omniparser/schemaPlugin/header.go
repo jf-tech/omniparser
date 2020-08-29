@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/text/encoding/charmap"
 
-	"github.com/jf-tech/omniparser/strutil"
+	"github.com/jf-tech/omniparser/strs"
 )
 
 // ParserSettings defines the common header (and its JSON format) for all schemas across all schema plugins.
@@ -41,7 +41,7 @@ var SupportedEncodingMappings = map[string]encodingMappingFunc{
 // GetEncoding returns the encoding of the schema. If no encoding is specified in the schema, which
 // the most comment default case, it assumes the input stream will be in UTF-8.
 func (p ParserSettings) GetEncoding() string {
-	return strutil.StrPtrOrElse(p.Encoding, EncodingUTF8)
+	return strs.StrPtrOrElse(p.Encoding, EncodingUTF8)
 }
 
 // Header contains the common ParserSettings for all schemas.
