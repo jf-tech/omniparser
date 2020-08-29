@@ -1,4 +1,4 @@
-package mathutil
+package maths
 
 // MaxInt returns the bigger value of the two input ints.
 func MaxInt(x, y int) int {

@@ -1,4 +1,4 @@
-package nodeutil
+package nodes
 
 import (
 	"errors"

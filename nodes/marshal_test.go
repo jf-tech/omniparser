@@ -1,4 +1,4 @@
-package nodeutil
+package nodes
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 
 	node "github.com/antchfx/xmlquery"
 
-	"github.com/jf-tech/omniparser/jsonutil"
+	"github.com/jf-tech/omniparser/jsons"
 )
 
 func nodeName(n *node.Node) string {
@@ -83,5 +83,5 @@ func nodeToInterface(n *node.Node) interface{} {
 }
 
 func jsonify(n *node.Node) string {
-	return jsonutil.BPM(nodeToInterface(n))
+	return jsons.BPM(nodeToInterface(n))
 }

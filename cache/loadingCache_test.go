@@ -7,9 +7,8 @@ import (
 	"testing"
 
 	"github.com/antchfx/xpath"
+	"github.com/jf-tech/omniparser/maths"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/jf-tech/omniparser/mathutil"
 )
 
 func TestNewLoadingCache(t *testing.T) {
@@ -29,7 +28,7 @@ func TestNewLoadingCache(t *testing.T) {
 			name:             "0 capacity specified, no limit",
 			capacity:         []int{0, -5}, // the second invalid value -5 is ignored.
 			panicErr:         "",
-			expectedCapacity: mathutil.MaxIntValue - 1,
+			expectedCapacity: maths.MaxIntValue - 1,
 		},
 		{
 			name:             "> 0 capacity specified",

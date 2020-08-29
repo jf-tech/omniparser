@@ -1,4 +1,4 @@
-package strutil
+package strs
 
 func StrPtrOrElse(sp *string, orElse string) string {
 	if sp != nil {

@@ -5,7 +5,7 @@ import (
 
 	lru "github.com/hashicorp/golang-lru"
 
-	"github.com/jf-tech/omniparser/mathutil"
+	"github.com/jf-tech/omniparser/maths"
 )
 
 // LoadingCache is a key/value cache with a user specified loading function and an optional capacity.
@@ -34,7 +34,7 @@ func NewLoadingCache(capacity ...int) *LoadingCache {
 		capv = capacity[0]
 	}
 	if capv == 0 {
-		capv = mathutil.MaxIntValue - 1
+		capv = maths.MaxIntValue - 1
 	}
 	cache, _ := lru.New(capv)
 	return &LoadingCache{capacity: capv, cache: cache}
