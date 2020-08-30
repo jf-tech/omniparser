@@ -1,4 +1,4 @@
-package schemaPlugin
+package schemaplugin
 
 import (
 	"io"
