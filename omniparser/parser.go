@@ -3,8 +3,8 @@ package omniparser
 import (
 	"io"
 
-	"github.com/jf-tech/omniparser/omniparser/schemaPlugin"
-	"github.com/jf-tech/omniparser/omniparser/transformCtx"
+	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
+	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
 
 // Parser is an interface that represents an instance of omniparser.
@@ -19,7 +19,7 @@ import (
 // TransformOp is not multi-thread safe. All operations on it must be done
 // within the same go routine.
 type Parser interface {
-	GetTransformOp(name string, input io.Reader, ctx *transformCtx.Ctx) (TransformOp, error)
-	SchemaHeader() schemaPlugin.Header
+	GetTransformOp(name string, input io.Reader, ctx *transformctx.Ctx) (TransformOp, error)
+	SchemaHeader() schemaplugin.Header
 	SchemaRawContent() string
 }

@@ -1,4 +1,4 @@
-package customFuncs
+package customfuncs
 
 import (
 	"testing"

@@ -1,4 +1,4 @@
-package schemaPlugin
+package schemaplugin
 
 import (
 	"io/ioutil"
@@ -15,7 +15,7 @@ import (
 
 func TestSupportedEncodingMappingsDump(t *testing.T) {
 	var supported []string
-	for k, _ := range SupportedEncodingMappings {
+	for k := range SupportedEncodingMappings {
 		supported = append(supported, k)
 	}
 	sort.Strings(supported)
