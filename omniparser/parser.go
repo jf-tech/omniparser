@@ -6,8 +6,8 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/jf-tech/omniparser/jsons"
 	"github.com/jf-tech/omniparser/omniparser/customfuncs"
+	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
@@ -71,7 +71,7 @@ func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Pa
 			continue
 		}
 		plugin, err := ext.ParseSchema(schemaName, schemaHeader, schemaContent)
-		if err == schemaplugin.ErrSchemaNotSupported {
+		if err == errs.ErrSchemaNotSupported {
 			continue
 		}
 		if err != nil {
@@ -86,7 +86,7 @@ func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Pa
 			schemaPlugin:  plugin,
 		}, nil
 	}
-	return nil, fmt.Errorf("unsupported schema '%s':\n%s", schemaName, jsons.BPM(schemaHeader))
+	return nil, errs.ErrSchemaNotSupported
 }
 
 // GetTransformOp creates and returns an instance of TransformOp for a given input.

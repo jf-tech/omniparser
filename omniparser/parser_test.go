@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
 	"github.com/jf-tech/omniparser/testlib"
 )
@@ -38,11 +39,11 @@ func TestNewParser(t *testing.T) {
 				{}, // Empty extension to test if we skip empty extension properly or not.
 				{
 					ParseSchema: func(string, schemaplugin.Header, []byte) (schemaplugin.Plugin, error) {
-						return nil, schemaplugin.ErrSchemaNotSupported
+						return nil, errs.ErrSchemaNotSupported
 					},
 				},
 			},
-			expectedErr: "unsupported schema 'test-schema':.*",
+			expectedErr: errs.ErrSchemaNotSupported.Error(),
 		},
 		{
 			name:   "supported schema plugin found, but schema validation fails",
