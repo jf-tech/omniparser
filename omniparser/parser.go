@@ -96,29 +96,23 @@ func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Pa
 
 // GetTransformOp creates and returns an instance of TransformOp for a given input.
 func (p *parser) GetTransformOp(name string, input io.Reader, ctx *transformctx.Ctx) (TransformOp, error) {
-	input = p.schemaHeader.ParserSettings.WrapEncoding(input)
-
-	br, err := iohelper.StripBOM(input)
+	br, err := iohelper.StripBOM(p.schemaHeader.ParserSettings.WrapEncoding(input))
 	if err != nil {
 		return nil, err
 	}
-
 	inputProcessor, err := p.schemaPlugin.GetInputProcessor(ctx, br)
 	if err != nil {
 		return nil, err
 	}
-
 	if ctx.InputName != name {
 		ctx.InputName = name
 	}
-
 	// If caller already specified a way to do context aware error formatting, use it;
 	// otherwise (vast majority cases), use the InputProcessor (which implements CtxAwareErr
 	// interface) created by the schema plugin.
 	if ctx.CtxAwareErr == nil {
 		ctx.CtxAwareErr = inputProcessor
 	}
-
 	return &transformOp{inputProcessor: inputProcessor}, nil
 }
 
