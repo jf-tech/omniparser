@@ -20,28 +20,27 @@ type ParserSettings struct {
 }
 
 const (
-	// EncodingUTF8 is the UTF-8 (golang's default) encoding scheme.
-	EncodingUTF8 = "utf-8"
-	// EncodingISO8859_1 is the ISO 8859-1 encoding.
-	EncodingISO8859_1 = "iso-8859-1"
-	// EncodingWindows1252 is the Windows 1252 encoding.
-	EncodingWindows1252 = "windows-1252"
+	encodingUTF8        = "utf-8"
+	encodingISO8859_1   = "iso-8859-1"
+	encodingWindows1252 = "windows-1252"
 )
 
 type encodingMappingFunc func(reader io.Reader) io.Reader
 
-// SupportedEncodingMappings provides mapping between input stream reader and a func that does
-// encoding specific translation.
-var SupportedEncodingMappings = map[string]encodingMappingFunc{
-	EncodingUTF8:        func(r io.Reader) io.Reader { return r },
-	EncodingISO8859_1:   func(r io.Reader) io.Reader { return charmap.ISO8859_1.NewDecoder().Reader(r) },
-	EncodingWindows1252: func(r io.Reader) io.Reader { return charmap.Windows1252.NewDecoder().Reader(r) },
+var supportedEncodingMappings = map[string]encodingMappingFunc{
+	encodingUTF8:        func(r io.Reader) io.Reader { return r },
+	encodingISO8859_1:   func(r io.Reader) io.Reader { return charmap.ISO8859_1.NewDecoder().Reader(r) },
+	encodingWindows1252: func(r io.Reader) io.Reader { return charmap.Windows1252.NewDecoder().Reader(r) },
 }
 
-// GetEncoding returns the encoding of the schema. If no encoding is specified in the schema, which
-// the most comment default case, it assumes the input stream will be in UTF-8.
-func (p ParserSettings) GetEncoding() string {
-	return strs.StrPtrOrElse(p.Encoding, EncodingUTF8)
+// WrapEncoding returns an io.Reader that ensures the encoding scheme matches what's specified
+// in 'parser_settings.encoding' setting.
+func (p ParserSettings) WrapEncoding(input io.Reader) io.Reader {
+	f, found := supportedEncodingMappings[strs.StrPtrOrElse(p.Encoding, encodingUTF8)]
+	if !found {
+		f = supportedEncodingMappings[encodingUTF8]
+	}
+	return f(input)
 }
 
 // Header contains the common ParserSettings for all schemas.
