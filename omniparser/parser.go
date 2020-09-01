@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/ioutil"
 
+	"github.com/jf-tech/iohelper"
+
 	"github.com/jf-tech/omniparser/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
@@ -31,10 +33,13 @@ type Parser interface {
 
 // Extension allows client of omniparser to supply its own custom funcs and/or schema plugin.
 type Extension struct {
+	// CustomFuncs contains a collection of custom funcs provided by this extension. Optional.
 	CustomFuncs customfuncs.CustomFuncs
+	// ParseSchema is a constructor function that matches and creates a schema plugin. Optional.
 	ParseSchema schemaplugin.SchemaParserFunc
 }
 
+// BuiltinExtensions contains all the built-in extensions (custom funcs, and schema plugins)
 var BuiltinExtensions = []Extension{
 	{
 		CustomFuncs: customfuncs.BuiltinCustomFuncs,
@@ -91,7 +96,24 @@ func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Pa
 
 // GetTransformOp creates and returns an instance of TransformOp for a given input.
 func (p *parser) GetTransformOp(name string, input io.Reader, ctx *transformctx.Ctx) (TransformOp, error) {
-	panic("TBD")
+	br, err := iohelper.StripBOM(p.schemaHeader.ParserSettings.WrapEncoding(input))
+	if err != nil {
+		return nil, err
+	}
+	inputProcessor, err := p.schemaPlugin.GetInputProcessor(ctx, br)
+	if err != nil {
+		return nil, err
+	}
+	if ctx.InputName != name {
+		ctx.InputName = name
+	}
+	// If caller already specified a way to do context aware error formatting, use it;
+	// otherwise (vast majority cases), use the InputProcessor (which implements CtxAwareErr
+	// interface) created by the schema plugin.
+	if ctx.CtxAwareErr == nil {
+		ctx.CtxAwareErr = inputProcessor
+	}
+	return &transformOp{inputProcessor: inputProcessor}, nil
 }
 
 // SchemaHeader returns the associated schema plugin's schema header.

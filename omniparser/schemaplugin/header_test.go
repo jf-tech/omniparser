@@ -1,6 +1,8 @@
 package schemaplugin
 
 import (
+	"bytes"
+	"io"
 	"io/ioutil"
 	"sort"
 	"strings"
@@ -8,6 +10,7 @@ import (
 
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/text/encoding/charmap"
 
 	"github.com/jf-tech/omniparser/jsons"
 	"github.com/jf-tech/omniparser/testlib"
@@ -15,7 +18,7 @@ import (
 
 func TestSupportedEncodingMappingsDump(t *testing.T) {
 	var supported []string
-	for k := range SupportedEncodingMappings {
+	for k := range supportedEncodingMappings {
 		supported = append(supported, k)
 	}
 	sort.Strings(supported)
@@ -23,7 +26,7 @@ func TestSupportedEncodingMappingsDump(t *testing.T) {
 }
 
 func TestSupportedEncodingMappings(t *testing.T) {
-	for encoding, mappingFn := range SupportedEncodingMappings {
+	for encoding, mappingFn := range supportedEncodingMappings {
 		t.Run(encoding, func(t *testing.T) {
 			actual, err := ioutil.ReadAll(mappingFn(strings.NewReader("test")))
 			assert.NoError(t, err)
@@ -32,15 +35,28 @@ func TestSupportedEncodingMappings(t *testing.T) {
 	}
 }
 
-func TestGetEncoding(t *testing.T) {
-	assert.Equal(
-		t, EncodingUTF8, (ParserSettings{Encoding: testlib.StrPtr(EncodingUTF8)}).GetEncoding())
-	assert.Equal(
-		t, EncodingISO8859_1, (ParserSettings{Encoding: testlib.StrPtr(EncodingISO8859_1)}).GetEncoding())
-	assert.Equal(
-		t, EncodingWindows1252, (ParserSettings{Encoding: testlib.StrPtr(EncodingWindows1252)}).GetEncoding())
-	assert.Equal(
-		t, EncodingUTF8, (ParserSettings{}).GetEncoding())
-	assert.Equal(
-		t, "whatever", (ParserSettings{Encoding: testlib.StrPtr("whatever")}).GetEncoding())
+func TestWrapEncoding(t *testing.T) {
+	readAll := func(r io.Reader) string {
+		b, err := ioutil.ReadAll(r)
+		assert.NoError(t, err)
+		return string(b)
+	}
+	// No 'parser_settings.encoding' ==> UTF-8
+	assert.Equal(t, "test", readAll(ParserSettings{}.WrapEncoding(strings.NewReader("test"))))
+	// 'parser_settings.encoding' = UTF-8
+	assert.Equal(t, "test", readAll(
+		ParserSettings{Encoding: testlib.StrPtr(encodingUTF8)}.WrapEncoding(strings.NewReader("test"))))
+	// 'parser_settings.encoding' = <unknown> ==> UTF-8
+	assert.Equal(t, "test", readAll(
+		ParserSettings{Encoding: testlib.StrPtr("unknown")}.WrapEncoding(strings.NewReader("test"))))
+	// 'parser_settings.encoding' = ISO-8859-1
+	iso88591bytes, err := charmap.ISO8859_1.NewEncoder().Bytes([]byte("test"))
+	assert.NoError(t, err)
+	assert.Equal(t, "test", readAll(
+		ParserSettings{Encoding: testlib.StrPtr(encodingISO8859_1)}.WrapEncoding(bytes.NewReader(iso88591bytes))))
+	// 'parser_settings.encoding' = windows-1252
+	windows1252bytes, err := charmap.Windows1252.NewEncoder().Bytes([]byte("test"))
+	assert.NoError(t, err)
+	assert.Equal(t, "test", readAll(
+		ParserSettings{Encoding: testlib.StrPtr(encodingWindows1252)}.WrapEncoding(bytes.NewReader(windows1252bytes))))
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
+	"github.com/jf-tech/omniparser/omniparser/transformctx"
 	"github.com/jf-tech/omniparser/testlib"
 )
 
@@ -91,17 +92,58 @@ func TestNewParser(t *testing.T) {
 	}
 }
 
-func TestParser(t *testing.T) {
+func TestParser_GetTransformOp_StripBOMFailure(t *testing.T) {
+	p := &parser{
+		schemaHeader: schemaplugin.Header{
+			ParserSettings: schemaplugin.ParserSettings{Version: "999", FileFormatType: "exe"},
+		},
+	}
+	op, err := p.GetTransformOp("test input", testlib.NewMockReadCloser("bom read failure", nil), nil)
+	assert.Error(t, err)
+	assert.Equal(t, "bom read failure", err.Error())
+	assert.Nil(t, op)
+}
+
+type testSchemaPlugin struct {
+	getInputProcessorErr error
+}
+
+func (t testSchemaPlugin) GetInputProcessor(_ *transformctx.Ctx, _ io.Reader) (schemaplugin.InputProcessor, error) {
+	if t.getInputProcessorErr != nil {
+		return nil, t.getInputProcessorErr
+	}
+	return &testInputProcessor{}, nil
+}
+
+func TestParser_GetTransformOp_GetInputProcessorFailure(t *testing.T) {
+	p := &parser{
+		schemaHeader: schemaplugin.Header{
+			ParserSettings: schemaplugin.ParserSettings{Version: "999", FileFormatType: "exe"},
+		},
+		schemaPlugin: testSchemaPlugin{getInputProcessorErr: errors.New("test failure")},
+	}
+	op, err := p.GetTransformOp("test input", strings.NewReader("something"), nil)
+	assert.Error(t, err)
+	assert.Equal(t, "test failure", err.Error())
+	assert.Nil(t, op)
+}
+
+func TestParser_GetTransformOp_NameAndCtxAwareErrOverwrite(t *testing.T) {
 	header := schemaplugin.Header{
 		ParserSettings: schemaplugin.ParserSettings{Version: "999", FileFormatType: "exe"},
 	}
 	p := &parser{
 		schemaHeader:  header,
 		schemaContent: []byte("test schema content"),
+		schemaPlugin:  testSchemaPlugin{},
 	}
-	assert.Panics(t, func() {
-		_, _ = p.GetTransformOp("name", nil, nil)
-	})
+	ctx := &transformctx.Ctx{}
+	op, err := p.GetTransformOp("test input", strings.NewReader("something"), ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, op)
+	assert.Equal(t, "test input", ctx.InputName)
+	assert.NotNil(t, ctx.CtxAwareErr)
+
 	assert.Equal(t, header, p.SchemaHeader())
-	assert.Equal(t, []byte("test schema content"), p.SchemaContent())
+	assert.Equal(t, "test schema content", string(p.SchemaContent()))
 }
