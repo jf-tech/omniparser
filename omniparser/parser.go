@@ -11,6 +11,7 @@ import (
 	"github.com/jf-tech/omniparser/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
+	omniv2 "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
 
@@ -36,14 +37,13 @@ type Extension struct {
 	// CustomFuncs contains a collection of custom funcs provided by this extension. Optional.
 	CustomFuncs customfuncs.CustomFuncs
 	// ParseSchema is a constructor function that matches and creates a schema plugin. Optional.
-	ParseSchema schemaplugin.SchemaParserFunc
+	ParseSchema schemaplugin.ParseSchemaFunc
 }
 
 // BuiltinExtensions contains all the built-in extensions (custom funcs, and schema plugins)
 var BuiltinExtensions = []Extension{
-	{
-		CustomFuncs: customfuncs.BuiltinCustomFuncs,
-	},
+	{CustomFuncs: customfuncs.BuiltinCustomFuncs},
+	{ParseSchema: omniv2.ParseSchema},
 }
 
 type parser struct {
@@ -75,7 +75,12 @@ func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Pa
 		if ext.ParseSchema == nil {
 			continue
 		}
-		plugin, err := ext.ParseSchema(schemaName, schemaHeader, schemaContent)
+		plugin, err := ext.ParseSchema(&schemaplugin.ParseSchemaCtx{
+			Name:        schemaName,
+			Header:      schemaHeader,
+			Content:     schemaContent,
+			CustomFuncs: collectCustomFuncs(append([]Extension{ext}, BuiltinExtensions...)), // keep builtin exts last.
+		})
 		if err == errs.ErrSchemaNotSupported {
 			continue
 		}
@@ -92,6 +97,22 @@ func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Pa
 		}, nil
 	}
 	return nil, errs.ErrSchemaNotSupported
+}
+
+func collectCustomFuncs(exts []Extension) customfuncs.CustomFuncs {
+	funcs := make(customfuncs.CustomFuncs)
+	for _, ext := range exts {
+		if ext.CustomFuncs == nil {
+			continue
+		}
+		for name, f := range ext.CustomFuncs {
+			// This does mean any 3rd party extension custom funcs name-collide with
+			// builtin custom funcs, they will be overwritten by builtin ones (because
+			// argument exts always put builtin exts at last), which makes sense. :)
+			funcs[name] = f
+		}
+	}
+	return funcs
 }
 
 // GetTransformOp creates and returns an instance of TransformOp for a given input.

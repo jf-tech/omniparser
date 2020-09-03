@@ -39,7 +39,7 @@ func TestNewParser(t *testing.T) {
 			exts: []Extension{
 				{}, // Empty extension to test if we skip empty extension properly or not.
 				{
-					ParseSchema: func(string, schemaplugin.Header, []byte) (schemaplugin.Plugin, error) {
+					ParseSchema: func(_ *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) {
 						return nil, errs.ErrSchemaNotSupported
 					},
 				},
@@ -51,7 +51,7 @@ func TestNewParser(t *testing.T) {
 			schema: `{"parser_settings": {"version": "9999", "file_format_type": "exe" }}`,
 			exts: []Extension{
 				{
-					ParseSchema: func(string, schemaplugin.Header, []byte) (schemaplugin.Plugin, error) {
+					ParseSchema: func(_ *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) {
 						return nil, errors.New("invalid schema")
 					},
 				},
@@ -63,7 +63,7 @@ func TestNewParser(t *testing.T) {
 			schema: `{"parser_settings": {"version": "9999", "file_format_type": "exe" }}`,
 			exts: []Extension{
 				{
-					ParseSchema: func(string, schemaplugin.Header, []byte) (schemaplugin.Plugin, error) {
+					ParseSchema: func(_ *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) {
 						return nil, nil
 					},
 				},
