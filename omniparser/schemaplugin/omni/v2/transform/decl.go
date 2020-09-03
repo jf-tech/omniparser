@@ -6,9 +6,11 @@ import (
 	"github.com/jf-tech/omniparser/strs"
 )
 
+// Kind specifies the types of omni schema's input elements.
 type Kind string
 
 const (
+	KindUnknown    Kind = "unknown"
 	KindConst      Kind = "const"
 	KindExternal   Kind = "external"
 	KindField      Kind = "field"
@@ -18,6 +20,7 @@ const (
 	KindTemplate   Kind = "template"
 )
 
+// ResultType specifies the types of omni schema's output elements.
 type ResultType string
 
 const (
@@ -31,9 +34,12 @@ const (
 )
 
 const (
-	FinalOutput = "FINAL_OUTPUT"
+	// finalOutput is the special name of a Decl that is designated for the output
+	// for an omni schema.
+	finalOutput = "FINAL_OUTPUT"
 )
 
+// CustomFuncDecl is the decl for a "custom_func".
 type CustomFuncDecl struct {
 	Name                         string  `json:"name,omitempty"`
 	Args                         []*Decl `json:"args,omitempty"`
@@ -41,6 +47,7 @@ type CustomFuncDecl struct {
 	fqdn                         string  // internal; never unmarshaled from a schema.
 }
 
+// MarshalJSON is the custom JSON marshaler for CustomFuncDecl.
 func (d CustomFuncDecl) MarshalJSON() ([]byte, error) {
 	type Alias CustomFuncDecl
 	return json.Marshal(&struct {
@@ -64,28 +71,30 @@ func (d *CustomFuncDecl) deepCopy() *CustomFuncDecl {
 	return dest
 }
 
-// This is the struct will be unmarshaled from `transform_declarations` section of an omni schema.
+// Decl is the type for omni schema's `transform_declarations` declarations.
 type Decl struct {
-	// Applicable for KindConst.
+	// Const indicates the input element is a cost.
 	Const *string `json:"const,omitempty"`
-	// Applicable for KindExternal
+	// External indicates the input element is from an external property.
 	External *string `json:"external,omitempty"`
-	// Applicable for KindField, KindObject, KindTemplate, KindCustomFunc
+	// XPath specifies an xpath for an input element.
 	XPath *string `json:"xpath,omitempty"`
-	// Applicable for KindField, KindObject, KindTemplate, KindCustomFunc
+	// XPathDynamic specifies a dynamically constructed xpath for an input element.
 	XPathDynamic *Decl `json:"xpath_dynamic,omitempty"`
-	// Applicable for KindCustomFunc.
+	// CustomFunc specifies the input element is a custom function.
 	CustomFunc *CustomFuncDecl `json:"custom_func,omitempty"`
-	// Applicable for KindTemplate.
+	// Template specifies the input element is a template.
 	Template *string `json:"template,omitempty"`
-	// Applicable for KindObject.
+	// Object specifies the input element is an object.
 	Object map[string]*Decl `json:"object,omitempty"`
-	// Applicable for KindArray.
+	// Array specifies the input element is an array.
 	Array []*Decl `json:"array,omitempty"`
-	// Applicable for KindConst, KindExternal, KindField or KindCustomFunc.
-	ResultType               *ResultType `json:"result_type,omitempty"`
-	KeepLeadingTrailingSpace bool        `json:"keep_leading_trailing_space,omitempty"`
-	KeepEmptyOrNull          bool        `json:"keep_empty_or_null,omitempty"`
+	// ResultType specifies the desired output type of an element.
+	ResultType *ResultType `json:"result_type,omitempty"`
+	// KeepLeadingTrailingSpace specifies space trimming in string value of the output element.
+	KeepLeadingTrailingSpace bool `json:"keep_leading_trailing_space,omitempty"`
+	// KeepEmptyOrNull specifies whether or not keep an empty/null output or not.
+	KeepEmptyOrNull bool `json:"keep_empty_or_null,omitempty"`
 
 	// Internal runtime fields that are not unmarshaled from a schema.
 	fqdn     string
@@ -95,6 +104,7 @@ type Decl struct {
 	parent   *Decl
 }
 
+// MarshalJSON is the custom JSON marshaler for Decl.
 func (d Decl) MarshalJSON() ([]byte, error) {
 	emptyToNil := func(s string) string {
 		return strs.FirstNonBlank(s, "(nil)")
@@ -161,7 +171,8 @@ func (d *Decl) isXPathSet() bool {
 	return d.XPath != nil || d.XPathDynamic != nil
 }
 
-// Note only deep-copy all the public fields, those internal computed fields are not copied.
+// Note only deep-copy all the public fields, those internal computed fields MUST not be copied:
+// see explanation in validate.go's computeDeclHash().
 func (d *Decl) deepCopy() *Decl {
 	dest := &Decl{}
 	dest.Const = strs.CopyStrPtr(d.Const)

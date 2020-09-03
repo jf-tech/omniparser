@@ -39,3 +39,72 @@ func CopyStrPtr(sp *string) *string {
 	s := *sp
 	return &s
 }
+
+const (
+	// FQDNDelimiter is the default FQDN delimiter.
+	FQDNDelimiter = "."
+)
+
+// BuildFQDN builds an FQDN from a slice of namelet strings.
+func BuildFQDN(namelets ...string) string {
+	return BuildFQDN2(FQDNDelimiter, namelets...)
+}
+
+// BuildFQDN2 builds an FQDN from a slice of namelet strings and a given delimiter.
+func BuildFQDN2(delimiter string, namelets ...string) string {
+	return strings.Join(namelets, delimiter)
+}
+
+// CopySlice copies a string slice. The returned slice is guaranteed to be a different
+// slice (thus the name Copy) so modifying the src from the caller side won't affect
+// the returned slice.
+func CopySlice(src []string) []string {
+	return MergeSlices(src, nil)
+}
+
+// MergeSlices returns a new slice with two input slice content merged together. The result
+// is guaranteed to be a new slice thus modifying a or b from the caller side won't affect
+// the returned slice.
+func MergeSlices(a, b []string) []string {
+	return append(append([]string(nil), a...), b...)
+}
+
+// HasDup detects whether there are duplicates existing in the src slice.
+func HasDup(src []string) bool {
+	seen := map[string]bool{}
+	for _, v := range src {
+		if _, found := seen[v]; found {
+			return true
+		}
+		seen[v] = true
+	}
+	return false
+}
+
+// MapSlice returns a new string slice whose element is transformed from input slice's
+// corresponding element by a transform func. If any error occurs during any transform,
+// returned slice will be nil together with the error.
+func MapSlice(src []string, f func(string) (string, error)) ([]string, error) {
+	if len(src) == 0 {
+		return nil, nil
+	}
+	result := make([]string, len(src))
+	for i := 0; i < len(src); i++ {
+		s, err := f(src[i])
+		if err != nil {
+			return nil, err
+		}
+		result[i] = s
+	}
+	return result, nil
+}
+
+// NoErrMapSlice returns a new string slice whose element is transformed from input slice's
+// corresponding element by a transform func. The transform func must not fail and NoErrMapSlice
+// guarantees to succeed.
+func NoErrMapSlice(src []string, f func(string) string) []string {
+	result, _ := MapSlice(src, func(s string) (string, error) {
+		return f(s), nil
+	})
+	return result
+}

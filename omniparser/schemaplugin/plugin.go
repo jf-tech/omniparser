@@ -8,6 +8,7 @@ import (
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
 
+// ParseSchemaCtx is a context object used by schema plugins during schema parsing.
 type ParseSchemaCtx struct {
 	Name        string
 	Header      Header
