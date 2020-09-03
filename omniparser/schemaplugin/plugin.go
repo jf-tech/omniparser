@@ -3,18 +3,26 @@ package schemaplugin
 import (
 	"io"
 
+	"github.com/jf-tech/omniparser/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
 
-// SchemaParserFunc is a type of a func that checks if a given schema is supported by
+type ParseSchemaCtx struct {
+	Name        string
+	Header      Header
+	Content     []byte
+	CustomFuncs customfuncs.CustomFuncs
+}
+
+// ParseSchemaFunc is a type of a func that checks if a given schema is supported by
 // its associated plugin, and, if yes, parses the schema content, creates and initializes
 // a new instance of its associated plugin.
 // If the given schema is not supported, errs.ErrSchemaNotSupported should be returned.
 // Any other error returned will cause omniparser to fail entirely.
 // Note, any non errs.ErrSchemaNotSupported error returned here should be errs.CtxAwareErr
 // formatted (i.e. error should contain schema name and if possible error line number).
-type SchemaParserFunc func(name string, header Header, content []byte) (Plugin, error)
+type ParseSchemaFunc func(ctx *ParseSchemaCtx) (Plugin, error)
 
 // Plugin is an interface representing a schema plugin responsible for processing input
 // stream based on its given schema.

@@ -19,6 +19,9 @@ type bytesReadCloser struct{ underlying io.Reader }
 func (b bytesReadCloser) Read(p []byte) (n int, err error) { return b.underlying.Read(p) }
 func (bytesReadCloser) Close() error                       { return nil }
 
+// NewMockReadCloser creates an io.ReadCloser for tests. If `failureMsg` is non-empty, then
+// the created io.ReadCloser will always fail with an error of `failureMsg`. Otherwise the
+// io.ReadCloser will read out and return `content`.
 func NewMockReadCloser(failureMsg string, content []byte) io.ReadCloser {
 	if failureMsg != "" {
 		return alwaysFailReadCloser{errors.New(failureMsg)}
