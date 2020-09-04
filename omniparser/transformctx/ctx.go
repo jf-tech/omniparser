@@ -14,6 +14,8 @@ type ExtensionCtx = interface{}
 type Ctx struct {
 	// InputName is the name of the input stream to be processed.
 	InputName string
+	// ExternalProperties contains exteranlly set string properties used in schema.
+	ExternalProperties map[string]string
 	// CtxAwareErr allows context aware error formatting such as adding input (file) name
 	// and line number as a prefix to the error string.
 	CtxAwareErr errs.CtxAwareErr
@@ -21,4 +23,14 @@ type Ctx struct {
 	// caller and extension's custom functions and/or schema plugin during input
 	// parsing/transform.
 	ExtCtx ExtensionCtx
+}
+
+func (ctx *Ctx) ExternalProperty(name string) (string, bool) {
+	if len(ctx.ExternalProperties) == 0 {
+		return "", false
+	}
+	if v, found := ctx.ExternalProperties[name]; found {
+		return v, true
+	}
+	return "", false
 }

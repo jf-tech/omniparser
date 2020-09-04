@@ -5,6 +5,11 @@ import (
 	"unicode"
 )
 
+// StrPtr returns string pointer that points to a given string value.
+func StrPtr(s string) *string {
+	return &s
+}
+
 // IsStrNonBlank checks if a string is blank or not.
 func IsStrNonBlank(s string) bool {
 	return len(strings.TrimFunc(s, unicode.IsSpace)) > 0
@@ -53,6 +58,24 @@ func BuildFQDN(namelets ...string) string {
 // BuildFQDN2 builds an FQDN from a slice of namelet strings and a given delimiter.
 func BuildFQDN2(delimiter string, namelets ...string) string {
 	return strings.Join(namelets, delimiter)
+}
+
+// LastNameletOfFQDN returns the last namelet of an FQDN delimited by default
+// delimiter. If there is no delimiter in the FQDN, then the FQDN itself is
+// // returned.
+func LastNameletOfFQDN(fqdn string) string {
+	return LastNameletOfFQDN2(FQDNDelimiter, fqdn)
+}
+
+// LastNameletOfFQDN2 returns the last namelet of an FQDN delimited by given
+// delimiter. If there is no delimiter in the FQDN, then the FQDN itself is
+// returned.
+func LastNameletOfFQDN2(delimiter, fqdn string) string {
+	index := strings.LastIndex(fqdn, delimiter)
+	if index < 0 {
+		return fqdn
+	}
+	return fqdn[index+1:]
 }
 
 // CopySlice copies a string slice. The returned slice is guaranteed to be a different
