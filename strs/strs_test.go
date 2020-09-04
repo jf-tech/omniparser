@@ -6,9 +6,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/jf-tech/omniparser/testlib"
 )
+
+func TestStrPtr(t *testing.T) {
+	sp := StrPtr("pi")
+	assert.NotNil(t, sp)
+	assert.Equal(t, "pi", *sp)
+}
 
 func TestIsStrNonBlank(t *testing.T) {
 	for _, test := range []struct {
@@ -53,13 +57,13 @@ func TestFirstNonBlank(t *testing.T) {
 }
 
 func TestStrPtrOrElse(t *testing.T) {
-	assert.Equal(t, "this", StrPtrOrElse(testlib.StrPtr("this"), "that"))
+	assert.Equal(t, "this", StrPtrOrElse(StrPtr("this"), "that"))
 	assert.Equal(t, "that", StrPtrOrElse(nil, "that"))
 }
 
 func TestCopyStrPtr(t *testing.T) {
 	assert.True(t, CopyStrPtr(nil) == nil)
-	src := testlib.StrPtr("abc")
+	src := StrPtr("abc")
 	dst := CopyStrPtr(src)
 	assert.Equal(t, *src, *dst)
 	assert.True(t, fmt.Sprintf("%p", src) != fmt.Sprintf("%p", dst))
@@ -94,6 +98,44 @@ func TestBuildFQDN(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			assert.Equal(t, test.expected, BuildFQDN(test.namelets...))
+		})
+	}
+}
+
+func TestLastNameletOfFQDN(t *testing.T) {
+	for _, test := range []struct {
+		name     string
+		fqdn     string
+		expected string
+	}{
+		{
+			name:     "empty",
+			fqdn:     "",
+			expected: "",
+		},
+		{
+			name:     "no delimiter",
+			fqdn:     "abc",
+			expected: "abc",
+		},
+		{
+			name:     "delimiter at beginning",
+			fqdn:     ".abc",
+			expected: "abc",
+		},
+		{
+			name:     "delimiter at the end",
+			fqdn:     "abc.",
+			expected: "",
+		},
+		{
+			name:     "fqdn",
+			fqdn:     "abc.def.ghi",
+			expected: "ghi",
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, test.expected, LastNameletOfFQDN(test.fqdn))
 		})
 	}
 }

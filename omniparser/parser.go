@@ -100,17 +100,15 @@ func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Pa
 }
 
 func collectCustomFuncs(exts []Extension) customfuncs.CustomFuncs {
-	funcs := make(customfuncs.CustomFuncs)
+	var funcs customfuncs.CustomFuncs
 	for _, ext := range exts {
 		if ext.CustomFuncs == nil {
 			continue
 		}
-		for name, f := range ext.CustomFuncs {
-			// This does mean any 3rd party extension custom funcs name-collide with
-			// builtin custom funcs, they will be overwritten by builtin ones (because
-			// argument exts always put builtin exts at last), which makes sense. :)
-			funcs[name] = f
-		}
+		// This does mean if any 3rd party extension custom funcs name-collide with
+		// builtin custom funcs, they will be overwritten by builtin ones (because
+		// argument exts always have builtin exts at last), which makes sense. :)
+		funcs = customfuncs.Merge(funcs, ext.CustomFuncs)
 	}
 	return funcs
 }

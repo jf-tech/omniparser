@@ -11,9 +11,3 @@ func TestIntPtr(t *testing.T) {
 	assert.NotNil(t, np)
 	assert.Equal(t, 31415926, *np)
 }
-
-func TestStrPtr(t *testing.T) {
-	sp := StrPtr("pi")
-	assert.NotNil(t, sp)
-	assert.Equal(t, "pi", *sp)
-}

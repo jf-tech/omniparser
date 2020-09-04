@@ -13,7 +13,7 @@ import (
 	"golang.org/x/text/encoding/charmap"
 
 	"github.com/jf-tech/omniparser/jsons"
-	"github.com/jf-tech/omniparser/testlib"
+	"github.com/jf-tech/omniparser/strs"
 )
 
 func TestSupportedEncodingMappingsDump(t *testing.T) {
@@ -45,18 +45,18 @@ func TestWrapEncoding(t *testing.T) {
 	assert.Equal(t, "test", readAll(ParserSettings{}.WrapEncoding(strings.NewReader("test"))))
 	// 'parser_settings.encoding' = UTF-8
 	assert.Equal(t, "test", readAll(
-		ParserSettings{Encoding: testlib.StrPtr(encodingUTF8)}.WrapEncoding(strings.NewReader("test"))))
+		ParserSettings{Encoding: strs.StrPtr(encodingUTF8)}.WrapEncoding(strings.NewReader("test"))))
 	// 'parser_settings.encoding' = <unknown> ==> UTF-8
 	assert.Equal(t, "test", readAll(
-		ParserSettings{Encoding: testlib.StrPtr("unknown")}.WrapEncoding(strings.NewReader("test"))))
+		ParserSettings{Encoding: strs.StrPtr("unknown")}.WrapEncoding(strings.NewReader("test"))))
 	// 'parser_settings.encoding' = ISO-8859-1
 	iso88591bytes, err := charmap.ISO8859_1.NewEncoder().Bytes([]byte("test"))
 	assert.NoError(t, err)
 	assert.Equal(t, "test", readAll(
-		ParserSettings{Encoding: testlib.StrPtr(encodingISO8859_1)}.WrapEncoding(bytes.NewReader(iso88591bytes))))
+		ParserSettings{Encoding: strs.StrPtr(encodingISO8859_1)}.WrapEncoding(bytes.NewReader(iso88591bytes))))
 	// 'parser_settings.encoding' = windows-1252
 	windows1252bytes, err := charmap.Windows1252.NewEncoder().Bytes([]byte("test"))
 	assert.NoError(t, err)
 	assert.Equal(t, "test", readAll(
-		ParserSettings{Encoding: testlib.StrPtr(encodingWindows1252)}.WrapEncoding(bytes.NewReader(windows1252bytes))))
+		ParserSettings{Encoding: strs.StrPtr(encodingWindows1252)}.WrapEncoding(bytes.NewReader(windows1252bytes))))
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/jf-tech/omniparser/jsons"
 	"github.com/jf-tech/omniparser/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/strs"
-	"github.com/jf-tech/omniparser/testlib"
 )
 
 func TestValidateTransformDeclarations(t *testing.T) {
@@ -239,12 +238,12 @@ func TestDetectKind(t *testing.T) {
 	}{
 		{
 			name:         "const",
-			decl:         &Decl{Const: testlib.StrPtr("test")},
+			decl:         &Decl{Const: strs.StrPtr("test")},
 			expectedKind: KindConst,
 		},
 		{
 			name:         "external",
-			decl:         &Decl{External: testlib.StrPtr("test")},
+			decl:         &Decl{External: strs.StrPtr("test")},
 			expectedKind: KindExternal,
 		},
 		{
@@ -254,32 +253,32 @@ func TestDetectKind(t *testing.T) {
 		},
 		{
 			name:         "object with empty map",
-			decl:         &Decl{XPath: testlib.StrPtr("test"), Object: map[string]*Decl{}},
+			decl:         &Decl{XPath: strs.StrPtr("test"), Object: map[string]*Decl{}},
 			expectedKind: KindObject,
 		},
 		{
 			name: "object with non-empty map",
 			decl: &Decl{
 				XPathDynamic: &Decl{},
-				Object:       map[string]*Decl{"a": {Const: testlib.StrPtr("test")}},
+				Object:       map[string]*Decl{"a": {Const: strs.StrPtr("test")}},
 			},
 			expectedKind: KindObject,
 		},
 		{
 			name: "array",
 			decl: &Decl{
-				Array: []*Decl{{Const: testlib.StrPtr("test")}},
+				Array: []*Decl{{Const: strs.StrPtr("test")}},
 			},
 			expectedKind: KindArray,
 		},
 		{
 			name:         "template",
-			decl:         &Decl{XPath: testlib.StrPtr("test"), Template: testlib.StrPtr("test")},
+			decl:         &Decl{XPath: strs.StrPtr("test"), Template: strs.StrPtr("test")},
 			expectedKind: KindTemplate,
 		},
 		{
 			name:         "field with xpath",
-			decl:         &Decl{XPath: testlib.StrPtr("test")},
+			decl:         &Decl{XPath: strs.StrPtr("test")},
 			expectedKind: KindField,
 		},
 		{
@@ -303,9 +302,9 @@ func TestDetectKind(t *testing.T) {
 func TestComputeDeclHash(t *testing.T) {
 	decl1 := &Decl{
 		Object: map[string]*Decl{
-			"field3": {Const: testlib.StrPtr("const"), kind: KindConst, fqdn: "root.field3", hash: "h3"},
-			"field1": {External: testlib.StrPtr("external"), kind: KindExternal, fqdn: "root.field1", hash: "h1"},
-			"field2": {Template: testlib.StrPtr("template"), kind: KindTemplate, fqdn: "root.field2", hash: "h2"},
+			"field3": {Const: strs.StrPtr("const"), kind: KindConst, fqdn: "root.field3", hash: "h3"},
+			"field1": {External: strs.StrPtr("external"), kind: KindExternal, fqdn: "root.field1", hash: "h1"},
+			"field2": {Template: strs.StrPtr("template"), kind: KindTemplate, fqdn: "root.field2", hash: "h2"},
 		},
 		kind: KindObject,
 		fqdn: "root",

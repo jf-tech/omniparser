@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/jsons"
-	"github.com/jf-tech/omniparser/testlib"
+	"github.com/jf-tech/omniparser/strs"
 )
 
 func TestMarshalDecl(t *testing.T) {
@@ -110,7 +110,7 @@ func TestIsPrimitiveKind(t *testing.T) {
 }
 
 func TestIsXPathSet(t *testing.T) {
-	assert.True(t, (&Decl{XPath: testlib.StrPtr("A/B/C")}).isXPathSet())
+	assert.True(t, (&Decl{XPath: strs.StrPtr("A/B/C")}).isXPathSet())
 	assert.True(t, (&Decl{XPathDynamic: &Decl{}}).isXPathSet())
 	assert.False(t, (&Decl{}).isXPathSet())
 }
