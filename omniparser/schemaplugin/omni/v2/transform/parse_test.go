@@ -13,7 +13,7 @@ import (
 )
 
 func testParseCtx() *parseCtx {
-	ctx := newParseCtx(
+	ctx := NewParseCtx(
 		&transformctx.Ctx{
 			InputName:          "test-input",
 			ExternalProperties: map[string]string{"abc": "efg"},
@@ -453,7 +453,7 @@ func TestParseCtx_ParseNode(t *testing.T) {
 			linkParent(test.decl)
 			ctx := testParseCtx()
 			ctx.disableTransformCache = false
-			value, err := ctx.parseNode(testNode(), test.decl)
+			value, err := ctx.ParseNode(testNode(), test.decl)
 			switch test.expectedErr {
 			case "":
 				assert.NoError(t, err)

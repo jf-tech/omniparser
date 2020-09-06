@@ -64,7 +64,7 @@ func (p *parseCtx) prepCustomFuncArgValues(
 	}
 
 	for _, argDecl := range customFuncDecl.Args {
-		// We'd love to delegate all the value calculation to parseNode but here we have
+		// We'd love to delegate all the value calculation to ParseNode but here we have
 		// one special case, when we deal with a field.
 		// We have situations we need to support aggregation func such as sum/avg. In those cases
 		// the arg to the custom func can be a field with xpath/xpath_dynamic that we want it to
@@ -98,7 +98,7 @@ func (p *parseCtx) prepCustomFuncArgValues(
 			// fn is NOT variadic and xpath query returned at least one value, only use the first one.
 			appendArgValue(argDecl, argValueNodes[0].InnerText())
 		case KindArray:
-			argValue, err := p.parseNode(n, argDecl)
+			argValue, err := p.ParseNode(n, argDecl)
 			if err != nil {
 				return nil, err
 			}
@@ -110,7 +110,7 @@ func (p *parseCtx) prepCustomFuncArgValues(
 			}
 		default:
 			// Normal case not involving field (so const/external/nested custom_func)
-			v, err := p.parseNode(n, argDecl)
+			v, err := p.ParseNode(n, argDecl)
 			if err != nil {
 				return nil, err
 			}
