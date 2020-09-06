@@ -23,7 +23,8 @@ type parseCtx struct {
 	transformCache        map[string]interface{}
 }
 
-func newParseCtx(opCtx *transformctx.Ctx, customFuncs customfuncs.CustomFuncs) *parseCtx {
+// NewParseCtx creates new context for parsing a *Node (and its sub-tree) into an output record.
+func NewParseCtx(opCtx *transformctx.Ctx, customFuncs customfuncs.CustomFuncs) *parseCtx {
 	return &parseCtx{
 		opCtx:                 opCtx,
 		customFuncs:           customFuncs,
@@ -42,12 +43,10 @@ func resultTypeConversion(decl *Decl, value string) (interface{}, error) {
 		return value, nil
 	}
 	// after this point, result type isn't of string.
-
 	// Omit the field in final result if it is empty with non-string type.
 	if !strs.IsStrNonBlank(value) {
 		return nil, nil
 	}
-
 	switch decl.resultType() {
 	case ResultTypeInt:
 		f, err := strconv.ParseFloat(value, 64)
@@ -128,7 +127,7 @@ func normalizeAndReturnValue(decl *Decl, value interface{}) (interface{}, error)
 	return returnValue, nil
 }
 
-func (p *parseCtx) parseNode(n *node.Node, decl *Decl) (interface{}, error) {
+func (p *parseCtx) ParseNode(n *node.Node, decl *Decl) (interface{}, error) {
 	var cacheKey string
 	if !p.disableTransformCache {
 		cacheKey = nodePtrAddrStr(n) + "/" + decl.hash
@@ -136,7 +135,6 @@ func (p *parseCtx) parseNode(n *node.Node, decl *Decl) (interface{}, error) {
 			return cacheValue, nil
 		}
 	}
-
 	saveIntoCache := func(value interface{}, err error) (interface{}, error) {
 		if !p.disableTransformCache {
 			if err != nil {
@@ -146,7 +144,6 @@ func (p *parseCtx) parseNode(n *node.Node, decl *Decl) (interface{}, error) {
 		}
 		return value, err
 	}
-
 	switch decl.kind {
 	case KindConst:
 		return saveIntoCache(p.parseConst(decl))
@@ -204,14 +201,14 @@ func (p *parseCtx) computeXPath(n *node.Node, decl *Decl) (xpath string, dynamic
 }
 
 func (p *parseCtx) computeXPathDynamic(n *node.Node, xpathDynamicDecl *Decl) (string, error) {
-	v, err := p.parseNode(n, xpathDynamicDecl)
+	v, err := p.ParseNode(n, xpathDynamicDecl)
 	if err != nil {
 		return "", err
 	}
 	// if v is straight out nil, then we should fail out
 	// if v isn't nil, it could be an interface{} type whose value is nil; or it could be some valid values.
 	// note we need to guard the IsNil call as it would panic if v kind isn't interface/chan/func/map/slice/ptr.
-	// note we only need to ensure for kind == interface, because  parseNode will never return
+	// note we only need to ensure for kind == interface, because  ParseNode will never return
 	// chan/func/ptr. It's possible to return map/slice, but in earlier validation (validateXPath) we already
 	// ensured `xpath_dynamic` result type is string.
 	if v == nil || (reflect.ValueOf(v).Kind() == reflect.Interface && reflect.ValueOf(v).IsNil()) {
@@ -298,11 +295,11 @@ func (p *parseCtx) parseObject(n *node.Node, decl *Decl) (interface{}, error) {
 	}
 	object := map[string]interface{}{}
 	for _, childDecl := range decl.children {
-		childValue, err := p.parseNode(n, childDecl)
+		childValue, err := p.ParseNode(n, childDecl)
 		if err != nil {
 			return nil, err
 		}
-		// value returned by p.parseNode is already normalized, thus this
+		// value returned by p.ParseNode is already normalized, thus this
 		// normalizeAndSaveValue won't fail.
 		_ = normalizeAndSaveValue(childDecl, childValue, func(normalizedValue interface{}) {
 			object[strs.LastNameletOfFQDN(childDecl.fqdn)] = normalizedValue
@@ -330,11 +327,11 @@ func (p *parseCtx) parseArray(n *node.Node, decl *Decl) (interface{}, error) {
 			return nil, fmt.Errorf("xpath query '%s' on '%s' failed: %s", xpath, childDecl.fqdn, err.Error())
 		}
 		for _, nodeForChildDecl := range nodes {
-			childValue, err := p.parseNode(nodeForChildDecl, childDecl)
+			childValue, err := p.ParseNode(nodeForChildDecl, childDecl)
 			if err != nil {
 				return nil, err
 			}
-			// value returned by p.parseNode is already normalized, thus this
+			// value returned by p.ParseNode is already normalized, thus this
 			// normalizeAndSaveValue won't fail.
 			_ = normalizeAndSaveValue(childDecl, childValue, func(normalizedValue interface{}) {
 				array = append(array, normalizedValue)

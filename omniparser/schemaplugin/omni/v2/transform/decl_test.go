@@ -158,7 +158,7 @@ func verifyDeclDeepCopy(t *testing.T, d1, d2 *Decl) {
 	verifyPtrsInDeepCopy(d1.Template, d2.Template)
 
 	verifyPtrsInDeepCopy(d1.Object, d2.Object)
-	for name, _ := range d1.Object {
+	for name := range d1.Object {
 		verifyDeclDeepCopy(t, d1.Object[name], d2.Object[name])
 	}
 

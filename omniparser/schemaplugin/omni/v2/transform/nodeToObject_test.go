@@ -35,18 +35,18 @@ func TestIsChildText(t *testing.T) {
 			name:  "xml: child is array",
 			xpath: "a",
 			xmlStr: `<a>
-			                            <b>1</b>
-			                            <b>2</b>
-			                        </a>`,
+						<b>1</b>
+						<b>2</b>
+					</a>`,
 			isTextNode: false,
 		},
 		{
 			name:  "xml: child is object",
 			xpath: "a",
 			xmlStr: `<a>
-			                            <b>1</b>
-			                            <c>2</c>
-			                        </a>`,
+						<b>1</b>
+						<c>2</c>
+					</a>`,
 			isTextNode: false,
 		},
 	} {
