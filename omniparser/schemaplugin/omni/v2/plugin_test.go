@@ -83,7 +83,7 @@ func TestParseSchema_FormatNotSupported(t *testing.T) {
 	assert.Nil(t, p)
 }
 
-func TestParseSchema_TransformDeclarationsValidationFailed(t *testing.T) {
+func TestParseSchema_TransformDeclarationsJSONValidationFailed(t *testing.T) {
 	p, err := ParseSchema(
 		&schemaplugin.ParseSchemaCtx{
 			Name: "test-schema",
@@ -98,6 +98,30 @@ func TestParseSchema_TransformDeclarationsValidationFailed(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t,
 		`schema 'test-schema' validation failed: transform_declarations: FINAL_OUTPUT is required`,
+		err.Error())
+	assert.Nil(t, p)
+}
+
+func TestParseSchema_TransformDeclarationsInCodeValidationFailed(t *testing.T) {
+	p, err := ParseSchema(
+		&schemaplugin.ParseSchemaCtx{
+			Name: "test-schema",
+			Header: schemaplugin.Header{
+				ParserSettings: schemaplugin.ParserSettings{
+					Version:        PluginVersion,
+					FileFormatType: "xml",
+				},
+			},
+			Content: []byte(
+				`{
+					"transform_declarations": {
+						"FINAL_OUTPUT": { "template": "non-existing" }
+					}
+				}`),
+		})
+	assert.Error(t, err)
+	assert.Equal(t,
+		`schema 'test-schema' 'transform_declarations' validation failed': 'FINAL_OUTPUT' contains non-existing template reference 'non-existing'`,
 		err.Error())
 	assert.Nil(t, p)
 }
@@ -195,7 +219,3 @@ func TestGetInputProcessor_CustomFileFormat_Success(t *testing.T) {
 	assert.Equal(t, "test input", string(data))
 	assert.Equal(t, "test runtime", r.runtime.(string))
 }
-
-/* TODO once 'transform_declarations' parsing is done.
-func TestParseSchema_XML(t *testing.T) {}
-*/

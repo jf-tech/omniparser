@@ -21,11 +21,13 @@ type CustomFuncs = map[string]CustomFuncType
 // BuiltinCustomFuncs contains all the built-in custom functions.
 var BuiltinCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
+	"avg":                avg,
 	"concat":             concat,
 	"external":           external,
 	"lower":              lower,
 	"splitIntoJsonArray": splitIntoJsonArray,
 	"substring":          substring,
+	"sum":                sum,
 	"upper":              upper,
 }
 

@@ -100,3 +100,31 @@ func TestBPMInSnapshot(t *testing.T) {
 		},
 	}))
 }
+
+func TestPrettyJSON_Success(t *testing.T) {
+	pretty, err := PrettyJSON(`{"Name":"John","Age":65,"Smoker":false,"Hobbies":["flying","fishing","reading"]}`)
+	assert.NoError(t, err)
+	cupaloy.SnapshotT(t, pretty)
+}
+
+func TestPrettyJSON_Failure(t *testing.T) {
+	pretty, err := PrettyJSON(`{`)
+	assert.Error(t, err)
+	assert.Equal(t, "unexpected end of JSON input", err.Error())
+	assert.Equal(t, "", pretty)
+}
+
+func TestBestEffortPrettyJSON_Success(t *testing.T) {
+	pretty := BestEffortPrettyJSON(`{"Name":"John","Age":65,"Smoker":false,"Hobbies":["flying","fishing","reading"]}`)
+	cupaloy.SnapshotT(t, pretty)
+}
+
+func TestBestEffortPrettyJSON_Failure(t *testing.T) {
+	pretty := BestEffortPrettyJSON(`{`)
+	assert.Equal(t, "{}", pretty)
+}
+
+func TestBPJ_Success(t *testing.T) {
+	pretty := BPJ(`{"Name":"John","Age":65,"Smoker":false,"Hobbies":["flying","fishing","reading"]}`)
+	cupaloy.SnapshotT(t, pretty)
+}

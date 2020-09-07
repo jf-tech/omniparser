@@ -28,7 +28,7 @@ func ValidateTransformDeclarations(schemaContent []byte, customFuncs customfuncs
 	ctx.declHashes = map[string]string{}
 
 	// We did json schema validation earlier, so "FINAL_OUTPUT" must exist.
-	finalOutputDecl, err := ctx.validateDecl(finalOutput, ctx.Decls[finalOutput], []string{finalOutput})
+	finalOutputDecl, err := ctx.validateDecl(FinalOutput, ctx.Decls[FinalOutput], []string{FinalOutput})
 	if err != nil {
 		return nil, err
 	}

@@ -34,9 +34,9 @@ const (
 )
 
 const (
-	// finalOutput is the special name of a Decl that is designated for the output
+	// FinalOutput is the special name of a Decl that is designated for the output
 	// for an omni schema.
-	finalOutput = "FINAL_OUTPUT"
+	FinalOutput = "FINAL_OUTPUT"
 )
 
 // CustomFuncDecl is the decl for a "custom_func".

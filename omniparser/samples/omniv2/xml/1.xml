@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<lb0:library xmlns:lb0="...">
+    <books>
+        <header>
+            <publisher>Scholastic Press</publisher>
+        </header>
+        <book title="Harry Potter and the Philosopher's Stone" price="9.99">
+            <author>J. K. Rowling</author>
+            <year>1997</year>
+        </book>
+        <book title="Harry Potter and the Chamber of Secrets" price="10.99">
+            <author>J. K. Rowling</author>
+            <year>1998</year>
+        </book>
+        <footer>Harry Potter Collection</footer>
+    </books>
+    <books>
+        <header>
+            <publisher>Harper &amp; Brothers</publisher>
+        </header>
+        <book title="Goodnight Moon" price="5.99">
+            <author>Margaret Wise Brown</author>
+            <year>1947</year>
+        </book>
+        <book price="3.99">
+            <author>Unknown</author>
+            <year>1900</year>
+        </book>
+        <footer>Kids Reading Collection</footer>
+    </books>
+</lb0:library>

@@ -1,0 +1,40 @@
+{
+    "parser_settings": {
+        "version": "omni.2.0",
+        "file_format_type": "xml"
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": "lb0:library/books", "object": {
+            "authors": { "array": [ { "xpath": "book/author" } ] },
+            "book_titles": { "array": [ { "xpath": "book/@title" } ] },
+            "books": { "array": [ { "xpath": "book", "template": "book_template" } ] },
+            "first_book": { "xpath": "book[position() = 1]", "result_type": "object" },
+            "footer": { "template": "footer_template1" },
+            "header": { "xpath": "header", "object": {
+                "publisher": { "xpath": "publisher" }
+            }},
+            "total_price": { "result_type": "float", "custom_func": { "name": "sum", "args": [ { "xpath": "book/@price" } ] }},
+            "avg_price": { "result_type": "float", "custom_func": { "name": "avg", "args": [ { "xpath": "book/@price" } ] }}
+        }},
+        "footer_template1": { "xpath": "footer" },
+        "book_template": { "keep_empty_or_null": true, "object": {
+            "planet": { "const": "earth" },
+            "author": { "xpath": "author" },
+            "year": { "result_type": "int", "xpath": "year" },
+            "price": { "result_type": "float", "xpath": "@price" },
+            "title": { "xpath": "@title" },
+            "custom_func_demo": { "keep_empty_or_null": true, "result_type": "string", "custom_func": {
+                "name": "concat",
+                "args": [
+                    { "xpath": "author" },
+                    { "custom_func": { "name": "concat", "args": [ { "const": "<" }, { "const": ">" } ] } },
+                    { "xpath": "@title" },
+                    { "const": "-" },
+                    { "xpath": "../header/publisher" }
+                ]
+            }},
+            "footer": { "template": "footer_template2" }
+        }},
+        "footer_template2": { "xpath": "../footer" }
+    }
+}
