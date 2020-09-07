@@ -8,12 +8,13 @@ import (
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
 
-// ParseSchemaCtx is a context object used by schema plugins during schema parsing.
+// ParseSchemaCtx is a context object used by schema plugin during schema parsing.
 type ParseSchemaCtx struct {
-	Name        string
-	Header      Header
-	Content     []byte
-	CustomFuncs customfuncs.CustomFuncs
+	Name         string
+	Header       Header
+	Content      []byte
+	CustomFuncs  customfuncs.CustomFuncs
+	PluginParams interface{}
 }
 
 // ParseSchemaFunc is a type of a func that checks if a given schema is supported by
@@ -35,8 +36,7 @@ type Plugin interface {
 	GetInputProcessor(ctx *transformctx.Ctx, input io.Reader) (InputProcessor, error)
 }
 
-// InputProcessor is an interface responsible for a given input stream
-// parsing and processing.
+// InputProcessor is an interface responsible for a given input stream parsing and processing.
 type InputProcessor interface {
 	// Read is called repeatedly during the processing of an input stream. Each call it should return
 	// one result object, called record. It's entirely up to the implementation of this interface/method

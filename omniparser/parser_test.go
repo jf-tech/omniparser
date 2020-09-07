@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/jf-tech/omniparser/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
@@ -18,26 +19,26 @@ func TestNewParser(t *testing.T) {
 	for _, test := range []struct {
 		name        string
 		schema      string
-		exts        []Extension
+		pluginCfgs  []SchemaPluginConfig
 		expectedErr string
 	}{
 		{
 			name:        "fail to read out schema content",
 			schema:      "",
-			exts:        nil,
+			pluginCfgs:  nil,
 			expectedErr: "unable to read schema 'test-schema': mock reading failure",
 		},
 		{
 			name:        "fail to unmarshal schema header",
 			schema:      "[invalid",
-			exts:        nil,
+			pluginCfgs:  nil,
 			expectedErr: "unable to read schema 'test-schema': corrupted header `parser_settings`:.*",
 		},
 		{
 			name:   "no supported schema plugin",
 			schema: `{"parser_settings": {"version": "9999", "file_format_type": "exe" }}`,
-			exts: []Extension{
-				{}, // Empty extension to test if we skip empty extension properly or not.
+			pluginCfgs: []SchemaPluginConfig{
+				{}, // Empty to test if we skip empty 3rd party plugin config properly or not.
 				{
 					ParseSchema: func(_ *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) {
 						return nil, errs.ErrSchemaNotSupported
@@ -49,7 +50,7 @@ func TestNewParser(t *testing.T) {
 		{
 			name:   "supported schema plugin found, but schema validation fails",
 			schema: `{"parser_settings": {"version": "9999", "file_format_type": "exe" }}`,
-			exts: []Extension{
+			pluginCfgs: []SchemaPluginConfig{
 				{
 					ParseSchema: func(_ *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) {
 						return nil, errors.New("invalid schema")
@@ -61,11 +62,25 @@ func TestNewParser(t *testing.T) {
 		{
 			name:   "supported schema plugin found, schema parsing successful",
 			schema: `{"parser_settings": {"version": "9999", "file_format_type": "exe" }}`,
-			exts: []Extension{
+			pluginCfgs: []SchemaPluginConfig{
 				{
-					ParseSchema: func(_ *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) {
+					CustomFuncs: customfuncs.CustomFuncs{
+						"upper":            nil,
+						"very_very_unique": func() {},
+					},
+					ParseSchema: func(ctx *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) {
+						// since there is a naming collision for "upper", totally this plugin only
+						// adds one new custom func 'very_very_unique'.
+						assert.Equal(t, len(customfuncs.BuiltinCustomFuncs)+1, len(ctx.CustomFuncs))
+						// make sure the name-collided 'upper' is overwritten by builtin one.
+						assert.NotNil(t, ctx.CustomFuncs["upper"])
+						// make sure 'very_very_unique' is added.
+						assert.NotNil(t, ctx.CustomFuncs["very_very_unique"])
+						// make sure plugin param is passed in correctly.
+						assert.Equal(t, 13, ctx.PluginParams.(int))
 						return nil, nil
 					},
+					PluginParams: 13,
 				},
 			},
 			expectedErr: "",
@@ -78,7 +93,7 @@ func TestNewParser(t *testing.T) {
 			} else {
 				schemaReader = strings.NewReader(test.schema)
 			}
-			plugin, err := NewParser("test-schema", schemaReader, test.exts...)
+			plugin, err := NewParser("test-schema", schemaReader, test.pluginCfgs...)
 			if test.expectedErr != "" {
 				assert.Error(t, err)
 				assert.Regexp(t, test.expectedErr, err.Error())

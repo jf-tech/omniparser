@@ -1,87 +1,42 @@
 package nodes
 
 import (
-	"encoding/json"
-	"fmt"
+	"testing"
 
 	node "github.com/antchfx/xmlquery"
-
-	"github.com/jf-tech/omniparser/jsons"
+	"github.com/stretchr/testify/assert"
 )
 
-func nodeName(n *node.Node) string {
-	if n == nil {
-		return "(nil)"
-	}
-	switch n.Type {
-	case node.DocumentNode:
-		return "(ROOT)"
-	case node.DeclarationNode:
-		return fmt.Sprintf("(DECL %s)", n.Data)
-	case node.ElementNode:
-		name := fmt.Sprintf("(ELEM %s)", n.Data)
-		if n.Prefix != "" {
-			name = fmt.Sprintf("(ELEM %s:%s)", n.Prefix, n.Data)
-		}
-		return name
-	case node.TextNode:
-		return fmt.Sprintf("(TEXT '%s')", n.Data)
-	case node.CharDataNode:
-		return fmt.Sprintf("(CDATA '%s')", n.Data)
-	case node.CommentNode:
-		return fmt.Sprintf("(COMMENT '%s')", n.Data)
-	case node.AttributeNode:
-		return fmt.Sprintf("(ATTR '%s')", n.Data)
-	default:
-		return fmt.Sprintf("(unknown '%s')", n.Data)
+func TestNodeName(t *testing.T) {
+	for _, test := range []struct {
+		name     string
+		n        *node.Node
+		expected string
+	}{
+		{name: "nil", n: nil, expected: "(nil)"},
+		{name: "root", n: &node.Node{Type: node.DocumentNode}, expected: "(ROOT)"},
+		{name: "decl", n: &node.Node{Type: node.DeclarationNode, Data: "xml"}, expected: "(DECL xml)"},
+		{name: "elem w/o ns", n: &node.Node{Type: node.ElementNode, Data: "A"}, expected: "(ELEM A)"},
+		{name: "elem w/ ns", n: &node.Node{Type: node.ElementNode, Data: "A", Prefix: "ns"}, expected: "(ELEM ns:A)"},
+		{name: "text", n: &node.Node{Type: node.TextNode, Data: "data"}, expected: "(TEXT 'data')"},
+		{name: "cdata", n: &node.Node{Type: node.CharDataNode, Data: "data"}, expected: "(CDATA 'data')"},
+		{name: "comment", n: &node.Node{Type: node.CommentNode, Data: "huh"}, expected: "(COMMENT 'huh')"},
+		{name: "attr", n: &node.Node{Type: node.AttributeNode, Data: "attr"}, expected: "(ATTR attr)"},
+		{name: "unknown", n: &node.Node{Type: node.NodeType(99999), Data: "what"}, expected: "(unknown 'what')"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, test.expected, nodeName(test.n))
+		})
 	}
 }
 
-func nodeTypeStr(nt node.NodeType) string {
-	switch nt {
-	case node.DocumentNode:
-		return "DocumentNode"
-	case node.DeclarationNode:
-		return "DeclarationNode"
-	case node.ElementNode:
-		return "ElementNode"
-	case node.TextNode:
-		return "TextNode"
-	case node.CharDataNode:
-		return "CharDataNode"
-	case node.CommentNode:
-		return "CommentNode"
-	case node.AttributeNode:
-		return "AttributeNode"
-	default:
-		return fmt.Sprintf("(unknown:%d)", nt)
-	}
-}
-
-func nodeToInterface(n *node.Node) interface{} {
-	m := make(map[string]interface{})
-	m["Parent"] = nodeName(n.Parent)
-	m["FirstChild"] = nodeName(n.FirstChild)
-	m["LastChild"] = nodeName(n.LastChild)
-	m["PrevSibling"] = nodeName(n.PrevSibling)
-	m["NextSibling"] = nodeName(n.NextSibling)
-	m["Parent"] = nodeName(n.Parent)
-	m["Type"] = nodeTypeStr(n.Type)
-	m["Data"] = n.Data
-	m["Prefix"] = n.Prefix
-	m["NamespaceURI"] = n.NamespaceURI
-	attrb, _ := json.Marshal(n.Attr)
-	var attrv interface{}
-	_ = json.Unmarshal(attrb, &attrv)
-	m["Attr"] = attrv
-	var children []interface{}
-	for child := n.FirstChild; child != nil; child = child.NextSibling {
-		children = append(children, nodeToInterface(child))
-	}
-	m["#children"] = children
-	return m
-}
-
-func jsonify(n *node.Node) string {
-	return jsons.BPM(nodeToInterface(n))
+func TestNodeTypeStr(t *testing.T) {
+	assert.Equal(t, "DocumentNode", nodeTypeStr(node.DocumentNode))
+	assert.Equal(t, "DeclarationNode", nodeTypeStr(node.DeclarationNode))
+	assert.Equal(t, "ElementNode", nodeTypeStr(node.ElementNode))
+	assert.Equal(t, "TextNode", nodeTypeStr(node.TextNode))
+	assert.Equal(t, "CharDataNode", nodeTypeStr(node.CharDataNode))
+	assert.Equal(t, "CommentNode", nodeTypeStr(node.CommentNode))
+	assert.Equal(t, "AttributeNode", nodeTypeStr(node.AttributeNode))
+	assert.Equal(t, "(unknown:99999)", nodeTypeStr(node.NodeType(99999)))
 }

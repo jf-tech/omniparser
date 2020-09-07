@@ -6,6 +6,7 @@ import (
 
 	"github.com/jf-tech/omniparser/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/omniparser/errs"
+	omniv2fileformat "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/fileformat"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/transform"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
@@ -14,7 +15,7 @@ type inputProcessor struct {
 	finalOutputDecl *transform.Decl
 	customFuncs     customfuncs.CustomFuncs
 	ctx             *transformctx.Ctx
-	reader          InputReader
+	reader          omniv2fileformat.FormatReader
 }
 
 func (p *inputProcessor) Read() ([]byte, error) {
