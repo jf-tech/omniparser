@@ -1,0 +1,228 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "github.com/jf-tech/omniparser:transform_declarations",
+    "title": "omniparser schema: transform_declarations",
+    "type": "object",
+    "properties": {
+        "transform_declarations": {
+            "type": "object",
+            "properties": {
+                "FINAL_OUTPUT": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/const" },
+                        { "$ref": "#/definitions/external" },
+                        { "$ref": "#/definitions/field" },
+                        { "$ref": "#/definitions/object" },
+                        { "$ref": "#/definitions/custom_func" },
+                        { "$ref": "#/definitions/array" },
+                        { "$ref": "#/definitions/template" }
+                    ]
+                }
+            },
+            "patternProperties": {
+                "^[_a-zA-Z0-9]+$": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/const" },
+                        { "$ref": "#/definitions/external" },
+                        { "$ref": "#/definitions/field" },
+                        { "$ref": "#/definitions/object" },
+                        { "$ref": "#/definitions/custom_func" },
+                        { "$ref": "#/definitions/array" },
+                        { "$ref": "#/definitions/template" }
+                    ]
+                }
+            },
+            "required": [ "FINAL_OUTPUT" ],
+            "additionalProperties": false
+        }
+    },
+    "required": [ "transform_declarations" ],
+    "definitions": {
+        "value_comment": { "type": "string" },
+        "value_keep_leading_trailing_space": { "type": "boolean" },
+        "value_ignore_error_and_return_empty_str": { "type": "boolean" },
+        "value_keep_empty_or_null": { "type": "boolean" },
+        "value_name": {
+            "type": "string",
+            "minLength": 1,
+            "$comment": "name can not be empty string"
+        },
+        "value_const": {
+            "type": "string",
+            "$comment": "const can be empty string"
+        },
+        "value_external": {
+            "type": "string",
+            "minLength": 1,
+            "$comment": "external can not be empty string"
+        },
+        "value_xpath": {
+            "type": "string",
+            "minLength": 1,
+            "$comment": "xpath can not be empty string"
+        },
+        "value_xpath_dynamic": {
+            "type": "object",
+            "items": {
+                "oneOf": [
+                    { "$ref": "#/definitions/const" },
+                    { "$ref": "#/definitions/external" },
+                    { "$ref": "#/definitions/field" },
+                    { "$ref": "#/definitions/custom_func" },
+                    { "$ref": "#/definitions/template" }
+                ]
+            }
+        },
+        "value_template": {
+            "type": "string",
+            "minLength": 1,
+            "$comment": "template can not be empty string"
+        },
+        "value_object": {
+            "type": "object",
+            "patternProperties": {
+                "^[_a-zA-Z0-9]+$": {
+                    "oneOf": [
+                        { "$ref": "#/definitions/const" },
+                        { "$ref": "#/definitions/external" },
+                        { "$ref": "#/definitions/field" },
+                        { "$ref": "#/definitions/object" },
+                        { "$ref": "#/definitions/custom_func" },
+                        { "$ref": "#/definitions/array" },
+                        { "$ref": "#/definitions/template" }
+                    ],
+                    "$comment": "object's field can be any kind of transform"
+                }
+            },
+            "additionalProperties": false
+        },
+        "value_custom_func": {
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#/definitions/value_name" },
+                "args": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            { "$ref": "#/definitions/const" },
+                            { "$ref": "#/definitions/external" },
+                            { "$ref": "#/definitions/field" },
+                            { "$ref": "#/definitions/custom_func" },
+                            { "$ref": "#/definitions/array" },
+                            { "$ref": "#/definitions/template" }
+                        ]
+                    }
+                },
+                "ignore_error_and_return_empty_str": { "$ref": "#/definitions/value_ignore_error_and_return_empty_str" }
+            },
+            "required": [ "name", "args" ],
+            "additionalProperties": false
+        },
+        "result_type": {
+            "type": "string",
+            "enum": [
+                "int",
+                "float",
+                "boolean",
+                "string",
+                "object"
+            ]
+        },
+        "const": {
+            "type": "object",
+            "properties": {
+                "const": { "$ref": "#/definitions/value_const" },
+                "result_type": { "$ref": "#/definitions/result_type" },
+                "keep_leading_trailing_space": { "$ref": "#/definitions/value_keep_leading_trailing_space" },
+                "keep_empty_or_null": { "$ref": "#/definitions/value_keep_empty_or_null" },
+                "_comment": { "$ref": "#/definitions/value_comment" }
+            },
+            "required": [ "const" ],
+            "additionalProperties": false
+        },
+        "external": {
+            "type": "object",
+            "properties": {
+                "external": { "$ref": "#/definitions/value_external" },
+                "result_type": { "$ref": "#/definitions/result_type" },
+                "keep_leading_trailing_space": { "$ref": "#/definitions/value_keep_leading_trailing_space" },
+                "keep_empty_or_null": { "$ref": "#/definitions/value_keep_empty_or_null" },
+                "_comment": { "$ref": "#/definitions/value_comment" }
+            },
+            "required": [ "external" ],
+            "additionalProperties": false
+        },
+        "field": {
+            "type": "object",
+            "properties": {
+                "xpath": { "$ref": "#/definitions/value_xpath" },
+                "xpath_dynamic": { "$ref": "#/definitions/value_xpath_dynamic" },
+                "result_type": { "$ref": "#/definitions/result_type" },
+                "keep_leading_trailing_space": { "$ref": "#/definitions/value_keep_leading_trailing_space" },
+                "keep_empty_or_null": { "$ref": "#/definitions/value_keep_empty_or_null" },
+                "_comment": { "$ref": "#/definitions/value_comment" }
+            },
+            "additionalProperties": false
+        },
+        "object": {
+            "type": "object",
+            "properties": {
+                "xpath": { "$ref": "#/definitions/value_xpath" },
+                "xpath_dynamic": { "$ref": "#/definitions/value_xpath_dynamic" },
+                "object": { "$ref": "#/definitions/value_object" },
+                "keep_empty_or_null": { "$ref": "#/definitions/value_keep_empty_or_null" },
+                "_comment": { "$ref": "#/definitions/value_comment" }
+            },
+            "required": [ "object" ],
+            "additionalProperties": false
+        },
+        "array": {
+            "type": "object",
+            "properties": {
+                "array": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            { "$ref": "#/definitions/const" },
+                            { "$ref": "#/definitions/external" },
+                            { "$ref": "#/definitions/field" },
+                            { "$ref": "#/definitions/object" },
+                            { "$ref": "#/definitions/custom_func" },
+                            { "$ref": "#/definitions/template" }
+                        ],
+                        "$comment": "array's element can be any kind of transform, except array. might support in the future, but not now"
+                    }
+                },
+                "keep_empty_or_null": { "$ref": "#/definitions/value_keep_empty_or_null" },
+                "_comment": { "$ref": "#/definitions/value_comment" }
+            },
+            "required": [ "array" ],
+            "additionalProperties": false
+        },
+        "template": {
+            "type": "object",
+            "properties": {
+                "xpath": { "$ref": "#/definitions/value_xpath" },
+                "xpath_dynamic": { "$ref": "#/definitions/value_xpath_dynamic" },
+                "template": { "$ref": "#/definitions/value_template" },
+                "_comment": { "$ref": "#/definitions/value_comment" }
+            },
+            "required": [ "template" ],
+            "additionalProperties": false
+        },
+        "custom_func": {
+            "type": "object",
+            "properties": {
+                "xpath": { "$ref": "#/definitions/value_xpath" },
+                "xpath_dynamic": { "$ref": "#/definitions/value_xpath_dynamic" },
+                "custom_func": { "$ref": "#/definitions/value_custom_func" },
+                "result_type": { "$ref": "#/definitions/result_type" },
+                "keep_leading_trailing_space": { "$ref": "#/definitions/value_keep_leading_trailing_space" },
+                "keep_empty_or_null": { "$ref": "#/definitions/value_keep_empty_or_null" },
+                "_comment": { "$ref": "#/definitions/value_comment" }
+            },
+            "required": [ "custom_func" ],
+            "additionalProperties": false
+        }
+    }
+}

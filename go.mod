@@ -10,5 +10,6 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jf-tech/iohelper v1.0.3
 	github.com/stretchr/testify v1.6.1
+	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/text v0.3.0
 )
