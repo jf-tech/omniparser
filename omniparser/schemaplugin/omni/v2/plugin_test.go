@@ -76,9 +76,29 @@ func TestParseSchema_FormatNotSupported(t *testing.T) {
 					FileFormatType: "unknown",
 				},
 			},
+			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
 		})
 	assert.Error(t, err)
 	assert.Equal(t, errs.ErrSchemaNotSupported, err)
+	assert.Nil(t, p)
+}
+
+func TestParseSchema_TransformDeclarationsValidationFailed(t *testing.T) {
+	p, err := ParseSchema(
+		&schemaplugin.ParseSchemaCtx{
+			Name: "test-schema",
+			Header: schemaplugin.Header{
+				ParserSettings: schemaplugin.ParserSettings{
+					Version:        PluginVersion,
+					FileFormatType: "xml",
+				},
+			},
+			Content: []byte(`{"transform_declarations": {}}`),
+		})
+	assert.Error(t, err)
+	assert.Equal(t,
+		`schema 'test-schema' validation failed: transform_declarations: FINAL_OUTPUT is required`,
+		err.Error())
 	assert.Nil(t, p)
 }
 
@@ -90,6 +110,7 @@ func TestParseSchema_CustomFileFormat_FormatNotSupported(t *testing.T) {
 					Version: PluginVersion,
 				},
 			},
+			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
 			PluginParams: &PluginParams{
 				CustomFileFormat: testFileFormat{
 					validateSchemaErr: errs.ErrSchemaNotSupported,
@@ -109,6 +130,7 @@ func TestParseSchema_CustomFileFormat_ValidationFailure(t *testing.T) {
 					Version: PluginVersion,
 				},
 			},
+			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
 			PluginParams: &PluginParams{
 				CustomFileFormat: testFileFormat{
 					validateSchemaErr: errors.New("validation failure"),
@@ -128,6 +150,7 @@ func TestParseSchema_CustomFileFormat_Success(t *testing.T) {
 					Version: PluginVersion,
 				},
 			},
+			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
 			PluginParams: &PluginParams{
 				CustomFileFormat: testFileFormat{
 					validateSchemaRuntime: "runtime data",

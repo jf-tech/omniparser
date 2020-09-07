@@ -7,6 +7,7 @@ import (
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
 	omniv2fileformat "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/fileformat"
 	omniv2xml "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/fileformat/xml"
+	"github.com/jf-tech/omniparser/omniparser/schemavalidate"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
 
@@ -22,6 +23,12 @@ type PluginParams struct {
 func ParseSchema(ctx *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) {
 	if ctx.Header.ParserSettings.Version != PluginVersion {
 		return nil, errs.ErrSchemaNotSupported
+	}
+	// Now do transform_declarations json schema validation
+	err := schemavalidate.SchemaValidate(ctx.Name, ctx.Content, schemavalidate.JSONSchemaTransformDeclarations)
+	if err != nil {
+		// err is always context formatted.
+		return nil, err
 	}
 	// If caller specifies a custom FileFormat, we'll use it (and it only);
 	// otherwise we'll use the builtin ones.

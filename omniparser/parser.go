@@ -12,6 +12,7 @@ import (
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
 	omniv2 "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2"
+	"github.com/jf-tech/omniparser/omniparser/schemavalidate"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
 
@@ -53,12 +54,16 @@ func NewParser(schemaName string, schemaReader io.Reader, pluginConfigs ...Schem
 	if err != nil {
 		return nil, fmt.Errorf("unable to read schema '%s': %s", schemaName, err.Error())
 	}
-	var schemaHeader schemaplugin.Header
-	err = json.Unmarshal(schemaContent, &schemaHeader)
+	// validate the universal parser_settings header schema.
+	err = schemavalidate.SchemaValidate(schemaName, schemaContent, schemavalidate.JSONSchemaParserSettings)
 	if err != nil {
-		return nil, fmt.Errorf(
-			"unable to read schema '%s': corrupted header `parser_settings`: %s", schemaName, err)
+		// The err from schemavalidate.SchemaValidate is already context formatted.
+		return nil, err
 	}
+	var schemaHeader schemaplugin.Header
+	// parser_settings has just been json schema validated. so unmarshaling will not go wrong.
+	_ = json.Unmarshal(schemaContent, &schemaHeader)
+
 	var allPluginConfigs []SchemaPluginConfig
 	allPluginConfigs = append(allPluginConfigs, pluginConfigs...)
 	allPluginConfigs = append(allPluginConfigs, SchemaPluginConfig{

@@ -32,7 +32,7 @@ func TestNewParser(t *testing.T) {
 			name:        "fail to unmarshal schema header",
 			schema:      "[invalid",
 			pluginCfgs:  nil,
-			expectedErr: "unable to read schema 'test-schema': corrupted header `parser_settings`:.*",
+			expectedErr: "unable to perform schema validation: invalid character 'i' looking for beginning of value",
 		},
 		{
 			name:   "no supported schema plugin",
@@ -48,7 +48,13 @@ func TestNewParser(t *testing.T) {
 			expectedErr: errs.ErrSchemaNotSupported.Error(),
 		},
 		{
-			name:   "supported schema plugin found, but schema validation fails",
+			name:        "supported schema plugin found, but json schema validation for parser_settings failed",
+			schema:      `{"parser_settings": {"versionx": "9999", "file_format_type": "exe" }}`,
+			pluginCfgs:  nil,
+			expectedErr: "schema 'test-schema' validation failed:\nparser_settings: version is required\nparser_settings: Additional property versionx is not allowed",
+		},
+		{
+			name:   "supported schema plugin found, but schema validation failed",
 			schema: `{"parser_settings": {"version": "9999", "file_format_type": "exe" }}`,
 			pluginCfgs: []SchemaPluginConfig{
 				{
@@ -96,7 +102,7 @@ func TestNewParser(t *testing.T) {
 			plugin, err := NewParser("test-schema", schemaReader, test.pluginCfgs...)
 			if test.expectedErr != "" {
 				assert.Error(t, err)
-				assert.Regexp(t, test.expectedErr, err.Error())
+				assert.Equal(t, test.expectedErr, err.Error())
 				assert.Nil(t, plugin)
 			} else {
 				assert.NoError(t, err)
