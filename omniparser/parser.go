@@ -69,18 +69,18 @@ func NewParser(schemaName string, schemaReader io.Reader, pluginConfigs ...Schem
 	allPluginConfigs = append(allPluginConfigs, SchemaPluginConfig{
 		ParseSchema: omniv2.ParseSchema,
 	})
-	for _, plugin := range allPluginConfigs {
-		if plugin.ParseSchema == nil {
+	for _, pluginCfg := range allPluginConfigs {
+		if pluginCfg.ParseSchema == nil {
 			continue
 		}
-		plugin, err := plugin.ParseSchema(&schemaplugin.ParseSchemaCtx{
+		plugin, err := pluginCfg.ParseSchema(&schemaplugin.ParseSchemaCtx{
 			Name:    schemaName,
 			Header:  schemaHeader,
 			Content: schemaContent,
 			// keep builtin custom funcs at tail, so that if we have name collision between the caller
 			// supplied custom funcs and built-in ones, the built-in ones win.
-			CustomFuncs:  customfuncs.Merge(plugin.CustomFuncs, customfuncs.BuiltinCustomFuncs),
-			PluginParams: plugin.PluginParams,
+			CustomFuncs:  customfuncs.Merge(pluginCfg.CustomFuncs, customfuncs.BuiltinCustomFuncs),
+			PluginParams: pluginCfg.PluginParams,
 		})
 		if err == errs.ErrSchemaNotSupported {
 			continue

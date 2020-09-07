@@ -1,0 +1,81 @@
+[
+	{
+		"authors": [
+			"J. K. Rowling",
+			"J. K. Rowling"
+		],
+		"avg_price": 10.49,
+		"book_titles": [
+			"Harry Potter and the Philosopher's Stone",
+			"Harry Potter and the Chamber of Secrets"
+		],
+		"books": [
+			{
+				"author": "J. K. Rowling",
+				"custom_func_demo": "J. K. Rowling<>Harry Potter and the Philosopher's Stone-Scholastic Press",
+				"footer": "Harry Potter Collection",
+				"planet": "earth",
+				"price": 9.99,
+				"title": "Harry Potter and the Philosopher's Stone",
+				"year": 1997
+			},
+			{
+				"author": "J. K. Rowling",
+				"custom_func_demo": "J. K. Rowling<>Harry Potter and the Chamber of Secrets-Scholastic Press",
+				"footer": "Harry Potter Collection",
+				"planet": "earth",
+				"price": 10.99,
+				"title": "Harry Potter and the Chamber of Secrets",
+				"year": 1998
+			}
+		],
+		"first_book": {
+			"author": "J. K. Rowling",
+			"year": "1997"
+		},
+		"footer": "Harry Potter Collection",
+		"header": {
+			"publisher": "Scholastic Press"
+		},
+		"total_price": 20.98
+	},
+	{
+		"authors": [
+			"Margaret Wise Brown",
+			"Unknown"
+		],
+		"avg_price": 4.99,
+		"book_titles": [
+			"Goodnight Moon"
+		],
+		"books": [
+			{
+				"author": "Margaret Wise Brown",
+				"custom_func_demo": "Margaret Wise Brown<>Goodnight Moon-Harper & Brothers",
+				"footer": "Kids Reading Collection",
+				"planet": "earth",
+				"price": 5.99,
+				"title": "Goodnight Moon",
+				"year": 1947
+			},
+			{
+				"author": "Unknown",
+				"custom_func_demo": "Unknown<>-Harper & Brothers",
+				"footer": "Kids Reading Collection",
+				"planet": "earth",
+				"price": 3.99,
+				"year": 1900
+			}
+		],
+		"first_book": {
+			"author": "Margaret Wise Brown",
+			"year": "1947"
+		},
+		"footer": "Kids Reading Collection",
+		"header": {
+			"publisher": "Harper & Brothers"
+		},
+		"total_price": 9.98
+	}
+]
+

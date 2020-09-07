@@ -35,3 +35,25 @@ func BestEffortPrettyMarshal(v interface{}) string {
 
 // BPM is a shortcut (mostly used ing tests) to BestEffortPrettyMarshal.
 var BPM = BestEffortPrettyMarshal
+
+// PrettyJSON reformats a json string to be pretty
+func PrettyJSON(jsonStr string) (string, error) {
+	var v interface{}
+	err := json.Unmarshal([]byte(jsonStr), &v)
+	if err != nil {
+		return "", err
+	}
+	return PrettyMarshal(v)
+}
+
+// BestEffortPrettyJSON reformats a json string to be pretty, ignoring any error.
+func BestEffortPrettyJSON(jsonStr string) string {
+	s, err := PrettyJSON(jsonStr)
+	if err != nil {
+		return "{}"
+	}
+	return s
+}
+
+// BPJ is a shortcut (mostly used ing tests) to BestEffortPrettyJSON.
+var BPJ = BestEffortPrettyJSON

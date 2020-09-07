@@ -182,7 +182,7 @@ func xpathQueryNeeded(decl *Decl) bool {
 	// See details in parseArray().
 	// Now, if the transform is FINAL_OUTPUT, we never do xpath query on that, FINAL_OUTPUT's content node
 	// is always supplied by reader.
-	return decl.fqdn != finalOutput &&
+	return decl.fqdn != FinalOutput &&
 		decl.isXPathSet() &&
 		(decl.parent == nil || decl.parent.kind != KindArray)
 }
