@@ -6,7 +6,7 @@ import (
 	"github.com/bradleyjkemp/cupaloy"
 
 	"github.com/jf-tech/omniparser/jsons"
-	"github.com/jf-tech/omniparser/omniparser/samples/sampleutil"
+	"github.com/jf-tech/omniparser/samples/sampleutil"
 )
 
 func Test1(t *testing.T) {
