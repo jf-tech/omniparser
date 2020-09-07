@@ -3,33 +3,26 @@ package testlib
 import (
 	"io/ioutil"
 	"os"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/strs"
 )
 
 // For dir/pattern params check https://golang.org/pkg/io/ioutil/#TempFile
 // Caller is responsible for calling os.Remove on the returned file.
-func CreateTempFileWithContent(dir, pattern, content string) (*os.File, error) {
+func CreateTempFileWithContent(t *testing.T, dir, pattern, content string) *os.File {
 	f, err := ioutil.TempFile(dir, pattern)
-	if err != nil {
-		return nil, err
-	}
-
+	assert.NoError(t, err)
 	// If content is empty, no need to write
 	if !strs.IsStrNonBlank(content) {
 		_ = f.Close()
-		return f, nil
+		return f
 	}
-
-	if _, err := f.Write([]byte(content)); err != nil {
-		_ = os.Remove(f.Name())
-		return nil, err
-	}
-
-	if err := f.Close(); err != nil {
-		_ = os.Remove(f.Name())
-		return nil, err
-	}
-
-	return f, nil
+	_, err = f.Write([]byte(content))
+	assert.NoError(t, err)
+	err = f.Close()
+	assert.NoError(t, err)
+	return f
 }
