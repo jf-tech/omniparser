@@ -4,16 +4,13 @@ import (
 	"testing"
 
 	"github.com/bradleyjkemp/cupaloy"
-	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/jsons"
 	"github.com/jf-tech/omniparser/testlib"
 )
 
 func createTempFile(t *testing.T, content string) string {
-	f, err := testlib.CreateTempFileWithContent("", "", content)
-	assert.NoError(t, err)
-	return f.Name()
+	return testlib.CreateTempFileWithContent(t, "", "", content).Name()
 }
 
 func TestSampleTestCommon(t *testing.T) {
