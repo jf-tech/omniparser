@@ -1,0 +1,10 @@
+{"timestamp":"2020-09-08T12:34:56.123Z", "severity":"INFO", "source":"balancer", "message":"balancer is happy"}
+
+{"timestamp":"2020-09-08T12:34:57.123Z", "severity":"INFO", "source":"api", "message":"api is happy"}
+{"timestamp":"2020-09-08T12:34:57.124Z", "severity":"ERROR", "source":"api", "message":"something is bad"}
+{"timestamp":"2020-09-08T12:34:57.125Z", "severity":"CRITICAL", "source":"api", "message":"something is really bad"}
+{"timestamp":"2020-09-08T12:34:58.321Z", "severity":"WARNING", "source":"balancer", "message":"balancer senses some trouble"}
+
+{"timestamp":"2020-09-08T12:34:59.130Z", "severity":"WARNING", "source":"api", "message":"it is getting better"}
+{"timestamp":"2020-09-08T12:34:59.323Z", "severity":"INFO", "source":"api", "message":"api is happy"}
+{"timestamp":"2020-09-08T12:34:59.623Z", "severity":"INFO", "source":"balancer", "message":"balancer is happy"}
