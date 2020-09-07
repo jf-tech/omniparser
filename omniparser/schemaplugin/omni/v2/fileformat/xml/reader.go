@@ -52,19 +52,17 @@ func (r *reader) FmtErr(format string, args ...interface{}) error {
 	return errors.New(r.fmtErrStr(format, args...))
 }
 
-const (
-	xmlParserLineFieldFQDN = "reader.p.decoder.line"
-)
-
 func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 	return fmt.Sprintf("input '%s' near line %d: %s", r.inputName, r.lineNumber(), fmt.Sprintf(format, args...))
 }
 
 func (r *reader) lineNumber() int {
-	// We assumed the field structure leading to "line" from library
-	// github.com/antchfx/xmlquery. If we decide to upgrade to a newer version
-	// of the library and somehow the structure/path is changed, our test case
-	// will fail, ensuring us to make corresponding changes here.
+	// We want to return an approx line number for error reporting purpose. But
+	// the 'line' field is buried at: r.reader.p.decoder.line, and none of them
+	// are exported. So using this hack to get the number. Given all the libraries
+	// are of fixed versions in go modules, we're fine. If in the future, something
+	// changes and breaks due to library upgrade, we'll have test failures to remind
+	// us to fix.
 	return int(reflect.ValueOf(r.reader).Elem().
 		FieldByName("p").Elem().
 		FieldByName("decoder").Elem().

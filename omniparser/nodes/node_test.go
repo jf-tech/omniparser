@@ -140,7 +140,7 @@ func createTestTree(t *testing.T) *testTree {
 
 func TestReferenceTestTree(t *testing.T) {
 	test := createTestTree(t)
-	cupaloy.SnapshotT(t, jsonify(test.root))
+	cupaloy.SnapshotT(t, JSONify(test.root))
 }
 
 func TestCopyNode(t *testing.T) {
@@ -168,10 +168,10 @@ func TestCopyTree(t *testing.T) {
 	child2Copy := CopyTree(test.child2)
 	assert.True(t, test.child2 != child2Copy)
 	verifyPointerIntegrityInTree(t, child2Copy)
-	assert.Equal(t, jsonify(test.child2), jsonify(child2Copy))
+	assert.Equal(t, JSONify(test.child2), JSONify(child2Copy))
 
 	rootCopy := findRoot(child2Copy)
 	assert.True(t, test.root != rootCopy)
 	verifyPointerIntegrityInTree(t, rootCopy)
-	assert.Equal(t, jsonify(test.root), jsonify(rootCopy))
+	assert.Equal(t, JSONify(test.root), JSONify(rootCopy))
 }

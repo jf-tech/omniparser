@@ -32,32 +32,23 @@ type Parser interface {
 	SchemaContent() []byte
 }
 
-// Extension allows client of omniparser to supply its own custom funcs and/or schema plugin.
-type Extension struct {
-	// CustomFuncs contains a collection of custom funcs provided by this extension. Optional.
-	CustomFuncs customfuncs.CustomFuncs
-	// ParseSchema is a constructor function that matches and creates a schema plugin. Optional.
-	ParseSchema schemaplugin.ParseSchemaFunc
-}
-
-// BuiltinExtensions contains all the built-in extensions (custom funcs, and schema plugins)
-var BuiltinExtensions = []Extension{
-	{CustomFuncs: customfuncs.BuiltinCustomFuncs},
-	{ParseSchema: omniv2.ParseSchema},
-}
-
 type parser struct {
 	schemaName    string
 	schemaHeader  schemaplugin.Header
 	schemaContent []byte
-	exts          []Extension
 	schemaPlugin  schemaplugin.Plugin
 }
 
-// NewParser creates a new instance of omniparser for a given schema. Caller can also supply
-// additional extensions (on top of builtin extensions) so caller can adds new custom funcs and/or
-// new schema plugins.
-func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Parser, error) {
+type SchemaPluginConfig struct {
+	CustomFuncs  customfuncs.CustomFuncs
+	ParseSchema  schemaplugin.ParseSchemaFunc
+	PluginParams interface{}
+}
+
+// NewParser creates a new instance of omniparser for a given schema. Caller can use the optional
+// pluginConfigs to supply additional custom funcs, and/or additional schema plugins and their
+// corresponding initialization params.
+func NewParser(schemaName string, schemaReader io.Reader, pluginConfigs ...SchemaPluginConfig) (Parser, error) {
 	schemaContent, err := ioutil.ReadAll(schemaReader)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read schema '%s': %s", schemaName, err.Error())
@@ -68,18 +59,23 @@ func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Pa
 		return nil, fmt.Errorf(
 			"unable to read schema '%s': corrupted header `parser_settings`: %s", schemaName, err)
 	}
-	var allExts []Extension
-	allExts = append(allExts, exts...)
-	allExts = append(allExts, BuiltinExtensions...)
-	for _, ext := range allExts {
-		if ext.ParseSchema == nil {
+	var allPluginConfigs []SchemaPluginConfig
+	allPluginConfigs = append(allPluginConfigs, pluginConfigs...)
+	allPluginConfigs = append(allPluginConfigs, SchemaPluginConfig{
+		ParseSchema: omniv2.ParseSchema,
+	})
+	for _, plugin := range allPluginConfigs {
+		if plugin.ParseSchema == nil {
 			continue
 		}
-		plugin, err := ext.ParseSchema(&schemaplugin.ParseSchemaCtx{
-			Name:        schemaName,
-			Header:      schemaHeader,
-			Content:     schemaContent,
-			CustomFuncs: collectCustomFuncs(append([]Extension{ext}, BuiltinExtensions...)), // keep builtin exts last.
+		plugin, err := plugin.ParseSchema(&schemaplugin.ParseSchemaCtx{
+			Name:    schemaName,
+			Header:  schemaHeader,
+			Content: schemaContent,
+			// keep builtin custom funcs at tail, so that if we have name collision between the caller
+			// supplied custom funcs and built-in ones, the built-in ones win.
+			CustomFuncs:  customfuncs.Merge(plugin.CustomFuncs, customfuncs.BuiltinCustomFuncs),
+			PluginParams: plugin.PluginParams,
 		})
 		if err == errs.ErrSchemaNotSupported {
 			continue
@@ -92,25 +88,10 @@ func NewParser(schemaName string, schemaReader io.Reader, exts ...Extension) (Pa
 			schemaName:    schemaName,
 			schemaHeader:  schemaHeader,
 			schemaContent: schemaContent,
-			exts:          allExts,
 			schemaPlugin:  plugin,
 		}, nil
 	}
 	return nil, errs.ErrSchemaNotSupported
-}
-
-func collectCustomFuncs(exts []Extension) customfuncs.CustomFuncs {
-	var funcs customfuncs.CustomFuncs
-	for _, ext := range exts {
-		if ext.CustomFuncs == nil {
-			continue
-		}
-		// This does mean if any 3rd party extension custom funcs name-collide with
-		// builtin custom funcs, they will be overwritten by builtin ones (because
-		// argument exts always have builtin exts at last), which makes sense. :)
-		funcs = customfuncs.Merge(funcs, ext.CustomFuncs)
-	}
-	return funcs
 }
 
 // GetTransformOp creates and returns an instance of TransformOp for a given input.
