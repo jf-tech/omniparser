@@ -3,9 +3,9 @@ package customparse
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
-	"time"
 
 	node "github.com/antchfx/xmlquery"
 	"github.com/bradleyjkemp/cupaloy"
@@ -71,9 +71,13 @@ func employeePersonalDetailsLookup(_ *transformctx.Ctx, node *node.Node) (interf
 	id := node.InnerText()
 	// Pretend some complex logic and/or RPC calls...
 	// This custom_parse demonstrates how to return a complex object with map[string]interface{}
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
 	return map[string]interface{}{
 		"name": "name-" + id,
-		"age":  time.Now().Nanosecond()%50 + 20,
+		"age":  idInt%40 + 21, // whatever this means :)
 		"home_address": map[string]interface{}{
 			"street": "street-" + id,
 			"city":   "city-" + id,
