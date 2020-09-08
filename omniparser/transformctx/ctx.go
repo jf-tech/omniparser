@@ -15,6 +15,7 @@ type Ctx struct {
 	CtxAwareErr errs.CtxAwareErr
 }
 
+// ExternalProperty looks up, and returns an external property value, if exists.
 func (ctx *Ctx) ExternalProperty(name string) (string, bool) {
 	if len(ctx.ExternalProperties) == 0 {
 		return "", false

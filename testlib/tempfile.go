@@ -10,7 +10,8 @@ import (
 	"github.com/jf-tech/omniparser/strs"
 )
 
-// For dir/pattern params check https://golang.org/pkg/io/ioutil/#TempFile
+// CreateTempFileWithContent creates a temp file with desired content in it
+// for testing. For dir/pattern params check https://golang.org/pkg/io/ioutil/#TempFile
 // Caller is responsible for calling os.Remove on the returned file.
 func CreateTempFileWithContent(t *testing.T, dir, pattern, content string) *os.File {
 	f, err := ioutil.TempFile(dir, pattern)

@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	// FileFormatJSONLog is the constant for this special/sample file format.
 	FileFormatJSONLog = "jsonlog"
 )
 
@@ -20,6 +21,7 @@ type jsonLogFileFormat struct {
 	schemaName string
 }
 
+// NewJSONLogFileFormat creates a new FileFormat for this special/sample jsonlog.
 func NewJSONLogFileFormat(schemaName string) omniv2fileformat.FileFormat {
 	return &jsonLogFileFormat{schemaName: schemaName}
 }
