@@ -12,10 +12,11 @@ import (
 )
 
 type inputProcessor struct {
-	finalOutputDecl *transform.Decl
-	customFuncs     customfuncs.CustomFuncs
-	ctx             *transformctx.Ctx
-	reader          omniv2fileformat.FormatReader
+	finalOutputDecl  *transform.Decl
+	customFuncs      customfuncs.CustomFuncs
+	customParseFuncs transform.CustomParseFuncs
+	ctx              *transformctx.Ctx
+	reader           omniv2fileformat.FormatReader
 }
 
 func (p *inputProcessor) Read() ([]byte, error) {
@@ -24,7 +25,8 @@ func (p *inputProcessor) Read() ([]byte, error) {
 		// Read() supposed to have already done CtxAwareErr error wrapping. So directly return.
 		return nil, err
 	}
-	result, err := transform.NewParseCtx(p.ctx, p.customFuncs).ParseNode(node, p.finalOutputDecl)
+	result, err := transform.NewParseCtx(p.ctx, p.customFuncs, p.customParseFuncs).
+		ParseNode(node, p.finalOutputDecl)
 	if err != nil {
 		// ParseNode() error not CtxAwareErr wrapped, so wrap it.
 		// Note errs.ErrorTransformFailed is a continuable error.

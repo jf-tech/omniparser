@@ -1,9 +1,10 @@
 package transform
 
 import (
-	"regexp"
+	"errors"
 	"testing"
 
+	node "github.com/antchfx/xmlquery"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/omniparser/customfuncs"
@@ -24,7 +25,18 @@ func testParseCtx() *parseCtx {
 					return "test", nil
 				},
 			},
-			customfuncs.BuiltinCustomFuncs))
+			customfuncs.BuiltinCustomFuncs),
+		CustomParseFuncs{
+			"test_custom_parse_str": func(_ *transformctx.Ctx, _ *node.Node) (interface{}, error) {
+				return "abc", nil
+			},
+			"test_custom_parse_int": func(_ *transformctx.Ctx, _ *node.Node) (interface{}, error) {
+				return 123, nil
+			},
+			"test_custom_parse_err": func(_ *transformctx.Ctx, _ *node.Node) (interface{}, error) {
+				return nil, errors.New("test_custom_parse_err")
+			},
+		})
 	// by default disabling transform cache in test because vast majority of
 	// test cases don't have their decls' hash computed.
 	ctx.disableTransformCache = true
@@ -118,7 +130,7 @@ func TestResultTypeConversion(t *testing.T) {
 				assert.NoError(t, err)
 			default:
 				assert.Error(t, err)
-				assert.Regexp(t, test.expectedErr, err.Error())
+				assert.Equal(t, test.expectedErr, err.Error())
 			}
 			assert.Equal(t, test.expectedValue, typedValue)
 		})
@@ -255,7 +267,7 @@ func TestNormalizeAndSaveValue(t *testing.T) {
 				assert.NoError(t, err)
 			default:
 				assert.Error(t, err)
-				assert.Regexp(t, test.expectedErr, err.Error())
+				assert.Equal(t, test.expectedErr, err.Error())
 			}
 		})
 	}
@@ -448,6 +460,15 @@ func TestParseCtx_ParseNode(t *testing.T) {
 			expectedValue: "abcbaA",
 			expectedErr:   "",
 		},
+		{
+			name: "custom_parse kind",
+			decl: &Decl{
+				CustomParse: strs.StrPtr("test_custom_parse_str"),
+				kind:        KindCustomParse,
+			},
+			expectedValue: "abc",
+			expectedErr:   "",
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			linkParent(test.decl)
@@ -459,7 +480,7 @@ func TestParseCtx_ParseNode(t *testing.T) {
 				assert.NoError(t, err)
 			default:
 				assert.Error(t, err)
-				assert.Regexp(t, test.expectedErr, err.Error())
+				assert.Equal(t, test.expectedErr, err.Error())
 			}
 			assert.Equal(t, test.expectedValue, value)
 		})
@@ -652,7 +673,7 @@ func TestParseCtx_ParseCustomFunc(t *testing.T) {
 				fqdn: "test_fqdn",
 			},
 			expectedValue: nil,
-			expectedErr:   regexp.QuoteMeta(`xpath query '*' on 'test_fqdn' yielded more than one result`),
+			expectedErr:   `xpath query '*' on 'test_fqdn' yielded more than one result`,
 		},
 		{
 			name: "resultType is object",
@@ -722,7 +743,78 @@ func TestParseCtx_ParseCustomFunc(t *testing.T) {
 				assert.NoError(t, err)
 			default:
 				assert.Error(t, err)
-				assert.Regexp(t, test.expectedErr, err.Error())
+				assert.Equal(t, test.expectedErr, err.Error())
+			}
+			assert.Equal(t, test.expectedValue, value)
+		})
+	}
+}
+
+func TestParseCtx_ParseCustomParse(t *testing.T) {
+	for _, test := range []struct {
+		name          string
+		decl          *Decl
+		expectedValue interface{}
+		expectedErr   string
+	}{
+		{
+			name: "successful invoking custom_parse that returns a string",
+			decl: &Decl{
+				CustomParse: strs.StrPtr("test_custom_parse_str"),
+				kind:        KindCustomParse,
+			},
+			expectedValue: "abc",
+			expectedErr:   "",
+		},
+		{
+			name: "successful invoking custom_parse that returns an int",
+			decl: &Decl{
+				CustomParse: strs.StrPtr("test_custom_parse_int"),
+				ResultType:  resultTypePtr(ResultTypeInt),
+				kind:        KindCustomParse,
+			},
+			expectedValue: 123,
+			expectedErr:   "",
+		},
+		{
+			name: "failed invoking custom_parse",
+			decl: &Decl{
+				CustomParse: strs.StrPtr("test_custom_parse_err"),
+				kind:        KindCustomParse,
+			},
+			expectedValue: nil,
+			expectedErr:   "test_custom_parse_err",
+		},
+		{
+			name: "xpath matches no node",
+			decl: &Decl{
+				XPath:       strs.StrPtr("NO MATCH"),
+				CustomParse: strs.StrPtr("test_custom_parse_str"),
+				kind:        KindCustomParse,
+			},
+			expectedValue: nil,
+			expectedErr:   "",
+		},
+		{
+			name: "xpath matches more than one node",
+			decl: &Decl{
+				XPath:       strs.StrPtr("*"),
+				CustomParse: strs.StrPtr("test_custom_parse_str"),
+				kind:        KindCustomParse,
+				fqdn:        "test_fqdn",
+			},
+			expectedValue: nil,
+			expectedErr:   `xpath query '*' on 'test_fqdn' yielded more than one result`,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			value, err := testParseCtx().parseCustomParse(testNode(), test.decl)
+			switch test.expectedErr {
+			case "":
+				assert.NoError(t, err)
+			default:
+				assert.Error(t, err)
+				assert.Equal(t, test.expectedErr, err.Error())
 			}
 			assert.Equal(t, test.expectedValue, value)
 		})

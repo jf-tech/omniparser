@@ -13,18 +13,22 @@ import (
 )
 
 type validateCtx struct {
-	Decls       map[string]*Decl `json:"transform_declarations"`
-	customFuncs customfuncs.CustomFuncs
-	declHashes  map[string]string
+	Decls            map[string]*Decl `json:"transform_declarations"`
+	customFuncs      customfuncs.CustomFuncs
+	customParseFuncs CustomParseFuncs
+	declHashes       map[string]string
 }
 
 // ValidateTransformDeclarations validates `transform_declarations` section of an omni schema and returns
 // the `FINAL_OUTPUT` corresponding Decl.
-func ValidateTransformDeclarations(schemaContent []byte, customFuncs customfuncs.CustomFuncs) (*Decl, error) {
+func ValidateTransformDeclarations(
+	schemaContent []byte, customFuncs customfuncs.CustomFuncs, customParseFuncs CustomParseFuncs) (*Decl, error) {
+
 	var ctx validateCtx
 	// We did json schema validation earlier, so this unmarshal guarantees to succeed.
 	_ = json.Unmarshal(schemaContent, &ctx)
 	ctx.customFuncs = customFuncs
+	ctx.customParseFuncs = customParseFuncs
 	ctx.declHashes = map[string]string{}
 
 	// We did json schema validation earlier, so "FINAL_OUTPUT" must exist.
@@ -62,6 +66,11 @@ func (ctx *validateCtx) validateDecl(fqdn string, decl *Decl, templateRefStack [
 		}
 	case KindCustomFunc:
 		err := ctx.validateCustomFunc(fqdn, decl, templateRefStack)
+		if err != nil {
+			return nil, err
+		}
+	case KindCustomParse:
+		err := ctx.validateCustomParse(fqdn, decl)
 		if err != nil {
 			return nil, err
 		}
@@ -169,6 +178,13 @@ func (ctx *validateCtx) validateCustomFunc(fqdn string, decl *Decl, templateRefS
 	return nil
 }
 
+func (ctx *validateCtx) validateCustomParse(fqdn string, decl *Decl) error {
+	if _, found := ctx.customParseFuncs[*decl.CustomParse]; !found {
+		return fmt.Errorf("unknown custom_parse '%s' on '%s'", *decl.CustomParse, fqdn)
+	}
+	return nil
+}
+
 func (ctx *validateCtx) validateTemplate(fqdn string, decl *Decl, templateRefStack []string) (*Decl, error) {
 	templateName := *decl.Template
 	templateDecl, found := ctx.Decls[templateName]
@@ -211,6 +227,8 @@ func detectKind(decl *Decl) Kind {
 		return KindExternal
 	case decl.CustomFunc != nil:
 		return KindCustomFunc
+	case decl.CustomParse != nil:
+		return KindCustomParse
 	case decl.Object != nil:
 		return KindObject
 	case decl.Array != nil:

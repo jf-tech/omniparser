@@ -52,7 +52,7 @@ func TestInputProcessor_Read_ParseNodeFailure(t *testing.T) {
 			"transform_declarations": {
 				"FINAL_OUTPUT": { "const": "abc", "result_type": "int" }
 			}
-		}`), nil)
+		}`), nil, nil)
 	assert.NoError(t, err)
 	p := &inputProcessor{
 		finalOutputDecl: finalOutputDecl,
@@ -74,7 +74,7 @@ func TestInputProcessor_Read_Success(t *testing.T) {
 			"transform_declarations": {
 				"FINAL_OUTPUT": { "const": "123", "result_type": "int" }
 			}
-		}`), nil)
+		}`), nil, nil)
 	assert.NoError(t, err)
 	p := &inputProcessor{
 		finalOutputDecl: finalOutputDecl,

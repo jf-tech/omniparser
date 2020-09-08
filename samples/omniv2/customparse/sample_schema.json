@@ -1,0 +1,14 @@
+{
+    "parser_settings": {
+        "version": "omni.2.0",
+        "file_format_type": "xml"
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": "/Employees/Employee", "object": {
+            "employee_id": { "xpath": "ID" },
+            "personal_details": { "xpath": "ID", "custom_parse": "employee_personal_details_lookup" },
+            "business_details": { "xpath": "ID", "custom_parse": "employee_business_details_lookup" },
+            "team": { "xpath": "ID", "custom_parse": "employee_team_lookup" }
+        }}
+    }
+}

@@ -10,14 +10,15 @@ import (
 type Kind string
 
 const (
-	KindUnknown    Kind = "unknown"
-	KindConst      Kind = "const"
-	KindExternal   Kind = "external"
-	KindField      Kind = "field"
-	KindObject     Kind = "object"
-	KindArray      Kind = "array"
-	KindCustomFunc Kind = "custom_func"
-	KindTemplate   Kind = "template"
+	KindUnknown     Kind = "unknown"
+	KindConst       Kind = "const"
+	KindExternal    Kind = "external"
+	KindField       Kind = "field"
+	KindObject      Kind = "object"
+	KindArray       Kind = "array"
+	KindCustomFunc  Kind = "custom_func"
+	KindCustomParse Kind = "custom_parse"
+	KindTemplate    Kind = "template"
 )
 
 // ResultType specifies the types of omni schema's output elements.
@@ -83,6 +84,8 @@ type Decl struct {
 	XPathDynamic *Decl `json:"xpath_dynamic,omitempty"`
 	// CustomFunc specifies the input element is a custom function.
 	CustomFunc *CustomFuncDecl `json:"custom_func,omitempty"`
+	// CustomParse specifies the input element is to be custom parsed.
+	CustomParse *string `json:"custom_parse,omitempty"`
 	// Template specifies the input element is a template.
 	Template *string `json:"template,omitempty"`
 	// Object specifies the input element is an object.
@@ -143,7 +146,11 @@ func (d *Decl) resultType() ResultType {
 		switch d.kind {
 		case KindConst, KindExternal, KindField, KindCustomFunc:
 			return ResultTypeString
-		case KindObject:
+		case KindObject, KindCustomParse:
+			// By default KindCustomParse is considered to be returning
+			// object (If schema writer wants wants it to return string
+			// or any other type, that's fine, as long as that specific
+			// result_type is explicitly stated in the schema.
 			return ResultTypeObject
 		case KindArray:
 			return ResultTypeArray
@@ -184,6 +191,7 @@ func (d *Decl) deepCopy() *Decl {
 	if d.CustomFunc != nil {
 		dest.CustomFunc = d.CustomFunc.deepCopy()
 	}
+	dest.CustomParse = strs.CopyStrPtr(d.CustomParse)
 	dest.Template = strs.CopyStrPtr(d.Template)
 	if len(d.Object) > 0 {
 		dest.Object = map[string]*Decl{}

@@ -154,6 +154,7 @@ func verifyDeclDeepCopy(t *testing.T, d1, d2 *Decl) {
 			verifyDeclDeepCopy(t, d1.CustomFunc.Args[i], d2.CustomFunc.Args[i])
 		}
 	}
+	verifyPtrsInDeepCopy(d1.CustomParse, d2.CustomParse)
 
 	verifyPtrsInDeepCopy(d1.Template, d2.Template)
 
@@ -200,7 +201,8 @@ func TestDeclDeepCopy(t *testing.T) {
             { "object": {
                 "field831": { "const": "value831" }
             }}
-        ]}
+        ]},
+		"field9": { "xpath": "value9", "custom_parse": "cp9" }
     }}`
 	var src Decl
 	assert.NoError(t, json.Unmarshal([]byte(declJson), &src))

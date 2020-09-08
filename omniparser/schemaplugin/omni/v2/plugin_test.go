@@ -14,6 +14,7 @@ import (
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
 	omniv2fileformat "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/fileformat"
+	omniv2xml "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/fileformat/xml"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/transform"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
@@ -121,7 +122,7 @@ func TestParseSchema_TransformDeclarationsInCodeValidationFailed(t *testing.T) {
 		})
 	assert.Error(t, err)
 	assert.Equal(t,
-		`schema 'test-schema' 'transform_declarations' validation failed': 'FINAL_OUTPUT' contains non-existing template reference 'non-existing'`,
+		`schema 'test-schema' 'transform_declarations' validation failed: 'FINAL_OUTPUT' contains non-existing template reference 'non-existing'`,
 		err.Error())
 	assert.Nil(t, p)
 }
@@ -185,6 +186,32 @@ func TestParseSchema_CustomFileFormat_Success(t *testing.T) {
 	plugin := p.(*schemaPlugin)
 	assert.Equal(t, "runtime data", plugin.fileFormat.(testFileFormat).validateSchemaRuntime.(string))
 	assert.Equal(t, "runtime data", plugin.formatRuntime.(string))
+}
+
+func TestParseSchema_CustomParseFuncs_Success(t *testing.T) {
+	p, err := ParseSchema(
+		&schemaplugin.ParseSchemaCtx{
+			Header: schemaplugin.Header{
+				ParserSettings: schemaplugin.ParserSettings{
+					Version:        PluginVersion,
+					FileFormatType: omniv2xml.FileFormatXML,
+				},
+			},
+			Content: []byte(`{
+					"transform_declarations": {
+						"FINAL_OUTPUT": { "xpath": "/A/B", "custom_parse": "test_custom_parse" }
+					}
+				}`),
+			PluginParams: &PluginParams{
+				CustomParseFuncs: transform.CustomParseFuncs{
+					"test_custom_parse": func(_ *transformctx.Ctx, _n *node.Node) (interface{}, error) {
+						return "test", nil
+					},
+				},
+			},
+		})
+	assert.NoError(t, err)
+	assert.NotNil(t, p)
 }
 
 func TestGetInputProcessor_CustomFileFormat_Failure(t *testing.T) {

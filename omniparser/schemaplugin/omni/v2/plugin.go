@@ -19,6 +19,7 @@ const (
 
 type PluginParams struct {
 	CustomFileFormat omniv2fileformat.FileFormat
+	CustomParseFuncs transform.CustomParseFuncs
 }
 
 // ParseSchema parses, validates and creates an omni-schema based schema plugin.
@@ -32,24 +33,13 @@ func ParseSchema(ctx *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) 
 		// err is already context formatted.
 		return nil, err
 	}
-	finalOutputDecl, err := transform.ValidateTransformDeclarations(ctx.Content, ctx.CustomFuncs)
+	finalOutputDecl, err := transform.ValidateTransformDeclarations(ctx.Content, ctx.CustomFuncs, customParseFuncs(ctx))
 	if err != nil {
 		return nil, fmt.Errorf(
-			"schema '%s' 'transform_declarations' validation failed': %s",
+			"schema '%s' 'transform_declarations' validation failed: %s",
 			ctx.Name, err.Error())
 	}
-	// If caller specifies a custom FileFormat, we'll use it (and it only);
-	// otherwise we'll use the builtin ones.
-	fileFormats := []omniv2fileformat.FileFormat{
-		omniv2xml.NewXMLFileFormat(ctx.Name),
-	}
-	if ctx.PluginParams != nil {
-		params := ctx.PluginParams.(*PluginParams)
-		if params != nil {
-			fileFormats = []omniv2fileformat.FileFormat{params.CustomFileFormat}
-		}
-	}
-	for _, fileFormat := range fileFormats {
+	for _, fileFormat := range fileFormats(ctx) {
 		formatRuntime, err := fileFormat.ValidateSchema(
 			ctx.Header.ParserSettings.FileFormatType,
 			ctx.Content,
@@ -71,6 +61,30 @@ func ParseSchema(ctx *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) 
 	return nil, errs.ErrSchemaNotSupported
 }
 
+func customParseFuncs(ctx *schemaplugin.ParseSchemaCtx) transform.CustomParseFuncs {
+	if ctx.PluginParams == nil {
+		return nil
+	}
+	params := ctx.PluginParams.(*PluginParams)
+	if len(params.CustomParseFuncs) == 0 {
+		return nil
+	}
+	return params.CustomParseFuncs
+}
+
+func fileFormats(ctx *schemaplugin.ParseSchemaCtx) []omniv2fileformat.FileFormat {
+	// If caller specifies a custom FileFormat, we'll use it (and it only);
+	// otherwise we'll use the builtin ones.
+	formats := []omniv2fileformat.FileFormat{
+		omniv2xml.NewXMLFileFormat(ctx.Name),
+		// TODO more bulit-in omniv2 file formats to come.
+	}
+	if ctx.PluginParams != nil && ctx.PluginParams.(*PluginParams).CustomFileFormat != nil {
+		formats = []omniv2fileformat.FileFormat{ctx.PluginParams.(*PluginParams).CustomFileFormat}
+	}
+	return formats
+}
+
 type schemaPlugin struct {
 	ctx             *schemaplugin.ParseSchemaCtx
 	fileFormat      omniv2fileformat.FileFormat
@@ -84,9 +98,10 @@ func (s *schemaPlugin) GetInputProcessor(ctx *transformctx.Ctx, input io.Reader)
 		return nil, err
 	}
 	return &inputProcessor{
-		finalOutputDecl: s.finalOutputDecl,
-		customFuncs:     s.ctx.CustomFuncs,
-		ctx:             ctx,
-		reader:          reader,
+		finalOutputDecl:  s.finalOutputDecl,
+		customFuncs:      s.ctx.CustomFuncs,
+		customParseFuncs: customParseFuncs(s.ctx),
+		ctx:              ctx,
+		reader:           reader,
 	}, nil
 }
