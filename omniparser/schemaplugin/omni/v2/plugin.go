@@ -14,9 +14,11 @@ import (
 )
 
 const (
+	// PluginVersion is the version of omniv2 schema plugin.
 	PluginVersion = "omni.2.0"
 )
 
+// PluginParams allows user of omniparser to provide omniv2 schema plugin customization.
 type PluginParams struct {
 	CustomFileFormat omniv2fileformat.FileFormat
 	CustomParseFuncs transform.CustomParseFuncs

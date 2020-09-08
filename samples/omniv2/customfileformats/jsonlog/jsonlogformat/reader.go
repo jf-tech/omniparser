@@ -82,7 +82,7 @@ func parseJSONValue(x interface{}, parent *node.Node) {
 		}
 	case map[string]interface{}:
 		var keys []string
-		for k, _ := range v {
+		for k := range v {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
@@ -126,6 +126,7 @@ func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 	return fmt.Sprintf("input '%s' line %d: %s", r.inputName, r.line, fmt.Sprintf(format, args...))
 }
 
+// NewReader creates an InputReader for this sample jsonlog file format.
 func NewReader(inputName string, src io.Reader, filterXPath string) (*reader, error) {
 	filter, err := xpath.Compile(filterXPath)
 	if err != nil {

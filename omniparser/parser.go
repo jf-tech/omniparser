@@ -40,6 +40,7 @@ type parser struct {
 	schemaPlugin  schemaplugin.Plugin
 }
 
+// SchemaPluginConfig allows caller to provide schema plugin and custom func customization.
 type SchemaPluginConfig struct {
 	CustomFuncs  customfuncs.CustomFuncs
 	ParseSchema  schemaplugin.ParseSchemaFunc

@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	// FileFormatXML is the file format for XML for omniv2 schema plugin.
 	FileFormatXML = "xml"
 )
 
@@ -20,6 +21,7 @@ type xmlFileFormat struct {
 	schemaName string
 }
 
+// NewXMLFileFormat creates a FileFormat for XML for omniv2 schema plugin.
 func NewXMLFileFormat(schemaName string) omniv2fileformat.FileFormat {
 	return &xmlFileFormat{schemaName: schemaName}
 }

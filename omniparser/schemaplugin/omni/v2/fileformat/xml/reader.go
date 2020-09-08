@@ -100,6 +100,7 @@ fail:
 	return xpath
 }
 
+// NewReader creates an InputReader for XML file format for omniv2 schema plugin.
 func NewReader(inputName string, src io.Reader, xpath string) (*reader, error) {
 	xpath = strings.TrimSpace(xpath)
 	xpathWithoutLastFilter := removeLastFilterInXPath(xpath)
