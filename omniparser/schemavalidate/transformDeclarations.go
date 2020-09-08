@@ -21,6 +21,7 @@ const (
                         { "$ref": "#/definitions/field" },
                         { "$ref": "#/definitions/object" },
                         { "$ref": "#/definitions/custom_func" },
+                        { "$ref": "#/definitions/custom_parse" },
                         { "$ref": "#/definitions/array" },
                         { "$ref": "#/definitions/template" }
                     ]
@@ -34,6 +35,7 @@ const (
                         { "$ref": "#/definitions/field" },
                         { "$ref": "#/definitions/object" },
                         { "$ref": "#/definitions/custom_func" },
+                        { "$ref": "#/definitions/custom_parse" },
                         { "$ref": "#/definitions/array" },
                         { "$ref": "#/definitions/template" }
                     ]
@@ -76,6 +78,7 @@ const (
                     { "$ref": "#/definitions/external" },
                     { "$ref": "#/definitions/field" },
                     { "$ref": "#/definitions/custom_func" },
+                    { "$ref": "#/definitions/custom_parse" },
                     { "$ref": "#/definitions/template" }
                 ]
             }
@@ -95,6 +98,7 @@ const (
                         { "$ref": "#/definitions/field" },
                         { "$ref": "#/definitions/object" },
                         { "$ref": "#/definitions/custom_func" },
+                        { "$ref": "#/definitions/custom_parse" },
                         { "$ref": "#/definitions/array" },
                         { "$ref": "#/definitions/template" }
                     ],
@@ -115,6 +119,7 @@ const (
                             { "$ref": "#/definitions/external" },
                             { "$ref": "#/definitions/field" },
                             { "$ref": "#/definitions/custom_func" },
+                            { "$ref": "#/definitions/custom_parse" },
                             { "$ref": "#/definitions/array" },
                             { "$ref": "#/definitions/template" }
                         ]
@@ -125,14 +130,20 @@ const (
             "required": [ "name", "args" ],
             "additionalProperties": false
         },
+        "value_custom_parse": {
+            "type": "string",
+            "minLength": 1,
+            "$comment": "custom_parse can not be empty string"
+        },
         "result_type": {
             "type": "string",
             "enum": [
-                "int",
-                "float",
+                "array",
                 "boolean",
-                "string",
-                "object"
+                "float",
+                "int",
+                "object",
+                "string"
             ]
         },
         "const": {
@@ -195,6 +206,7 @@ const (
                             { "$ref": "#/definitions/field" },
                             { "$ref": "#/definitions/object" },
                             { "$ref": "#/definitions/custom_func" },
+                            { "$ref": "#/definitions/custom_parse" },
                             { "$ref": "#/definitions/template" }
                         ],
                         "$comment": "array's element can be any kind of transform, except array. might support in the future, but not now"
@@ -229,6 +241,20 @@ const (
                 "_comment": { "$ref": "#/definitions/value_comment" }
             },
             "required": [ "custom_func" ],
+            "additionalProperties": false
+        },
+        "custom_parse": {
+            "type": "object",
+            "properties": {
+                "xpath": { "$ref": "#/definitions/value_xpath" },
+                "xpath_dynamic": { "$ref": "#/definitions/value_xpath_dynamic" },
+                "custom_parse": { "$ref": "#/definitions/value_custom_parse" },
+                "result_type": { "$ref": "#/definitions/result_type" },
+                "keep_leading_trailing_space": { "$ref": "#/definitions/value_keep_leading_trailing_space" },
+                "keep_empty_or_null": { "$ref": "#/definitions/value_keep_empty_or_null" },
+                "_comment": { "$ref": "#/definitions/value_comment" }
+            },
+            "required": [ "custom_parse" ],
             "additionalProperties": false
         }
     }

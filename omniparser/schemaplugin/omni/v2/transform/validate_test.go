@@ -3,11 +3,13 @@ package transform
 import (
 	"testing"
 
+	node "github.com/antchfx/xmlquery"
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/jsons"
 	"github.com/jf-tech/omniparser/omniparser/customfuncs"
+	"github.com/jf-tech/omniparser/omniparser/transformctx"
 	"github.com/jf-tech/omniparser/strs"
 )
 
@@ -46,7 +48,8 @@ func TestValidateTransformDeclarations(t *testing.T) {
                         "field_9": { "template": "template9" },
                         "field_10": { "xpath_dynamic": { "const": "X/Y/Z" }, "template": "template10" },
                         "field_11": { "template": "template11" },
-                        "field_12": { "template": "template12" }
+                        "field_12": { "template": "template12" },
+						"field_13": { "custom_parse": "test_custom_parse" }
                     }},
                     "template9": { "xpath": "1/2/3", "object": {
                         "field9": { "xpath": "4/5/6" }
@@ -210,12 +213,28 @@ func TestValidateTransformDeclarations(t *testing.T) {
             }`,
 			expectedErr: "cannot specify 'xpath' or 'xpath_dynamic' on both 'FINAL_OUTPUT.field_1' and the template 'template1' it references",
 		},
+		{
+			name: "failure - unknown custom_parse",
+			transformDeclarationsJson: ` {
+                "transform_declarations": {
+                    "FINAL_OUTPUT": { "object": {
+                        "field_1": { "xpath": "abc", "custom_parse": "non-existing" }
+                    }}
+                }
+            }`,
+			expectedErr: "unknown custom_parse 'non-existing' on 'FINAL_OUTPUT.field_1'",
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			finalOutputDecl, err := ValidateTransformDeclarations(
 				[]byte(test.transformDeclarationsJson),
 				customfuncs.CustomFuncs{
 					"test_func": func() {},
+				},
+				CustomParseFuncs{
+					"test_custom_parse": func(_ *transformctx.Ctx, _ *node.Node) (interface{}, error) {
+						return nil, nil
+					},
 				})
 			switch {
 			case strs.IsStrNonBlank(test.expectedErr):

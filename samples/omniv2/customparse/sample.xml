@@ -1,0 +1,10 @@
+<Employees>
+    <Employee>
+        <ID>1234</ID>
+        <Team>HR</Team>
+    </Employee>
+    <Employee>
+        <ID>5678</ID>
+        <Team>DevOps</Team>
+    </Employee>
+</Employees>

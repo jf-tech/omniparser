@@ -19,15 +19,20 @@ import (
 type parseCtx struct {
 	opCtx                 *transformctx.Ctx
 	customFuncs           customfuncs.CustomFuncs
+	customParseFuncs      CustomParseFuncs
 	disableTransformCache bool // by default we have caching on. only in some tests we turn caching off.
 	transformCache        map[string]interface{}
 }
 
 // NewParseCtx creates new context for parsing a *Node (and its sub-tree) into an output record.
-func NewParseCtx(opCtx *transformctx.Ctx, customFuncs customfuncs.CustomFuncs) *parseCtx {
+func NewParseCtx(
+	opCtx *transformctx.Ctx,
+	customFuncs customfuncs.CustomFuncs,
+	customParseFuncs CustomParseFuncs) *parseCtx {
 	return &parseCtx{
 		opCtx:                 opCtx,
 		customFuncs:           customFuncs,
+		customParseFuncs:      customParseFuncs,
 		disableTransformCache: false,
 		transformCache:        map[string]interface{}{},
 	}
@@ -85,7 +90,6 @@ func normalizeAndSaveValue(decl *Decl, value interface{}, save func(interface{})
 		if !decl.KeepLeadingTrailingSpace {
 			strValue = strings.TrimSpace(strValue)
 		}
-		// Can't use strs.IsStrNonBlank() because it does trim before comparing to empty string.
 		if strValue == "" && !decl.KeepEmptyOrNull {
 			return nil
 		}
@@ -98,13 +102,11 @@ func normalizeAndSaveValue(decl *Decl, value interface{}, save func(interface{})
 			save(typedResult)
 		}
 		return nil
-	// Applies to KindArray
 	case reflect.Slice:
 		if len(value.([]interface{})) > 0 || decl.KeepEmptyOrNull {
 			save(value)
 		}
 		return nil
-	// Applies to KindObject
 	case reflect.Map:
 		if len(value.(map[string]interface{})) > 0 || decl.KeepEmptyOrNull {
 			save(value)
@@ -157,7 +159,8 @@ func (p *parseCtx) ParseNode(n *node.Node, decl *Decl) (interface{}, error) {
 		return saveIntoCache(p.parseArray(n, decl))
 	case KindCustomFunc:
 		return saveIntoCache(p.parseCustomFunc(n, decl))
-	// Actually validation phase ensures no further situations as we already replaced `template` kind.
+	case KindCustomParse:
+		return saveIntoCache(p.parseCustomParse(n, decl))
 	default:
 		return nil, fmt.Errorf("unexpected decl kind '%s' on '%s'", decl.kind, decl.fqdn)
 	}
@@ -285,6 +288,21 @@ func (p *parseCtx) parseCustomFunc(n *node.Node, decl *Decl) (interface{}, error
 	return normalizeAndReturnValue(decl, funcValue)
 }
 
+func (p *parseCtx) parseCustomParse(n *node.Node, decl *Decl) (interface{}, error) {
+	n, err := p.querySingleNodeFromXPath(n, decl)
+	if err != nil {
+		return nil, err
+	}
+	if n == nil {
+		return normalizeAndReturnValue(decl, nil)
+	}
+	v, err := p.invokeCustomParse(p.customParseFuncs[*decl.CustomParse], n)
+	if err != nil {
+		return nil, err
+	}
+	return normalizeAndReturnValue(decl, v)
+}
+
 func (p *parseCtx) parseObject(n *node.Node, decl *Decl) (interface{}, error) {
 	n, err := p.querySingleNodeFromXPath(n, decl)
 	if err != nil {
@@ -322,12 +340,12 @@ func (p *parseCtx) parseArray(n *node.Node, decl *Decl) (interface{}, error) {
 		if err != nil {
 			continue
 		}
-		nodes, err := nodes.MatchAll(n, xpath, xpathMatchFlags(dynamic))
+		childNodes, err := nodes.MatchAll(n, xpath, xpathMatchFlags(dynamic))
 		if err != nil {
 			return nil, fmt.Errorf("xpath query '%s' on '%s' failed: %s", xpath, childDecl.fqdn, err.Error())
 		}
-		for _, nodeForChildDecl := range nodes {
-			childValue, err := p.ParseNode(nodeForChildDecl, childDecl)
+		for _, childNode := range childNodes {
+			childValue, err := p.ParseNode(childNode, childDecl)
 			if err != nil {
 				return nil, err
 			}

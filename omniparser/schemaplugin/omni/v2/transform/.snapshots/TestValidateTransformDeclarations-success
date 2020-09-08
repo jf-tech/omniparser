@@ -200,6 +200,12 @@
 			],
 			"parent": "FINAL_OUTPUT"
 		},
+		"field_13": {
+			"custom_parse": "test_custom_parse",
+			"fqdn": "FINAL_OUTPUT.field_13",
+			"kind": "custom_parse",
+			"parent": "FINAL_OUTPUT"
+		},
 		"field_9": {
 			"xpath": "1/2/3",
 			"object": {
@@ -228,6 +234,7 @@
 		"FINAL_OUTPUT.field_10",
 		"FINAL_OUTPUT.field_11",
 		"FINAL_OUTPUT.field_12",
+		"FINAL_OUTPUT.field_13",
 		"FINAL_OUTPUT.field_9"
 	],
 	"parent": "(nil)"
