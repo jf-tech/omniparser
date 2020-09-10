@@ -10,6 +10,7 @@ import (
 	node "github.com/antchfx/xmlquery"
 
 	"github.com/jf-tech/omniparser/omniparser/errs"
+	"github.com/jf-tech/omniparser/omniparser/nodes"
 )
 
 // ErrNodeReadingFailed indicates the reader fails to read out a complete non-corrupted
@@ -69,41 +70,10 @@ func (r *reader) lineNumber() int {
 		FieldByName("line").Int())
 }
 
-func removeLastFilterInXPath(xpath string) string {
-	runes := []rune(xpath)
-	if len(runes) == 0 {
-		return xpath
-	}
-	if runes[len(runes)-1] != ']' {
-		return xpath
-	}
-	bracket := 1
-	for pos := len(runes) - 2; pos >= 0; pos-- {
-		switch runes[pos] {
-		case '"', '\'':
-			quote := runes[pos]
-			for pos--; pos >= 0 && runes[pos] != quote; pos-- {
-			}
-			if pos < 0 {
-				goto fail
-			}
-		case '[':
-			bracket--
-			if bracket == 0 {
-				return string(runes[0:pos])
-			}
-		case ']':
-			bracket++
-		}
-	}
-fail:
-	return xpath
-}
-
 // NewReader creates an InputReader for XML file format for omniv2 schema plugin.
 func NewReader(inputName string, src io.Reader, xpath string) (*reader, error) {
 	xpath = strings.TrimSpace(xpath)
-	xpathWithoutLastFilter := removeLastFilterInXPath(xpath)
+	xpathWithoutLastFilter := nodes.RemoveLastFilterInXPath(xpath)
 	var sp *node.StreamParser
 	var err error
 	if xpathWithoutLastFilter == xpath {
