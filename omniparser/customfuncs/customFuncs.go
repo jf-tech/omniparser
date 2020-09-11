@@ -23,6 +23,7 @@ var BuiltinCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
 	"avg":                avg,
 	"concat":             concat,
+	"eval":               eval,
 	"external":           external,
 	"lower":              lower,
 	"splitIntoJsonArray": splitIntoJsonArray,
