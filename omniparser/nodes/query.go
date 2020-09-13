@@ -25,13 +25,6 @@ const (
 	DisableXPathCache = uint(1) << iota
 )
 
-// XPathExprCache is the default loading cache used for caching the compiled
-// xpath expression. If the default size is too big/small and/or a cache limit isn't
-// desired at all, caller can simply replace the cache during global initialization.
-// But be aware it's global so any packages uses this package inside your process will
-// be affected.
-var XPathExprCache = cache.NewLoadingCache()
-
 func loadXPathExpr(expr string, flags []uint) (*xpath.Expr, error) {
 	var flagsActual uint
 	switch len(flags) {
@@ -47,9 +40,7 @@ func loadXPathExpr(expr string, flags []uint) (*xpath.Expr, error) {
 	if flagsActual&DisableXPathCache != 0 {
 		exp, err = xpath.Compile(expr)
 	} else {
-		exp, err = XPathExprCache.Get(expr, func(key interface{}) (interface{}, error) {
-			return xpath.Compile(key.(string))
-		})
+		exp, err = cache.GetXPathExpr(expr)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("xpath '%s' compilation failed: %s", expr, err.Error())

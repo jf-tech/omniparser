@@ -13,6 +13,7 @@ import (
 	"github.com/antchfx/xpath"
 	"github.com/jf-tech/iohelper"
 
+	"github.com/jf-tech/omniparser/cache"
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/strs"
 )
@@ -72,6 +73,9 @@ func (r *reader) Read() (*node.Node, error) {
 	}
 }
 
+// Note parseJSON and parseJSONValue are borrowed and adapted from
+// https://github.com/antchfx/jsonquery/blob/master/node.go.
+
 func parseJSONValue(x interface{}, parent *node.Node) {
 	switch v := x.(type) {
 	case []interface{}:
@@ -128,7 +132,7 @@ func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 
 // NewReader creates an InputReader for this sample jsonlog file format.
 func NewReader(inputName string, src io.Reader, filterXPath string) (*reader, error) {
-	filter, err := xpath.Compile(filterXPath)
+	filter, err := cache.GetXPathExpr(filterXPath)
 	if err != nil {
 		return nil, err
 	}
