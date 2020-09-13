@@ -230,7 +230,7 @@ func TestStream_ArrOfObj(t *testing.T) {
 	assert.Nil(t, n)
 }
 
-func TestStream_RootObj(t *testing.T) {
+func TestStream_RootObjMatch(t *testing.T) {
 	sp, err := NewJSONStreamParser(strings.NewReader(`
 		{
 			"a": "123"
@@ -246,7 +246,18 @@ func TestStream_RootObj(t *testing.T) {
 	assert.Nil(t, n)
 }
 
-func TestStream_RootVal(t *testing.T) {
+func TestStream_RootObjNotMatch(t *testing.T) {
+	sp, err := NewJSONStreamParser(strings.NewReader(`
+		{
+			"a": "123"
+		}`), ".[a!='123']")
+
+	n, err := sp.Read()
+	assert.Equal(t, io.EOF, err)
+	assert.Nil(t, n)
+}
+
+func TestStream_RootValMatch(t *testing.T) {
 	sp, err := NewJSONStreamParser(strings.NewReader(`"abc"`), ".")
 	assert.NoError(t, err)
 
@@ -255,6 +266,15 @@ func TestStream_RootVal(t *testing.T) {
 	assert.Equal(t, `<>abc</>`, n.OutputXML(true))
 
 	n, err = sp.Read()
+	assert.Equal(t, io.EOF, err)
+	assert.Nil(t, n)
+}
+
+func TestStream_RootValNotMatch(t *testing.T) {
+	sp, err := NewJSONStreamParser(strings.NewReader(`"abc"`), ".[text()!='abc']")
+	assert.NoError(t, err)
+
+	n, err := sp.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
