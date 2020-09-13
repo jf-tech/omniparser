@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/antchfx/xpath"
-
+	"github.com/jf-tech/omniparser/cache"
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	omniv2fileformat "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/fileformat"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/transform"
@@ -36,7 +35,7 @@ func (p *xmlFileFormat) ValidateSchema(format string, _ []byte, finalOutputDecl 
 	if !strs.IsStrPtrNonBlank(finalOutputDecl.XPath) {
 		return nil, p.FmtErr("'FINAL_OUTPUT' must have 'xpath' specified")
 	}
-	_, err := xpath.Compile(*finalOutputDecl.XPath)
+	_, err := cache.GetXPathExpr(*finalOutputDecl.XPath)
 	if err != nil {
 		return nil, p.FmtErr("'xpath' on 'FINAL_OUTPUT' (value: '%s') is invalid, err: %s",
 			*finalOutputDecl.XPath, err.Error())

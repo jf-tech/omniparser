@@ -25,26 +25,26 @@ func TestMatchAll(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, top)
 
-	XPathExprCache = cache.NewLoadingCache() // TODO: make parallel unit test happy.
-	assert.Equal(t, 0, len(XPathExprCache.DumpForTest()))
+	cache.XPathExprCache = cache.NewLoadingCache()
+	assert.Equal(t, 0, len(cache.XPathExprCache.DumpForTest()))
 
 	top, err = MatchSingle(top, "/AAA")
 	assert.NoError(t, err)
 	assert.NotNil(t, top)
-	assert.Equal(t, 1, len(XPathExprCache.DumpForTest())) // "/AAA" added to xpath expr cache.
+	assert.Equal(t, 1, len(cache.XPathExprCache.DumpForTest())) // "/AAA" added to xpath expr cache.
 
 	n, err := MatchAll(top, "BBB")
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(n))
 	assert.Equal(t, `<BBB id="1"></BBB>`, n[0].OutputXML(true))
-	assert.Equal(t, 2, len(XPathExprCache.DumpForTest())) // "BBB" added to xpath expr cache.
+	assert.Equal(t, 2, len(cache.XPathExprCache.DumpForTest())) // "BBB" added to xpath expr cache.
 
 	n, err = MatchAll(top, "CCC", DisableXPathCache)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(n))
 	assert.Equal(t, `<CCC id="2"><DDD></DDD></CCC>`, n[0].OutputXML(true))
 	assert.Equal(t, `<CCC id="3"><DDD></DDD></CCC>`, n[1].OutputXML(true))
-	assert.Equal(t, 2, len(XPathExprCache.DumpForTest())) // "CCC" shouldn't be added to cache.
+	assert.Equal(t, 2, len(cache.XPathExprCache.DumpForTest())) // "CCC" shouldn't be added to cache.
 
 	n, err = MatchAll(top, "CCC[@id='2']")
 	assert.NoError(t, err)
