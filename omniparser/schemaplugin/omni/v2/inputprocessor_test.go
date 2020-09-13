@@ -12,7 +12,7 @@ import (
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/transform"
 )
 
-var testContinuableErr = errors.New("continuable error")
+var errContinuableInTest = errors.New("continuable error")
 
 type testReader struct {
 	result []*node.Node
@@ -30,7 +30,7 @@ func (r *testReader) Read() (*node.Node, error) {
 	return result, err
 }
 
-func (r *testReader) IsContinuableError(err error) bool { return err == testContinuableErr }
+func (r *testReader) IsContinuableError(err error) bool { return err == errContinuableInTest }
 
 func (r *testReader) FmtErr(format string, args ...interface{}) error {
 	return fmt.Errorf("ctx: "+format, args...)
@@ -88,7 +88,7 @@ func TestInputProcessor_Read_Success(t *testing.T) {
 func TestIsContinuableError(t *testing.T) {
 	p := &inputProcessor{reader: &testReader{}}
 	assert.False(t, p.IsContinuableError(errors.New("test failure")))
-	assert.True(t, p.IsContinuableError(testContinuableErr))
+	assert.True(t, p.IsContinuableError(errContinuableInTest))
 }
 
 func TestFmtErr(t *testing.T) {

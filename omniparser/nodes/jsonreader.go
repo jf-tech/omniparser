@@ -64,12 +64,9 @@ type JSONStreamParser struct {
 	root, curNode, streamNode  *jnode
 }
 
-func (sp *JSONStreamParser) addChild(jnodeType jnodeType, nodeType node.NodeType, data interface{}) {
-	sp.curNode = sp.curNode.addChild(jnodeType, nodeType, data)
-	if nodeType == node.ElementNode &&
-		sp.xpathExpr != nil &&
-		sp.streamNode == nil &&
-		node.QuerySelector(sp.root.n, sp.xpathExpr) != nil {
+func (sp *JSONStreamParser) addElemChildNodeToCurNode(jnodeType jnodeType, data interface{}) {
+	sp.curNode = sp.curNode.addChild(jnodeType, node.ElementNode, data)
+	if sp.xpathExpr != nil && sp.streamNode == nil && node.QuerySelector(sp.root.n, sp.xpathExpr) != nil {
 		sp.streamNode = sp.curNode
 	}
 }
@@ -93,7 +90,7 @@ func (sp *JSONStreamParser) parse() (*node.Node, error) {
 				// Note case order matters, because curNode type could be prop|arr or root|arr, in those
 				// cases, we want `case isArr` to be hit first.
 				case sp.curNode.isArr():
-					sp.addChild(jnodeTypeObj, node.ElementNode, "") // think it as a nameless anonymous obj
+					sp.addElemChildNodeToCurNode(jnodeTypeObj, "") // think it as a nameless anonymous obj
 				case sp.curNode.isRoot(), sp.curNode.isProp():
 					sp.curNode.jnodeType |= jnodeTypeObj
 				}
@@ -101,7 +98,7 @@ func (sp *JSONStreamParser) parse() (*node.Node, error) {
 				switch {
 				// Note case order matters
 				case sp.curNode.isArr():
-					sp.addChild(jnodeTypeArr, node.ElementNode, "") // think it as a nameless anonymous arr
+					sp.addElemChildNodeToCurNode(jnodeTypeArr, "") // think it as a nameless anonymous arr
 				case sp.curNode.isRoot(), sp.curNode.isProp():
 					sp.curNode.jnodeType |= jnodeTypeArr
 				}
@@ -125,13 +122,13 @@ func (sp *JSONStreamParser) parse() (*node.Node, error) {
 			// Note case order matters, because curNode type could be prop|obj or root|obj, in those
 			// cases, we want isObj case to be hit first.
 			case sp.curNode.isObj():
-				sp.addChild(jnodeTypeProp, node.ElementNode, tok)
+				sp.addElemChildNodeToCurNode(jnodeTypeProp, tok)
 			// similarly we want isArr hit before isProp/isRoot
 			case sp.curNode.isArr():
 				// if parent is an array, so we're adding a value directly to the array.
 				// by creating an anonymous element node, then the value as text node
 				// underneath it.
-				sp.addChild(jnodeTypeProp, node.ElementNode, "") // think it as a nameless anonymous property
+				sp.addElemChildNodeToCurNode(jnodeTypeProp, "") // think it as a nameless anonymous property
 				// Limitation: we don't ever add "nil" as a text node there is no matching representation
 				// in *node.Node tree.
 				if tok != nil {
