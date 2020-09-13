@@ -12,6 +12,7 @@ import (
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 )
 
+// SampleTestCommon is a test helper for sample tests
 func SampleTestCommon(t *testing.T, schemaFile, inputFile string) string {
 	schemaFileBaseName := filepath.Base(schemaFile)
 	schemaFileReader, err := os.Open(schemaFile)
