@@ -22,7 +22,7 @@
 	"NextSibling": "(nil)",
 	"Parent": "(ELEM A)",
 	"Prefix": "",
-	"PrevSibling": "(ELEM B)",
+	"PrevSibling": "(nil)",
 	"Type": "ElementNode"
 }
 
