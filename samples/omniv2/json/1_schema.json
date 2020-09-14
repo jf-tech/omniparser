@@ -1,0 +1,62 @@
+{
+    "parser_settings": {
+        "version": "omni.2.0",
+        "file_format_type": "json"
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": "/publishers/*", "object": {
+            "authors": { "array": [ { "xpath": "books/*/author" } ] },
+            "book_titles": { "array": [ { "xpath": "books/*/title" } ] },
+            "books": { "array": [ { "xpath": "books/*", "object": {
+                "author": { "xpath": "author" },
+                "year": { "xpath": "year", "result_type": "int" },
+                "price": { "xpath": "price", "result_type": "float" },
+                "title": { "xpath": "title" },
+                "custom_func_demo": {
+                    "custom_func": {
+                        "name": "concat",
+                        "args": [
+                            { "xpath": "author" },
+                            {
+                                "custom_func": {
+                                    "name": "concat",
+                                    "args": [
+                                        { "const": "<" },
+                                        { "const": ">" }
+                                    ]
+                                }
+                            },
+                            { "xpath": "title" },
+                            { "const": "-" },
+                            { "xpath": "../../name" }
+                        ]
+                    }
+                }
+            }} ] },
+            "publisher": { "xpath": "name" },
+            "first_book": { "xpath": "books/*[position() = 1]", "result_type": "object" },
+            "original_book_array": { "xpath": "books", "result_type": "object" },
+            "sum_price_times_10": {
+                "custom_func": {
+                    "name": "sum",
+                    "args": [ { "array": [ {
+                        "xpath": "books/*",
+                        "custom_func": {
+                            "name": "floor",
+                            "args": [
+                                { "custom_func": {
+                                        "name": "eval",
+                                        "args": [
+                                            { "const": "[price] * 10" },
+                                            { "const": "price:float" }, { "xpath": "price" }
+                                        ]
+                                }},
+                                { "const": "2", "_comment": "decimal places" }
+                            ]
+                        }
+                    }]}]
+                }
+            }
+        }}
+    }
+}

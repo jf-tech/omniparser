@@ -217,6 +217,7 @@ func TestStream_ArrOfObj(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, `<><a>123</a><b>john</b></>`, n.OutputXML(true))
 	assert.Equal(t, `<><><a>123</a><b>john</b></></>`, sp.root.n.OutputXML(true))
+	assert.True(t, sp.AtLine() >= 6)
 
 	n, err = sp.Read()
 	assert.NoError(t, err)
@@ -224,6 +225,7 @@ func TestStream_ArrOfObj(t *testing.T) {
 	// this is to verify we've deleted the previous stream node so memory won't
 	// grow unbounded in streaming mode.
 	assert.Equal(t, `<><><a>123</a><b>smith</b></></>`, sp.root.n.OutputXML(true))
+	assert.True(t, sp.AtLine() >= 15)
 
 	n, err = sp.Read()
 	assert.Equal(t, io.EOF, err)
@@ -251,6 +253,7 @@ func TestStream_RootObjNotMatch(t *testing.T) {
 		{
 			"a": "123"
 		}`), ".[a!='123']")
+	assert.NoError(t, err)
 
 	n, err := sp.Read()
 	assert.Equal(t, io.EOF, err)
@@ -291,6 +294,9 @@ func TestStream_ObjPropMatch(t *testing.T) {
 	n, err := sp.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, `<a>123</a>`, n.OutputXML(true))
+	// Just so that one realizes if you stream on a prop, then the object itself may be incomplete
+	// at the time of Read() call returns. This following assert shows.
+	assert.Equal(t, `<><a>123</a></>`, n.Parent.OutputXML(true))
 
 	n, err = sp.Read()
 	assert.Equal(t, io.EOF, err)
@@ -350,6 +356,6 @@ func TestStream_ArrValueNotMatch(t *testing.T) {
 func TestNewJSONStreamParser_InvalidXPath(t *testing.T) {
 	sp, err := NewJSONStreamParser(nil, ">")
 	assert.Error(t, err)
-	assert.Equal(t, "expression must evaluate to a node-set", err.Error())
+	assert.Equal(t, "invalid xpath '>', err: expression must evaluate to a node-set", err.Error())
 	assert.Nil(t, sp)
 }

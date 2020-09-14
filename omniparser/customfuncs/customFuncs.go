@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -25,6 +26,7 @@ var BuiltinCustomFuncs = map[string]CustomFuncType{
 	"concat":             concat,
 	"eval":               eval,
 	"external":           external,
+	"floor":              floor,
 	"lower":              lower,
 	"splitIntoJsonArray": splitIntoJsonArray,
 	"substring":          substring,
@@ -56,6 +58,22 @@ func external(ctx *transformctx.Ctx, name string) (string, error) {
 		return v, nil
 	}
 	return "", fmt.Errorf("cannot find external property '%s'", name)
+}
+
+func floor(_ *transformctx.Ctx, value, decimalPlaces string) (string, error) {
+	v, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return "", fmt.Errorf("unable to parse value '%s' to float64: %s", value, err.Error())
+	}
+	dp, err := strconv.Atoi(decimalPlaces)
+	if err != nil {
+		return "", fmt.Errorf("unable to parse decimal place value '%s' to int: %s", decimalPlaces, err.Error())
+	}
+	if dp < 0 || dp > 100 {
+		return "", fmt.Errorf("decimal place value must be an integer with range of [0,100], instead, got %d", dp)
+	}
+	p10 := math.Pow10(dp)
+	return fmt.Sprintf("%v", math.Floor(v*p10)/p10), nil
 }
 
 func lower(_ *transformctx.Ctx, s string) (string, error) {
