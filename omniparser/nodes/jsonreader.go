@@ -2,12 +2,14 @@ package nodes
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"strconv"
 	"strings"
 
 	node "github.com/antchfx/xmlquery"
 	"github.com/antchfx/xpath"
+	"github.com/jf-tech/iohelper"
 
 	"github.com/jf-tech/omniparser/cache"
 )
@@ -68,6 +70,7 @@ func data2str(data interface{}) string {
 
 // JSONStreamParser is a streaming json to *node.Node parser.
 type JSONStreamParser struct {
+	r                          *iohelper.LineCountingReader
 	d                          *json.Decoder
 	xpathExpr, xpathFilterExpr *xpath.Expr
 	root, curNode, streamNode  *jnode
@@ -195,13 +198,18 @@ func (sp *JSONStreamParser) Read() (*node.Node, error) {
 	return sp.parse()
 }
 
+// AtLine returns the **rough** line number of the current json decoder.
+func (sp *JSONStreamParser) AtLine() int {
+	return sp.r.AtLine()
+}
+
 // NewJSONStreamParser creates a new instance of json streaming parser.
 func NewJSONStreamParser(r io.Reader, xpathStr string) (*JSONStreamParser, error) {
 	xpathStr = strings.TrimSpace(xpathStr)
 	xpathNoFilterStr := RemoveLastFilterInXPath(xpathStr)
 	xpathExpr, err := cache.GetXPathExpr(xpathStr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid xpath '%s', err: %s", xpathStr, err.Error())
 	}
 	xpathNoFilterExpr, _ := cache.GetXPathExpr(xpathNoFilterStr)
 	ifelse := func(cond bool, expr1, expr2 *xpath.Expr) *xpath.Expr {
@@ -210,8 +218,10 @@ func NewJSONStreamParser(r io.Reader, xpathStr string) (*JSONStreamParser, error
 		}
 		return expr2
 	}
+	lineCountingReader := iohelper.NewLineCountingReader(r)
 	parser := &JSONStreamParser{
-		d:               json.NewDecoder(r),
+		r:               lineCountingReader,
+		d:               json.NewDecoder(lineCountingReader),
 		xpathExpr:       xpathNoFilterExpr,
 		xpathFilterExpr: ifelse(xpathStr == xpathNoFilterStr, nil, xpathExpr),
 		root:            &jnode{jnodeType: jnodeTypeRoot, n: &node.Node{Type: node.DocumentNode}},

@@ -117,6 +117,78 @@ func TestExternal(t *testing.T) {
 	}
 }
 
+func TestFloor(t *testing.T) {
+	for _, test := range []struct {
+		name           string
+		value          string
+		decimalPlaces  string
+		expectedErr    string
+		expectedResult string
+	}{
+		{
+			name:           "invalid value",
+			value:          "??",
+			decimalPlaces:  "2",
+			expectedErr:    `unable to parse value '??' to float64: strconv.ParseFloat: parsing "??": invalid syntax`,
+			expectedResult: "",
+		},
+		{
+			name:           "invalid decimal place value",
+			value:          "3.1415926",
+			decimalPlaces:  "??",
+			expectedErr:    `unable to parse decimal place value '??' to int: strconv.Atoi: parsing "??": invalid syntax`,
+			expectedResult: "",
+		},
+		{
+			name:           "decimal places less than 0",
+			value:          "3.1415926",
+			decimalPlaces:  "-1",
+			expectedErr:    `decimal place value must be an integer with range of [0,100], instead, got -1`,
+			expectedResult: "",
+		},
+		{
+			name:           "decimal places > 100",
+			value:          "3.1415926",
+			decimalPlaces:  "101",
+			expectedErr:    `decimal place value must be an integer with range of [0,100], instead, got 101`,
+			expectedResult: "",
+		},
+		{
+			name:           "decimal places less than available digits",
+			value:          "3.1415926",
+			decimalPlaces:  "2",
+			expectedErr:    "",
+			expectedResult: "3.14",
+		},
+		{
+			name:           "decimal places 0",
+			value:          "3.1415926",
+			decimalPlaces:  "0",
+			expectedErr:    "",
+			expectedResult: "3",
+		},
+		{
+			name:           "decimal places more than available digits",
+			value:          "3.1415926",
+			decimalPlaces:  "20",
+			expectedErr:    "",
+			expectedResult: "3.1415926",
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			result, err := floor(nil, test.value, test.decimalPlaces)
+			if test.expectedErr != "" {
+				assert.Error(t, err)
+				assert.Equal(t, test.expectedErr, err.Error())
+				assert.Equal(t, "", result)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, test.expectedResult, result)
+			}
+		})
+	}
+}
+
 func TestLower(t *testing.T) {
 	s, err := lower(nil, "")
 	assert.NoError(t, err)

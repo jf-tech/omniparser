@@ -7,6 +7,7 @@ import (
 	"github.com/jf-tech/omniparser/omniparser/errs"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin"
 	omniv2fileformat "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/fileformat"
+	omniv2json "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/fileformat/json"
 	omniv2xml "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/fileformat/xml"
 	"github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/transform"
 	"github.com/jf-tech/omniparser/omniparser/schemavalidate"
@@ -78,6 +79,7 @@ func fileFormats(ctx *schemaplugin.ParseSchemaCtx) []omniv2fileformat.FileFormat
 	// If caller specifies a custom FileFormat, we'll use it (and it only);
 	// otherwise we'll use the builtin ones.
 	formats := []omniv2fileformat.FileFormat{
+		omniv2json.NewJSONFileFormat(ctx.Name),
 		omniv2xml.NewXMLFileFormat(ctx.Name),
 		// TODO more bulit-in omniv2 file formats to come.
 	}
