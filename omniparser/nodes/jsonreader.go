@@ -76,21 +76,18 @@ type JSONStreamParser struct {
 	root, curNode, streamNode  *jnode
 }
 
-// Creates a child `jnode` (with underlying *node.Node type == element) to the curNode,
-// checks if this newly created node matches the stream xpath or not, and marks it as
-// stream candidate.
-func (sp *JSONStreamParser) addChild(jnodeType jnodeType, data interface{}) {
-	sp.curNode = sp.curNode.addChild(jnodeType, node.ElementNode, data)
+// streamCandidateCheck checks if sp.curNode is a potential stream candidate.
+func (sp *JSONStreamParser) streamCandidateCheck() {
 	if sp.xpathExpr != nil && sp.streamNode == nil && node.QuerySelector(sp.root.n, sp.xpathExpr) != nil {
 		sp.streamNode = sp.curNode
 	}
 }
 
-// streamTargetReady checks if the stream candidate is ready to be returned to the caller.
-// A stream candidate is ready if:
+// streamTargetCheck checks if the stream candidate is actually a stream target and ready to be
+// returned to the caller. A stream candidate is the target if:
 // - If it has finished processing (sp.curNode == sp.streamNode)
 // - Either we don't have a stream filter xpath or the stream filter xpath matches.
-func (sp *JSONStreamParser) streamTargetReady() *node.Node {
+func (sp *JSONStreamParser) streamTargetCheck() *node.Node {
 	ret := (*node.Node)(nil)
 	if sp.curNode == sp.streamNode {
 		if sp.xpathFilterExpr == nil || node.QuerySelector(sp.root.n, sp.xpathFilterExpr) != nil {
@@ -109,12 +106,6 @@ func (sp *JSONStreamParser) streamTargetReady() *node.Node {
 }
 
 func (sp *JSONStreamParser) parse() (*node.Node, error) {
-	// This is a special case where the stream target is directly on the root.
-	// e.g. json doc with only "abc".
-	if sp.curNode != nil && sp.curNode.isRoot() &&
-		sp.xpathExpr != nil && sp.streamNode == nil && node.QuerySelector(sp.root.n, sp.xpathExpr) != nil {
-		sp.streamNode = sp.curNode
-	}
 	for {
 		tok, err := sp.d.Token()
 		if err != nil {
@@ -130,22 +121,38 @@ func (sp *JSONStreamParser) parse() (*node.Node, error) {
 				// cases, we want `case isArr` to be hit first.
 				case sp.curNode.isArr():
 					// if we see "{" inside an "[]", we create an anonymous object element node for it.
-					sp.addChild(jnodeTypeObj, "")
-				case sp.curNode.isRoot(), sp.curNode.isProp():
-					// if we see "{" directly on root, or it's following a property name, then we just
-					// need to change the current node (root or a prop node) attribute to be of an obj.
+					sp.curNode = sp.curNode.addChild(jnodeTypeObj, node.ElementNode, "")
+					sp.streamCandidateCheck()
+				case sp.curNode.isProp():
+					// a "{" follows a property name, indicate this property is an object.
+					// We don't need to streamCandidateCheck here because we've already done
+					// the check when the property itself is processed.
 					sp.curNode.jnodeType |= jnodeTypeObj
+				case sp.curNode.isRoot():
+					// if we see "{" directly on root, this root contains a single object. Mark the root
+					// node's type so. Also we need to check stream candidate, in case caller wants to
+					// match the entire json doc.
+					sp.curNode.jnodeType |= jnodeTypeObj
+					sp.streamCandidateCheck()
 				}
 			case '[':
 				switch {
 				// Note case order matters
 				case sp.curNode.isArr():
-					sp.addChild(jnodeTypeArr, "") // think it as a nameless anonymous arr
-				case sp.curNode.isRoot(), sp.curNode.isProp():
+					// every immediate thing created inside an array is rooted by an anonymous element node.
+					sp.curNode = sp.curNode.addChild(jnodeTypeArr, node.ElementNode, "")
+					sp.streamCandidateCheck()
+				case sp.curNode.isProp():
+					// Again, similarly we don't do streamCandidateCheck here since the check is already
+					// done when the property node is created.
 					sp.curNode.jnodeType |= jnodeTypeArr
+				case sp.curNode.isRoot():
+					// arr directly on root.
+					sp.curNode.jnodeType |= jnodeTypeArr
+					sp.streamCandidateCheck()
 				}
 			case '}', ']':
-				ret := sp.streamTargetReady()
+				ret := sp.streamTargetCheck()
 				sp.curNode = sp.curNode.parent
 				if ret != nil {
 					return ret, nil
@@ -156,28 +163,42 @@ func (sp *JSONStreamParser) parse() (*node.Node, error) {
 			// Note case order matters, because curNode type could be prop|obj or root|obj, in those
 			// cases, we want isObj case to be hit first.
 			case sp.curNode.isObj():
-				sp.addChild(jnodeTypeProp, tok)
+				sp.curNode = sp.curNode.addChild(jnodeTypeProp, node.ElementNode, tok)
+				sp.streamCandidateCheck()
 			// similarly we want isArr hit before isProp/isRoot
 			case sp.curNode.isArr():
 				// if parent is an array, so we're adding a value directly to the array.
 				// by creating an anonymous element node, then the value as text node
 				// underneath it.
-				sp.addChild(jnodeTypeProp, "") // think it as a nameless anonymous property
+				sp.curNode = sp.curNode.addChild(jnodeTypeProp, node.ElementNode, "")
+				sp.streamCandidateCheck()
 				// Limitation: we don't ever add "nil" as a text node there is no matching representation
 				// in *node.Node tree.
 				if tok != nil {
 					sp.curNode.addChild(jnodeTypeVal, node.TextNode, tok)
 				}
-				ret := sp.streamTargetReady()
+				ret := sp.streamTargetCheck()
 				sp.curNode = sp.curNode.parent
 				if ret != nil {
 					return ret, nil
 				}
-			case sp.curNode.isProp(), sp.curNode.isRoot():
+			case sp.curNode.isProp():
 				if tok != nil {
 					sp.curNode.addChild(jnodeTypeVal, node.TextNode, tok)
 				}
-				ret := sp.streamTargetReady()
+				ret := sp.streamTargetCheck()
+				sp.curNode = sp.curNode.parent
+				if ret != nil {
+					return ret, nil
+				}
+			case sp.curNode.isRoot():
+				// A value is directly setting on root. We need to do both stream candidate check
+				// as well as target check.
+				sp.streamCandidateCheck()
+				if tok != nil {
+					sp.curNode.addChild(jnodeTypeVal, node.TextNode, tok)
+				}
+				ret := sp.streamTargetCheck()
 				sp.curNode = sp.curNode.parent
 				if ret != nil {
 					return ret, nil
