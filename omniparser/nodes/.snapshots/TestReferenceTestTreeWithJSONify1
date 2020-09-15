@@ -22,34 +22,62 @@
 			"Children": [
 				{
 					"Attr": null,
-					"Children": null,
+					"Children": [
+						{
+							"Attr": null,
+							"Children": null,
+							"Data": "data 11",
+							"FirstChild": "(nil)",
+							"LastChild": "(nil)",
+							"NamespaceURI": "",
+							"NextSibling": "(nil)",
+							"Parent": "(ElementNode grandChild11)",
+							"Prefix": "",
+							"PrevSibling": "(nil)",
+							"Type": "CharDataNode"
+						}
+					],
 					"Data": "grandChild11",
-					"FirstChild": "(nil)",
-					"LastChild": "(nil)",
+					"FirstChild": "(CharDataNode 'data 11')",
+					"LastChild": "(CharDataNode 'data 11')",
 					"NamespaceURI": "",
-					"NextSibling": "(CharDataNode 'grandChild12')",
+					"NextSibling": "(ElementNode grandChild12)",
 					"Parent": "(ElementNode prefix_c1:child1)",
 					"Prefix": "",
 					"PrevSibling": "(nil)",
-					"Type": "CharDataNode"
+					"Type": "ElementNode"
 				},
 				{
 					"Attr": null,
-					"Children": null,
+					"Children": [
+						{
+							"Attr": null,
+							"Children": null,
+							"Data": "data 12",
+							"FirstChild": "(nil)",
+							"LastChild": "(nil)",
+							"NamespaceURI": "",
+							"NextSibling": "(nil)",
+							"Parent": "(ElementNode grandChild12)",
+							"Prefix": "",
+							"PrevSibling": "(nil)",
+							"Type": "CharDataNode"
+						}
+					],
 					"Data": "grandChild12",
-					"FirstChild": "(nil)",
-					"LastChild": "(nil)",
+					"FirstChild": "(CharDataNode 'data 12')",
+					"LastChild": "(CharDataNode 'data 12')",
 					"NamespaceURI": "",
 					"NextSibling": "(nil)",
 					"Parent": "(ElementNode prefix_c1:child1)",
 					"Prefix": "",
-					"PrevSibling": "(CharDataNode 'grandChild11')",
-					"Type": "CharDataNode"
+					"PrevSibling": "(ElementNode grandChild11)",
+					"Type": "ElementNode"
 				}
 			],
 			"Data": "child1",
-			"FirstChild": "(CharDataNode 'grandChild11')",
-			"LastChild": "(CharDataNode 'grandChild12')",
+			"FirstChild": "(ElementNode grandChild11)",
+			"LastChild": "(ElementNode grandChild12)",
 			"NamespaceURI": "namespace_c1",
 			"NextSibling": "(ElementNode prefix_c2:child2)",
 			"Parent": "(DocumentNode)",
@@ -70,21 +98,35 @@
 			"Children": [
 				{
 					"Attr": null,
-					"Children": null,
+					"Children": [
+						{
+							"Attr": null,
+							"Children": null,
+							"Data": "data 21",
+							"FirstChild": "(nil)",
+							"LastChild": "(nil)",
+							"NamespaceURI": "",
+							"NextSibling": "(nil)",
+							"Parent": "(ElementNode grandChild21)",
+							"Prefix": "",
+							"PrevSibling": "(nil)",
+							"Type": "CharDataNode"
+						}
+					],
 					"Data": "grandChild21",
-					"FirstChild": "(nil)",
-					"LastChild": "(nil)",
+					"FirstChild": "(CharDataNode 'data 21')",
+					"LastChild": "(CharDataNode 'data 21')",
 					"NamespaceURI": "",
 					"NextSibling": "(nil)",
 					"Parent": "(ElementNode prefix_c2:child2)",
 					"Prefix": "",
 					"PrevSibling": "(nil)",
-					"Type": "CharDataNode"
+					"Type": "ElementNode"
 				}
 			],
 			"Data": "child2",
-			"FirstChild": "(CharDataNode 'grandChild21')",
-			"LastChild": "(CharDataNode 'grandChild21')",
+			"FirstChild": "(ElementNode grandChild21)",
+			"LastChild": "(ElementNode grandChild21)",
 			"NamespaceURI": "namespace_c2",
 			"NextSibling": "(ElementNode prefix_c3:child3)",
 			"Parent": "(DocumentNode)",

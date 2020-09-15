@@ -25,22 +25,6 @@ func testNode() *node.Node {
 	return nodeA
 }
 
-func TestInvokeCustomFuncForExternal_Success(t *testing.T) {
-	result, err := testParseCtx().invokeCustomFunc(
-		testNode(),
-		&CustomFuncDecl{
-			Name: "upper",
-			Args: []*Decl{
-				{
-					External: strs.StrPtr("abc"),
-					kind:     KindExternal,
-				},
-			},
-		})
-	assert.NoError(t, err)
-	assert.Equal(t, "EFG", result)
-}
-
 func TestInvokeCustomFunc_Success(t *testing.T) {
 	result, err := testParseCtx().invokeCustomFunc(
 		testNode(),
@@ -86,13 +70,25 @@ func TestInvokeCustomFunc_Success(t *testing.T) {
 					},
 					kind: KindCustomFunc,
 				},
+				{Const: strs.StrPtr("-"), kind: KindConst},
+				{External: strs.StrPtr("abc"), kind: KindExternal},
+				{Const: strs.StrPtr("-"), kind: KindConst},
+				{
+					CustomFunc: &CustomFuncDecl{
+						Name: "javascript",
+						Args: []*Decl{
+							{Const: strs.StrPtr("var n=JSON.parse(_node); '['+n.B+'/'+n.C+']'"), kind: KindConst},
+						},
+					},
+					kind: KindCustomFunc,
+				},
 			},
 		})
 	assert.NoError(t, err)
-	assert.Equal(t, "[b''bc", result)
+	assert.Equal(t, "[b''bc-efg-[b/c]", result)
 }
 
-func TestInvokeCustomFunc_MultipleValueFromXPathUsed(t *testing.T) {
+func TestInvokeCustomFunc_MultipleValuesFromXPathUsed(t *testing.T) {
 	result, err := testParseCtx().invokeCustomFunc(
 		testNode(),
 		&CustomFuncDecl{

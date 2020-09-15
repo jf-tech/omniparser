@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNodePtrName(t *testing.T) {
+func TestJ1NodePtrName(t *testing.T) {
 	for _, test := range []struct {
 		name     string
 		n        *node.Node
@@ -25,18 +25,18 @@ func TestNodePtrName(t *testing.T) {
 		{name: "unknown", n: &node.Node{Type: node.NodeType(99999), Data: "what"}, expected: "(unknown 'what')"},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.expected, nodePtrName(test.n))
+			assert.Equal(t, test.expected, j1NodePtrName(test.n))
 		})
 	}
 }
 
-func TestNodeTypeStr(t *testing.T) {
-	assert.Equal(t, "DocumentNode", nodeTypeStr(node.DocumentNode))
-	assert.Equal(t, "DeclarationNode", nodeTypeStr(node.DeclarationNode))
-	assert.Equal(t, "ElementNode", nodeTypeStr(node.ElementNode))
-	assert.Equal(t, "TextNode", nodeTypeStr(node.TextNode))
-	assert.Equal(t, "CharDataNode", nodeTypeStr(node.CharDataNode))
-	assert.Equal(t, "CommentNode", nodeTypeStr(node.CommentNode))
-	assert.Equal(t, "AttributeNode", nodeTypeStr(node.AttributeNode))
-	assert.Equal(t, "(unknown:99999)", nodeTypeStr(node.NodeType(99999)))
+func TestJ1NodeTypeStr(t *testing.T) {
+	assert.Equal(t, "DocumentNode", j1NodeTypeStr(node.DocumentNode))
+	assert.Equal(t, "DeclarationNode", j1NodeTypeStr(node.DeclarationNode))
+	assert.Equal(t, "ElementNode", j1NodeTypeStr(node.ElementNode))
+	assert.Equal(t, "TextNode", j1NodeTypeStr(node.TextNode))
+	assert.Equal(t, "CharDataNode", j1NodeTypeStr(node.CharDataNode))
+	assert.Equal(t, "CommentNode", j1NodeTypeStr(node.CommentNode))
+	assert.Equal(t, "AttributeNode", j1NodeTypeStr(node.AttributeNode))
+	assert.Equal(t, "(unknown:99999)", j1NodeTypeStr(node.NodeType(99999)))
 }

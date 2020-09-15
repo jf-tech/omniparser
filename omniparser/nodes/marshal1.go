@@ -9,7 +9,8 @@ import (
 	"github.com/jf-tech/omniparser/jsons"
 )
 
-func nodePtrName(n *node.Node) string {
+// j1NodePtrName returns a categorized name for a *node.Node pointer used in JSONify1
+func j1NodePtrName(n *node.Node) string {
 	if n == nil {
 		return "(nil)"
 	}
@@ -37,7 +38,8 @@ func nodePtrName(n *node.Node) string {
 	}
 }
 
-func nodeTypeStr(nt node.NodeType) string {
+// j1NodeTypeStr converts uint type node.NodeType into a string for JSONify1.
+func j1NodeTypeStr(nt node.NodeType) string {
 	switch nt {
 	case node.DocumentNode:
 		return "DocumentNode"
@@ -58,16 +60,15 @@ func nodeTypeStr(nt node.NodeType) string {
 	}
 }
 
-func nodeToInterface(n *node.Node, omitPtr bool) interface{} {
+// j1NodeToInterface converts *node.NodeType into an interface{} suitable for json marshaling used in JSONify1.
+func j1NodeToInterface(n *node.Node) interface{} {
 	m := make(map[string]interface{})
-	if !omitPtr {
-		m["Parent"] = nodePtrName(n.Parent)
-		m["FirstChild"] = nodePtrName(n.FirstChild)
-		m["LastChild"] = nodePtrName(n.LastChild)
-		m["PrevSibling"] = nodePtrName(n.PrevSibling)
-		m["NextSibling"] = nodePtrName(n.NextSibling)
-	}
-	m["Type"] = nodeTypeStr(n.Type)
+	m["Parent"] = j1NodePtrName(n.Parent)
+	m["FirstChild"] = j1NodePtrName(n.FirstChild)
+	m["LastChild"] = j1NodePtrName(n.LastChild)
+	m["PrevSibling"] = j1NodePtrName(n.PrevSibling)
+	m["NextSibling"] = j1NodePtrName(n.NextSibling)
+	m["Type"] = j1NodeTypeStr(n.Type)
 	m["Data"] = n.Data
 	m["Prefix"] = n.Prefix
 	m["NamespaceURI"] = n.NamespaceURI
@@ -77,17 +78,13 @@ func nodeToInterface(n *node.Node, omitPtr bool) interface{} {
 	m["Attr"] = attrv
 	var children []interface{}
 	for child := n.FirstChild; child != nil; child = child.NextSibling {
-		children = append(children, nodeToInterface(child, omitPtr))
+		children = append(children, j1NodeToInterface(child))
 	}
 	m["Children"] = children
 	return m
 }
 
-// JSONify json marshals out a *Node.
-func JSONify(n *node.Node) string {
-	return JSONify2(n, false)
-}
-
-func JSONify2(n *node.Node, omitPtr bool) string {
-	return jsons.BPM(nodeToInterface(n, omitPtr))
+// JSONify1 json marshals a *node.Node quite verbatim. Mostly used in test for snapshotting.
+func JSONify1(n *node.Node) string {
+	return jsons.BPM(j1NodeToInterface(n))
 }

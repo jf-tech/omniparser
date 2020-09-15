@@ -1,10 +1,20 @@
-package transform
+package nodes
 
 import (
+	"encoding/json"
+
 	node "github.com/antchfx/xmlquery"
 
 	"github.com/jf-tech/omniparser/strs"
 )
+
+func j2NodeName(n *node.Node) string {
+	name := n.Data
+	if n.Prefix != "" {
+		name = n.Prefix + ":" + name
+	}
+	return name
+}
 
 func isText(n *node.Node) bool {
 	return n.Type == node.TextNode || n.Type == node.CharDataNode
@@ -69,15 +79,15 @@ func isChildArray(n *node.Node) bool {
 		}
 		elemCount++
 		if elemName == nil {
-			elemName = strs.StrPtr(child.Data)
-		} else if child.Data != *elemName {
+			elemName = strs.StrPtr(j2NodeName(child))
+		} else if j2NodeName(child) != *elemName {
 			return false
 		}
 	}
 	return elemCount > 1 || (elemCount == 1 && *elemName == "")
 }
 
-func nodeToObject(n *node.Node) interface{} {
+func J2NodeToInterface(n *node.Node) interface{} {
 	if n.FirstChild == nil {
 		return nil
 	}
@@ -92,7 +102,7 @@ func nodeToObject(n *node.Node) interface{} {
 			if child.Type != node.ElementNode {
 				continue
 			}
-			arr = append(arr, nodeToObject(child))
+			arr = append(arr, J2NodeToInterface(child))
 		}
 		return arr
 	}
@@ -109,7 +119,13 @@ func nodeToObject(n *node.Node) interface{} {
 		//     <efg>blah3</efg>
 		//   </xyz>
 		// we'll end up returning map[string]interface{}{ "abc": "blah2", "efg": "blah3" }
-		obj[child.Data] = nodeToObject(child)
+		obj[j2NodeName(child)] = J2NodeToInterface(child)
 	}
 	return obj
+}
+
+// JSONify2 json marshals a *node.Node into a minified json string that's user friendly.
+func JSONify2(n *node.Node) string {
+	b, _ := json.Marshal(J2NodeToInterface(n))
+	return string(b)
 }

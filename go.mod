@@ -7,6 +7,9 @@ require (
 	github.com/antchfx/xmlquery v1.3.1
 	github.com/antchfx/xpath v1.1.10
 	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
+	github.com/dlclark/regexp2 v1.2.1 // indirect
+	github.com/dop251/goja v0.0.0-20200912112403-81ddb8a7cc41
+	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/google/uuid v1.1.2
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jf-tech/iohelper v1.0.4

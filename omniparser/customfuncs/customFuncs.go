@@ -24,9 +24,10 @@ var BuiltinCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
 	"avg":                avg,
 	"concat":             concat,
-	"eval":               eval,
+	"eval":               eval, // deprecated; kept for backcompat reason; use 'javascript' instead.
 	"external":           external,
 	"floor":              floor,
+	"javascript":         javascript,
 	"lower":              lower,
 	"splitIntoJsonArray": splitIntoJsonArray,
 	"substring":          substring,

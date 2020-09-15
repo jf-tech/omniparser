@@ -11,14 +11,14 @@
 		"books": [
 			{
 				"author": "J. K. Rowling",
-				"custom_func_demo": "J. K. Rowling<>Harry Potter and the Philosopher's Stone-Scholastic Press",
+				"custom_func_demo": "J. K. Rowling/Harry Potter and the Philosopher's Stone/Scholastic Press",
 				"price": 9.99,
 				"title": "Harry Potter and the Philosopher's Stone",
 				"year": 1997
 			},
 			{
 				"author": "J. K. Rowling",
-				"custom_func_demo": "J. K. Rowling<>Harry Potter and the Chamber of Secrets-Scholastic Press",
+				"custom_func_demo": "J. K. Rowling/Harry Potter and the Chamber of Secrets/Scholastic Press",
 				"price": 10.99,
 				"title": "Harry Potter and the Chamber of Secrets",
 				"year": 1998
@@ -58,13 +58,13 @@
 		"books": [
 			{
 				"author": "Margaret Wise Brown",
-				"custom_func_demo": "Margaret Wise Brown<>Goodnight Moon-Harper & Brothers",
+				"custom_func_demo": "Margaret Wise Brown/Goodnight Moon/Harper & Brothers",
 				"price": 5.99,
 				"title": "Goodnight Moon",
 				"year": 1947
 			},
 			{
-				"custom_func_demo": "<>Brown Bear, Brown Bear, What Do You See-Harper & Brothers",
+				"custom_func_demo": "undefined/Brown Bear, Brown Bear, What Do You See/Harper & Brothers",
 				"price": 3.99,
 				"title": "Brown Bear, Brown Bear, What Do You See"
 			}
