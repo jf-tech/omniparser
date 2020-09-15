@@ -13,7 +13,7 @@ into desired JSON output based on a schema spec written in JSON.
     ```
     TBD
     ```
-- Schema:
+- Code:
     ```
     TBD
     ```
