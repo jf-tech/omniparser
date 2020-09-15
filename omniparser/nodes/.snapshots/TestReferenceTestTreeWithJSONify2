@@ -1,0 +1,11 @@
+{
+	"prefix_c1:child1": {
+		"grandChild11": "data 11",
+		"grandChild12": "data 12"
+	},
+	"prefix_c2:child2": {
+		"grandChild21": "data 21"
+	},
+	"prefix_c3:child3": null
+}
+

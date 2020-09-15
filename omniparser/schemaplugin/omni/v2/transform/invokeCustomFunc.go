@@ -13,7 +13,7 @@ import (
 func (p *parseCtx) invokeCustomFunc(n *node.Node, customFuncDecl *CustomFuncDecl) (string, error) {
 	// In validation, we've validated the custom func exists.
 	fn, _ := p.customFuncs[customFuncDecl.Name]
-	argValues, err := p.prepCustomFuncArgValues(n, customFuncDecl, fn)
+	argValues, err := p.prepArgValues(n, customFuncDecl, fn)
 	if err != nil {
 		return "", err
 	}
@@ -34,10 +34,22 @@ func (p *parseCtx) invokeCustomFunc(n *node.Node, customFuncDecl *CustomFuncDecl
 	return "", fmt.Errorf("'%s' failed: %s", customFuncDecl.fqdn, err.Error())
 }
 
-func (p *parseCtx) prepCustomFuncArgValues(
+func (p *parseCtx) prepDefaultArgValues(n *node.Node, fn customfuncs.CustomFuncType) []reflect.Value {
+	// All custom_func's must have 0-th arg of *transformctx.Ctx
+	argValues := []reflect.Value{reflect.ValueOf(p.opCtx)}
+	// Some newer custom_func's can have *node.Node as secondary default arg.
+	fnType := reflect.TypeOf(fn)
+	argNum := fnType.NumIn()
+	if argNum >= 2 && fnType.In(1) == reflect.TypeOf((*node.Node)(nil)) {
+		argValues = append(argValues, reflect.ValueOf(n))
+	}
+	return argValues
+}
+
+func (p *parseCtx) prepArgValues(
 	n *node.Node, customFuncDecl *CustomFuncDecl, fn customfuncs.CustomFuncType) ([]reflect.Value, error) {
 
-	argValues := []reflect.Value{reflect.ValueOf(p.opCtx)}
+	argValues := p.prepDefaultArgValues(n, fn)
 	appendArgValue := func(argDecl *Decl, value interface{}) {
 		v, _ := normalizeAndReturnValue(argDecl, value)
 		// if v is nil for some reason, e.g:

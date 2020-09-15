@@ -261,7 +261,7 @@ func (p *parseCtx) parseField(n *node.Node, decl *Decl) (interface{}, error) {
 		// XML input files, as XML might contains attributes, which can't really nicely
 		// translate into map[string]interface{}. All other file format types
 		// (csv/edi/fixed-length/json) are fine. Well, so be it the limitation.
-		return normalizeAndReturnValue(decl, nodeToObject(n))
+		return normalizeAndReturnValue(decl, nodes.J2NodeToInterface(n))
 	}
 	return normalizeAndReturnValue(decl, n.InnerText())
 }

@@ -33,7 +33,7 @@ func BestEffortPrettyMarshal(v interface{}) string {
 	return jsonStr
 }
 
-// BPM is a shortcut (mostly used ing tests) to BestEffortPrettyMarshal.
+// BPM is a shortcut (mostly used in tests) to BestEffortPrettyMarshal.
 var BPM = BestEffortPrettyMarshal
 
 // PrettyJSON reformats a json string to be pretty
@@ -55,5 +55,5 @@ func BestEffortPrettyJSON(jsonStr string) string {
 	return s
 }
 
-// BPJ is a shortcut (mostly used ing tests) to BestEffortPrettyJSON.
+// BPJ is a shortcut (mostly used in tests) to BestEffortPrettyJSON.
 var BPJ = BestEffortPrettyJSON

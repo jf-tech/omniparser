@@ -81,12 +81,12 @@ func TestCreateFormatReader(t *testing.T) {
 	t.Run("B1", func(t *testing.T) {
 		n1, err := r.Read()
 		assert.NoError(t, err)
-		cupaloy.SnapshotT(t, nodes.JSONify(n1))
+		cupaloy.SnapshotT(t, nodes.JSONify1(n1))
 	})
 	t.Run("B2", func(t *testing.T) {
 		n2, err := r.Read()
 		assert.NoError(t, err)
-		cupaloy.SnapshotT(t, nodes.JSONify(n2))
+		cupaloy.SnapshotT(t, nodes.JSONify1(n2))
 	})
 	t.Run("EOF", func(t *testing.T) {
 		n3, err := r.Read()

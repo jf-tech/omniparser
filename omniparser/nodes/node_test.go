@@ -7,6 +7,8 @@ import (
 	node "github.com/antchfx/xmlquery"
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/jf-tech/omniparser/jsons"
 )
 
 func findRoot(n *node.Node) *node.Node {
@@ -56,10 +58,12 @@ type testTree struct {
 	//
 	// root
 	//   child1                              child2                    child3
-	//     grandChild11, grandchild12          grandChild21
-	root                                     *node.Node
-	child1, child2, child3                   *node.Node
-	grandChild11, grandChild12, grandChild21 *node.Node
+	//     grandChild11E, grandchild12E          grandChild21E
+	//     grandChild11T, grandchild12T          grandChild21T
+	root                                        *node.Node
+	child1, child2, child3                      *node.Node
+	grandChild11E, grandChild12E, grandChild21E *node.Node
+	grandChild11T, grandChild12T, grandChild21T *node.Node
 }
 
 func createTestTree(t *testing.T) *testTree {
@@ -99,53 +103,72 @@ func createTestTree(t *testing.T) *testTree {
 			{Name: xml.Name{Space: "", Local: "c3"}, Value: "c3"},
 		},
 	}
-	grandChild11 := &node.Node{
-		Type: node.CharDataNode,
+	grandChild11E := &node.Node{
+		Type: node.ElementNode,
 		Data: "grandChild11",
 	}
-	grandChild12 := &node.Node{
+	grandChild11T := &node.Node{
 		Type: node.CharDataNode,
+		Data: "data 11",
+	}
+	grandChild12E := &node.Node{
+		Type: node.ElementNode,
 		Data: "grandChild12",
 	}
-	grandChild21 := &node.Node{
+	grandChild12T := &node.Node{
 		Type: node.CharDataNode,
+		Data: "data 12",
+	}
+	grandChild21E := &node.Node{
+		Type: node.ElementNode,
 		Data: "grandChild21",
+	}
+	grandChild21T := &node.Node{
+		Type: node.CharDataNode,
+		Data: "data 21",
 	}
 
 	node.AddChild(root, child1)
 	node.AddSibling(child1, child2)
 	node.AddSibling(child1, child3)
-	node.AddChild(child1, grandChild11)
-	node.AddSibling(grandChild11, grandChild12)
-	node.AddChild(child2, grandChild21)
+	node.AddChild(child1, grandChild11E)
+	node.AddChild(child1, grandChild12E)
+	node.AddChild(child2, grandChild21E)
+	node.AddChild(grandChild11E, grandChild11T)
+	node.AddChild(grandChild12E, grandChild12T)
+	node.AddChild(grandChild21E, grandChild21T)
 
 	verifyPointerIntegrityInTree(t, root)
 	verifyPointerIntegrityInTree(t, child1)
 	verifyPointerIntegrityInTree(t, child2)
 	verifyPointerIntegrityInTree(t, child3)
-	verifyPointerIntegrityInTree(t, grandChild11)
-	verifyPointerIntegrityInTree(t, grandChild12)
-	verifyPointerIntegrityInTree(t, grandChild21)
+	verifyPointerIntegrityInTree(t, grandChild11E)
+	verifyPointerIntegrityInTree(t, grandChild12E)
+	verifyPointerIntegrityInTree(t, grandChild21E)
+	verifyPointerIntegrityInTree(t, grandChild11T)
+	verifyPointerIntegrityInTree(t, grandChild12T)
+	verifyPointerIntegrityInTree(t, grandChild21T)
 
 	return &testTree{
-		root:         root,
-		child1:       child1,
-		child2:       child2,
-		child3:       child3,
-		grandChild11: grandChild11,
-		grandChild12: grandChild12,
-		grandChild21: grandChild21,
+		root:          root,
+		child1:        child1,
+		child2:        child2,
+		child3:        child3,
+		grandChild11E: grandChild11E,
+		grandChild12E: grandChild12E,
+		grandChild21E: grandChild21E,
+		grandChild11T: grandChild11T,
+		grandChild12T: grandChild12T,
+		grandChild21T: grandChild21T,
 	}
 }
 
-func TestReferenceTestTreeWithPtrs(t *testing.T) {
-	test := createTestTree(t)
-	cupaloy.SnapshotT(t, JSONify(test.root))
+func TestReferenceTestTreeWithJSONify1(t *testing.T) {
+	cupaloy.SnapshotT(t, JSONify1(createTestTree(t).root))
 }
 
-func TestReferenceTestTreeWithNoPtrs(t *testing.T) {
-	test := createTestTree(t)
-	cupaloy.SnapshotT(t, JSONify2(test.root, true))
+func TestReferenceTestTreeWithJSONify2(t *testing.T) {
+	cupaloy.SnapshotT(t, jsons.BPJ(JSONify2(createTestTree(t).root)))
 }
 
 func TestCopyNode(t *testing.T) {
@@ -173,10 +196,10 @@ func TestCopyTree(t *testing.T) {
 	child2Copy := CopyTree(test.child2)
 	assert.True(t, test.child2 != child2Copy)
 	verifyPointerIntegrityInTree(t, child2Copy)
-	assert.Equal(t, JSONify(test.child2), JSONify(child2Copy))
+	assert.Equal(t, JSONify1(test.child2), JSONify1(child2Copy))
 
 	rootCopy := findRoot(child2Copy)
 	assert.True(t, test.root != rootCopy)
 	verifyPointerIntegrityInTree(t, rootCopy)
-	assert.Equal(t, JSONify(test.root), JSONify(rootCopy))
+	assert.Equal(t, JSONify1(test.root), JSONify1(rootCopy))
 }

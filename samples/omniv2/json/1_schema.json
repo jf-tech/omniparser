@@ -14,21 +14,10 @@
                 "title": { "xpath": "title" },
                 "custom_func_demo": {
                     "custom_func": {
-                        "name": "concat",
+                        "name": "javascript",
                         "args": [
-                            { "xpath": "author" },
-                            {
-                                "custom_func": {
-                                    "name": "concat",
-                                    "args": [
-                                        { "const": "<" },
-                                        { "const": ">" }
-                                    ]
-                                }
-                            },
-                            { "xpath": "title" },
-                            { "const": "-" },
-                            { "xpath": "../../name" }
+                            { "const": "var n = JSON.parse(_node);n.author+'/'+n.title+'/'+press" },
+                            { "const": "press:string" }, { "xpath": "../../name" }
                         ]
                     }
                 }
@@ -45,11 +34,11 @@
                             "name": "floor",
                             "args": [
                                 { "custom_func": {
-                                        "name": "eval",
-                                        "args": [
-                                            { "const": "[price] * 10" },
-                                            { "const": "price:float" }, { "xpath": "price" }
-                                        ]
+                                    "name": "javascript",
+                                    "args": [
+                                        { "const": "price * 10" },
+                                        { "const": "price:float" }, { "xpath": "price" }
+                                    ]
                                 }},
                                 { "const": "2", "_comment": "decimal places" }
                             ]
