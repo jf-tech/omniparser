@@ -1,26 +1,26 @@
 {
-	"#children": [
+	"Attr": [],
+	"Children": [
 		{
-			"#children": null,
 			"Attr": null,
+			"Children": null,
 			"Data": "data2",
 			"FirstChild": "(nil)",
 			"LastChild": "(nil)",
 			"NamespaceURI": "",
 			"NextSibling": "(nil)",
-			"Parent": "(ELEM B)",
+			"Parent": "(ElementNode B)",
 			"Prefix": "",
 			"PrevSibling": "(nil)",
 			"Type": "CharDataNode"
 		}
 	],
-	"Attr": [],
 	"Data": "B",
-	"FirstChild": "(CDATA 'data2')",
-	"LastChild": "(CDATA 'data2')",
+	"FirstChild": "(CharDataNode 'data2')",
+	"LastChild": "(CharDataNode 'data2')",
 	"NamespaceURI": "",
 	"NextSibling": "(nil)",
-	"Parent": "(ELEM A)",
+	"Parent": "(ElementNode A)",
 	"Prefix": "",
 	"PrevSibling": "(nil)",
 	"Type": "ElementNode"
