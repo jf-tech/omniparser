@@ -1,0 +1,92 @@
+{
+	"Attr": [
+		{
+			"Name": {
+				"Local": "r",
+				"Space": "ns"
+			},
+			"Value": "r"
+		}
+	],
+	"Children": [
+		{
+			"Attr": [
+				{
+					"Name": {
+						"Local": "c1",
+						"Space": ""
+					},
+					"Value": "c1"
+				}
+			],
+			"Children": [
+				{
+					"Attr": null,
+					"Children": null,
+					"Data": "grandChild11",
+					"NamespaceURI": "",
+					"Prefix": "",
+					"Type": "CharDataNode"
+				},
+				{
+					"Attr": null,
+					"Children": null,
+					"Data": "grandChild12",
+					"NamespaceURI": "",
+					"Prefix": "",
+					"Type": "CharDataNode"
+				}
+			],
+			"Data": "child1",
+			"NamespaceURI": "namespace_c1",
+			"Prefix": "prefix_c1",
+			"Type": "ElementNode"
+		},
+		{
+			"Attr": [
+				{
+					"Name": {
+						"Local": "c2",
+						"Space": ""
+					},
+					"Value": "c2"
+				}
+			],
+			"Children": [
+				{
+					"Attr": null,
+					"Children": null,
+					"Data": "grandChild21",
+					"NamespaceURI": "",
+					"Prefix": "",
+					"Type": "CharDataNode"
+				}
+			],
+			"Data": "child2",
+			"NamespaceURI": "namespace_c2",
+			"Prefix": "prefix_c2",
+			"Type": "ElementNode"
+		},
+		{
+			"Attr": [
+				{
+					"Name": {
+						"Local": "c3",
+						"Space": ""
+					},
+					"Value": "c3"
+				}
+			],
+			"Children": null,
+			"Data": "child3",
+			"NamespaceURI": "namespace_c3",
+			"Prefix": "prefix_c3",
+			"Type": "ElementNode"
+		}
+	],
+	"Data": "root",
+	"NamespaceURI": "namespace_r",
+	"Prefix": "prefix_r",
+	"Type": "DocumentNode"
+}
+

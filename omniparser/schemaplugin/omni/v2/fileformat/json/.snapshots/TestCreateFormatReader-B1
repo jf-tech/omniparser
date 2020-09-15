@@ -1,26 +1,26 @@
 {
-	"#children": [
+	"Attr": null,
+	"Children": [
 		{
-			"#children": null,
 			"Attr": null,
+			"Children": null,
 			"Data": "B1",
 			"FirstChild": "(nil)",
 			"LastChild": "(nil)",
 			"NamespaceURI": "",
 			"NextSibling": "(nil)",
-			"Parent": "(ELEM )",
+			"Parent": "(ElementNode )",
 			"Prefix": "",
 			"PrevSibling": "(nil)",
 			"Type": "TextNode"
 		}
 	],
-	"Attr": null,
 	"Data": "",
-	"FirstChild": "(TEXT 'B1')",
-	"LastChild": "(TEXT 'B1')",
+	"FirstChild": "(TextNode 'B1')",
+	"LastChild": "(TextNode 'B1')",
 	"NamespaceURI": "",
 	"NextSibling": "(nil)",
-	"Parent": "(ROOT)",
+	"Parent": "(DocumentNode)",
 	"Prefix": "",
 	"PrevSibling": "(nil)",
 	"Type": "ElementNode"

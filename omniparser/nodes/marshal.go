@@ -9,29 +9,29 @@ import (
 	"github.com/jf-tech/omniparser/jsons"
 )
 
-func nodeName(n *node.Node) string {
+func nodePtrName(n *node.Node) string {
 	if n == nil {
 		return "(nil)"
 	}
 	switch n.Type {
 	case node.DocumentNode:
-		return "(ROOT)"
+		return "(DocumentNode)"
 	case node.DeclarationNode:
-		return fmt.Sprintf("(DECL %s)", n.Data)
+		return fmt.Sprintf("(DeclarationNode %s)", n.Data)
 	case node.ElementNode:
-		name := fmt.Sprintf("(ELEM %s)", n.Data)
+		name := fmt.Sprintf("(ElementNode %s)", n.Data)
 		if n.Prefix != "" {
-			name = fmt.Sprintf("(ELEM %s:%s)", n.Prefix, n.Data)
+			name = fmt.Sprintf("(ElementNode %s:%s)", n.Prefix, n.Data)
 		}
 		return name
 	case node.TextNode:
-		return fmt.Sprintf("(TEXT '%s')", n.Data)
+		return fmt.Sprintf("(TextNode '%s')", n.Data)
 	case node.CharDataNode:
-		return fmt.Sprintf("(CDATA '%s')", n.Data)
+		return fmt.Sprintf("(CharDataNode '%s')", n.Data)
 	case node.CommentNode:
-		return fmt.Sprintf("(COMMENT '%s')", n.Data)
+		return fmt.Sprintf("(CommentNode '%s')", n.Data)
 	case node.AttributeNode:
-		return fmt.Sprintf("(ATTR %s)", n.Data)
+		return fmt.Sprintf("(AttributeNode %s)", n.Data)
 	default:
 		return fmt.Sprintf("(unknown '%s')", n.Data)
 	}
@@ -58,14 +58,15 @@ func nodeTypeStr(nt node.NodeType) string {
 	}
 }
 
-func nodeToInterface(n *node.Node) interface{} {
+func nodeToInterface(n *node.Node, omitPtr bool) interface{} {
 	m := make(map[string]interface{})
-	m["Parent"] = nodeName(n.Parent)
-	m["FirstChild"] = nodeName(n.FirstChild)
-	m["LastChild"] = nodeName(n.LastChild)
-	m["PrevSibling"] = nodeName(n.PrevSibling)
-	m["NextSibling"] = nodeName(n.NextSibling)
-	m["Parent"] = nodeName(n.Parent)
+	if !omitPtr {
+		m["Parent"] = nodePtrName(n.Parent)
+		m["FirstChild"] = nodePtrName(n.FirstChild)
+		m["LastChild"] = nodePtrName(n.LastChild)
+		m["PrevSibling"] = nodePtrName(n.PrevSibling)
+		m["NextSibling"] = nodePtrName(n.NextSibling)
+	}
 	m["Type"] = nodeTypeStr(n.Type)
 	m["Data"] = n.Data
 	m["Prefix"] = n.Prefix
@@ -76,13 +77,17 @@ func nodeToInterface(n *node.Node) interface{} {
 	m["Attr"] = attrv
 	var children []interface{}
 	for child := n.FirstChild; child != nil; child = child.NextSibling {
-		children = append(children, nodeToInterface(child))
+		children = append(children, nodeToInterface(child, omitPtr))
 	}
-	m["#children"] = children
+	m["Children"] = children
 	return m
 }
 
 // JSONify json marshals out a *Node.
 func JSONify(n *node.Node) string {
-	return jsons.BPM(nodeToInterface(n))
+	return JSONify2(n, false)
+}
+
+func JSONify2(n *node.Node, omitPtr bool) string {
+	return jsons.BPM(nodeToInterface(n, omitPtr))
 }

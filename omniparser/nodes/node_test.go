@@ -138,9 +138,14 @@ func createTestTree(t *testing.T) *testTree {
 	}
 }
 
-func TestReferenceTestTree(t *testing.T) {
+func TestReferenceTestTreeWithPtrs(t *testing.T) {
 	test := createTestTree(t)
 	cupaloy.SnapshotT(t, JSONify(test.root))
+}
+
+func TestReferenceTestTreeWithNoPtrs(t *testing.T) {
+	test := createTestTree(t)
+	cupaloy.SnapshotT(t, JSONify2(test.root, true))
 }
 
 func TestCopyNode(t *testing.T) {
