@@ -3,6 +3,9 @@ package jsons
 import (
 	"bytes"
 	"encoding/json"
+	"strings"
+
+	"github.com/jf-tech/omniparser/strs"
 )
 
 const (
@@ -19,7 +22,14 @@ func PrettyMarshal(v interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return valueBuf.String(), nil
+	lines := strings.Split(valueBuf.String(), "\n")
+	noEmptyLines := make([]string, 0, len(lines))
+	for _, line := range lines {
+		if strs.IsStrNonBlank(line) {
+			noEmptyLines = append(noEmptyLines, line)
+		}
+	}
+	return strings.Join(noEmptyLines, "\n"), nil
 }
 
 // BestEffortPrettyMarshal does a best effort JSON marshaling of 'v' with human

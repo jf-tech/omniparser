@@ -25,10 +25,11 @@ into desired JSON output based on a schema spec written in JSON.
 ## Why
 
 ## Recent Feature Additions
+- command line interface
+- javascript engine integration as a custom_func.
+- JSON stream parser
 - Extensibility
     - Ability to provide custom functions.
     - Ability to provide custom schema plugins.
     - Ability to customize the built-in omniv2 plugin's parsing code.
     - Ability to provide a new file format support to built-in omniv2 plugin.
-- JSON stream parser
-- 'javascript' engine integration as a custom_func.

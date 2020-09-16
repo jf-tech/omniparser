@@ -29,8 +29,7 @@ func TestPrettyMarshal_Success(t *testing.T) {
 		"fishing",
 		"reading"
 	]
-}
-`
+}`
 	assert.Equal(t, expected, actual)
 }
 
@@ -66,8 +65,7 @@ func TestBestEffortPrettyMarshal_Success(t *testing.T) {
 		"fishing",
 		"reading"
 	]
-}
-`
+}`
 	assert.Equal(t, expected, actual)
 }
 
