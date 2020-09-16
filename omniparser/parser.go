@@ -106,12 +106,12 @@ func (p *parser) GetTransformOp(name string, input io.Reader, ctx *transformctx.
 	if err != nil {
 		return nil, err
 	}
+	if ctx.InputName != name {
+		ctx.InputName = name
+	}
 	inputProcessor, err := p.schemaPlugin.GetInputProcessor(ctx, br)
 	if err != nil {
 		return nil, err
-	}
-	if ctx.InputName != name {
-		ctx.InputName = name
 	}
 	// If caller already specified a way to do context aware error formatting, use it;
 	// otherwise (vast majority cases), use the InputProcessor (which implements CtxAwareErr

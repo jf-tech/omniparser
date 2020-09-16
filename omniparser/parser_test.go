@@ -143,7 +143,7 @@ func TestParser_GetTransformOp_GetInputProcessorFailure(t *testing.T) {
 		},
 		schemaPlugin: testSchemaPlugin{getInputProcessorErr: errors.New("test failure")},
 	}
-	op, err := p.GetTransformOp("test input", strings.NewReader("something"), nil)
+	op, err := p.GetTransformOp("test input", strings.NewReader("something"), &transformctx.Ctx{})
 	assert.Error(t, err)
 	assert.Equal(t, "test failure", err.Error())
 	assert.Nil(t, op)
