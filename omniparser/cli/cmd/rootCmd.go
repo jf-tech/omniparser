@@ -11,6 +11,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(transformCmd)
+	rootCmd.AddCommand(serverCmd)
 }
 
 // Execute executes the root command.

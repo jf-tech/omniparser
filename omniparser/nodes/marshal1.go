@@ -60,7 +60,7 @@ func j1NodeTypeStr(nt node.NodeType) string {
 	}
 }
 
-// j1NodeToInterface converts *node.NodeType into an interface{} suitable for json marshaling used in JSONify1.
+// j1NodeToInterface converts *node.Node into an interface{} suitable for json marshaling used in JSONify1.
 func j1NodeToInterface(n *node.Node) interface{} {
 	m := make(map[string]interface{})
 	m["Parent"] = j1NodePtrName(n.Parent)
