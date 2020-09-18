@@ -18,7 +18,7 @@ import (
 var (
 	transformCmd = &cobra.Command{
 		Use:   "transform",
-		Short: "Transforms an input file to desired output based on a schema.",
+		Short: "Transforms input to desired output based on a schema.",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return doTransform()

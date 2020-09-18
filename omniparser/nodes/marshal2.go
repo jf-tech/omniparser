@@ -87,6 +87,7 @@ func isChildArray(n *node.Node) bool {
 	return elemCount > 1 || (elemCount == 1 && *elemName == "")
 }
 
+// J2NodeToInterface converts *node.NodeType into an interface{} that, once marshaled, is json friendly.
 func J2NodeToInterface(n *node.Node) interface{} {
 	if n.FirstChild == nil {
 		return nil
