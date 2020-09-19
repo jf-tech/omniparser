@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi"
@@ -46,7 +48,15 @@ func doServer() {
 	rootRouter := chi.NewRouter()
 	rootRouter.Mount("/transform", transformRouter)
 
-	fmt.Printf("Listening on http://localhost:%d ...\n\n", port)
+	envPort, found := os.LookupEnv("PORT")
+	if found {
+		var err error
+		port, err = strconv.Atoi(envPort)
+		if err != nil {
+			panic(err)
+		}
+	}
+	fmt.Printf("Listening on port %d ...\n\n", port)
 	_ = http.ListenAndServe(fmt.Sprintf(":%d", port), rootRouter)
 }
 
