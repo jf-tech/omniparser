@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -46,6 +49,9 @@ func doServer() {
 	transformRouter.Post("/", httpPostTransform)
 
 	rootRouter := chi.NewRouter()
+	rootRouter.Get("/", func(w http.ResponseWriter, req *http.Request) {
+		http.FileServer(http.Dir(filepath.Join(serverCmdDir(), "web"))).ServeHTTP(w, req)
+	})
 	rootRouter.Mount("/transform", transformRouter)
 
 	envPort, found := os.LookupEnv("PORT")
@@ -56,8 +62,14 @@ func doServer() {
 			panic(err)
 		}
 	}
-	fmt.Printf("Listening on port %d ...\n\n", port)
-	_ = http.ListenAndServe(fmt.Sprintf(":%d", port), rootRouter)
+	log.Printf("Listening on port %d ...", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), rootRouter))
+}
+
+func serverCmdDir() string {
+	_, filename, _, _ := runtime.Caller(1)
+	absDir, _ := filepath.Abs(filepath.Dir(filename))
+	return absDir
 }
 
 type req struct {
@@ -67,11 +79,11 @@ type req struct {
 }
 
 func httpPostTransform(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Serving request from %s ... ", r.RemoteAddr)
+	log.Printf("Serving request from %s ... ", r.RemoteAddr)
 
 	writeError := func(msg string, code int) {
 		http.Error(w, msg, code)
-		fmt.Println(code)
+		log.Print(code)
 	}
 	writeBadRequest := func(msg string) {
 		writeError(msg, http.StatusBadRequest)
@@ -111,5 +123,5 @@ func httpPostTransform(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(contentTypeHeader, contentTypeJSON)
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(jsons.BPJ("[" + strings.Join(records, ",") + "]")))
-	fmt.Println(http.StatusOK)
+	log.Print(http.StatusOK)
 }

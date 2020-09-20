@@ -1,0 +1,52 @@
+<html>
+<head>
+  <title>OmniParser Playground</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" />
+  <script type="text/javascript" language="javascript">
+    const doTransform = async () => {
+      $('textarea#outputText').value = "";
+      var req = JSON.stringify({schema: $('textarea#schemaText').val(), input: $('textarea#inputText').val()});
+      const resp = await fetch('/transform', {
+        method: 'POST',
+        body: req,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      $('textarea#outputText').val(await resp.text());
+    }
+  </script>
+</head>
+<body>
+  <div class="jumbotron p-3">
+    <div class="container">
+      <h4>OmniParser Playground</h4>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+        <div class="col">
+          <label for="schemaInput"><h5>Schema:</h5></label>
+          <textarea class="form-control " id="schemaText" rows="10"></textarea>
+        </div>
+        <div class="col">
+          <label for="schemaInput"><h5>Input:</h5></label>
+          <textarea class="form-control" id="inputText" rows="10"></textarea>
+        </div>
+    </div>
+    <div class="row py-4">
+      <div class="col">
+        <button type="button" class="btn btn-primary" onclick="doTransform()">Transform >></button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <label for="schemaInput"><h5>Output:</h5></label>
+        <textarea class="form-control" id="outputText" rows="20" readonly></textarea>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
