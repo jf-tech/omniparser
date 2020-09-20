@@ -30,10 +30,12 @@
     const doClear = () => {
       $('textarea#schemaText').val("");
       $('textarea#inputText').val("");
+      $('textarea#outputText').val("");
     }
     const sampleSelected = (index) => {
       $('textarea#schemaText').val(samples[index].schema);
       $('textarea#inputText').val(samples[index].input);
+      $('textarea#outputText').val("");
     }
   </script>
 </head>
