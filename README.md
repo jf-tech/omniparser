@@ -21,6 +21,10 @@ into desired JSON output based on a schema spec written in JSON.
     ```
     TBD
     ```
+## Playground
+
+You can use https://omniparser.herokuapp.com/ for trying out schemas and inputs and see how the transform works.
+You can try out these [json examples](./samples/omniv2/json) or [xml examples](./samples/omniv2/xml). 
 
 ## Why
 
