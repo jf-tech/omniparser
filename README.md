@@ -107,6 +107,7 @@ Take a detailed look at samples here:
     - [BeanIO](http://beanio.org/) can't deal with EDI input.
     - [Jolt](https://github.com/bazaarvoice/jolt) can't deal with anything other than JSON input.
     - [JSONata](https://jsonata.org/) still only JSON -> JSON transform.
+- Many of the parsers/transforms don't support streaming read, loading entire input into memory - not acceptable in some situations.
 
 ## Requirements
 - Golang 1.14
