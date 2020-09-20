@@ -90,9 +90,10 @@ into desired JSON output based on a schema spec written in JSON.
     ```
 ## Playground
 
-You can use https://omniparser.herokuapp.com/ for trying out schemas and inputs and see how the transform works.
+You can use https://omniparser.herokuapp.com/ (might need to wait for a few seconds for heroku instance to wake up)
+for trying out schemas and inputs and see how the transform works.
 
-If you don't know how to start, take a look at existing samples:
+If you don't know where to start, take a look at existing samples:
 - [json examples](./samples/omniv2/json)
 - [xml examples](./samples/omniv2/xml). 
 
