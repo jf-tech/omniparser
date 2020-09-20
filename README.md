@@ -4,35 +4,111 @@
 A data transform parser in naive golang that transforms input data of various formats (CSV, txt, XML, EDI, JSON)
 into desired JSON output based on a schema spec written in JSON.
 
-## Simple Example
+## Simple Example (JSON -> JSON Transform)
 - Input:
     ```
-    TBD
+    {
+        "order_id": "1234567",
+        "tracking_number": "1z9999999999999999",
+        "items": [
+            {
+                "item_sku": "ab123",
+                "item_price": 12.34,
+                "number_purchased": 5
+            },
+            {
+                "item_sku": "ck763-23",
+                "item_price": 3.12,
+                "number_purchased": 2
+            }
+        ]
+    }
     ```
 - Schema:
     ```
-    TBD
+    {
+        "parser_settings": {
+            "version": "omni.2.0",
+            "file_format_type": "json"
+        },
+        "transform_declarations": {
+            "FINAL_OUTPUT": { "xpath": ".", "object": {
+                "order_id": { "xpath": "order_id" },
+                "tracking_number": { "custom_func": {
+                    "name": "upper",
+                    "args": [ { "xpath": "tracking_number" } ]
+                }},
+                "items": { "array": [{ "xpath": "items/*", "object": {
+                    "sku":  { "custom_func": {
+                        "name": "substring",
+                        "args": [
+                            { "custom_func": { "name": "upper", "args": [ { "xpath": "item_sku" }]}},
+                            { "const": "0", "_comment": "start index" },
+                            { "const": "5", "_comment": "sub length" }
+                        ]
+                    }},
+                    "total_price": { "custom_func": {
+                        "name": "javascript",
+                        "args": [
+                            { "const": "num * price" },
+                            { "const": "num:int" }, { "xpath": "number_purchased" },
+                            { "const": "price:float" }, { "xpath": "item_price" }
+                        ]
+                    }}
+                }}]}
+            }}
+        }
+    }
     ```
 - Code:
     ```
-    TBD
+    parser, err := omniparser.NewParser("schema-name", strings.NewReader("..."))
+    if err != nil { ... }
+    op, err := parser.GetTransformOp("input-name", strings.NewReader("..."), &transformctx.Ctx{})
+    if err != nil { ... }
+    if !op.Next() { ... }  
+    b, err := op.Read()
+    if err != nil { ... }
+    fmt.Println(string(b))
     ```
 - Output:
     ```
-    TBD
+    {
+        "order_id": "1234567",
+        "tracking_number": "1Z9999999999999999",
+        "items": [
+            {
+                "sku": "AB123",
+                "total_price": "61.7"
+            },
+            {
+                "sku": "CK763",
+                "total_price": "6.24"
+            }
+        ]
+    }
     ```
 ## Playground
 
 You can use https://omniparser.herokuapp.com/ for trying out schemas and inputs and see how the transform works.
-You can try out these [json examples](./samples/omniv2/json) or [xml examples](./samples/omniv2/xml). 
+
+If you don't know how to start, take a look at existing samples:
+- [json examples](./samples/omniv2/json)
+- [xml examples](./samples/omniv2/xml). 
 
 ## Why
+- No good ETL transform/parser library exists in Golang.
+- Even looking into Java and other languages, choices aren't many and all have limitations:
+    - [Smooks](https://www.smooks.org/) is dead, plus its EDI parsing/transform is too heavyweight, needing code-gen.
+    - [BeanIO](http://beanio.org/) can't deal with EDI input.
+    - [Jolt](https://github.com/bazaarvoice/jolt) can't deal with anything other than JSON input.
+    - [JSONata](https://jsonata.org/) still only JSON -> JSON transform.
 
 ## Recent Feature Additions
-- command line interface
+- command line interface (one-off `transform` cmd or long running http `server` mode).
 - javascript engine integration as a custom_func.
-- JSON stream parser
-- Extensibility
+- JSON stream parser.
+- Extensibility:
     - Ability to provide custom functions.
     - Ability to provide custom schema plugins.
     - Ability to customize the built-in omniv2 plugin's parsing code.
