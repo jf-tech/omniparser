@@ -4,6 +4,17 @@
 A data transform parser in naive golang that transforms input data of various formats (CSV, txt, XML, EDI, JSON)
 into desired JSON output based on a schema spec written in JSON.
 
+## Demo in Playground
+
+Use https://omniparser.herokuapp.com/ (might need to wait for a few seconds for heroku instance to wake up)
+for trying out schemas and inputs, yours and from sample library, to see how transform works.
+
+![](./omniparser/cli/cmd/web/playground-demo.gif)
+
+Take a detailed look at samples here:
+- [json examples](./samples/omniv2/json)
+- [xml examples](./samples/omniv2/xml).
+
 ## Simple Example (JSON -> JSON Transform)
 - Input:
     ```
@@ -88,14 +99,6 @@ into desired JSON output based on a schema spec written in JSON.
         ]
     }
     ```
-## Playground
-
-You can use https://omniparser.herokuapp.com/ (might need to wait for a few seconds for heroku instance to wake up)
-for trying out schemas and inputs and see how the transform works.
-
-If you don't know where to start, take a look at existing samples:
-- [json examples](./samples/omniv2/json)
-- [xml examples](./samples/omniv2/xml). 
 
 ## Why
 - No good ETL transform/parser library exists in Golang.
@@ -105,8 +108,15 @@ If you don't know where to start, take a look at existing samples:
     - [Jolt](https://github.com/bazaarvoice/jolt) can't deal with anything other than JSON input.
     - [JSONata](https://jsonata.org/) still only JSON -> JSON transform.
 
+## Requirements
+- Golang 1.14
+
+    This is only needed for `javascript` engine integration. Please raise an issue if you think 1.14 is too high, and
+    you don't need `javascript` custom_func. Then we may consider moving `javascript` custom_func into a separate
+    extension repo/package; the rest of the library is just golang 1.12.
+
 ## Recent Feature Additions
-- command line interface (one-off `transform` cmd or long running http `server` mode).
+- command line interface (one-off `transform` cmd or long-running http `server` mode).
 - javascript engine integration as a custom_func.
 - JSON stream parser.
 - Extensibility:
