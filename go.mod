@@ -20,4 +20,5 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73 // indirect
 	golang.org/x/text v0.3.3
+	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
