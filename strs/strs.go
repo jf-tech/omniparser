@@ -2,7 +2,6 @@ package strs
 
 import (
 	"strings"
-	"unicode"
 )
 
 // StrPtr returns string pointer that points to a given string value.
@@ -12,7 +11,7 @@ func StrPtr(s string) *string {
 
 // IsStrNonBlank checks if a string is blank or not.
 func IsStrNonBlank(s string) bool {
-	return len(strings.TrimFunc(s, unicode.IsSpace)) > 0
+	return len(strings.TrimSpace(s)) > 0
 }
 
 // IsStrPtrNonBlank checks if the value represented by a string pointer is blank or not.

@@ -1,0 +1,85 @@
+{
+	"Root": {
+		"ValueStored": false,
+		"Value": null,
+		"Children": {
+			"h": {
+				"ValueStored": false,
+				"Value": null,
+				"Children": {
+					"e": {
+						"ValueStored": false,
+						"Value": null,
+						"Children": {
+							"l": {
+								"ValueStored": false,
+								"Value": null,
+								"Children": {
+									"l": {
+										"ValueStored": false,
+										"Value": null,
+										"Children": {
+											"o": {
+												"ValueStored": false,
+												"Value": null,
+												"Children": {
+													",": {
+														"ValueStored": false,
+														"Value": null,
+														"Children": {
+															" ": {
+																"ValueStored": false,
+																"Value": null,
+																"Children": {
+																	"こ": {
+																		"ValueStored": false,
+																		"Value": null,
+																		"Children": {
+																			"ん": {
+																				"ValueStored": false,
+																				"Value": null,
+																				"Children": {
+																					"に": {
+																						"ValueStored": false,
+																						"Value": null,
+																						"Children": {
+																							"ち": {
+																								"ValueStored": false,
+																								"Value": null,
+																								"Children": {
+																									"は": {
+																										"ValueStored": false,
+																										"Value": null,
+																										"Children": {
+																											"!": {
+																												"ValueStored": true,
+																												"Value": 0,
+																												"Children": null
+																											}
+																										}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
