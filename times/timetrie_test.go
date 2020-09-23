@@ -28,7 +28,7 @@ func TestDumpDateTimeTrie(t *testing.T) {
 
 func TestDumpAllTimezones(t *testing.T) {
 	var tzs []string
-	for tz, _ := range tzList {
+	for tz := range tzList {
 		tzs = append(tzs, tz)
 	}
 	sort.Strings(tzs)
