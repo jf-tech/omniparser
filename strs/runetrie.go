@@ -10,6 +10,7 @@ type trieNode struct {
 	children    map[string]*trieNode
 }
 
+// MarshalJSON json marshals a trieNode
 func (tn *trieNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
 		ValueStored bool
@@ -35,6 +36,7 @@ type RuneTrie struct {
 	nodeCount int
 }
 
+// MarshalJSON json marshals a RuneTrie
 func (t *RuneTrie) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
 		Root *trieNode
@@ -107,6 +109,7 @@ func (t *RuneTrie) Get(s string) (interface{}, bool) {
 	return n.value, n.valueStored
 }
 
+// NodeCount returns the total number of nodes in the trie.
 func (t *RuneTrie) NodeCount() int {
 	return t.nodeCount
 }
