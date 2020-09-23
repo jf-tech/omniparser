@@ -1,9 +1,7 @@
 package times
 
 import (
-	"errors"
 	"fmt"
-	"regexp"
 	"strings"
 	"time"
 
@@ -21,11 +19,6 @@ func loadLoc(tz string) (*time.Location, error) {
 	}
 	return loc.(*time.Location), nil
 }
-
-var (
-	// 'AM'/'PM'/'0-9' followed by '-' then tz string (which can be 'a-zA-Z0-9', '+', '-', '/')
-	tzSuffixRegexp = regexp.MustCompile(`^.*\s*([AP]M|[0-9])\s*-([A-Za-z][A-Za-z/_\-+0-9]+)$`)
-)
 
 // SmartParse parses a date time string and returns a time.Time and a tz flag indicates whether the
 // date time string contains tz info.
@@ -62,13 +55,12 @@ func SmartParse(s string) (t time.Time, tz bool, err error) {
 	s = strings.TrimSpace(s)
 
 	var loc *time.Location
-	if m := tzSuffixRegexp.FindStringSubmatch(s); m != nil {
-		tz := m[len(m)-1]
-		loc, err = loadLoc(tz)
-		if err != nil {
-			return time.Time{}, false, errors.New("unrecognized timezone string '" + tz + "'")
-		}
-		s = strings.TrimSpace(s[:len(s)-len(tz)-1]) // -1 for the '-' that is not included in tz.
+
+	if tzStr, tzFound := probeTimezoneSuffix(s); tzFound {
+		// no err checking because tz from probeTimezoneSuffix guaranteed to be valid.
+		loc, _ = loadLoc(tzStr)
+		// -1 for the '-' that is not included in tz.
+		s = strings.TrimSpace(s[:len(s)-len(tzStr)-1])
 	}
 
 	v, found := dateTimeTrie.Get(s)
@@ -83,4 +75,20 @@ func SmartParse(s string) (t time.Time, tz bool, err error) {
 	}
 	t, err = time.Parse(e.layout, s)
 	return t, e.tz, err
+}
+
+func probeTimezoneSuffix(s string) (string, bool) {
+	tzFound := ""
+	for dash := strings.LastIndex(s, "-"); dash >= 0; dash = strings.LastIndex(s[:dash], "-") {
+		tz := s[dash+1:]
+		if _, found := allTimezones[tz]; found {
+			tzFound = tz
+			// Found or not found, we need to continue to
+			// look further back in case of '-Eire' vs 'GB-Eire'.
+		}
+	}
+	if tzFound != "" {
+		return tzFound, true
+	}
+	return "", false
 }

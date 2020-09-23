@@ -3,6 +3,7 @@ package strs
 import (
 	"testing"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/stretchr/testify/assert"
@@ -42,18 +43,29 @@ func TestRuneTrie(t *testing.T) {
 		},
 		{
 			name: "multiple strings with mapper",
-			mapper: func(rs []rune, index int) (advance int, key string) {
+			mapper: func(s string, index int) (advance int, key uint64) {
+				r, size := utf8.DecodeRuneInString(s[index:])
 				switch {
-				case unicode.IsDigit(rs[index]):
-					for advance = index + 1; advance < len(rs) && unicode.IsDigit(rs[advance]); advance++ {
+				case unicode.IsDigit(r):
+					for advance = index + size; advance < len(s); {
+						r, size = utf8.DecodeRuneInString(s[advance:])
+						if !unicode.IsDigit(r) {
+							break
+						}
+						advance += size
 					}
-					return advance - index, "#digit"
-				case unicode.IsSpace(rs[index]):
-					for advance = index + 1; advance < len(rs) && unicode.IsSpace(rs[advance]); advance++ {
+					return advance - index, uint64('d' << 32)
+				case unicode.IsSpace(r):
+					for advance = index + size; advance < len(s); {
+						r, size = utf8.DecodeRuneInString(s[advance:])
+						if !unicode.IsSpace(r) {
+							break
+						}
+						advance += size
 					}
-					return advance - index, "#space"
+					return advance - index, uint64('s' << 32)
 				default:
-					return 1, string(rs[index])
+					return size, uint64(r)
 				}
 			},
 			count: 8,
@@ -96,7 +108,7 @@ func TestRuneTrie(t *testing.T) {
 	// Also testing the panic for more than one mapper provided
 	assert.PanicsWithValue(t, "must not call with more than one mapper", func() {
 		NewRuneTrie(
-			func([]rune, int) (int, string) { return 0, "" },
-			func([]rune, int) (int, string) { return 0, "" })
+			func(string, int) (int, uint64) { return 0, 0 },
+			func(string, int) (int, uint64) { return 0, 0 })
 	})
 }

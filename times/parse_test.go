@@ -7,6 +7,38 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestLoadLoc(t *testing.T) {
+	for _, test := range []struct {
+		tz          string
+		expectedErr string
+	}{
+		{
+			tz:          "America/Los_Angeles",
+			expectedErr: "",
+		},
+		{
+			tz:          "America/Indiana/Indianapolis",
+			expectedErr: "",
+		},
+		{
+			tz:          "Unknown",
+			expectedErr: "unknown time zone Unknown",
+		},
+	} {
+		t.Run(test.tz, func(t *testing.T) {
+			loc, err := loadLoc(test.tz)
+			if test.expectedErr != "" {
+				assert.Error(t, err)
+				assert.Equal(t, test.expectedErr, err.Error())
+				assert.Nil(t, loc)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, test.tz, loc.String())
+			}
+		})
+	}
+}
+
 func TestSmartParse_Success(t *testing.T) {
 	for _, test := range []struct {
 		name            string
@@ -116,9 +148,27 @@ func TestSmartParse_Success(t *testing.T) {
 			expectedTZ:      true,
 		},
 		{
-			name:            "   yyyy-mm-dd hh:mm:ss     -IANA-tz   ",
-			input:           "   2020-09-22 12:34:56     -Etc/GMT+10   ",
+			name:            "   yyyy-mm-dd   hh:mm:ss     -IANA-tz   ",
+			input:           "   2020-09-22   12:34:56     -Etc/GMT+10   ",
 			expectedRFC3339: "2020-09-22T12:34:56-10:00",
+			expectedTZ:      true,
+		},
+		{
+			name:            "yyyy/mm/ddThh:mm:ss-Eire ",
+			input:           "2020/09/22T12:34:56-Eire ",
+			expectedRFC3339: "2020-09-22T12:34:56+01:00",
+			expectedTZ:      true,
+		},
+		{
+			name:            "yyyy/mm/ddThh:mm:ss-GB-Eire ",
+			input:           "2020/09/22T12:34:56-GB-Eire ",
+			expectedRFC3339: "2020-09-22T12:34:56+01:00",
+			expectedTZ:      true,
+		},
+		{
+			name:            "yyyy/mm/ddThh:mm:ss-US/Indiana-Starke",
+			input:           "2020/09/22T12:34:56-US/Indiana-Starke",
+			expectedRFC3339: "2020-09-22T12:34:56-05:00",
 			expectedTZ:      true,
 		},
 	} {
@@ -140,7 +190,7 @@ func TestSmartParse_Failure(t *testing.T) {
 		{
 			name:        "invalid IANA timezone",
 			input:       "2020-09-22T12:34:56-Unknown",
-			expectedErr: "unrecognized timezone string 'Unknown'",
+			expectedErr: "unable to parse '2020-09-22T12:34:56-Unknown' in any supported date/time format",
 		},
 		{
 			name:        "not supported date format",
@@ -166,9 +216,19 @@ func TestSmartParse_Failure(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkTimeParse(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, err := time.Parse("2006-01-02 03:04:05 PM", "2020-09-22 12:34:56 AM")
+		if err != nil {
+			b.FailNow()
+		}
+	}
+}
+
 func BenchmarkSmartParse(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, _, err := SmartParse("   2020-09-22 12:34:56 AM     -America/Indiana/Indianapolis   ")
+		_, _, err := SmartParse("2020-09-22 12:34:56 AM")
 		if err != nil {
 			b.FailNow()
 		}
