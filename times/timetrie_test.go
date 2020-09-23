@@ -1,7 +1,6 @@
 package times
 
 import (
-	"sort"
 	"testing"
 
 	"github.com/bradleyjkemp/cupaloy"
@@ -21,16 +20,14 @@ func TestAddToTrie(t *testing.T) {
 		})
 }
 
-func TestDumpDateTimeTrie(t *testing.T) {
-	t.Logf("total trie nodes created: %d", dateTimeTrie.NodeCount())
-	cupaloy.SnapshotT(t, jsons.BPM(dateTimeTrie))
+func TestInitDateTimeTrie(t *testing.T) {
+	trie := initDateTimeTrie()
+	t.Logf("total trie nodes created: %d", trie.NodeCount())
+	cupaloy.SnapshotT(t, jsons.BPM(trie))
 }
 
-func TestDumpAllTimezones(t *testing.T) {
-	var tzs []string
-	for tz := range tzList {
-		tzs = append(tzs, tz)
-	}
-	sort.Strings(tzs)
-	cupaloy.SnapshotT(t, jsons.BPM(tzs))
+func TestInitTimezones(t *testing.T) {
+	m := initTimezones()
+	t.Logf("total timezones: %d", len(m))
+	cupaloy.SnapshotT(t, jsons.BPM(m))
 }

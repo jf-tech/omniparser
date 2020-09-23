@@ -117,6 +117,7 @@ Take a detailed look at samples here:
     extension repo/package; the rest of the library is just golang 1.12.
 
 ## Recent Feature Additions
+- added trie based high performance `times.SmartParse`.
 - command line interface (one-off `transform` cmd or long-running http `server` mode).
 - javascript engine integration as a custom_func.
 - JSON stream parser.

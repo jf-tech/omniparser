@@ -2,9 +2,9 @@ package times
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/tkuchiki/go-timezone"
 
@@ -88,22 +88,41 @@ var tzOffsetEntries = []trieEntry{
 	{pattern: "00:00", layout: "07:00"},
 }
 
-func keyMapper(rs []rune, index int) (advance int, key string) {
-	switch {
-	case unicode.IsDigit(rs[index]):
-		for advance = index + 1; advance < len(rs) && unicode.IsDigit(rs[advance]); advance++ {
-		}
-		return advance - index, "#d" + strconv.Itoa(advance-index)
-	case unicode.IsSpace(rs[index]):
-		for advance = index + 1; advance < len(rs) && unicode.IsSpace(rs[advance]); advance++ {
-		}
-		return advance - index, "#s"
-	default:
-		return 1, string(rs[index])
-	}
+func digitKey(count int) uint64 {
+	return uint64('d'<<32) | uint64(uint32(count))
 }
 
-var dateTimeTrie = strs.NewRuneTrie(keyMapper)
+const (
+	spaceKey = uint64('s' << 32)
+)
+
+func keyMapper(s string, index int) (advance int, key uint64) {
+	r, size := utf8.DecodeRuneInString(s[index:])
+	switch {
+	case unicode.IsDigit(r):
+		count := 1
+		for advance = index + size; advance < len(s); {
+			r, size = utf8.DecodeRuneInString(s[advance:])
+			if !unicode.IsDigit(r) {
+				break
+			}
+			advance += size
+			count++
+		}
+		return advance - index, digitKey(count)
+	case unicode.IsSpace(r):
+		for advance = index + size; advance < len(s); {
+			r, size = utf8.DecodeRuneInString(s[advance:])
+			if !unicode.IsSpace(r) {
+				break
+			}
+			advance += size
+		}
+		return advance - index, spaceKey
+	default:
+		return size, uint64(r)
+	}
+}
 
 func addToTrie(trie *strs.RuneTrie, e trieEntry) {
 	if !trie.Add(e.pattern, e) {
@@ -111,22 +130,23 @@ func addToTrie(trie *strs.RuneTrie, e trieEntry) {
 	}
 }
 
-func initDateTimeTrie() {
+func initDateTimeTrie() *strs.RuneTrie {
+	trie := strs.NewRuneTrie(keyMapper)
 	for _, de := range dateEntries {
 		// date only
-		addToTrie(dateTimeTrie, de)
+		addToTrie(trie, de)
 		for _, dateTimeDelim := range dateTimeDelims {
 			for _, te := range timeEntries {
 				// date + time
 				addToTrie(
-					dateTimeTrie,
+					trie,
 					trieEntry{
 						pattern: de.pattern + dateTimeDelim + te.pattern,
 						layout:  de.layout + dateTimeDelim + te.layout,
 					})
 				// date + time + "Z"
 				addToTrie(
-					dateTimeTrie,
+					trie,
 					trieEntry{
 						pattern: de.pattern + dateTimeDelim + te.pattern + "Z",
 						layout:  de.layout + dateTimeDelim + te.layout + "Z",
@@ -136,7 +156,7 @@ func initDateTimeTrie() {
 					for _, offset := range tzOffsetEntries {
 						// date + time + tz-offset
 						addToTrie(
-							dateTimeTrie,
+							trie,
 							trieEntry{
 								pattern: de.pattern + dateTimeDelim + te.pattern + timeTZOffsetDelim + offset.pattern,
 								// while in trie pattern we need '+' or '-', in actual golang time.Parse/ParseInLocation
@@ -150,22 +170,25 @@ func initDateTimeTrie() {
 			}
 		}
 	}
+	return trie
 }
 
-var tzList map[string]bool
-
-func initTimezoneList() {
+func initTimezones() map[string]bool {
 	all := timezone.New().Timezones()
 	delete(all, "-00")
-	tzList = make(map[string]bool)
+	tzMap := make(map[string]bool)
 	for _, tzs := range all {
 		for _, tz := range tzs {
-			tzList[tz] = true
+			tzMap[tz] = true
 		}
 	}
+	return tzMap
 }
 
+var dateTimeTrie *strs.RuneTrie
+var allTimezones map[string]bool
+
 func init() {
-	initDateTimeTrie()
-	initTimezoneList()
+	dateTimeTrie = initDateTimeTrie()
+	allTimezones = initTimezones()
 }

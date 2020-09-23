@@ -7,7 +7,7 @@
 				"ValueStored": false,
 				"Value": null,
 				"Children": {
-					"#space": {
+					"0x73|0x0": {
 						"ValueStored": false,
 						"Value": null,
 						"Children": {
@@ -15,11 +15,11 @@
 								"ValueStored": false,
 								"Value": null,
 								"Children": {
-									"#space": {
+									"0x73|0x0": {
 										"ValueStored": false,
 										"Value": null,
 										"Children": {
-											"#digit": {
+											"0x64|0x0": {
 												"ValueStored": true,
 												"Value": 2,
 												"Children": {
