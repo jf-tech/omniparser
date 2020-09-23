@@ -1,0 +1,48 @@
+{
+	"Root": {
+		"ValueStored": false,
+		"Value": null,
+		"Children": {
+			"a": {
+				"ValueStored": false,
+				"Value": null,
+				"Children": {
+					"#space": {
+						"ValueStored": false,
+						"Value": null,
+						"Children": {
+							"b": {
+								"ValueStored": false,
+								"Value": null,
+								"Children": {
+									"#space": {
+										"ValueStored": false,
+										"Value": null,
+										"Children": {
+											"#digit": {
+												"ValueStored": true,
+												"Value": 2,
+												"Children": {
+													"d": {
+														"ValueStored": true,
+														"Value": 1,
+														"Children": null
+													}
+												}
+											},
+											"c": {
+												"ValueStored": true,
+												"Value": 0,
+												"Children": null
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

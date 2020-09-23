@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"strings"
-
-	"github.com/jf-tech/omniparser/strs"
 )
 
 const (
@@ -25,7 +23,7 @@ func PrettyMarshal(v interface{}) (string, error) {
 	lines := strings.Split(valueBuf.String(), "\n")
 	noEmptyLines := make([]string, 0, len(lines))
 	for _, line := range lines {
-		if strs.IsStrNonBlank(line) {
+		if len(strings.TrimSpace(line)) > 0 {
 			noEmptyLines = append(noEmptyLines, line)
 		}
 	}
