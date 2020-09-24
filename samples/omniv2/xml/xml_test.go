@@ -9,6 +9,11 @@ import (
 	"github.com/jf-tech/omniparser/samples/sampleutil"
 )
 
+func Test1_DateTime_Parse_And_Format(t *testing.T) {
+	cupaloy.SnapshotT(t, jsons.BPJ(sampleutil.SampleTestCommon(
+		t, "./1_datetime_parse_and_format.schema.json", "./1_datetime_parse_and_format.input.xml")))
+}
+
 func Test2_Multiple_Objects(t *testing.T) {
 	cupaloy.SnapshotT(t, jsons.BPJ(sampleutil.SampleTestCommon(
 		t, "./2_multiple_objects.schema.json", "./2_multiple_objects.input.xml")))
