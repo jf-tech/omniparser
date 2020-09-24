@@ -12,7 +12,6 @@ import (
 
 var evalExprCache = cache.NewLoadingCache()
 
-// Deprecated. Kept for back-compatibility. Use 'javascript' instead.
 // For supported operators, check: https://github.com/Knetic/govaluate/blob/master/MANUAL.md
 func eval(_ *transformctx.Ctx, exprStr string, args ...string) (string, error) {
 	if len(args)%2 != 0 {

@@ -11,7 +11,7 @@ import (
 // be affected.
 var XPathExprCache = NewLoadingCache()
 
-// GetXPathExpr compiles a given xpath expression string and returns a compile xpath.Expr
+// GetXPathExpr compiles a given xpath expression string and returns a compiled *xpath.Expr
 // or error.
 func GetXPathExpr(expr string) (*xpath.Expr, error) {
 	exp, err := XPathExprCache.Get(expr, func(key interface{}) (interface{}, error) {

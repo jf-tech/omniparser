@@ -1,6 +1,7 @@
 [
 	"avg",
 	"concat",
+	"containsPattern",
 	"dateTimeLayoutToRFC3339",
 	"dateTimeToEpoch",
 	"dateTimeToRFC3339",
@@ -9,10 +10,13 @@
 	"eval",
 	"external",
 	"floor",
+	"ifElse",
+	"isEmpty",
 	"javascript",
 	"lower",
 	"splitIntoJsonArray",
 	"substring",
 	"sum",
-	"upper"
+	"upper",
+	"uuidv3"
 ]
