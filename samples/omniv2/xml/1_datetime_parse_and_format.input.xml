@@ -3,5 +3,5 @@
     <DateTimeWithNoTZ>09/22/2020 12:34:56</DateTimeWithNoTZ>
     <DateTimeUTC>09-22-2020  12:34:56Z</DateTimeUTC>
     <DateTimeWithIANA_TZ>09/22/20T12:34:56-America/New_York</DateTimeWithIANA_TZ>
-    <DayBeforeMonthWithTZAbbreviation>22/09/20T12:34:56-NZST</DayBeforeMonthWithTZAbbreviation>
+    <DayBeforeMonth>22/09/20T12:34:56</DayBeforeMonth>
 </Root>

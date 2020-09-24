@@ -92,10 +92,10 @@
             "custom_layout_day_before_month": { "custom_func": {
                 "name": "dateTimeLayoutToRFC3339",
                 "args": [
-                    { "xpath": "DayBeforeMonthWithTZAbbreviation" },
-                    { "const": "02/01/06T15:04:05-MST", "_comment": "layout" },
-                    { "const": "true", "_comment": "layoutTZ" },
-                    { "const": "", "_comment": "fromTZ" },
+                    { "xpath": "DayBeforeMonth" },
+                    { "const": "02/01/06T15:04:05", "_comment": "layout" },
+                    { "const": "false", "_comment": "layoutTZ" },
+                    { "const": "Pacific/Auckland", "_comment": "fromTZ" },
                     { "const": "America/Los_Angeles", "_comment": "toTZ" }
                 ]
             }}
