@@ -19,22 +19,6 @@ type CustomFuncType = interface{}
 // CustomFuncs is a map from custom func names to an actual custom func.
 type CustomFuncs = map[string]CustomFuncType
 
-// BuiltinCustomFuncs contains all the built-in custom functions.
-var BuiltinCustomFuncs = map[string]CustomFuncType{
-	// keep these custom funcs lexically sorted
-	"avg":                avg,
-	"concat":             concat,
-	"eval":               eval, // deprecated; kept for backcompat reason; use 'javascript' instead.
-	"external":           external,
-	"floor":              floor,
-	"javascript":         javascript,
-	"lower":              lower,
-	"splitIntoJsonArray": splitIntoJsonArray,
-	"substring":          substring,
-	"sum":                sum,
-	"upper":              upper,
-}
-
 // Merge merges multiple custom func maps into one.
 func Merge(funcs ...CustomFuncs) CustomFuncs {
 	merged := make(CustomFuncs)
@@ -45,6 +29,32 @@ func Merge(funcs ...CustomFuncs) CustomFuncs {
 	}
 	return merged
 }
+
+var builtinPublishedCustomFuncs = map[string]CustomFuncType{
+	// keep these custom funcs lexically sorted
+	"avg":                     avg,
+	"concat":                  concat,
+	"dateTimeToRFC3339":       dateTimeToRFC3339,
+	"dateTimeLayoutToRFC3339": dateTimeLayoutToRFC3339,
+	"floor":                   floor,
+	"javascript":              javascript,
+	"lower":                   lower,
+	"substring":               substring,
+	"sum":                     sum,
+	"upper":                   upper,
+}
+
+var builtinHiddenBackCompatCustomFuncs = map[string]CustomFuncType{
+	// keep these custom funcs lexically sorted
+	"dateTimeToRfc3339":           dateTimeToRFC3339,       // deprecated; use dateTimeToRFC3339.
+	"dateTimeWithLayoutToRfc3339": dateTimeLayoutToRFC3339, // deprecated; use dateTimeLayoutToRFC3339.
+	"eval":                        eval,                    // deprecated; use 'javascript'.
+	"external":                    external,                // deprecated; use "external" decl.
+	"splitIntoJsonArray":          splitIntoJsonArray,      // deprecated; use 'javascript'.
+}
+
+// BuiltinCustomFuncs contains all the built-in custom functions.
+var BuiltinCustomFuncs = Merge(builtinPublishedCustomFuncs, builtinHiddenBackCompatCustomFuncs)
 
 func concat(_ *transformctx.Ctx, strs ...string) (string, error) {
 	var b bytes.Buffer

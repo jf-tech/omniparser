@@ -1,14 +1,25 @@
 package customfuncs
 
 import (
+	"sort"
 	"testing"
 
+	"github.com/bradleyjkemp/cupaloy"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/jf-tech/omniparser/jsons"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 	"github.com/jf-tech/omniparser/strs"
 )
 
+func TestDumpBuiltinCustomFuncNames(t *testing.T) {
+	var names []string
+	for name := range BuiltinCustomFuncs {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	cupaloy.SnapshotT(t, jsons.BPM(names))
+}
 func TestMerge(t *testing.T) {
 	fs1 := CustomFuncs{
 		"a": 1,
