@@ -31,12 +31,11 @@ func loadLoc(tz string) (*time.Location, error) {
 //  mm/dd/yy
 //  yyyymmdd
 // The time part of the string has the following supported formats:
-//  hh:mm:ss
+//  hh:mm:ss[.sssssssss]  (sub-second precision is up to nano-second, or 9-digit)
 //  hh:mm
 //  hhmmss
 //  hhmm
-// Note 1: all formats above can also be followed by 'AM/PM'.
-// Note 2: we don't support sub-seconds, yet.
+// Note: all formats above can also be followed by 'AM/PM'.
 // The tz part of the string has the following supported formats:
 //  Z
 //  -/+hh

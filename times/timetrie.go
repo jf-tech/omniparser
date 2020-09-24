@@ -38,28 +38,73 @@ var dateEntries = []trieEntry{
 var dateTimeDelims = []string{"T", " "}
 
 var timeEntries = []trieEntry{
-	// hh:mm[:ss]
+	// hh:mm[:ss[.sssssssss]]
 	{pattern: "00:00:00", layout: "15:04:05"},
+	{pattern: "00:00:00.0", layout: "15:04:05"},
+	{pattern: "00:00:00.00", layout: "15:04:05"},
+	{pattern: "00:00:00.000", layout: "15:04:05"},
+	{pattern: "00:00:00.0000", layout: "15:04:05"},
+	{pattern: "00:00:00.00000", layout: "15:04:05"},
+	{pattern: "00:00:00.000000", layout: "15:04:05"},
+	{pattern: "00:00:00.0000000", layout: "15:04:05"},
+	{pattern: "00:00:00.00000000", layout: "15:04:05"},
+	{pattern: "00:00:00.000000000", layout: "15:04:05"},
 	{pattern: "00:00", layout: "15:04"},
 
 	// hhmm[ss]
 	{pattern: "000000", layout: "150405"},
 	{pattern: "0000", layout: "1504"},
 
-	// hh:mm[:ss] AM
+	// hh:mm[:ss[.sssssssss]] AM
 	{pattern: "00:00:00 AM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.0 AM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.00 AM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.000 AM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.0000 AM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.00000 AM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.000000 AM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.0000000 AM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.00000000 AM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.000000000 AM", layout: "03:04:05 PM"},
 	{pattern: "00:00 AM", layout: "03:04 PM"},
 
-	// hh:mm[:ss] PM
+	// hh:mm[:ss[.sssssssss]] PM
 	{pattern: "00:00:00 PM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.0 PM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.00 PM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.000 PM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.00000 PM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.000000 PM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.0000000 PM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.00000000 PM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.000000000 PM", layout: "03:04:05 PM"},
+	{pattern: "00:00:00.0000000000 PM", layout: "03:04:05 PM"},
 	{pattern: "00:00 PM", layout: "03:04 PM"},
 
-	// hh:mm[:ss]AM
+	// hh:mm[:ss[.sssssssss]]AM
 	{pattern: "00:00:00AM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.0AM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.00AM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.000AM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.0000AM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.00000AM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.000000AM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.0000000AM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.00000000AM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.000000000AM", layout: "03:04:05PM"},
 	{pattern: "00:00AM", layout: "03:04PM"},
 
-	// hh:mm[:ss]PM
+	// hh:mm[:ss[.sssssssss]]PM
 	{pattern: "00:00:00PM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.0PM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.00PM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.000PM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.0000PM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.00000PM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.000000PM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.0000000PM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.00000000PM", layout: "03:04:05PM"},
+	{pattern: "00:00:00.000000000PM", layout: "03:04:05PM"},
 	{pattern: "00:00PM", layout: "03:04PM"},
 
 	// hhmm[ss] AM

@@ -93,6 +93,12 @@ func TestSmartParse_Success(t *testing.T) {
 			expectedTZ:      false,
 		},
 		{
+			name:            "yyyy-mm-ddThh:mm:ss.sssssssss",
+			input:           "2020-09-22T12:34:56.123456789",
+			expectedRFC3339: "2020-09-22T12:34:56.123456789Z",
+			expectedTZ:      false,
+		},
+		{
 			name:            "yyyy/mm/dd hh:mm",
 			input:           "2020/09/22 12:34",
 			expectedRFC3339: "2020-09-22T12:34:00Z",
@@ -142,9 +148,21 @@ func TestSmartParse_Success(t *testing.T) {
 			expectedTZ:      true,
 		},
 		{
+			name:            "   yyyy-mm-dd hh:mm:ss.sssssssss AM     -IANA-tz   ",
+			input:           "   2020-09-22 12:34:56.123456789 AM     -America/Indiana/Indianapolis   ",
+			expectedRFC3339: "2020-09-22T00:34:56.123456789-04:00",
+			expectedTZ:      true,
+		},
+		{
 			name:            "   yyyy-mm-dd hh:mm:ss PM     -IANA-tz   ",
 			input:           "   2020-09-22 12:34:56 PM     -Pacific/Auckland   ",
 			expectedRFC3339: "2020-09-22T12:34:56+12:00",
+			expectedTZ:      true,
+		},
+		{
+			name:            "   yyyy-mm-dd hh:mm:ss.sssssssss PM     -IANA-tz   ",
+			input:           "   2020-09-22 12:34:56.123456789 PM     -Pacific/Auckland   ",
+			expectedRFC3339: "2020-09-22T12:34:56.123456789+12:00",
 			expectedTZ:      true,
 		},
 		{
@@ -175,7 +193,7 @@ func TestSmartParse_Success(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t1, tz, err := SmartParse(test.input)
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedRFC3339, t1.Format(time.RFC3339))
+			assert.Equal(t, test.expectedRFC3339, t1.Format(time.RFC3339Nano))
 			assert.Equal(t, test.expectedTZ, tz)
 		})
 	}
