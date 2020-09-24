@@ -138,6 +138,16 @@ func TestDateTimeLayoutToRFC3339(t *testing.T) {
 		expected string
 	}{
 		{
+			name:     "empty datetime -> no op",
+			datetime: "",
+			layout:   "2006+01+02 X 15:04:05",
+			layoutTZ: "false",
+			fromTZ:   "UTC",
+			toTZ:     "America/New_York",
+			err:      "",
+			expected: "",
+		},
+		{
 			name:     "layout but no tz",
 			datetime: "2020+09+22 X 12:34:56",
 			layout:   "2006+01+02 X 15:04:05",
@@ -181,6 +191,70 @@ func TestDateTimeLayoutToRFC3339(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			result, err := dateTimeLayoutToRFC3339(
 				nil, test.datetime, test.layout, test.layoutTZ, test.fromTZ, test.toTZ)
+			if test.err != "" {
+				assert.Error(t, err)
+				assert.Equal(t, test.err, err.Error())
+				assert.Equal(t, "", result)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, test.expected, result)
+			}
+		})
+	}
+}
+
+func TestDateTimeToEpoch(t *testing.T) {
+	for _, test := range []struct {
+		name     string
+		datetime string
+		fromTZ   string
+		unit     string
+		err      string
+		expected string
+	}{
+		{
+			name:     "empty datetime -> no op",
+			datetime: "",
+			fromTZ:   "UTC",
+			unit:     millisecond,
+			err:      "",
+			expected: "",
+		},
+		{
+			name:     "invalid datetime",
+			datetime: "invalid",
+			fromTZ:   "UTC",
+			unit:     second,
+			err:      "unable to parse 'invalid' in any supported date/time format",
+			expected: "",
+		},
+		{
+			name:     "invalid unit",
+			datetime: "2020/09/22T12:34:56",
+			fromTZ:   "",
+			unit:     "hour",
+			err:      "unsupported time unit 'hour'",
+			expected: "",
+		},
+		{
+			name:     "second",
+			datetime: "2020/09/22T12:34:56-05",
+			fromTZ:   "America/Los_Angeles",
+			unit:     second,
+			err:      "",
+			expected: "1600796096",
+		},
+		{
+			name:     "millisecond",
+			datetime: "2020/09/22T12:34:56-05",
+			fromTZ:   "America/Los_Angeles",
+			unit:     millisecond,
+			err:      "",
+			expected: "1600796096000",
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			result, err := dateTimeToEpoch(nil, test.datetime, test.fromTZ, test.unit)
 			if test.err != "" {
 				assert.Error(t, err)
 				assert.Equal(t, test.err, err.Error())
