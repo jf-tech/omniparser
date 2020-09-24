@@ -2,6 +2,7 @@
 	"avg",
 	"concat",
 	"dateTimeLayoutToRFC3339",
+	"dateTimeToEpoch",
 	"dateTimeToRFC3339",
 	"dateTimeToRfc3339",
 	"dateTimeWithLayoutToRfc3339",

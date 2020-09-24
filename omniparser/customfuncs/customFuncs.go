@@ -34,8 +34,9 @@ var builtinPublishedCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
 	"avg":                     avg,
 	"concat":                  concat,
-	"dateTimeToRFC3339":       dateTimeToRFC3339,
 	"dateTimeLayoutToRFC3339": dateTimeLayoutToRFC3339,
+	"dateTimeToEpoch":         dateTimeToEpoch,
+	"dateTimeToRFC3339":       dateTimeToRFC3339,
 	"floor":                   floor,
 	"javascript":              javascript,
 	"lower":                   lower,
@@ -46,8 +47,8 @@ var builtinPublishedCustomFuncs = map[string]CustomFuncType{
 
 var builtinHiddenBackCompatCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
-	"dateTimeToRfc3339":           dateTimeToRFC3339,       // deprecated; use dateTimeToRFC3339.
 	"dateTimeWithLayoutToRfc3339": dateTimeLayoutToRFC3339, // deprecated; use dateTimeLayoutToRFC3339.
+	"dateTimeToRfc3339":           dateTimeToRFC3339,       // deprecated; use dateTimeToRFC3339.
 	"eval":                        eval,                    // deprecated; use 'javascript'.
 	"external":                    external,                // deprecated; use "external" decl.
 	"splitIntoJsonArray":          splitIntoJsonArray,      // deprecated; use 'javascript'.
