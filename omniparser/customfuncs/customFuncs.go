@@ -8,6 +8,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/uuid"
+
+	"github.com/jf-tech/omniparser/cache"
 	"github.com/jf-tech/omniparser/omniparser/transformctx"
 	"github.com/jf-tech/omniparser/strs"
 )
@@ -34,24 +37,28 @@ var builtinPublishedCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
 	"avg":                     avg,
 	"concat":                  concat,
+	"containsPattern":         containsPattern,
 	"dateTimeLayoutToRFC3339": dateTimeLayoutToRFC3339,
 	"dateTimeToEpoch":         dateTimeToEpoch,
 	"dateTimeToRFC3339":       dateTimeToRFC3339,
+	"eval":                    eval,
 	"floor":                   floor,
+	"ifElse":                  ifElse,
+	"isEmpty":                 isEmpty,
 	"javascript":              javascript,
 	"lower":                   lower,
+	"splitIntoJsonArray":      splitIntoJsonArray,
 	"substring":               substring,
 	"sum":                     sum,
 	"upper":                   upper,
+	"uuidv3":                  uuidv3,
 }
 
 var builtinHiddenBackCompatCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
 	"dateTimeWithLayoutToRfc3339": dateTimeLayoutToRFC3339, // deprecated; use dateTimeLayoutToRFC3339.
 	"dateTimeToRfc3339":           dateTimeToRFC3339,       // deprecated; use dateTimeToRFC3339.
-	"eval":                        eval,                    // deprecated; use 'javascript'.
 	"external":                    external,                // deprecated; use "external" decl.
-	"splitIntoJsonArray":          splitIntoJsonArray,      // deprecated; use 'javascript'.
 }
 
 // BuiltinCustomFuncs contains all the built-in custom functions.
@@ -63,6 +70,19 @@ func concat(_ *transformctx.Ctx, strs ...string) (string, error) {
 		b.WriteString(s)
 	}
 	return b.String(), nil
+}
+
+func containsPattern(_ *transformctx.Ctx, regexPattern string, strs ...string) (string, error) {
+	r, err := cache.GetRegex(regexPattern)
+	if err != nil {
+		return "", err
+	}
+	for _, str := range strs {
+		if r.MatchString(str) {
+			return "true", nil
+		}
+	}
+	return "false", nil
 }
 
 func external(ctx *transformctx.Ctx, name string) (string, error) {
@@ -86,6 +106,30 @@ func floor(_ *transformctx.Ctx, value, decimalPlaces string) (string, error) {
 	}
 	p10 := math.Pow10(dp)
 	return fmt.Sprintf("%v", math.Floor(v*p10)/p10), nil
+}
+
+func ifElse(_ *transformctx.Ctx, conditionsAndValues ...string) (string, error) {
+	if len(conditionsAndValues)%2 != 1 {
+		return "", fmt.Errorf("arg number must be odd, but got: %d", len(conditionsAndValues))
+	}
+	for i := 0; i < len(conditionsAndValues)/2; i++ {
+		condition, err := strconv.ParseBool(conditionsAndValues[2*i])
+		if err != nil {
+			return "", fmt.Errorf(
+				`condition argument must be a boolean string, but got: %s`, conditionsAndValues[2*i])
+		}
+		if condition {
+			return conditionsAndValues[(2*i)+1], nil
+		}
+	}
+	return conditionsAndValues[len(conditionsAndValues)-1], nil
+}
+
+func isEmpty(_ *transformctx.Ctx, str string) (string, error) {
+	if str == "" {
+		return "true", nil
+	}
+	return "false", nil
 }
 
 func lower(_ *transformctx.Ctx, s string) (string, error) {
@@ -156,4 +200,8 @@ func substring(_ *transformctx.Ctx, str, startIndex, lengthStr string) (string, 
 
 func upper(_ *transformctx.Ctx, s string) (string, error) {
 	return strings.ToUpper(s), nil
+}
+
+func uuidv3(_ *transformctx.Ctx, s string) (string, error) {
+	return uuid.NewMD5(uuid.Nil, []byte(s)).String(), nil
 }
