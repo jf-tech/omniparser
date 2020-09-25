@@ -1,0 +1,17 @@
+{
+	"xpath": "abc",
+	"object": {
+		"field1": {
+			"external": "123",
+			"fqdn": "root.field1",
+			"kind": "external",
+			"parent": "root"
+		}
+	},
+	"fqdn": "root",
+	"kind": "object",
+	"children": [
+		"root.field1"
+	],
+	"parent": "(nil)"
+}

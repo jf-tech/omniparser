@@ -1,0 +1,27 @@
+{
+	"Attr": [],
+	"Children": [
+		{
+			"Attr": null,
+			"Children": null,
+			"Data": "data1",
+			"FirstChild": "(nil)",
+			"LastChild": "(nil)",
+			"NamespaceURI": "",
+			"NextSibling": "(nil)",
+			"Parent": "(ElementNode B)",
+			"Prefix": "",
+			"PrevSibling": "(nil)",
+			"Type": "CharDataNode"
+		}
+	],
+	"Data": "B",
+	"FirstChild": "(CharDataNode 'data1')",
+	"LastChild": "(CharDataNode 'data1')",
+	"NamespaceURI": "",
+	"NextSibling": "(nil)",
+	"Parent": "(ElementNode A)",
+	"Prefix": "",
+	"PrevSibling": "(nil)",
+	"Type": "ElementNode"
+}

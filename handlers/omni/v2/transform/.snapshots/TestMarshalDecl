@@ -1,0 +1,84 @@
+[
+	{
+		"const": "123",
+		"result_type": "int",
+		"fqdn": "(nil)",
+		"kind": "(nil)",
+		"parent": "(nil)"
+	},
+	{
+		"external": "abc",
+		"result_type": "string",
+		"keep_leading_trailing_space": true,
+		"keep_empty_or_null": true,
+		"fqdn": "(nil)",
+		"kind": "(nil)",
+		"parent": "(nil)"
+	},
+	{
+		"xpath": "xyz",
+		"keep_leading_trailing_space": true,
+		"keep_empty_or_null": true,
+		"fqdn": "(nil)",
+		"kind": "(nil)",
+		"parent": "(nil)"
+	},
+	{
+		"xpath_dynamic": {
+			"const": "true",
+			"result_type": "boolean",
+			"fqdn": "(nil)",
+			"kind": "(nil)",
+			"parent": "(nil)"
+		},
+		"template": "t",
+		"fqdn": "(nil)",
+		"kind": "(nil)",
+		"parent": "(nil)"
+	},
+	{
+		"xpath": "abc",
+		"object": {
+			"field1": {
+				"external": "123",
+				"fqdn": "(nil)",
+				"kind": "(nil)",
+				"parent": "(nil)"
+			}
+		},
+		"fqdn": "(nil)",
+		"kind": "(nil)",
+		"parent": "(nil)"
+	},
+	{
+		"array": [
+			{
+				"const": "123",
+				"result_type": "float",
+				"fqdn": "(nil)",
+				"kind": "(nil)",
+				"parent": "(nil)"
+			}
+		],
+		"fqdn": "(nil)",
+		"kind": "(nil)",
+		"parent": "(nil)"
+	},
+	{
+		"custom_func": {
+			"name": "upper",
+			"args": [
+				{
+					"const": "  abc  ",
+					"keep_leading_trailing_space": true,
+					"fqdn": "(nil)",
+					"kind": "(nil)",
+					"parent": "(nil)"
+				}
+			]
+		},
+		"fqdn": "(nil)",
+		"kind": "(nil)",
+		"parent": "(nil)"
+	}
+]

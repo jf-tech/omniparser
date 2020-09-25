@@ -1,0 +1,24 @@
+[
+	{
+		"order_info": {
+			"order_items": [
+				{
+					"color": "Blue",
+					"id": 217789,
+					"size": "M"
+				}
+			]
+		}
+	},
+	{
+		"order_info": {
+			"order_items": [
+				{
+					"color": "Green",
+					"id": 217790,
+					"size": "L"
+				}
+			]
+		}
+	}
+]

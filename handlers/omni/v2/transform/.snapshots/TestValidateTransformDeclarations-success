@@ -1,0 +1,241 @@
+{
+	"object": {
+		"field1": {
+			"const": "value1",
+			"fqdn": "FINAL_OUTPUT.field1",
+			"kind": "const",
+			"parent": "FINAL_OUTPUT"
+		},
+		"field2": {
+			"xpath_dynamic": {
+				"custom_func": {
+					"name": "test_func",
+					"args": [
+						{
+							"xpath": "W/X",
+							"fqdn": "FINAL_OUTPUT.field2.xpath_dynamic.custom_func(test_func).arg[1]",
+							"kind": "field",
+							"parent": "(nil)"
+						}
+					],
+					"fqdn": "FINAL_OUTPUT.field2.xpath_dynamic.custom_func(test_func)"
+				},
+				"fqdn": "FINAL_OUTPUT.field2.xpath_dynamic",
+				"kind": "custom_func",
+				"children": [
+					"FINAL_OUTPUT.field2.xpath_dynamic.custom_func(test_func).arg[1]"
+				],
+				"parent": "(nil)"
+			},
+			"fqdn": "FINAL_OUTPUT.field2",
+			"kind": "field",
+			"parent": "FINAL_OUTPUT"
+		},
+		"field3": {
+			"xpath": "E/F/G",
+			"object": {
+				"field4": {
+					"array": [
+						{
+							"const": "value4",
+							"fqdn": "FINAL_OUTPUT.field3.field4.elem[1]",
+							"kind": "const",
+							"parent": "FINAL_OUTPUT.field3.field4"
+						},
+						{
+							"xpath": "H/I/J",
+							"fqdn": "FINAL_OUTPUT.field3.field4.elem[2]",
+							"kind": "field",
+							"parent": "FINAL_OUTPUT.field3.field4"
+						},
+						{
+							"xpath": "K/L/M",
+							"object": {
+								"field5": {
+									"xpath": "N/O/P",
+									"fqdn": "FINAL_OUTPUT.field3.field4.elem[3].field5",
+									"kind": "field",
+									"parent": "FINAL_OUTPUT.field3.field4.elem[3]"
+								}
+							},
+							"fqdn": "FINAL_OUTPUT.field3.field4.elem[3]",
+							"kind": "object",
+							"children": [
+								"FINAL_OUTPUT.field3.field4.elem[3].field5"
+							],
+							"parent": "FINAL_OUTPUT.field3.field4"
+						},
+						{
+							"xpath": "1/2/3",
+							"object": {
+								"field9": {
+									"xpath": "4/5/6",
+									"fqdn": "FINAL_OUTPUT.field3.field4.elem[4].field9",
+									"kind": "field",
+									"parent": "FINAL_OUTPUT.field3.field4.elem[4]"
+								}
+							},
+							"fqdn": "FINAL_OUTPUT.field3.field4.elem[4]",
+							"kind": "object",
+							"children": [
+								"FINAL_OUTPUT.field3.field4.elem[4].field9"
+							],
+							"parent": "FINAL_OUTPUT.field3.field4"
+						}
+					],
+					"fqdn": "FINAL_OUTPUT.field3.field4",
+					"kind": "array",
+					"children": [
+						"FINAL_OUTPUT.field3.field4.elem[1]",
+						"FINAL_OUTPUT.field3.field4.elem[2]",
+						"FINAL_OUTPUT.field3.field4.elem[3]",
+						"FINAL_OUTPUT.field3.field4.elem[4]"
+					],
+					"parent": "FINAL_OUTPUT.field3"
+				}
+			},
+			"fqdn": "FINAL_OUTPUT.field3",
+			"kind": "object",
+			"children": [
+				"FINAL_OUTPUT.field3.field4"
+			],
+			"parent": "FINAL_OUTPUT"
+		},
+		"field6": {
+			"custom_func": {
+				"name": "test_func",
+				"args": [
+					{
+						"xpath": "Q/R/S",
+						"fqdn": "FINAL_OUTPUT.field6.custom_func(test_func).arg[1]",
+						"kind": "field",
+						"parent": "FINAL_OUTPUT.field6"
+					},
+					{
+						"custom_func": {
+							"name": "test_func",
+							"args": [
+								{
+									"xpath": "W/X",
+									"fqdn": "FINAL_OUTPUT.field6.custom_func(test_func).arg[2].custom_func(test_func).arg[1]",
+									"kind": "field",
+									"parent": "FINAL_OUTPUT.field6.custom_func(test_func).arg[2]"
+								}
+							],
+							"fqdn": "FINAL_OUTPUT.field6.custom_func(test_func).arg[2].custom_func(test_func)"
+						},
+						"fqdn": "FINAL_OUTPUT.field6.custom_func(test_func).arg[2]",
+						"kind": "custom_func",
+						"children": [
+							"FINAL_OUTPUT.field6.custom_func(test_func).arg[2].custom_func(test_func).arg[1]"
+						],
+						"parent": "FINAL_OUTPUT.field6"
+					}
+				],
+				"fqdn": "FINAL_OUTPUT.field6.custom_func(test_func)"
+			},
+			"fqdn": "FINAL_OUTPUT.field6",
+			"kind": "custom_func",
+			"children": [
+				"FINAL_OUTPUT.field6.custom_func(test_func).arg[1]",
+				"FINAL_OUTPUT.field6.custom_func(test_func).arg[2]"
+			],
+			"parent": "FINAL_OUTPUT"
+		},
+		"field_10": {
+			"xpath_dynamic": {
+				"const": "X/Y/Z",
+				"fqdn": "FINAL_OUTPUT.field_10.xpath_dynamic",
+				"kind": "const",
+				"parent": "(nil)"
+			},
+			"object": {
+				"field10": {
+					"const": "value10",
+					"fqdn": "FINAL_OUTPUT.field_10.field10",
+					"kind": "const",
+					"parent": "FINAL_OUTPUT.field_10"
+				}
+			},
+			"fqdn": "FINAL_OUTPUT.field_10",
+			"kind": "object",
+			"children": [
+				"FINAL_OUTPUT.field_10.field10"
+			],
+			"parent": "FINAL_OUTPUT"
+		},
+		"field_11": {
+			"array": [
+				{
+					"xpath": "T/U/V",
+					"fqdn": "FINAL_OUTPUT.field_11.elem[1]",
+					"kind": "field",
+					"parent": "FINAL_OUTPUT.field_11"
+				}
+			],
+			"fqdn": "FINAL_OUTPUT.field_11",
+			"kind": "array",
+			"children": [
+				"FINAL_OUTPUT.field_11.elem[1]"
+			],
+			"parent": "FINAL_OUTPUT"
+		},
+		"field_12": {
+			"custom_func": {
+				"name": "test_func",
+				"args": [
+					{
+						"xpath": "W/X",
+						"fqdn": "FINAL_OUTPUT.field_12.custom_func(test_func).arg[1]",
+						"kind": "field",
+						"parent": "FINAL_OUTPUT.field_12"
+					}
+				],
+				"fqdn": "FINAL_OUTPUT.field_12.custom_func(test_func)"
+			},
+			"fqdn": "FINAL_OUTPUT.field_12",
+			"kind": "custom_func",
+			"children": [
+				"FINAL_OUTPUT.field_12.custom_func(test_func).arg[1]"
+			],
+			"parent": "FINAL_OUTPUT"
+		},
+		"field_13": {
+			"custom_parse": "test_custom_parse",
+			"fqdn": "FINAL_OUTPUT.field_13",
+			"kind": "custom_parse",
+			"parent": "FINAL_OUTPUT"
+		},
+		"field_9": {
+			"xpath": "1/2/3",
+			"object": {
+				"field9": {
+					"xpath": "4/5/6",
+					"fqdn": "FINAL_OUTPUT.field_9.field9",
+					"kind": "field",
+					"parent": "FINAL_OUTPUT.field_9"
+				}
+			},
+			"fqdn": "FINAL_OUTPUT.field_9",
+			"kind": "object",
+			"children": [
+				"FINAL_OUTPUT.field_9.field9"
+			],
+			"parent": "FINAL_OUTPUT"
+		}
+	},
+	"fqdn": "FINAL_OUTPUT",
+	"kind": "object",
+	"children": [
+		"FINAL_OUTPUT.field1",
+		"FINAL_OUTPUT.field2",
+		"FINAL_OUTPUT.field3",
+		"FINAL_OUTPUT.field6",
+		"FINAL_OUTPUT.field_10",
+		"FINAL_OUTPUT.field_11",
+		"FINAL_OUTPUT.field_12",
+		"FINAL_OUTPUT.field_13",
+		"FINAL_OUTPUT.field_9"
+	],
+	"parent": "(nil)"
+}

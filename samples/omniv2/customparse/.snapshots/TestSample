@@ -1,0 +1,66 @@
+[
+	{
+		"business_details": {
+			"reviews": [
+				{
+					"rating": "Exceeded Expectation",
+					"year": 2020
+				},
+				{
+					"rating": "Met Expectation",
+					"year": 2019
+				},
+				{
+					"rating": "Below Expectation",
+					"year": 2018
+				}
+			],
+			"title": "Sr. Engineer (1234)",
+			"years_of_service": 3
+		},
+		"employee_id": "1234",
+		"personal_details": {
+			"age": 55,
+			"home_address": {
+				"city": "city-1234",
+				"state": "state-1234",
+				"street": "street-1234",
+				"zip": "1234"
+			},
+			"name": "name-1234"
+		},
+		"team": "TEAM-1234"
+	},
+	{
+		"business_details": {
+			"reviews": [
+				{
+					"rating": "Exceeded Expectation",
+					"year": 2020
+				},
+				{
+					"rating": "Met Expectation",
+					"year": 2019
+				},
+				{
+					"rating": "Below Expectation",
+					"year": 2018
+				}
+			],
+			"title": "Sr. Engineer (5678)",
+			"years_of_service": 3
+		},
+		"employee_id": "5678",
+		"personal_details": {
+			"age": 59,
+			"home_address": {
+				"city": "city-5678",
+				"state": "state-5678",
+				"street": "street-5678",
+				"zip": "5678"
+			},
+			"name": "name-5678"
+		},
+		"team": "TEAM-5678"
+	}
+]

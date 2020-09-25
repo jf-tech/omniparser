@@ -1,0 +1,7 @@
+<Root>
+    <JustDate>2020/09/22</JustDate>
+    <DateTimeWithNoTZ>09/22/2020 12:34:56</DateTimeWithNoTZ>
+    <DateTimeUTC>09-22-2020  12:34:56Z</DateTimeUTC>
+    <DateTimeWithIANA_TZ>09/22/20T12:34:56-America/New_York</DateTimeWithIANA_TZ>
+    <DayBeforeMonth>22/09/20T12:34:56</DayBeforeMonth>
+</Root>

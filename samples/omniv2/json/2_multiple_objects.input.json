@@ -1,0 +1,36 @@
+{
+    "publishers": [
+        {
+            "name": "Scholastic Press",
+            "books": [
+                {
+                    "title": "Harry Potter and the Philosopher's Stone",
+                    "price": 9.99,
+                    "author": "J. K. Rowling",
+                    "year": 1997
+                },
+                {
+                    "title": "Harry Potter and the Chamber of Secrets",
+                    "price": 10.99,
+                    "author": "J. K. Rowling",
+                    "year": 1998
+                }
+            ]
+        },
+        {
+            "name": "Harper & Brothers",
+            "books": [
+                {
+                    "title": "Goodnight Moon",
+                    "price": 5.99,
+                    "author": "Margaret Wise Brown",
+                    "year": 1947
+                },
+                {
+                    "title": "Brown Bear, Brown Bear, What Do You See",
+                    "price": 3.99
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+[
+	{
+		"message": "something is bad",
+		"severity": "E",
+		"source": "api",
+		"timestamp": "2020-09-08T12:34:57.124Z"
+	},
+	{
+		"message": "something is really bad",
+		"severity": "F",
+		"source": "api",
+		"timestamp": "2020-09-08T12:34:57.125Z"
+	},
+	{
+		"message": "it is getting better",
+		"severity": "W",
+		"source": "api",
+		"timestamp": "2020-09-08T12:34:59.130Z"
+	}
+]

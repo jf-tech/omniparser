@@ -1,0 +1,17 @@
+{
+    "parser_settings": {
+        "version": "omni.2.0",
+        "file_format_type": "jsonlog"
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": ".[(severity='WARNING' or severity='ERROR' or severity='CRITICAL') and source='api']", "object": {
+            "timestamp": { "xpath": "timestamp" },
+            "source": { "const": "api" },
+            "severity": { "custom_func": {
+                "name": "normalize_severity",
+                "args": [{ "xpath": "severity" }]
+            }},
+            "message": { "xpath": "message" }
+        }}
+    }
+}
