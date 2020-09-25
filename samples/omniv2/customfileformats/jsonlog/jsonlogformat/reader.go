@@ -11,11 +11,11 @@ import (
 
 	node "github.com/antchfx/xmlquery"
 	"github.com/antchfx/xpath"
-	"github.com/jf-tech/iohelper"
+	"github.com/jf-tech/go-corelib/caches"
+	"github.com/jf-tech/go-corelib/ios"
+	"github.com/jf-tech/go-corelib/strs"
 
-	"github.com/jf-tech/omniparser/cache"
-	"github.com/jf-tech/omniparser/omniparser/errs"
-	"github.com/jf-tech/omniparser/strs"
+	"github.com/jf-tech/omniparser/errs"
 )
 
 // ErrLogReadingFailed indicates the reader fails to read out a complete non-corrupted
@@ -44,7 +44,7 @@ type reader struct {
 func (r *reader) Read() (*node.Node, error) {
 	for {
 		r.line++
-		l, err := iohelper.ReadLine(r.r)
+		l, err := ios.ReadLine(r.r)
 		if err == io.EOF {
 			return nil, errs.ErrEOF
 		}
@@ -132,7 +132,7 @@ func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 
 // NewReader creates an InputReader for this sample jsonlog file format.
 func NewReader(inputName string, src io.Reader, filterXPath string) (*reader, error) {
-	filter, err := cache.GetXPathExpr(filterXPath)
+	filter, err := caches.GetXPathExpr(filterXPath)
 	if err != nil {
 		return nil, err
 	}

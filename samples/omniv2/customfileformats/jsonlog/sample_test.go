@@ -7,13 +7,13 @@ import (
 	"testing"
 
 	"github.com/bradleyjkemp/cupaloy"
+	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/jf-tech/omniparser/jsons"
-	"github.com/jf-tech/omniparser/omniparser"
-	"github.com/jf-tech/omniparser/omniparser/customfuncs"
-	omniv2 "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2"
-	"github.com/jf-tech/omniparser/omniparser/transformctx"
+	"github.com/jf-tech/omniparser"
+	"github.com/jf-tech/omniparser/customfuncs"
+	omniv2 "github.com/jf-tech/omniparser/schemaplugin/omni/v2"
+	"github.com/jf-tech/omniparser/transformctx"
 	"github.com/jf-tech/omniparser/samples/omniv2/customfileformats/jsonlog/jsonlogformat"
 )
 

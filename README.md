@@ -9,7 +9,7 @@ into desired JSON output based on a schema spec written in JSON.
 Use https://omniparser.herokuapp.com/ (might need to wait for a few seconds for heroku instance to wake up)
 for trying out schemas and inputs, yours and from sample library, to see how transform works.
 
-![](./omniparser/cli/cmd/web/playground-demo.gif)
+![](./cli/cmd/web/playground-demo.gif)
 
 Take a detailed look at samples here:
 - [json examples](./samples/omniv2/json)

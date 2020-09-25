@@ -9,13 +9,13 @@ import (
 
 	node "github.com/antchfx/xmlquery"
 	"github.com/bradleyjkemp/cupaloy"
+	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/jf-tech/omniparser/jsons"
-	"github.com/jf-tech/omniparser/omniparser"
-	omniv2 "github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2"
-	"github.com/jf-tech/omniparser/omniparser/schemaplugin/omni/v2/transform"
-	"github.com/jf-tech/omniparser/omniparser/transformctx"
+	"github.com/jf-tech/omniparser"
+	omniv2 "github.com/jf-tech/omniparser/schemaplugin/omni/v2"
+	"github.com/jf-tech/omniparser/schemaplugin/omni/v2/transform"
+	"github.com/jf-tech/omniparser/transformctx"
 )
 
 func TestSample(t *testing.T) {

@@ -1,4 +1,4 @@
-package jsonlogformat
+package omniv2json
 
 import (
 	"fmt"
@@ -13,22 +13,21 @@ import (
 )
 
 const (
-	// FileFormatJSONLog is the constant for this special/sample file format.
-	FileFormatJSONLog = "jsonlog"
+	// FileFormatJSON is the file format for JSON for omniv2 schema plugin.
+	FileFormatJSON = "json"
 )
 
-type jsonLogFileFormat struct {
+type jsonFileFormat struct {
 	schemaName string
 }
 
-// NewJSONLogFileFormat creates a new FileFormat for this special/sample jsonlog.
-func NewJSONLogFileFormat(schemaName string) omniv2fileformat.FileFormat {
-	return &jsonLogFileFormat{schemaName: schemaName}
+// NewJSONFileFormat creates a FileFormat for JSON for omniv2 schema plugin.
+func NewJSONFileFormat(schemaName string) omniv2fileformat.FileFormat {
+	return &jsonFileFormat{schemaName: schemaName}
 }
 
-func (p *jsonLogFileFormat) ValidateSchema(
-	format string, _ []byte, finalOutputDecl *transform.Decl) (interface{}, error) {
-	if format != FileFormatJSONLog {
+func (p *jsonFileFormat) ValidateSchema(format string, _ []byte, finalOutputDecl *transform.Decl) (interface{}, error) {
+	if format != FileFormatJSON {
 		return nil, errs.ErrSchemaNotSupported
 	}
 	if finalOutputDecl == nil {
@@ -45,11 +44,11 @@ func (p *jsonLogFileFormat) ValidateSchema(
 	return *finalOutputDecl.XPath, nil
 }
 
-func (p *jsonLogFileFormat) CreateFormatReader(
+func (p *jsonFileFormat) CreateFormatReader(
 	name string, r io.Reader, runtime interface{}) (omniv2fileformat.FormatReader, error) {
 	return NewReader(name, r, runtime.(string))
 }
 
-func (p *jsonLogFileFormat) FmtErr(format string, args ...interface{}) error {
+func (p *jsonFileFormat) FmtErr(format string, args ...interface{}) error {
 	return fmt.Errorf("schema '%s': %s", p.schemaName, fmt.Sprintf(format, args...))
 }
