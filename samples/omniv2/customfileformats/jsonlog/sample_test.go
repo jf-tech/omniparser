@@ -12,9 +12,9 @@ import (
 
 	"github.com/jf-tech/omniparser"
 	"github.com/jf-tech/omniparser/customfuncs"
-	omniv2 "github.com/jf-tech/omniparser/schemaplugin/omni/v2"
-	"github.com/jf-tech/omniparser/transformctx"
+	omniv2 "github.com/jf-tech/omniparser/handlers/omni/v2"
 	"github.com/jf-tech/omniparser/samples/omniv2/customfileformats/jsonlog/jsonlogformat"
+	"github.com/jf-tech/omniparser/transformctx"
 )
 
 func normalizeSeverity(_ *transformctx.Ctx, sev string) (string, error) {
@@ -47,16 +47,17 @@ func TestSample(t *testing.T) {
 	assert.NoError(t, err)
 	defer inputFileReader.Close()
 
-	parser, err := omniparser.NewParser(
+	schema, err := omniparser.NewSchema(
 		schemaFileBaseName,
 		schemaFileReader,
-		// Use this SchemaPluginConfig to effectively replace the
-		// builtin omniv2 schema plugin (and its builtin fileformats)
-		// with, well, omniv2 schema plugin :) with our own custom
+		// Use this Extension to effectively replace the
+		// builtin omniv2 schema handler (and its builtin fileformats)
+		// with, well, omniv2 schema handler :) with our own custom
 		// fileformat. Also let's demo how to add a new custom func.
-		omniparser.SchemaPluginConfig{
-			ParseSchema: omniv2.ParseSchema,
-			PluginParams: &omniv2.PluginParams{
+		omniparser.Extension{
+			CreateHandler: omniv2.CreateHandler, // Use the same omniv2 handler
+			HandlerParams: &omniv2.HandlerParams{
+				// But use our own FileFormat.
 				CustomFileFormat: jsonlogformat.NewJSONLogFileFormat(schemaFileBaseName),
 			},
 			CustomFuncs: customfuncs.CustomFuncs{
@@ -64,15 +65,12 @@ func TestSample(t *testing.T) {
 			},
 		})
 	assert.NoError(t, err)
-	op, err := parser.GetTransformOp(
-		inputFileBaseName,
-		inputFileReader,
-		&transformctx.Ctx{})
+	transform, err := schema.NewTransform(inputFileBaseName, inputFileReader, &transformctx.Ctx{})
 	assert.NoError(t, err)
 
 	var records []string
-	for op.Next() {
-		recordBytes, err := op.Read()
+	for transform.Next() {
+		recordBytes, err := transform.Read()
 		assert.NoError(t, err)
 		records = append(records, string(recordBytes))
 	}

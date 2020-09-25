@@ -70,7 +70,7 @@ func (r *reader) lineNumber() int {
 		FieldByName("line").Int())
 }
 
-// NewReader creates an InputReader for XML file format for omniv2 schema plugin.
+// NewReader creates an InputReader for XML file format for omniv2 schema handler.
 func NewReader(inputName string, src io.Reader, xpath string) (*reader, error) {
 	xpath = strings.TrimSpace(xpath)
 	xpathWithoutLastFilter := nodes.RemoveLastFilterInXPath(xpath)

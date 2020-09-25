@@ -17,7 +17,7 @@ func xmlToTestNode(t *testing.T, xpath, xmlStr string) *node.Node {
 }
 
 func jsonToTestNode(t *testing.T, xpath, jsonStr string) *node.Node {
-	p, err := NewJSONStreamParser(strings.NewReader(jsonStr), xpath)
+	p, err := NewJSONStreamReader(strings.NewReader(jsonStr), xpath)
 	assert.NoError(t, err)
 	n, err := p.Read()
 	assert.NoError(t, err)

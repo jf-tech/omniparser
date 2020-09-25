@@ -6,7 +6,7 @@ import (
 	node "github.com/antchfx/xmlquery"
 
 	"github.com/jf-tech/omniparser/errs"
-	"github.com/jf-tech/omniparser/schemaplugin/omni/v2/transform"
+	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
 )
 
 // FileFormat defines how an omni v2's specific file format should behave.
@@ -22,9 +22,9 @@ type FileFormat interface {
 		inputName string, input io.Reader, formatRuntime interface{}) (FormatReader, error)
 }
 
-// FormatReader is an interface for reading a specific input format in omni plugin. We'll have a number
-// of format specific readers. The omni plugin will use these readers for loading input stream content
-// before doing the xpath/node based parsing.
+// FormatReader is an interface for reading a specific input format in omni schema handler. We'll have
+// a number of format specific readers. The omni schema handler will use these readers for loading input
+// stream content before doing the xpath/node based parsing.
 type FormatReader interface {
 	// Read returns a *Node and its subtree that will eventually be parsed and transformed into an
 	// output record.

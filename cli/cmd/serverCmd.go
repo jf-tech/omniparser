@@ -25,7 +25,7 @@ import (
 var (
 	serverCmd = &cobra.Command{
 		Use:   "server",
-		Short: "Launches op into HTTP server mode that does transform on its REST API.",
+		Short: "Launches op into HTTP server mode with its REST APIs.",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, _ []string) {
 			doServer()
@@ -120,20 +120,20 @@ func httpPostTransform(w http.ResponseWriter, r *http.Request) {
 		writeBadRequest(w, fmt.Sprintf("bad request: invalid request body. err: %s", err))
 		return
 	}
-	p, err := omniparser.NewParser("test-schema", strings.NewReader(req.Schema))
+	s, err := omniparser.NewSchema("test-schema", strings.NewReader(req.Schema))
 	if err != nil {
 		writeBadRequest(w, fmt.Sprintf("bad request: invalid schema. err: %s", err))
 		return
 	}
-	op, err := p.GetTransformOp("test-input", strings.NewReader(req.Input),
-		&transformctx.Ctx{ExternalProperties: req.Properties})
+	t, err := s.NewTransform(
+		"test-input", strings.NewReader(req.Input), &transformctx.Ctx{ExternalProperties: req.Properties})
 	if err != nil {
-		writeBadRequest(w, fmt.Sprintf("bad request: unable to init transform. err: %s", err))
+		writeBadRequest(w, fmt.Sprintf("bad request: unable to new transform. err: %s", err))
 		return
 	}
 	var records []string
-	for op.Next() {
-		b, err := op.Read()
+	for t.Next() {
+		b, err := t.Read()
 		if err != nil {
 			writeBadRequest(w, fmt.Sprintf("bad request: transform failed. err: %s", err))
 			return
@@ -147,7 +147,7 @@ func httpPostTransform(w http.ResponseWriter, r *http.Request) {
 var (
 	sampleDir                  = "../../samples/omniv2/"
 	sampleFormats              = []string{"json", "xml"}
-	inputSampleFilenamePattern = regexp.MustCompile("^([0-9]+[_a-zA-Z]+)\\.input\\.[a-z]+$")
+	sampleInputFilenamePattern = regexp.MustCompile("^([0-9]+[_a-zA-Z]+)\\.input\\.[a-z]+$")
 )
 
 type sample struct {
@@ -166,7 +166,7 @@ func httpGetSamples(w http.ResponseWriter, r *http.Request) {
 			goto getSampleFailure
 		}
 		for _, f := range files {
-			submatch := inputSampleFilenamePattern.FindStringSubmatch(f.Name())
+			submatch := sampleInputFilenamePattern.FindStringSubmatch(f.Name())
 			if len(submatch) < 2 {
 				continue
 			}

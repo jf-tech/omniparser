@@ -70,7 +70,7 @@ func TestParseArgTypeAndValue(t *testing.T) {
 }
 
 func TestJavascript(t *testing.T) {
-	sp, err := nodes.NewJSONStreamParser(strings.NewReader(`
+	sp, err := nodes.NewJSONStreamReader(strings.NewReader(`
 		{
 			"a": "one",
 			"b": 2

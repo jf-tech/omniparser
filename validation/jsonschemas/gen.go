@@ -9,7 +9,7 @@ import (
 
 const schemaTemplate = `// Code generated - DO NOT EDIT.
 
-package schemavalidate
+package validation
 
 const (
     {{.SchemaVarName}} =

@@ -8,8 +8,8 @@ import (
 	"github.com/jf-tech/go-corelib/strs"
 
 	"github.com/jf-tech/omniparser/errs"
-	omniv2fileformat "github.com/jf-tech/omniparser/schemaplugin/omni/v2/fileformat"
-	"github.com/jf-tech/omniparser/schemaplugin/omni/v2/transform"
+	omniv2fileformat "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat"
+	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
 )
 
 const (

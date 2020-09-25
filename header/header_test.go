@@ -1,4 +1,4 @@
-package schemaplugin
+package header
 
 import (
 	"bytes"

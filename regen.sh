@@ -21,8 +21,8 @@ function panic_fail_op () {
 
 SCRIPT_DIR=$(pwd `dirname "$0"`)
 
-cd $SCRIPT_DIR/schemavalidate || panic_fail_op
-green_printf "go:generate in 'schemavalidate'...\n"
+cd $SCRIPT_DIR/validation || panic_fail_op
+green_printf "go:generate in 'validation'...\n"
 go generate || panic_fail_op
 
 cd $SCRIPT_DIR/

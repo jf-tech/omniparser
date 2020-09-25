@@ -5,33 +5,32 @@ import (
 	"io"
 
 	"github.com/jf-tech/omniparser/errs"
-	"github.com/jf-tech/omniparser/schemaplugin"
-	omniv2fileformat "github.com/jf-tech/omniparser/schemaplugin/omni/v2/fileformat"
-	omniv2json "github.com/jf-tech/omniparser/schemaplugin/omni/v2/fileformat/json"
-	omniv2xml "github.com/jf-tech/omniparser/schemaplugin/omni/v2/fileformat/xml"
-	"github.com/jf-tech/omniparser/schemaplugin/omni/v2/transform"
-	"github.com/jf-tech/omniparser/schemavalidate"
+	"github.com/jf-tech/omniparser/handlers"
+	omniv2fileformat "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat"
+	omniv2json "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/json"
+	omniv2xml "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/xml"
+	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
+	"github.com/jf-tech/omniparser/validation"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
 const (
-	// PluginVersion is the version of omniv2 schema plugin.
-	PluginVersion = "omni.2.0"
+	version = "omni.2.0"
 )
 
-// PluginParams allows user of omniparser to provide omniv2 schema plugin customization.
-type PluginParams struct {
+// HandlerParams allows user of omniparser to provide omniv2 schema handler customization.
+type HandlerParams struct {
 	CustomFileFormat omniv2fileformat.FileFormat
 	CustomParseFuncs transform.CustomParseFuncs
 }
 
-// ParseSchema parses, validates and creates an omni-schema based schema plugin.
-func ParseSchema(ctx *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) {
-	if ctx.Header.ParserSettings.Version != PluginVersion {
+// CreateHandler parses, validates and creates an omni-schema based handler.
+func CreateHandler(ctx *handlers.HandlerCtx) (handlers.SchemaHandler, error) {
+	if ctx.Header.ParserSettings.Version != version {
 		return nil, errs.ErrSchemaNotSupported
 	}
 	// First do a `transform_declarations` json schema validation
-	err := schemavalidate.SchemaValidate(ctx.Name, ctx.Content, schemavalidate.JSONSchemaTransformDeclarations)
+	err := validation.SchemaValidate(ctx.Name, ctx.Content, validation.JSONSchemaTransformDeclarations)
 	if err != nil {
 		// err is already context formatted.
 		return nil, err
@@ -54,7 +53,7 @@ func ParseSchema(ctx *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) 
 			// error from FileFormat is already context formatted.
 			return nil, err
 		}
-		return &schemaPlugin{
+		return &schemaHandler{
 			ctx:             ctx,
 			fileFormat:      fileFormat,
 			formatRuntime:   formatRuntime,
@@ -64,18 +63,18 @@ func ParseSchema(ctx *schemaplugin.ParseSchemaCtx) (schemaplugin.Plugin, error) 
 	return nil, errs.ErrSchemaNotSupported
 }
 
-func customParseFuncs(ctx *schemaplugin.ParseSchemaCtx) transform.CustomParseFuncs {
-	if ctx.PluginParams == nil {
+func customParseFuncs(ctx *handlers.HandlerCtx) transform.CustomParseFuncs {
+	if ctx.HandlerParams == nil {
 		return nil
 	}
-	params := ctx.PluginParams.(*PluginParams)
+	params := ctx.HandlerParams.(*HandlerParams)
 	if len(params.CustomParseFuncs) == 0 {
 		return nil
 	}
 	return params.CustomParseFuncs
 }
 
-func fileFormats(ctx *schemaplugin.ParseSchemaCtx) []omniv2fileformat.FileFormat {
+func fileFormats(ctx *handlers.HandlerCtx) []omniv2fileformat.FileFormat {
 	// If caller specifies a custom FileFormat, we'll use it (and it only);
 	// otherwise we'll use the builtin ones.
 	formats := []omniv2fileformat.FileFormat{
@@ -83,28 +82,28 @@ func fileFormats(ctx *schemaplugin.ParseSchemaCtx) []omniv2fileformat.FileFormat
 		omniv2xml.NewXMLFileFormat(ctx.Name),
 		// TODO more bulit-in omniv2 file formats to come.
 	}
-	if ctx.PluginParams != nil && ctx.PluginParams.(*PluginParams).CustomFileFormat != nil {
-		formats = []omniv2fileformat.FileFormat{ctx.PluginParams.(*PluginParams).CustomFileFormat}
+	if ctx.HandlerParams != nil && ctx.HandlerParams.(*HandlerParams).CustomFileFormat != nil {
+		formats = []omniv2fileformat.FileFormat{ctx.HandlerParams.(*HandlerParams).CustomFileFormat}
 	}
 	return formats
 }
 
-type schemaPlugin struct {
-	ctx             *schemaplugin.ParseSchemaCtx
+type schemaHandler struct {
+	ctx             *handlers.HandlerCtx
 	fileFormat      omniv2fileformat.FileFormat
 	formatRuntime   interface{}
 	finalOutputDecl *transform.Decl
 }
 
-func (s *schemaPlugin) GetInputProcessor(ctx *transformctx.Ctx, input io.Reader) (schemaplugin.InputProcessor, error) {
-	reader, err := s.fileFormat.CreateFormatReader(ctx.InputName, input, s.formatRuntime)
+func (h *schemaHandler) NewIngester(ctx *transformctx.Ctx, input io.Reader) (handlers.Ingester, error) {
+	reader, err := h.fileFormat.CreateFormatReader(ctx.InputName, input, h.formatRuntime)
 	if err != nil {
 		return nil, err
 	}
-	return &inputProcessor{
-		finalOutputDecl:  s.finalOutputDecl,
-		customFuncs:      s.ctx.CustomFuncs,
-		customParseFuncs: customParseFuncs(s.ctx),
+	return &ingester{
+		finalOutputDecl:  h.finalOutputDecl,
+		customFuncs:      h.ctx.CustomFuncs,
+		customParseFuncs: customParseFuncs(h.ctx),
 		ctx:              ctx,
 		reader:           reader,
 	}, nil

@@ -24,17 +24,14 @@ func SampleTestCommon(t *testing.T, schemaFile, inputFile string) string {
 	assert.NoError(t, err)
 	defer inputFileReader.Close()
 
-	parser, err := omniparser.NewParser(schemaFileBaseName, schemaFileReader)
+	schema, err := omniparser.NewSchema(schemaFileBaseName, schemaFileReader)
 	assert.NoError(t, err)
-	op, err := parser.GetTransformOp(
-		inputFileBaseName,
-		inputFileReader,
-		&transformctx.Ctx{})
+	transform, err := schema.NewTransform(inputFileBaseName, inputFileReader, &transformctx.Ctx{})
 	assert.NoError(t, err)
 
 	var records []string
-	for op.Next() {
-		recordBytes, err := op.Read()
+	for transform.Next() {
+		recordBytes, err := transform.Read()
 		assert.NoError(t, err)
 		records = append(records, string(recordBytes))
 	}

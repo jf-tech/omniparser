@@ -134,15 +134,15 @@ func TestParseAgainstReference(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			sp, err := NewJSONStreamParser(strings.NewReader(test.js), "non-matching")
+			r, err := NewJSONStreamReader(strings.NewReader(test.js), "non-matching")
 			assert.NoError(t, err)
-			_, err = sp.parse()
+			_, err = r.parse()
 			assert.Equal(t, io.EOF, err)
 
 			n, err := parseJSON([]byte(test.js))
 			assert.NoError(t, err)
 
-			assert.Equal(t, n.OutputXML(true), sp.root.n.OutputXML(true))
+			assert.Equal(t, n.OutputXML(true), r.root.n.OutputXML(true))
 		})
 	}
 }
@@ -195,7 +195,7 @@ func TestJNodeType(t *testing.T) {
 }
 
 func TestStream_ArrOfObj(t *testing.T) {
-	sp, err := NewJSONStreamParser(strings.NewReader(`
+	r, err := NewJSONStreamReader(strings.NewReader(`
 		[
 			{
 				"a": 123,
@@ -213,77 +213,77 @@ func TestStream_ArrOfObj(t *testing.T) {
 		]`), "/*[a=123]")
 	assert.NoError(t, err)
 
-	n, err := sp.Read()
+	n, err := r.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, `<><a>123</a><b>john</b></>`, n.OutputXML(true))
-	assert.Equal(t, `<><><a>123</a><b>john</b></></>`, sp.root.n.OutputXML(true))
-	assert.True(t, sp.AtLine() >= 6)
+	assert.Equal(t, `<><><a>123</a><b>john</b></></>`, r.root.n.OutputXML(true))
+	assert.True(t, r.AtLine() >= 6)
 
-	n, err = sp.Read()
+	n, err = r.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, `<><a>123</a><b>smith</b></>`, n.OutputXML(true))
 	// this is to verify we've deleted the previous stream node so memory won't
 	// grow unbounded in streaming mode.
-	assert.Equal(t, `<><><a>123</a><b>smith</b></></>`, sp.root.n.OutputXML(true))
-	assert.True(t, sp.AtLine() >= 15)
+	assert.Equal(t, `<><><a>123</a><b>smith</b></></>`, r.root.n.OutputXML(true))
+	assert.True(t, r.AtLine() >= 15)
 
-	n, err = sp.Read()
+	n, err = r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestStream_RootObjMatch(t *testing.T) {
-	sp, err := NewJSONStreamParser(strings.NewReader(`
+	r, err := NewJSONStreamReader(strings.NewReader(`
 		{
 			"a": "123"
 		}`), ".")
 	assert.NoError(t, err)
 
-	n, err := sp.Read()
+	n, err := r.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, `<><a>123</a></>`, n.OutputXML(true))
 
-	n, err = sp.Read()
+	n, err = r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestStream_RootObjNotMatch(t *testing.T) {
-	sp, err := NewJSONStreamParser(strings.NewReader(`
+	r, err := NewJSONStreamReader(strings.NewReader(`
 		{
 			"a": "123"
 		}`), ".[a!='123']")
 	assert.NoError(t, err)
 
-	n, err := sp.Read()
+	n, err := r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestStream_RootValMatch(t *testing.T) {
-	sp, err := NewJSONStreamParser(strings.NewReader(`"abc"`), ".")
+	r, err := NewJSONStreamReader(strings.NewReader(`"abc"`), ".")
 	assert.NoError(t, err)
 
-	n, err := sp.Read()
+	n, err := r.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, `<>abc</>`, n.OutputXML(true))
 
-	n, err = sp.Read()
+	n, err = r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestStream_RootValNotMatch(t *testing.T) {
-	sp, err := NewJSONStreamParser(strings.NewReader(`"abc"`), ".[text()!='abc']")
+	r, err := NewJSONStreamReader(strings.NewReader(`"abc"`), ".[text()!='abc']")
 	assert.NoError(t, err)
 
-	n, err := sp.Read()
+	n, err := r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestStream_ObjPropMatch(t *testing.T) {
-	sp, err := NewJSONStreamParser(strings.NewReader(`
+	r, err := NewJSONStreamReader(strings.NewReader(`
 		{
 			"a": "123",
 			"b": "456"
@@ -291,20 +291,20 @@ func TestStream_ObjPropMatch(t *testing.T) {
 		"a")
 	assert.NoError(t, err)
 
-	n, err := sp.Read()
+	n, err := r.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, `<a>123</a>`, n.OutputXML(true))
 	// Just so that one realizes if you stream on a prop, then the object itself may be incomplete
 	// at the time of Read() call returns. This following assert shows.
 	assert.Equal(t, `<><a>123</a></>`, n.Parent.OutputXML(true))
 
-	n, err = sp.Read()
+	n, err = r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestStream_ObjPropNotMatch(t *testing.T) {
-	sp, err := NewJSONStreamParser(strings.NewReader(`
+	r, err := NewJSONStreamReader(strings.NewReader(`
 		{
 			"a": "123",
 			"b": "456"
@@ -312,13 +312,13 @@ func TestStream_ObjPropNotMatch(t *testing.T) {
 		"a[. != '123']")
 	assert.NoError(t, err)
 
-	n, err := sp.Read()
+	n, err := r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestStream_ArrValueMatch(t *testing.T) {
-	sp, err := NewJSONStreamParser(strings.NewReader(`
+	r, err := NewJSONStreamReader(strings.NewReader(`
 		{
 			"a": [
 				"123",
@@ -328,17 +328,17 @@ func TestStream_ArrValueMatch(t *testing.T) {
 		"a/*[.='123']")
 	assert.NoError(t, err)
 
-	n, err := sp.Read()
+	n, err := r.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, `<>123</>`, n.OutputXML(true))
 
-	n, err = sp.Read()
+	n, err = r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestStream_ArrValueNotMatch(t *testing.T) {
-	sp, err := NewJSONStreamParser(strings.NewReader(`
+	r, err := NewJSONStreamReader(strings.NewReader(`
 		{
 			"a": [
 				"123",
@@ -348,14 +348,14 @@ func TestStream_ArrValueNotMatch(t *testing.T) {
 		"a/*[.='xyz']")
 	assert.NoError(t, err)
 
-	n, err := sp.Read()
+	n, err := r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestNewJSONStreamParser_InvalidXPath(t *testing.T) {
-	sp, err := NewJSONStreamParser(nil, ">")
+	r, err := NewJSONStreamReader(nil, ">")
 	assert.Error(t, err)
 	assert.Equal(t, "invalid xpath '>', err: expression must evaluate to a node-set", err.Error())
-	assert.Nil(t, sp)
+	assert.Nil(t, r)
 }

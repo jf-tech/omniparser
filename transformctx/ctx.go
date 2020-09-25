@@ -4,11 +4,11 @@ import (
 	"github.com/jf-tech/omniparser/errs"
 )
 
-// Ctx contains the context object used throughout the lifespan of a TransformOp action.
+// Ctx contains the context object used throughout a Transform operation.
 type Ctx struct {
-	// InputName is the name of the input stream to be processed.
+	// InputName is the name of the input stream to be ingested and transformed.
 	InputName string
-	// ExternalProperties contains exteranlly set string properties used in schema.
+	// ExternalProperties contains externally set string properties used by schema in the transform.
 	ExternalProperties map[string]string
 	// CtxAwareErr allows context aware error formatting such as adding input (file) name
 	// and line number as a prefix to the error string.

@@ -12,10 +12,10 @@ import (
 
 	"github.com/jf-tech/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/errs"
-	"github.com/jf-tech/omniparser/schemaplugin"
-	omniv2fileformat "github.com/jf-tech/omniparser/schemaplugin/omni/v2/fileformat"
-	omniv2xml "github.com/jf-tech/omniparser/schemaplugin/omni/v2/fileformat/xml"
-	"github.com/jf-tech/omniparser/schemaplugin/omni/v2/transform"
+	"github.com/jf-tech/omniparser/handlers"
+	omniv2fileformat "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat"
+	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -25,17 +25,17 @@ type testFileFormat struct {
 	createFormatReaderErr error
 }
 
-func (t testFileFormat) ValidateSchema(_ string, _ []byte, _ *transform.Decl) (interface{}, error) {
-	if t.validateSchemaErr != nil {
-		return nil, t.validateSchemaErr
+func (f testFileFormat) ValidateSchema(_ string, _ []byte, _ *transform.Decl) (interface{}, error) {
+	if f.validateSchemaErr != nil {
+		return nil, f.validateSchemaErr
 	}
-	return t.validateSchemaRuntime, nil
+	return f.validateSchemaRuntime, nil
 }
 
-func (t testFileFormat) CreateFormatReader(
+func (f testFileFormat) CreateFormatReader(
 	inputName string, input io.Reader, runtime interface{}) (omniv2fileformat.FormatReader, error) {
-	if t.createFormatReaderErr != nil {
-		return nil, t.createFormatReaderErr
+	if f.createFormatReaderErr != nil {
+		return nil, f.createFormatReaderErr
 	}
 	return testFormatReader{
 		inputName: inputName,
@@ -54,11 +54,11 @@ func (r testFormatReader) Read() (*node.Node, error)           { panic("implemen
 func (r testFormatReader) IsContinuableError(error) bool       { panic("implement me") }
 func (r testFormatReader) FmtErr(string, ...interface{}) error { panic("implement me") }
 
-func TestParseSchema_VersionNotSupported(t *testing.T) {
-	p, err := ParseSchema(
-		&schemaplugin.ParseSchemaCtx{
-			Header: schemaplugin.Header{
-				ParserSettings: schemaplugin.ParserSettings{
+func TestCreateHandler_VersionNotSupported(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
 					Version: "12345",
 				},
 			},
@@ -68,12 +68,12 @@ func TestParseSchema_VersionNotSupported(t *testing.T) {
 	assert.Nil(t, p)
 }
 
-func TestParseSchema_FormatNotSupported(t *testing.T) {
-	p, err := ParseSchema(
-		&schemaplugin.ParseSchemaCtx{
-			Header: schemaplugin.Header{
-				ParserSettings: schemaplugin.ParserSettings{
-					Version:        PluginVersion,
+func TestCreateHandler_FormatNotSupported(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
+					Version:        version,
 					FileFormatType: "unknown",
 				},
 			},
@@ -84,13 +84,13 @@ func TestParseSchema_FormatNotSupported(t *testing.T) {
 	assert.Nil(t, p)
 }
 
-func TestParseSchema_TransformDeclarationsJSONValidationFailed(t *testing.T) {
-	p, err := ParseSchema(
-		&schemaplugin.ParseSchemaCtx{
+func TestCreateHandler_TransformDeclarationsJSONValidationFailed(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
 			Name: "test-schema",
-			Header: schemaplugin.Header{
-				ParserSettings: schemaplugin.ParserSettings{
-					Version:        PluginVersion,
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
+					Version:        version,
 					FileFormatType: "xml",
 				},
 			},
@@ -103,13 +103,13 @@ func TestParseSchema_TransformDeclarationsJSONValidationFailed(t *testing.T) {
 	assert.Nil(t, p)
 }
 
-func TestParseSchema_TransformDeclarationsInCodeValidationFailed(t *testing.T) {
-	p, err := ParseSchema(
-		&schemaplugin.ParseSchemaCtx{
+func TestCreateHandler_TransformDeclarationsInCodeValidationFailed(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
 			Name: "test-schema",
-			Header: schemaplugin.Header{
-				ParserSettings: schemaplugin.ParserSettings{
-					Version:        PluginVersion,
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
+					Version:        version,
 					FileFormatType: "xml",
 				},
 			},
@@ -127,16 +127,16 @@ func TestParseSchema_TransformDeclarationsInCodeValidationFailed(t *testing.T) {
 	assert.Nil(t, p)
 }
 
-func TestParseSchema_CustomFileFormat_FormatNotSupported(t *testing.T) {
-	p, err := ParseSchema(
-		&schemaplugin.ParseSchemaCtx{
-			Header: schemaplugin.Header{
-				ParserSettings: schemaplugin.ParserSettings{
-					Version: PluginVersion,
+func TestCreateHandler_CustomFileFormat_FormatNotSupported(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
+					Version: version,
 				},
 			},
 			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
-			PluginParams: &PluginParams{
+			HandlerParams: &HandlerParams{
 				CustomFileFormat: testFileFormat{
 					validateSchemaErr: errs.ErrSchemaNotSupported,
 				},
@@ -147,16 +147,16 @@ func TestParseSchema_CustomFileFormat_FormatNotSupported(t *testing.T) {
 	assert.Nil(t, p)
 }
 
-func TestParseSchema_CustomFileFormat_ValidationFailure(t *testing.T) {
-	p, err := ParseSchema(
-		&schemaplugin.ParseSchemaCtx{
-			Header: schemaplugin.Header{
-				ParserSettings: schemaplugin.ParserSettings{
-					Version: PluginVersion,
+func TestCreateHandler_CustomFileFormat_ValidationFailure(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
+					Version: version,
 				},
 			},
 			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
-			PluginParams: &PluginParams{
+			HandlerParams: &HandlerParams{
 				CustomFileFormat: testFileFormat{
 					validateSchemaErr: errors.New("validation failure"),
 				},
@@ -167,34 +167,34 @@ func TestParseSchema_CustomFileFormat_ValidationFailure(t *testing.T) {
 	assert.Nil(t, p)
 }
 
-func TestParseSchema_CustomFileFormat_Success(t *testing.T) {
-	p, err := ParseSchema(
-		&schemaplugin.ParseSchemaCtx{
-			Header: schemaplugin.Header{
-				ParserSettings: schemaplugin.ParserSettings{
-					Version: PluginVersion,
+func TestCreateHandler_CustomFileFormat_Success(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
+					Version: version,
 				},
 			},
 			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
-			PluginParams: &PluginParams{
+			HandlerParams: &HandlerParams{
 				CustomFileFormat: testFileFormat{
 					validateSchemaRuntime: "runtime data",
 				},
 			},
 		})
 	assert.NoError(t, err)
-	plugin := p.(*schemaPlugin)
+	plugin := p.(*schemaHandler)
 	assert.Equal(t, "runtime data", plugin.fileFormat.(testFileFormat).validateSchemaRuntime.(string))
 	assert.Equal(t, "runtime data", plugin.formatRuntime.(string))
 }
 
-func TestParseSchema_CustomParseFuncs_Success(t *testing.T) {
-	p, err := ParseSchema(
-		&schemaplugin.ParseSchemaCtx{
-			Header: schemaplugin.Header{
-				ParserSettings: schemaplugin.ParserSettings{
-					Version:        PluginVersion,
-					FileFormatType: omniv2xml.FileFormatXML,
+func TestCreateHandler_CustomParseFuncs_Success(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
+					Version:        version,
+					FileFormatType: "xml",
 				},
 			},
 			Content: []byte(`{
@@ -202,7 +202,7 @@ func TestParseSchema_CustomParseFuncs_Success(t *testing.T) {
 						"FINAL_OUTPUT": { "xpath": "/A/B", "custom_parse": "test_custom_parse" }
 					}
 				}`),
-			PluginParams: &PluginParams{
+			HandlerParams: &HandlerParams{
 				CustomParseFuncs: transform.CustomParseFuncs{
 					"test_custom_parse": func(_ *transformctx.Ctx, _n *node.Node) (interface{}, error) {
 						return "test", nil
@@ -214,32 +214,32 @@ func TestParseSchema_CustomParseFuncs_Success(t *testing.T) {
 	assert.NotNil(t, p)
 }
 
-func TestGetInputProcessor_CustomFileFormat_Failure(t *testing.T) {
-	ip, err := (&schemaPlugin{
+func TestNewIngester_CustomFileFormat_Failure(t *testing.T) {
+	ip, err := (&schemaHandler{
 		fileFormat: testFileFormat{
 			createFormatReaderErr: errors.New("failed to create reader"),
 		},
-	}).GetInputProcessor(&transformctx.Ctx{InputName: "test-input"}, nil)
+	}).NewIngester(&transformctx.Ctx{InputName: "test-input"}, nil)
 	assert.Error(t, err)
 	assert.Equal(t, "failed to create reader", err.Error())
 	assert.Nil(t, ip)
 }
 
-func TestGetInputProcessor_CustomFileFormat_Success(t *testing.T) {
-	plugin := &schemaPlugin{
-		ctx: &schemaplugin.ParseSchemaCtx{
+func TestNewIngester_CustomFileFormat_Success(t *testing.T) {
+	plugin := &schemaHandler{
+		ctx: &handlers.HandlerCtx{
 			CustomFuncs: customfuncs.BuiltinCustomFuncs,
 		},
 		fileFormat:    testFileFormat{},
 		formatRuntime: "test runtime",
 	}
 	ctx := &transformctx.Ctx{InputName: "test-input"}
-	ip, err := plugin.GetInputProcessor(ctx, strings.NewReader("test input"))
+	ip, err := plugin.NewIngester(ctx, strings.NewReader("test input"))
 	assert.NoError(t, err)
-	processor := ip.(*inputProcessor)
-	assert.Equal(t, ctx, processor.ctx)
-	assert.Equal(t, customfuncs.BuiltinCustomFuncs, processor.customFuncs)
-	r := processor.reader.(testFormatReader)
+	g := ip.(*ingester)
+	assert.Equal(t, ctx, g.ctx)
+	assert.Equal(t, customfuncs.BuiltinCustomFuncs, g.customFuncs)
+	r := g.reader.(testFormatReader)
 	assert.Equal(t, "test-input", r.inputName)
 	data, err := ioutil.ReadAll(r.input)
 	assert.NoError(t, err)

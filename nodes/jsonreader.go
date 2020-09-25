@@ -23,9 +23,10 @@ const (
 	jnodeTypeVal
 )
 
-// Ultimately the parser constructs and returns a *node.Node tree, however, we need to decorate
-// each node with `jnodeType` to indicate what kind of json element it is. So have to resort to
-// this companion `jnode` struct during parsing.
+// Ultimately JSONStreamReader constructs and returns a *node.Node tree representing the JSON
+// input it ingested. However, during the reading and parsing of the JSON input, we need to
+// decorate each node with a `jnodeType` to indicate what kind of JSON element it is. So have
+// to resort to this companion `jnode` struct during parsing.
 type jnode struct {
 	jnodeType jnodeType
 	parent    *jnode
@@ -67,8 +68,8 @@ func data2str(data interface{}) string {
 	return s
 }
 
-// JSONStreamParser is a streaming json to *node.Node parser.
-type JSONStreamParser struct {
+// JSONStreamReader is a streaming json to *node.Node reader.
+type JSONStreamReader struct {
 	r                          *ios.LineCountingReader
 	d                          *json.Decoder
 	xpathExpr, xpathFilterExpr *xpath.Expr
@@ -76,7 +77,7 @@ type JSONStreamParser struct {
 }
 
 // streamCandidateCheck checks if sp.curNode is a potential stream candidate.
-func (sp *JSONStreamParser) streamCandidateCheck() {
+func (sp *JSONStreamReader) streamCandidateCheck() {
 	if sp.xpathExpr != nil && sp.streamNode == nil && node.QuerySelector(sp.root.n, sp.xpathExpr) != nil {
 		sp.streamNode = sp.curNode
 	}
@@ -86,7 +87,7 @@ func (sp *JSONStreamParser) streamCandidateCheck() {
 // returned to the caller. A stream candidate is the target if:
 // - If it has finished processing (sp.curNode == sp.streamNode)
 // - Either we don't have a stream filter xpath or the stream filter xpath matches.
-func (sp *JSONStreamParser) streamTargetCheck() *node.Node {
+func (sp *JSONStreamReader) streamTargetCheck() *node.Node {
 	ret := (*node.Node)(nil)
 	if sp.curNode == sp.streamNode {
 		if sp.xpathFilterExpr == nil || node.QuerySelector(sp.root.n, sp.xpathFilterExpr) != nil {
@@ -104,7 +105,7 @@ func (sp *JSONStreamParser) streamTargetCheck() *node.Node {
 	return ret
 }
 
-func (sp *JSONStreamParser) parseDelim(tok json.Delim) *node.Node {
+func (sp *JSONStreamReader) parseDelim(tok json.Delim) *node.Node {
 	switch tok {
 	case '{':
 		switch {
@@ -152,7 +153,7 @@ func (sp *JSONStreamParser) parseDelim(tok json.Delim) *node.Node {
 	return nil
 }
 
-func (sp *JSONStreamParser) parseVal(tok json.Token) *node.Node {
+func (sp *JSONStreamReader) parseVal(tok json.Token) *node.Node {
 	switch {
 	// Note case order matters, because curNode type could be prop|obj or root|obj, in those
 	// cases, we want isObj case to be hit first.
@@ -201,7 +202,7 @@ func (sp *JSONStreamParser) parseVal(tok json.Token) *node.Node {
 	return nil
 }
 
-func (sp *JSONStreamParser) parse() (*node.Node, error) {
+func (sp *JSONStreamReader) parse() (*node.Node, error) {
 	for {
 		tok, err := sp.d.Token()
 		if err != nil {
@@ -222,7 +223,7 @@ func (sp *JSONStreamParser) parse() (*node.Node, error) {
 }
 
 // Read returns a matching *node.Node
-func (sp *JSONStreamParser) Read() (*node.Node, error) {
+func (sp *JSONStreamReader) Read() (*node.Node, error) {
 	// Because this is a streaming read, we need to release/remove last
 	// stream node from the node tree to free up memory.
 	if sp.streamNode != nil {
@@ -233,12 +234,12 @@ func (sp *JSONStreamParser) Read() (*node.Node, error) {
 }
 
 // AtLine returns the **rough** line number of the current json decoder.
-func (sp *JSONStreamParser) AtLine() int {
+func (sp *JSONStreamReader) AtLine() int {
 	return sp.r.AtLine()
 }
 
-// NewJSONStreamParser creates a new instance of json streaming parser.
-func NewJSONStreamParser(r io.Reader, xpathStr string) (*JSONStreamParser, error) {
+// NewJSONStreamReader creates a new instance of json streaming reader.
+func NewJSONStreamReader(r io.Reader, xpathStr string) (*JSONStreamReader, error) {
 	xpathStr = strings.TrimSpace(xpathStr)
 	xpathNoFilterStr := RemoveLastFilterInXPath(xpathStr)
 	xpathExpr, err := caches.GetXPathExpr(xpathStr)
@@ -253,13 +254,13 @@ func NewJSONStreamParser(r io.Reader, xpathStr string) (*JSONStreamParser, error
 		return expr2
 	}
 	lineCountingReader := ios.NewLineCountingReader(r)
-	parser := &JSONStreamParser{
+	reader := &JSONStreamReader{
 		r:               lineCountingReader,
 		d:               json.NewDecoder(lineCountingReader),
 		xpathExpr:       xpathNoFilterExpr,
 		xpathFilterExpr: ifelse(xpathStr == xpathNoFilterStr, nil, xpathExpr),
 		root:            &jnode{jnodeType: jnodeTypeRoot, n: &node.Node{Type: node.DocumentNode}},
 	}
-	parser.curNode = parser.root
-	return parser, nil
+	reader.curNode = reader.root
+	return reader, nil
 }

@@ -6,7 +6,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:  "op",
-	Long: "op is a CLI of omniparser that transforms data input (such as CSV/XML/JSON/EDI/etc) into desired output by a schema.",
+	Long: "op is a CLI of omniparser that ingests data input (such as CSV/XML/JSON/EDI/etc) and transforms into desired output by a schema.",
 }
 
 func init() {
