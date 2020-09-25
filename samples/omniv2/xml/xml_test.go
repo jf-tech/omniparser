@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/bradleyjkemp/cupaloy"
+	"github.com/jf-tech/go-corelib/jsons"
 
-	"github.com/jf-tech/omniparser/jsons"
 	"github.com/jf-tech/omniparser/samples/sampleutil"
 )
 

@@ -21,8 +21,8 @@ function panic_fail_op () {
 
 SCRIPT_DIR=$(pwd `dirname "$0"`)
 
-cd $SCRIPT_DIR/omniparser/schemavalidate || panic_fail_op
-green_printf "go:generate in 'omniparser/schemavalidate'...\n"
+cd $SCRIPT_DIR/schemavalidate || panic_fail_op
+green_printf "go:generate in 'schemavalidate'...\n"
 go generate || panic_fail_op
 
 cd $SCRIPT_DIR/
@@ -38,4 +38,4 @@ go clean -testcache ./... || panic_fail_op
 go test ./... || panic_fail_op
 
 cd $SCRIPT_DIR/
-green_printf "\nTest snapshots regeneration done!\n"
+green_printf "All done!\n"

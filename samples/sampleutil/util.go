@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/jf-tech/omniparser/omniparser"
-	"github.com/jf-tech/omniparser/omniparser/transformctx"
+	"github.com/jf-tech/omniparser"
+	"github.com/jf-tech/omniparser/transformctx"
 )
 
 // SampleTestCommon is a test helper for sample tests
