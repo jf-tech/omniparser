@@ -77,7 +77,7 @@ Take a detailed look at samples here:
     ```
     schema, err := omniparser.NewSchema("schema-name", strings.NewReader("..."))
     if err != nil { ... }
-    transform, err := parser.NewTransform("input-name", strings.NewReader("..."), &transformctx.Ctx{})
+    transform, err := schema.NewTransform("input-name", strings.NewReader("..."), &transformctx.Ctx{})
     if err != nil { ... }
     if !transform.Next() { ... }  
     b, err := transform.Read()
