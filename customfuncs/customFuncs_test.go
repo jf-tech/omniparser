@@ -38,6 +38,41 @@ func TestMerge(t *testing.T) {
 		Merge(fs1, fs2, nil))
 }
 
+func TestCoalesce(t *testing.T) {
+	for _, test := range []struct {
+		name     string
+		strs     []string
+		expected string
+	}{
+		{
+			name:     "empty input",
+			strs:     nil,
+			expected: "",
+		},
+		{
+			name:     "one empty string input",
+			strs:     []string{""},
+			expected: "",
+		},
+		{
+			name:     "one non-empty string input",
+			strs:     []string{"a b c"},
+			expected: "a b c",
+		},
+		{
+			name:     "multiple strings",
+			strs:     []string{"", "", "", " e f"},
+			expected: " e f",
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			result, err := coalesce(nil, test.strs...)
+			assert.NoError(t, err)
+			assert.Equal(t, test.expected, result)
+		})
+	}
+}
+
 func TestConcat(t *testing.T) {
 	for _, test := range []struct {
 		name     string

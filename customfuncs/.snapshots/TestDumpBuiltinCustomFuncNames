@@ -1,5 +1,6 @@
 [
 	"avg",
+	"coalesce",
 	"concat",
 	"containsPattern",
 	"dateTimeLayoutToRFC3339",
