@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser"
-	omniv2 "github.com/jf-tech/omniparser/schemaplugin/omni/v2"
-	"github.com/jf-tech/omniparser/schemaplugin/omni/v2/transform"
+	omniv2 "github.com/jf-tech/omniparser/handlers/omni/v2"
+	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -31,12 +31,12 @@ func TestSample(t *testing.T) {
 	assert.NoError(t, err)
 	defer inputFileReader.Close()
 
-	parser, err := omniparser.NewParser(
+	schema, err := omniparser.NewSchema(
 		schemaFileBaseName,
 		schemaFileReader,
-		omniparser.SchemaPluginConfig{
-			ParseSchema: omniv2.ParseSchema,
-			PluginParams: &omniv2.PluginParams{
+		omniparser.Extension{
+			CreateHandler: omniv2.CreateHandler,
+			HandlerParams: &omniv2.HandlerParams{
 				CustomParseFuncs: transform.CustomParseFuncs{
 					"employee_personal_details_lookup": employeePersonalDetailsLookup,
 					"employee_business_details_lookup": employeeBusinessDetailsLookup,
@@ -45,15 +45,12 @@ func TestSample(t *testing.T) {
 			},
 		})
 	assert.NoError(t, err)
-	op, err := parser.GetTransformOp(
-		inputFileBaseName,
-		inputFileReader,
-		&transformctx.Ctx{})
+	tfm, err := schema.NewTransform(inputFileBaseName, inputFileReader, &transformctx.Ctx{})
 	assert.NoError(t, err)
 
 	var records []string
-	for op.Next() {
-		recordBytes, err := op.Read()
+	for tfm.Next() {
+		recordBytes, err := tfm.Read()
 		assert.NoError(t, err)
 		records = append(records, string(recordBytes))
 	}

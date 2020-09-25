@@ -1,4 +1,4 @@
-package schemaplugin
+package header
 
 import (
 	"io"
@@ -7,11 +7,10 @@ import (
 	"golang.org/x/text/encoding/charmap"
 )
 
-// ParserSettings defines the common header (and its JSON format) for all schemas across all schema plugins.
-// It contains vital information about what schema plugin a schema wants to use, and what file format the
-// input stream is of (e.g. fixed-length txt, CSV/TSV, XML, JSON, EDI, etc).
-// Also optionally, it specifies the expected the encoding scheme for the input streams this schema is used
-// for.
+// ParserSettings defines the common header (and its JSON format) for all schemas across all schema handlers.
+// It contains vital information about which handler a schema wants to use, and what file format the input
+// stream is of (e.g. fixed-length txt, CSV/TSV, XML, JSON, EDI, etc). Also optionally, it specifies the
+// expected the encoding scheme for the input streams this schema is used for.
 type ParserSettings struct {
 	Version        string  `json:"version,omitempty"`
 	FileFormatType string  `json:"file_format_type,omitempty"`

@@ -1,50 +1,51 @@
-package schemaplugin
+package handlers
 
 import (
 	"io"
 
 	"github.com/jf-tech/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/errs"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
-// ParseSchemaCtx is a context object used by schema plugin during schema parsing.
-type ParseSchemaCtx struct {
-	Name         string
-	Header       Header
-	Content      []byte
-	CustomFuncs  customfuncs.CustomFuncs
-	PluginParams interface{}
+// HandlerCtx is a context object for a schema handler.
+type HandlerCtx struct {
+	Name          string
+	Header        header.Header
+	Content       []byte
+	CustomFuncs   customfuncs.CustomFuncs
+	HandlerParams interface{}
 }
 
-// ParseSchemaFunc is a type of a func that checks if a given schema is supported by
-// its associated plugin, and, if yes, parses the schema content, creates and initializes
-// a new instance of its associated plugin.
+// CreateHandlerFunc is a func that checks if a given schema is supported by its associated
+// handler, and, if yes, parses the schema content, creates and initializes a new instance of
+// its associated handler.
 // If the given schema is not supported, errs.ErrSchemaNotSupported should be returned.
 // Any other error returned will cause omniparser to fail entirely.
 // Note, any non errs.ErrSchemaNotSupported error returned here should be errs.CtxAwareErr
 // formatted (i.e. error should contain schema name and if possible error line number).
-type ParseSchemaFunc func(ctx *ParseSchemaCtx) (Plugin, error)
+type CreateHandlerFunc func(ctx *HandlerCtx) (SchemaHandler, error)
 
-// Plugin is an interface representing a schema plugin responsible for processing input
-// stream based on its given schema.
-type Plugin interface {
-	// GetInputProcessor returns an InputProcessor for an input stream.
-	// Omniparser will not call GetInputProcessor unless ParseSchema has returned supported.
-	// Omniparser calls GetInputProcessor when client supplies an input stream and is ready
-	// for the parser to process/transform the input.
-	GetInputProcessor(ctx *transformctx.Ctx, input io.Reader) (InputProcessor, error)
+// SchemaHandler is an interface representing a schema handler responsible for ingesting,
+// processing and transforming input stream based on its given schema.
+type SchemaHandler interface {
+	// NewIngester returns an Ingester for an input stream.
+	// Omniparser will not call NewIngester unless CreateHandler has returned supported.
+	// Omniparser calls NewIngester when client supplies an input stream and is ready
+	// for the parser to ingest/process/transform the input.
+	NewIngester(ctx *transformctx.Ctx, input io.Reader) (Ingester, error)
 }
 
-// InputProcessor is an interface responsible for a given input stream parsing and processing.
-type InputProcessor interface {
+// Ingester is an interface responsible for a given input stream ingestion, and transformation.
+type Ingester interface {
 	// Read is called repeatedly during the processing of an input stream. Each call it should return
 	// one result object, called record. It's entirely up to the implementation of this interface/method
 	// to decide whether internally it does all the processing all at once (such as in the very first call
 	// of `Read()`) and only hands out one record object at a time, OR, processes and returns one record
 	// for each call. However, the overall design principle of omniparser is to have streaming processing
-	// capability so memory won't be a constraint when dealing with large input file. All built-in plugin
-	// and processors are done this way.
+	// capability so memory won't be a constraint when dealing with large input file. All built-in handler
+	// and ingesters are done this way.
 	Read() ([]byte, error)
 
 	// IsContinuableError is called to determine if the error returned by Read is fatal or not. After Read
@@ -57,3 +58,4 @@ type InputProcessor interface {
 	// context aware (such as input file name + line number) error formatting.
 	errs.CtxAwareErr
 }
+

@@ -1,4 +1,4 @@
-package schemavalidate
+package validation
 
 //go:generate sh -c "cd jsonschemas && go run gen.go -json parser_settings.json -varname JSONSchemaParserSettings > ../parserSettings.go"
 //go:generate sh -c "cd jsonschemas && go run gen.go -json transform_declarations.json -varname JSONSchemaTransformDeclarations > ../transformDeclarations.go"

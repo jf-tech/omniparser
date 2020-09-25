@@ -1,8 +1,10 @@
 # omniparser
 ![CI](https://github.com/jf-tech/omniparser/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/jf-tech/omniparser/branch/master/graph/badge.svg)](https://codecov.io/gh/jf-tech/omniparser) [![Go Report Card](https://goreportcard.com/badge/github.com/jf-tech/omniparser)](https://goreportcard.com/report/github.com/jf-tech/omniparser)
 
-A data transform parser in naive golang that transforms input data of various formats (CSV, txt, XML, EDI, JSON)
+A parser in naive Golang that ingests and transforms input data of various formats (CSV, txt, XML, EDI, JSON)
 into desired JSON output based on a schema spec written in JSON.
+
+Golang Version: 1.14.2
 
 ## Demo in Playground
 
@@ -73,12 +75,12 @@ Take a detailed look at samples here:
     ```
 - Code:
     ```
-    parser, err := omniparser.NewParser("schema-name", strings.NewReader("..."))
+    schema, err := omniparser.NewSchema("schema-name", strings.NewReader("..."))
     if err != nil { ... }
-    op, err := parser.GetTransformOp("input-name", strings.NewReader("..."), &transformctx.Ctx{})
+    transform, err := parser.NesTransform("input-name", strings.NewReader("..."), &transformctx.Ctx{})
     if err != nil { ... }
-    if !op.Next() { ... }  
-    b, err := op.Read()
+    if !transform.Next() { ... }  
+    b, err := transform.Read()
     if err != nil { ... }
     fmt.Println(string(b))
     ```
@@ -123,6 +125,6 @@ Take a detailed look at samples here:
 - JSON stream parser.
 - Extensibility:
     - Ability to provide custom functions.
-    - Ability to provide custom schema plugins.
-    - Ability to customize the built-in omniv2 plugin's parsing code.
-    - Ability to provide a new file format support to built-in omniv2 plugin.
+    - Ability to provide custom schema handler.
+    - Ability to customize the built-in omniv2 schema handler's parsing code.
+    - Ability to provide a new file format support to built-in omniv2 schema handler.

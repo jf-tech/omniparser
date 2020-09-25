@@ -10,7 +10,7 @@ import (
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/nodes"
-	"github.com/jf-tech/omniparser/schemaplugin/omni/v2/transform"
+	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
 )
 
 func TestValidateSchema(t *testing.T) {
@@ -30,28 +30,28 @@ func TestValidateSchema(t *testing.T) {
 		},
 		{
 			name:        "FINAL_OUTPUT decl is nil",
-			format:      FileFormatXML,
+			format:      fileFormatXML,
 			decl:        nil,
 			expected:    nil,
 			expectedErr: `schema 'test-schema': 'FINAL_OUTPUT' decl is nil`,
 		},
 		{
 			name:        "FINAL_OUTPUT has not 'xpath' set",
-			format:      FileFormatXML,
+			format:      fileFormatXML,
 			decl:        &transform.Decl{},
 			expected:    nil,
 			expectedErr: `schema 'test-schema': 'FINAL_OUTPUT' must have 'xpath' specified`,
 		},
 		{
 			name:        "FINAL_OUTPUT 'xpath' is invalid",
-			format:      FileFormatXML,
+			format:      fileFormatXML,
 			decl:        &transform.Decl{XPath: strs.StrPtr("[invalid")},
 			expected:    nil,
 			expectedErr: `schema 'test-schema': 'xpath' on 'FINAL_OUTPUT' (value: '[invalid') is invalid, err: expression must evaluate to a node-set`,
 		},
 		{
 			name:        "success",
-			format:      FileFormatXML,
+			format:      fileFormatXML,
 			decl:        &transform.Decl{XPath: strs.StrPtr("/A/B[.!='skip']")},
 			expected:    "/A/B[.!='skip']",
 			expectedErr: "",

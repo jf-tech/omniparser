@@ -29,7 +29,7 @@ func IsErrNodeReadingFailed(err error) bool {
 
 type reader struct {
 	inputName string
-	r         *nodes.JSONStreamParser
+	r         *nodes.JSONStreamReader
 }
 
 func (r *reader) Read() (*node.Node, error) {
@@ -55,9 +55,9 @@ func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 	return fmt.Sprintf("input '%s' before/near line %d: %s", r.inputName, r.r.AtLine(), fmt.Sprintf(format, args...))
 }
 
-// NewReader creates an InputReader for JSON file format for omniv2 schema plugin.
+// NewReader creates an InputReader for JSON file format for omniv2 schema handler.
 func NewReader(inputName string, src io.Reader, xpath string) (*reader, error) {
-	sp, err := nodes.NewJSONStreamParser(src, xpath)
+	sp, err := nodes.NewJSONStreamReader(src, xpath)
 	if err != nil {
 		return nil, err
 	}

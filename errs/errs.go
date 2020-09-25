@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// ErrSchemaNotSupported indicates a schema is not supported by a plugin.
+// ErrSchemaNotSupported indicates a schema is not supported by a handler.
 var ErrSchemaNotSupported = errors.New("schema not supported")
 
 // ErrEOF indicates the end of input stream has reached.

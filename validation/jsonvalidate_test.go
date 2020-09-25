@@ -1,4 +1,4 @@
-package schemavalidate
+package validation
 
 import (
 	"testing"

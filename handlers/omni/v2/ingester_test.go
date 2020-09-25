@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/errs"
-	"github.com/jf-tech/omniparser/schemaplugin/omni/v2/transform"
+	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
 )
 
 var errContinuableInTest = errors.New("continuable error")
@@ -36,17 +36,17 @@ func (r *testReader) FmtErr(format string, args ...interface{}) error {
 	return fmt.Errorf("ctx: "+format, args...)
 }
 
-func TestInputProcessor_Read_ReadFailure(t *testing.T) {
-	p := &inputProcessor{
+func TestIngester_Read_ReadFailure(t *testing.T) {
+	g := &ingester{
 		reader: &testReader{result: []*node.Node{nil}, err: []error{errors.New("test failure")}},
 	}
-	b, err := p.Read()
+	b, err := g.Read()
 	assert.Error(t, err)
 	assert.Equal(t, "test failure", err.Error())
 	assert.Nil(t, b)
 }
 
-func TestInputProcessor_Read_ParseNodeFailure(t *testing.T) {
+func TestIngester_Read_ParseNodeFailure(t *testing.T) {
 	finalOutputDecl, err := transform.ValidateTransformDeclarations(
 		[]byte(` {
 			"transform_declarations": {
@@ -54,21 +54,21 @@ func TestInputProcessor_Read_ParseNodeFailure(t *testing.T) {
 			}
 		}`), nil, nil)
 	assert.NoError(t, err)
-	p := &inputProcessor{
+	g := &ingester{
 		finalOutputDecl: finalOutputDecl,
 		reader:          &testReader{result: []*node.Node{nil}, err: []error{nil}},
 	}
-	b, err := p.Read()
+	b, err := g.Read()
 	assert.Error(t, err)
 	assert.True(t, errs.IsErrTransformFailed(err))
-	assert.True(t, p.IsContinuableError(err))
+	assert.True(t, g.IsContinuableError(err))
 	assert.Equal(t,
 		`ctx: fail to transform. err: fail to convert value 'abc' to type 'int' on 'FINAL_OUTPUT', err: strconv.ParseFloat: parsing "abc": invalid syntax`,
 		err.Error())
 	assert.Nil(t, b)
 }
 
-func TestInputProcessor_Read_Success(t *testing.T) {
+func TestIngester_Read_Success(t *testing.T) {
 	finalOutputDecl, err := transform.ValidateTransformDeclarations(
 		[]byte(` {
 			"transform_declarations": {
@@ -76,22 +76,22 @@ func TestInputProcessor_Read_Success(t *testing.T) {
 			}
 		}`), nil, nil)
 	assert.NoError(t, err)
-	p := &inputProcessor{
+	g := &ingester{
 		finalOutputDecl: finalOutputDecl,
 		reader:          &testReader{result: []*node.Node{nil}, err: []error{nil}},
 	}
-	b, err := p.Read()
+	b, err := g.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, "123", string(b))
 }
 
 func TestIsContinuableError(t *testing.T) {
-	p := &inputProcessor{reader: &testReader{}}
-	assert.False(t, p.IsContinuableError(errors.New("test failure")))
-	assert.True(t, p.IsContinuableError(errContinuableInTest))
+	g := &ingester{reader: &testReader{}}
+	assert.False(t, g.IsContinuableError(errors.New("test failure")))
+	assert.True(t, g.IsContinuableError(errContinuableInTest))
 }
 
 func TestFmtErr(t *testing.T) {
-	p := &inputProcessor{reader: &testReader{}}
-	assert.Equal(t, "ctx: some 1 fruit", p.FmtErr("some %d %s", 1, "fruit").Error())
+	g := &ingester{reader: &testReader{}}
+	assert.Equal(t, "ctx: some 1 fruit", g.FmtErr("some %d %s", 1, "fruit").Error())
 }
