@@ -36,6 +36,7 @@ func Merge(funcs ...CustomFuncs) CustomFuncs {
 var builtinPublishedCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
 	"avg":                     avg,
+	"coalesce":                coalesce,
 	"concat":                  concat,
 	"containsPattern":         containsPattern,
 	"dateTimeLayoutToRFC3339": dateTimeLayoutToRFC3339,
@@ -56,13 +57,22 @@ var builtinPublishedCustomFuncs = map[string]CustomFuncType{
 
 var builtinHiddenBackCompatCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
-	"dateTimeWithLayoutToRfc3339": dateTimeLayoutToRFC3339, // deprecated; use dateTimeLayoutToRFC3339.
 	"dateTimeToRfc3339":           dateTimeToRFC3339,       // deprecated; use dateTimeToRFC3339.
+	"dateTimeWithLayoutToRfc3339": dateTimeLayoutToRFC3339, // deprecated; use dateTimeLayoutToRFC3339.
 	"external":                    external,                // deprecated; use "external" decl.
 }
 
 // BuiltinCustomFuncs contains all the built-in custom functions.
 var BuiltinCustomFuncs = Merge(builtinPublishedCustomFuncs, builtinHiddenBackCompatCustomFuncs)
+
+func coalesce(_ *transformctx.Ctx, strs ...string) (string, error) {
+	for _, str := range strs {
+		if str != "" {
+			return str, nil
+		}
+	}
+	return "", nil
+}
 
 func concat(_ *transformctx.Ctx, strs ...string) (string, error) {
 	var b bytes.Buffer
