@@ -6,46 +6,45 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCtx_ExternalProperty(t *testing.T) {
+func TestCtx_External(t *testing.T) {
 	for _, test := range []struct {
-		name               string
-		externalProperties map[string]string
-		propNameToLookUp   string
-		expectedValue      string
-		expectedFound      bool
+		name          string
+		props         map[string]string
+		lookup        string
+		expectedValue string
+		expectedFound bool
 	}{
 		{
-			name:               "externalProperties nil",
-			externalProperties: nil,
-			propNameToLookUp:   "abc",
-			expectedValue:      "",
-			expectedFound:      false,
+			name:          "nil",
+			props:         nil,
+			lookup:        "xyz",
+			expectedValue: "",
+			expectedFound: false,
 		},
 		{
-			name:               "externalProperties empty",
-			externalProperties: map[string]string{},
-			propNameToLookUp:   "efg",
-			expectedValue:      "",
-			expectedFound:      false,
+			name:          "empty",
+			props:         map[string]string{},
+			lookup:        "xyz",
+			expectedValue: "",
+			expectedFound: false,
 		},
 		{
-			name:               "can't find prop",
-			externalProperties: map[string]string{"abc": "abc"},
-			propNameToLookUp:   "efg",
-			expectedValue:      "",
-			expectedFound:      false,
+			name:          "not found",
+			props:         map[string]string{"123": "123"},
+			lookup:        "xyz",
+			expectedValue: "",
+			expectedFound: false,
 		},
 		{
-			name:               "found",
-			externalProperties: map[string]string{"abc": "123"},
-			propNameToLookUp:   "abc",
-			expectedValue:      "123",
-			expectedFound:      true,
+			name:          "found",
+			props:         map[string]string{"xyz": "abc"},
+			lookup:        "xyz",
+			expectedValue: "abc",
+			expectedFound: true,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			ctx := &Ctx{ExternalProperties: test.externalProperties}
-			v, found := ctx.ExternalProperty(test.propNameToLookUp)
+			v, found := (&Ctx{ExternalProperties: test.props}).External(test.lookup)
 			assert.Equal(t, test.expectedValue, v)
 			assert.Equal(t, test.expectedFound, found)
 		})

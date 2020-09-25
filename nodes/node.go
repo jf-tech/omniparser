@@ -7,57 +7,52 @@ import (
 )
 
 func copyNode(n *node.Node) *node.Node {
-	// copy the content
-	newNode := *n
-	// reset all the pointers
-	newNode.Parent = nil
-	newNode.FirstChild = nil
-	newNode.LastChild = nil
-	newNode.PrevSibling = nil
-	newNode.NextSibling = nil
-	// slice field copy is by-ref when copying a struct, so must do
-	// a manual copy to ensure the separation from original node.
+	n2 := *n
+	n2.Parent = nil
+	n2.FirstChild = nil
+	n2.LastChild = nil
+	n2.PrevSibling = nil
+	n2.NextSibling = nil
 	if n.Attr != nil {
-		newNode.Attr = make([]xml.Attr, len(n.Attr))
-		// xml.Attr is struct, which is copy by-value. So that's fine.
-		copy(newNode.Attr, n.Attr)
+		n2.Attr = make([]xml.Attr, len(n.Attr))
+		copy(n2.Attr, n.Attr)
 	}
-	return &newNode
+	return &n2
 }
 
 type copyTreeCtx struct {
-	targetNode    *node.Node
-	newTargetNode *node.Node
+	target    *node.Node
+	newTarget *node.Node
 }
 
 func (ctx *copyTreeCtx) copyTree(n *node.Node) *node.Node {
-	newNode := copyNode(n)
-	for childNode := n.FirstChild; childNode != nil; childNode = childNode.NextSibling {
-		newChildNode := ctx.copyTree(childNode)
-		newChildNode.PrevSibling = nil
-		newChildNode.NextSibling = nil
-		newChildNode.Parent = newNode
-		if childNode == n.FirstChild {
-			newNode.FirstChild = newChildNode
-			newNode.LastChild = newChildNode
+	n2 := copyNode(n)
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		c2 := ctx.copyTree(c)
+		c2.PrevSibling = nil
+		c2.NextSibling = nil
+		c2.Parent = n2
+		if c == n.FirstChild {
+			n2.FirstChild = c2
+			n2.LastChild = c2
 		} else {
-			newNode.LastChild.NextSibling = newChildNode
-			newChildNode.PrevSibling = newNode.LastChild
-			newNode.LastChild = newChildNode
+			n2.LastChild.NextSibling = c2
+			c2.PrevSibling = n2.LastChild
+			n2.LastChild = c2
 		}
 	}
-	if n == ctx.targetNode {
-		ctx.newTargetNode = newNode
+	if n == ctx.target {
+		ctx.newTarget = n2
 	}
-	return newNode
+	return n2
 }
 
 // CopyTree copies the entire *Node tree the input node resides in, and returns the input node's
 // corresponding node in the new tree back.
 func CopyTree(n *node.Node) *node.Node {
-	ctx := &copyTreeCtx{targetNode: n}
+	ctx := &copyTreeCtx{target: n}
 	for ; n.Parent != nil; n = n.Parent {
 	}
 	ctx.copyTree(n)
-	return ctx.newTargetNode
+	return ctx.newTarget
 }

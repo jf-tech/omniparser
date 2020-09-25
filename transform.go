@@ -46,15 +46,13 @@ func (o *transform) Next() bool {
 			return false
 		default:
 			o.curErr = err
-			// Only wrap handler error into ErrorTransformFailed when it's continuable error; if it's not,
-			// we do want to pop the handler specific raw non-continuable error up so client can choose to
-			// make some sense out of why the operation has ceased and follow up accordingly such as cleanup,
-			// error report, stats, etc)
+			// If ingester error is continuable, wrap it into a standard generic ErrTransformFailed
+			// so caller has an easier time to deal with it. If fatal error, then leave it raw to the
+			// caller so they can decide what it is and how to proceed.
 			if o.ingester.IsContinuableError(err) {
 				o.curErr = errs.ErrTransformFailed(err.Error())
 			}
 			o.curRecord = nil
-			// return true so client can call Read() to get the error.
 			return true
 		}
 	}

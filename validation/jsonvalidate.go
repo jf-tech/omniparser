@@ -10,7 +10,7 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-// SchemaValidate validates a schema based on its json schema. Any validation error, if
+// SchemaValidate validates a schema based on its JSON schema. Any validation error, if
 // present, is context formatted, i.e. schema name is prefixed in the error msg.
 func SchemaValidate(schemaName string, schemaContent []byte, jsonSchema string) error {
 	jsonSchemaLoader := gojsonschema.NewStringLoader(jsonSchema)

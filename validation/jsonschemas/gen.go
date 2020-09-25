@@ -12,30 +12,30 @@ const schemaTemplate = `// Code generated - DO NOT EDIT.
 package validation
 
 const (
-    {{.SchemaVarName}} =
-` + "\x60" /*\x60 is this char '`' :) */ + `
-{{.Schema}}
-` + "\x60" + `
+    {{.VarName}} =
+` + "`" + `
+{{.Content}}
+` + "`" + `
 )
 `
 
 type templateVars struct {
-	SchemaVarName string
-	Schema        string
+	VarName string
+	Content string
 }
 
 func main() {
-	var jsonFileName string
-	flag.StringVar(&jsonFileName, "json", "", "The name of json schema file.")
+	var filename string
+	flag.StringVar(&filename, "json", "", "The name of json schema file.")
 	var tv templateVars
-	flag.StringVar(&tv.SchemaVarName, "varname", "", "The variable name of json schema string.")
+	flag.StringVar(&tv.VarName, "varname", "", "The variable name of json schema string.")
 	flag.Parse()
 
-	jsonFileContent, err := ioutil.ReadFile("./" + jsonFileName)
+	content, err := ioutil.ReadFile("./" + filename)
 	if err != nil {
 		os.Exit(1)
 	}
-	tv.Schema = string(jsonFileContent)
+	tv.Content = string(content)
 
 	err = template.Must(template.New("genjsonschema").Parse(schemaTemplate)).Execute(os.Stdout, tv)
 	if err != nil {

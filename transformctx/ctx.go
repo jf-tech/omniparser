@@ -4,7 +4,7 @@ import (
 	"github.com/jf-tech/omniparser/errs"
 )
 
-// Ctx contains the context object used throughout a Transform operation.
+// Ctx is the context object used throughout a Transform operation.
 type Ctx struct {
 	// InputName is the name of the input stream to be ingested and transformed.
 	InputName string
@@ -15,13 +15,8 @@ type Ctx struct {
 	CtxAwareErr errs.CtxAwareErr
 }
 
-// ExternalProperty looks up, and returns an external property value, if exists.
-func (ctx *Ctx) ExternalProperty(name string) (string, bool) {
-	if len(ctx.ExternalProperties) == 0 {
-		return "", false
-	}
-	if v, found := ctx.ExternalProperties[name]; found {
-		return v, true
-	}
-	return "", false
+// External looks up, and returns an external property value, if exists.
+func (ctx *Ctx) External(name string) (string, bool) {
+	v, found := ctx.ExternalProperties[name]
+	return v, found
 }

@@ -86,7 +86,7 @@ func containsPattern(_ *transformctx.Ctx, regexPattern string, strs ...string) (
 }
 
 func external(ctx *transformctx.Ctx, name string) (string, error) {
-	if v, found := ctx.ExternalProperty(name); found {
+	if v, found := ctx.External(name); found {
 		return v, nil
 	}
 	return "", fmt.Errorf("cannot find external property '%s'", name)

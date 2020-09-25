@@ -41,8 +41,8 @@ type schema struct {
 	handler handlers.SchemaHandler
 }
 
-// Extension allows user of omniparser be able to add new schema handlers, and/or new custom functions
-// in addition to builtin handlers and functions.
+// Extension allows user of omniparser to add new schema handlers, and/or new custom functions
+// in addition to the builtin handlers and functions.
 type Extension struct {
 	CreateHandler handlers.CreateHandlerFunc
 	HandlerParams interface{}
@@ -63,6 +63,13 @@ var (
 )
 
 // NewSchema creates a new instance of Schema. Caller can use the optional Extensions for customization.
+// NewSchema will scan through exts left to right to find the first extension with a schema handler (by
+// specifying CreateHandler field) that supports the input schema. If no ext provided or no ext with a
+// handler that supports the schema, then NewSchema will fall back to builtin handlers. If the input
+// schema is still not supported by builtin handlers, NewSchema will fail with ErrSchemaNotSupported.
+// During the ext schema support probing, NewSchema will provide to it with all the custom funcs supplied
+// in ALL the exts plus the builtin ones. If there are custom func naming collisions, the earlier exts'
+// collided funcs will be trumped by later exts'; ext funcs will be trumped by builtin ones.
 func NewSchema(name string, schemaReader io.Reader, exts ...Extension) (Schema, error) {
 	content, err := ioutil.ReadAll(schemaReader)
 	if err != nil {

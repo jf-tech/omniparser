@@ -171,7 +171,7 @@ func (p *parseCtx) parseConst(decl *Decl) (interface{}, error) {
 }
 
 func (p *parseCtx) parseExternal(decl *Decl) (interface{}, error) {
-	if v, found := p.opCtx.ExternalProperty(*decl.External); found {
+	if v, found := p.opCtx.External(*decl.External); found {
 		return normalizeAndReturnValue(decl, v)
 	}
 	return "", fmt.Errorf("cannot find external property '%s' on '%s'", *decl.External, decl.fqdn)

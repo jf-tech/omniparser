@@ -19,7 +19,7 @@ func findRoot(n *node.Node) *node.Node {
 	return n
 }
 
-func verifyPointerIntegrityInTree(t *testing.T, n *node.Node) {
+func checkPointersInTree(t *testing.T, n *node.Node) {
 	if n == nil {
 		return
 	}
@@ -30,9 +30,9 @@ func verifyPointerIntegrityInTree(t *testing.T, n *node.Node) {
 	if n.LastChild != nil {
 		assert.True(t, n == n.LastChild.Parent)
 	}
-	verifyPointerIntegrityInTree(t, n.FirstChild)
-	// There is no need to call verifyPointerIntegrityInTree(t, n.LastChild)
-	// because verifyPointerIntegrityInTree(t, n.FirstChild) will traverse all its
+	checkPointersInTree(t, n.FirstChild)
+	// There is no need to call checkPointersInTree(t, n.LastChild)
+	// because checkPointersInTree(t, n.FirstChild) will traverse all its
 	// siblings to the end, and if the last one isn't n.LastChild then it will fail.
 	parent := n.Parent // could be nil if n is the root of a tree.
 	// Verify the PrevSibling chain
@@ -65,7 +65,7 @@ type testTree struct {
 	grandChild11T, grandChild12T, grandChild21T *node.Node
 }
 
-func createTestTree(t *testing.T) *testTree {
+func newTestTree(t *testing.T) *testTree {
 	root := &node.Node{
 		Type:         node.DocumentNode,
 		Data:         "root",
@@ -137,16 +137,16 @@ func createTestTree(t *testing.T) *testTree {
 	node.AddChild(grandChild12E, grandChild12T)
 	node.AddChild(grandChild21E, grandChild21T)
 
-	verifyPointerIntegrityInTree(t, root)
-	verifyPointerIntegrityInTree(t, child1)
-	verifyPointerIntegrityInTree(t, child2)
-	verifyPointerIntegrityInTree(t, child3)
-	verifyPointerIntegrityInTree(t, grandChild11E)
-	verifyPointerIntegrityInTree(t, grandChild12E)
-	verifyPointerIntegrityInTree(t, grandChild21E)
-	verifyPointerIntegrityInTree(t, grandChild11T)
-	verifyPointerIntegrityInTree(t, grandChild12T)
-	verifyPointerIntegrityInTree(t, grandChild21T)
+	checkPointersInTree(t, root)
+	checkPointersInTree(t, child1)
+	checkPointersInTree(t, child2)
+	checkPointersInTree(t, child3)
+	checkPointersInTree(t, grandChild11E)
+	checkPointersInTree(t, grandChild12E)
+	checkPointersInTree(t, grandChild21E)
+	checkPointersInTree(t, grandChild11T)
+	checkPointersInTree(t, grandChild12T)
+	checkPointersInTree(t, grandChild21T)
 
 	return &testTree{
 		root:          root,
@@ -163,42 +163,42 @@ func createTestTree(t *testing.T) *testTree {
 }
 
 func TestReferenceTestTreeWithJSONify1(t *testing.T) {
-	cupaloy.SnapshotT(t, JSONify1(createTestTree(t).root))
+	cupaloy.SnapshotT(t, JSONify1(newTestTree(t).root))
 }
 
 func TestReferenceTestTreeWithJSONify2(t *testing.T) {
-	cupaloy.SnapshotT(t, jsons.BPJ(JSONify2(createTestTree(t).root)))
+	cupaloy.SnapshotT(t, jsons.BPJ(JSONify2(newTestTree(t).root)))
 }
 
 func TestCopyNode(t *testing.T) {
-	test := createTestTree(t)
-	child2Copy := copyNode(test.child2)
+	test := newTestTree(t)
+	c2 := copyNode(test.child2)
 
-	assert.Equal(t, test.child2.Type, child2Copy.Type)
-	assert.Equal(t, test.child2.Data, child2Copy.Data)
-	assert.Equal(t, test.child2.Prefix, child2Copy.Prefix)
-	assert.Equal(t, test.child2.NamespaceURI, child2Copy.NamespaceURI)
-	assert.Equal(t, test.child2.Attr, child2Copy.Attr)
+	assert.Equal(t, test.child2.Type, c2.Type)
+	assert.Equal(t, test.child2.Data, c2.Data)
+	assert.Equal(t, test.child2.Prefix, c2.Prefix)
+	assert.Equal(t, test.child2.NamespaceURI, c2.NamespaceURI)
+	assert.Equal(t, test.child2.Attr, c2.Attr)
 	// this is to verify the slice Attrs is copied.
-	child2Copy.Attr[0].Value = "whatever"
+	c2.Attr[0].Value = "whatever"
 	assert.Equal(t, "c2", test.child2.Attr[0].Value)
 
-	assert.True(t, child2Copy.Parent == nil)
-	assert.True(t, child2Copy.FirstChild == nil)
-	assert.True(t, child2Copy.LastChild == nil)
-	assert.True(t, child2Copy.PrevSibling == nil)
-	assert.True(t, child2Copy.NextSibling == nil)
+	assert.True(t, c2.Parent == nil)
+	assert.True(t, c2.FirstChild == nil)
+	assert.True(t, c2.LastChild == nil)
+	assert.True(t, c2.PrevSibling == nil)
+	assert.True(t, c2.NextSibling == nil)
 }
 
 func TestCopyTree(t *testing.T) {
-	test := createTestTree(t)
-	child2Copy := CopyTree(test.child2)
-	assert.True(t, test.child2 != child2Copy)
-	verifyPointerIntegrityInTree(t, child2Copy)
-	assert.Equal(t, JSONify1(test.child2), JSONify1(child2Copy))
+	test := newTestTree(t)
+	c2 := CopyTree(test.child2)
+	assert.True(t, test.child2 != c2)
+	checkPointersInTree(t, c2)
+	assert.Equal(t, JSONify1(test.child2), JSONify1(c2))
 
-	rootCopy := findRoot(child2Copy)
+	rootCopy := findRoot(c2)
 	assert.True(t, test.root != rootCopy)
-	verifyPointerIntegrityInTree(t, rootCopy)
+	checkPointersInTree(t, rootCopy)
 	assert.Equal(t, JSONify1(test.root), JSONify1(rootCopy))
 }
