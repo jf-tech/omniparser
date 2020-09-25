@@ -37,12 +37,21 @@
       $('textarea#inputText').val(samples[index].input);
       $('textarea#outputText').val("");
     }
+    const populateBuildInfo = async () => {
+      const resp = await fetch('/version', {method: 'GET'});
+      var ver = JSON.parse(await resp.text());
+      $('#buildInfo').text("(" + "build commit: " + ver["BuildSHA"] + ", build time: " + ver["BuildTime"] + ")");
+    }
+    $(document).ready(function (){
+      populateBuildInfo();
+    });
   </script>
 </head>
 <body>
   <div class="jumbotron p-3">
     <div class="container">
       <h4>OmniParser Playground</h4>
+      <div id="buildInfo"></div>
     </div>
   </div>
   <div class="container">
