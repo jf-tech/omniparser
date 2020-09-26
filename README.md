@@ -8,7 +8,7 @@ Golang Version: 1.14.2
 
 ## Demo in Playground
 
-Use https://omniparser.herokuapp.com/ (might need to wait for a few seconds for heroku instance to wake up)
+Use https://omniparser.herokuapp.com/ (may need to wait for a few seconds for heroku instance to wake up)
 for trying out schemas and inputs, yours and from sample library, to see how transform works.
 
 ![](./cli/cmd/web/playground-demo.gif)
