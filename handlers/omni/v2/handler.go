@@ -10,8 +10,8 @@ import (
 	omniv2json "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/json"
 	omniv2xml "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/xml"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
-	"github.com/jf-tech/omniparser/validation"
 	"github.com/jf-tech/omniparser/transformctx"
+	"github.com/jf-tech/omniparser/validation"
 )
 
 const (

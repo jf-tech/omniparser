@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/errs"
-	"github.com/jf-tech/omniparser/nodes"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
+	"github.com/jf-tech/omniparser/nodes"
 )
 
 func TestValidateSchema(t *testing.T) {

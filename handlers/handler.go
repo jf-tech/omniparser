@@ -58,4 +58,3 @@ type Ingester interface {
 	// context aware (such as input file name + line number) error formatting.
 	errs.CtxAwareErr
 }
-
