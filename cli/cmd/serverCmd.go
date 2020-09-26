@@ -52,12 +52,16 @@ func doServer() {
 	samplesRouter := chi.NewRouter()
 	samplesRouter.Get("/", httpGetSamples)
 
+	versionRouter := chi.NewRouter()
+	versionRouter.Get("/", httpGetVersion)
+
 	rootRouter := chi.NewRouter()
 	rootRouter.Get("/", func(w http.ResponseWriter, req *http.Request) {
 		http.FileServer(http.Dir(filepath.Join(serverCmdDir(), "web"))).ServeHTTP(w, req)
 	})
 	rootRouter.Mount("/transform", transformRouter)
 	rootRouter.Mount("/samples", samplesRouter)
+	rootRouter.Mount("/version", versionRouter)
 
 	envPort, found := os.LookupEnv("PORT")
 	if found {
@@ -192,4 +196,9 @@ func httpGetSamples(w http.ResponseWriter, r *http.Request) {
 getSampleFailure:
 	writeInternalServerError(w, "unable to get samples")
 	return
+}
+
+func httpGetVersion(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Serving GET '/version' request from %s ... ", r.RemoteAddr)
+	writeSuccess(w, build)
 }
