@@ -130,4 +130,4 @@ Take a detailed look at samples here:
     - Ability to provide a new file format support to built-in omniv2 schema handler.
 
 ## Footnotes
-- This parser is a collaboration effort from [jf-tech](https://github.com/jf-tech/), [Simon](https://github.com/liangxibing) and [Steven](http://github.com/wangjia007bond).
+- omniparser is a collaboration effort of [jf-tech](https://github.com/jf-tech/), [Simon](https://github.com/liangxibing) and [Steven](http://github.com/wangjia007bond).
