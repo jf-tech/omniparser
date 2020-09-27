@@ -128,6 +128,23 @@ func TestCreateHandler_TransformDeclarationsInCodeValidationFailed(t *testing.T)
 	assert.Nil(t, p)
 }
 
+func TestCreateHandler_HandlerParamsTypeNotRight_Fallback(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
+					Version:        version,
+					FileFormatType: "json",
+				},
+			},
+			Content:       []byte(`{"transform_declarations": { "FINAL_OUTPUT": { "xpath": "." }}}`),
+			HandlerParams: "not nil but not the right type",
+		})
+	assert.NoError(t, err)
+	assert.IsType(t, omniv2json.NewJSONFileFormat(""), p.(*schemaHandler).fileFormat)
+	assert.Equal(t, ".", p.(*schemaHandler).formatRuntime.(string))
+}
+
 func TestCreateHandler_CustomFileFormat_FormatNotSupported_Fallback(t *testing.T) {
 	p, err := CreateHandler(
 		&handlers.HandlerCtx{

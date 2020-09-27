@@ -68,7 +68,10 @@ func customParseFuncs(ctx *handlers.HandlerCtx) transform.CustomParseFuncs {
 	if ctx.HandlerParams == nil {
 		return nil
 	}
-	params := ctx.HandlerParams.(*HandlerParams)
+	params, ok := ctx.HandlerParams.(*HandlerParams)
+	if !ok {
+		return nil
+	}
 	if len(params.CustomParseFuncs) == 0 {
 		return nil
 	}
@@ -81,12 +84,16 @@ func fileFormats(ctx *handlers.HandlerCtx) []omniv2fileformat.FileFormat {
 		omniv2xml.NewXMLFileFormat(ctx.Name),
 		// TODO more built-in omniv2 file formats to come.
 	}
-	if ctx.HandlerParams != nil {
-		// If caller specifies a list of custom FileFormats, we'll give them priority
-		// over builtin ones.
-		formats = append(ctx.HandlerParams.(*HandlerParams).CustomFileFormats, formats...)
+	if ctx.HandlerParams == nil {
+		return formats
 	}
-	return formats
+	params, ok := ctx.HandlerParams.(*HandlerParams)
+	if !ok {
+		return formats
+	}
+	// If caller specifies a list of custom FileFormats, we'll give them priority
+	// over builtin ones.
+	return append(params.CustomFileFormats, formats...)
 }
 
 type schemaHandler struct {
