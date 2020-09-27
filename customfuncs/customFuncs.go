@@ -42,7 +42,6 @@ var builtinPublishedCustomFuncs = map[string]CustomFuncType{
 	"dateTimeLayoutToRFC3339": dateTimeLayoutToRFC3339,
 	"dateTimeToEpoch":         dateTimeToEpoch,
 	"dateTimeToRFC3339":       dateTimeToRFC3339,
-	"eval":                    eval,
 	"floor":                   floor,
 	"ifElse":                  ifElse,
 	"isEmpty":                 isEmpty,
@@ -59,6 +58,7 @@ var builtinHiddenBackCompatCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
 	"dateTimeToRfc3339":           dateTimeToRFC3339,       // deprecated; use dateTimeToRFC3339.
 	"dateTimeWithLayoutToRfc3339": dateTimeLayoutToRFC3339, // deprecated; use dateTimeLayoutToRFC3339.
+	"eval":                        eval,                    // deprecated; use javascript.
 	"external":                    external,                // deprecated; use "external" decl.
 }
 

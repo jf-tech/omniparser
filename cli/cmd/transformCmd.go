@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/jf-tech/go-corelib/ios"
 	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/spf13/cobra"
@@ -36,17 +37,8 @@ func init() {
 		&input, "input", "i", "", "input file (optional; if not specified, stdin/pipe is used)")
 }
 
-// TODO: move to go-corelib.
-func fileExists(file string) bool {
-	fi, err := os.Stat(file)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return !fi.IsDir()
-}
-
 func openFile(label string, filepath string) (io.ReadCloser, error) {
-	if !fileExists(schema) {
+	if !ios.FileExists(schema) {
 		return nil, fmt.Errorf("%s file '%s' does not exist", label, filepath)
 	}
 	return os.Open(filepath)

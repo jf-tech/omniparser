@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unsafe"
 
 	node "github.com/antchfx/xmlquery"
 	"github.com/dop251/goja"
+	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/strs"
 
 	"github.com/jf-tech/omniparser/nodes"
@@ -62,20 +64,75 @@ func parseArgTypeAndValue(argDecl, argValue string) (name string, value interfac
 	}
 }
 
-func javascript(_ *transformctx.Ctx, n *node.Node, js string, args ...string) (string, error) {
+// For debugging/testing purpose so we can easily disable all the caches.
+var disableCache = false
+var programCache = caches.NewLoadingCache()     // per schema so won't have too many, no need to put a hard cap.
+var runtimeCache = caches.NewLoadingCache(100)  // per transform, plus expensive, a smaller cap.
+var nodeJSONCache = caches.NewLoadingCache(100) // per transform, plus expensive, a smaller cap.
+
+func getProgram(js string) (*goja.Program, error) {
+	if disableCache {
+		return goja.Compile("", js, false)
+	}
+	p, err := programCache.Get(js, func(key interface{}) (interface{}, error) {
+		return goja.Compile("", js, false)
+	})
+	if err != nil {
+		return nil, err
+	}
+	return p.(*goja.Program), nil
+}
+
+func ptrAddrStr(p unsafe.Pointer) string {
+	return strconv.FormatUint(uint64(uintptr(p)), 16)
+}
+
+func getRuntime(ctx *transformctx.Ctx) *goja.Runtime {
+	if disableCache {
+		return goja.New()
+	}
+	// a VM can be reused as long as not across thread. We don't have access to
+	// thread/goroutine id (nor do we want to use some hack to get it, see
+	// https://golang.org/doc/faq#no_goroutine_id). Instead, we use ctx as an
+	// indicator - omniparser runs on a single thread per transform. And ctx is
+	// is per transform.
+	addr := ptrAddrStr(unsafe.Pointer(ctx))
+	vm, _ := runtimeCache.Get(addr, func(_ interface{}) (interface{}, error) {
+		return goja.New(), nil
+	})
+	return vm.(*goja.Runtime)
+}
+
+func getNodeJSON(n *node.Node) string {
+	if disableCache {
+		return nodes.JSONify2(n)
+	}
+	addr := ptrAddrStr(unsafe.Pointer(n))
+	j, _ := nodeJSONCache.Get(addr, func(_ interface{}) (interface{}, error) {
+		return nodes.JSONify2(n), nil
+	})
+	return j.(string)
+}
+
+func javascript(ctx *transformctx.Ctx, n *node.Node, js string, args ...string) (string, error) {
 	if len(args)%2 != 0 {
 		return "", errors.New("invalid number of args to 'javascript'")
 	}
-	vm := goja.New()
-	vm.Set(argNameNode, nodes.JSONify2(n))
+	program, err := getProgram(js)
+	if err != nil {
+		return "", fmt.Errorf("invalid javascript: %s", err.Error())
+	}
+	runtime := getRuntime(ctx)
 	for i := 0; i < len(args)/2; i++ {
 		n, v, err := parseArgTypeAndValue(args[i*2], args[i*2+1])
 		if err != nil {
 			return "", err
 		}
-		vm.Set(n, v)
+		runtime.Set(n, v)
 	}
-	v, err := vm.RunString(js)
+	runtime.Set(argNameNode, getNodeJSON(n))
+
+	v, err := runtime.RunProgram(program)
 	if err != nil {
 		return "", err
 	}
