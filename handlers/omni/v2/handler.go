@@ -82,7 +82,7 @@ func fileFormats(ctx *handlers.HandlerCtx) []omniv2fileformat.FileFormat {
 		// TODO more built-in omniv2 file formats to come.
 	}
 	if ctx.HandlerParams != nil {
-		// If caller specifies list custom FileFormats, we'll give them priority
+		// If caller specifies a list of custom FileFormats, we'll give them priority
 		// over builtin ones.
 		formats = append(ctx.HandlerParams.(*HandlerParams).CustomFileFormats, formats...)
 	}
