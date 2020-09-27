@@ -13,6 +13,7 @@ import (
 	"github.com/jf-tech/omniparser"
 	"github.com/jf-tech/omniparser/customfuncs"
 	omniv2 "github.com/jf-tech/omniparser/handlers/omni/v2"
+	omniv2fileformat "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat"
 	"github.com/jf-tech/omniparser/samples/omniv2/customfileformats/jsonlog/jsonlogformat"
 	"github.com/jf-tech/omniparser/transformctx"
 )
@@ -58,7 +59,9 @@ func TestSample(t *testing.T) {
 			CreateHandler: omniv2.CreateHandler, // Use the same omniv2 handler
 			HandlerParams: &omniv2.HandlerParams{
 				// But use our own FileFormat.
-				CustomFileFormat: jsonlogformat.NewJSONLogFileFormat(schemaFileBaseName),
+				CustomFileFormats: []omniv2fileformat.FileFormat{
+					jsonlogformat.NewJSONLogFileFormat(schemaFileBaseName),
+				},
 			},
 			CustomFuncs: customfuncs.CustomFuncs{
 				"normalize_severity": normalizeSeverity,

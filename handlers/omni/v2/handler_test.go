@@ -14,6 +14,7 @@ import (
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/handlers"
 	omniv2fileformat "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat"
+	omniv2json "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/json"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
 	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/transformctx"
@@ -127,24 +128,44 @@ func TestCreateHandler_TransformDeclarationsInCodeValidationFailed(t *testing.T)
 	assert.Nil(t, p)
 }
 
-func TestCreateHandler_CustomFileFormat_FormatNotSupported(t *testing.T) {
+func TestCreateHandler_HandlerParamsTypeNotRight_Fallback(t *testing.T) {
 	p, err := CreateHandler(
 		&handlers.HandlerCtx{
 			Header: header.Header{
 				ParserSettings: header.ParserSettings{
-					Version: version,
+					Version:        version,
+					FileFormatType: "json",
 				},
 			},
-			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
+			Content:       []byte(`{"transform_declarations": { "FINAL_OUTPUT": { "xpath": "." }}}`),
+			HandlerParams: "not nil but not the right type",
+		})
+	assert.NoError(t, err)
+	assert.IsType(t, omniv2json.NewJSONFileFormat(""), p.(*schemaHandler).fileFormat)
+	assert.Equal(t, ".", p.(*schemaHandler).formatRuntime.(string))
+}
+
+func TestCreateHandler_CustomFileFormat_FormatNotSupported_Fallback(t *testing.T) {
+	p, err := CreateHandler(
+		&handlers.HandlerCtx{
+			Header: header.Header{
+				ParserSettings: header.ParserSettings{
+					Version:        version,
+					FileFormatType: "json",
+				},
+			},
+			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": { "xpath": "." }}}`),
 			HandlerParams: &HandlerParams{
-				CustomFileFormat: testFileFormat{
-					validateSchemaErr: errs.ErrSchemaNotSupported,
+				CustomFileFormats: []omniv2fileformat.FileFormat{
+					// Having the custom FileFormat returns ErrSchemaNotSupported
+					// causes it to fallback and continue probing the built-in FileFormats.
+					testFileFormat{validateSchemaErr: errs.ErrSchemaNotSupported},
 				},
 			},
 		})
-	assert.Error(t, err)
-	assert.Equal(t, "schema not supported", err.Error())
-	assert.Nil(t, p)
+	assert.NoError(t, err)
+	assert.IsType(t, omniv2json.NewJSONFileFormat(""), p.(*schemaHandler).fileFormat)
+	assert.Equal(t, ".", p.(*schemaHandler).formatRuntime.(string))
 }
 
 func TestCreateHandler_CustomFileFormat_ValidationFailure(t *testing.T) {
@@ -157,8 +178,8 @@ func TestCreateHandler_CustomFileFormat_ValidationFailure(t *testing.T) {
 			},
 			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
 			HandlerParams: &HandlerParams{
-				CustomFileFormat: testFileFormat{
-					validateSchemaErr: errors.New("validation failure"),
+				CustomFileFormats: []omniv2fileformat.FileFormat{
+					testFileFormat{validateSchemaErr: errors.New("validation failure")},
 				},
 			},
 		})
@@ -177,15 +198,14 @@ func TestCreateHandler_CustomFileFormat_Success(t *testing.T) {
 			},
 			Content: []byte(`{"transform_declarations": { "FINAL_OUTPUT": {} }}`),
 			HandlerParams: &HandlerParams{
-				CustomFileFormat: testFileFormat{
-					validateSchemaRuntime: "runtime data",
+				CustomFileFormats: []omniv2fileformat.FileFormat{
+					testFileFormat{validateSchemaRuntime: "runtime data"},
 				},
 			},
 		})
 	assert.NoError(t, err)
-	plugin := p.(*schemaHandler)
-	assert.Equal(t, "runtime data", plugin.fileFormat.(testFileFormat).validateSchemaRuntime.(string))
-	assert.Equal(t, "runtime data", plugin.formatRuntime.(string))
+	assert.IsType(t, &schemaHandler{}, p)
+	assert.Equal(t, "runtime data", p.(*schemaHandler).formatRuntime.(string))
 }
 
 func TestCreateHandler_CustomParseFuncs_Success(t *testing.T) {
@@ -226,7 +246,7 @@ func TestNewIngester_CustomFileFormat_Failure(t *testing.T) {
 }
 
 func TestNewIngester_CustomFileFormat_Success(t *testing.T) {
-	plugin := &schemaHandler{
+	handler := &schemaHandler{
 		ctx: &handlers.HandlerCtx{
 			CustomFuncs: customfuncs.BuiltinCustomFuncs,
 		},
@@ -234,7 +254,7 @@ func TestNewIngester_CustomFileFormat_Success(t *testing.T) {
 		formatRuntime: "test runtime",
 	}
 	ctx := &transformctx.Ctx{InputName: "test-input"}
-	ip, err := plugin.NewIngester(ctx, strings.NewReader("test input"))
+	ip, err := handler.NewIngester(ctx, strings.NewReader("test input"))
 	assert.NoError(t, err)
 	g := ip.(*ingester)
 	assert.Equal(t, ctx, g.ctx)

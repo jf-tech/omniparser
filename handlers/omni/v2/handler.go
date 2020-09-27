@@ -20,8 +20,8 @@ const (
 
 // HandlerParams allows user of omniparser to provide omniv2 schema handler customization.
 type HandlerParams struct {
-	CustomFileFormat omniv2fileformat.FileFormat
-	CustomParseFuncs transform.CustomParseFuncs
+	CustomFileFormats []omniv2fileformat.FileFormat
+	CustomParseFuncs  transform.CustomParseFuncs
 }
 
 // CreateHandler parses, validates and creates an omni-schema based handler.
@@ -35,7 +35,8 @@ func CreateHandler(ctx *handlers.HandlerCtx) (handlers.SchemaHandler, error) {
 		// err is already context formatted.
 		return nil, err
 	}
-	finalOutputDecl, err := transform.ValidateTransformDeclarations(ctx.Content, ctx.CustomFuncs, customParseFuncs(ctx))
+	finalOutputDecl, err := transform.ValidateTransformDeclarations(
+		ctx.Content, ctx.CustomFuncs, customParseFuncs(ctx))
 	if err != nil {
 		return nil, fmt.Errorf(
 			"schema '%s' 'transform_declarations' validation failed: %s",
@@ -67,7 +68,10 @@ func customParseFuncs(ctx *handlers.HandlerCtx) transform.CustomParseFuncs {
 	if ctx.HandlerParams == nil {
 		return nil
 	}
-	params := ctx.HandlerParams.(*HandlerParams)
+	params, ok := ctx.HandlerParams.(*HandlerParams)
+	if !ok {
+		return nil
+	}
 	if len(params.CustomParseFuncs) == 0 {
 		return nil
 	}
@@ -75,17 +79,21 @@ func customParseFuncs(ctx *handlers.HandlerCtx) transform.CustomParseFuncs {
 }
 
 func fileFormats(ctx *handlers.HandlerCtx) []omniv2fileformat.FileFormat {
-	// If caller specifies a custom FileFormat, we'll use it (and it only);
-	// otherwise we'll use the builtin ones.
 	formats := []omniv2fileformat.FileFormat{
 		omniv2json.NewJSONFileFormat(ctx.Name),
 		omniv2xml.NewXMLFileFormat(ctx.Name),
-		// TODO more bulit-in omniv2 file formats to come.
+		// TODO more built-in omniv2 file formats to come.
 	}
-	if ctx.HandlerParams != nil && ctx.HandlerParams.(*HandlerParams).CustomFileFormat != nil {
-		formats = []omniv2fileformat.FileFormat{ctx.HandlerParams.(*HandlerParams).CustomFileFormat}
+	if ctx.HandlerParams == nil {
+		return formats
 	}
-	return formats
+	params, ok := ctx.HandlerParams.(*HandlerParams)
+	if !ok {
+		return formats
+	}
+	// If caller specifies a list of custom FileFormats, we'll give them priority
+	// over builtin ones.
+	return append(params.CustomFileFormats, formats...)
 }
 
 type schemaHandler struct {
