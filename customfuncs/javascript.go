@@ -81,7 +81,7 @@ func getProgram(js string) (*goja.Program, error) {
 	if disableCache {
 		return goja.Compile("", js, false)
 	}
-	p, err := JSProgramCache.Get(js, func(key interface{}) (interface{}, error) {
+	p, err := JSProgramCache.Get(js, func(interface{}) (interface{}, error) {
 		return goja.Compile("", js, false)
 	})
 	if err != nil {
@@ -104,7 +104,7 @@ func getRuntime(ctx *transformctx.Ctx) *goja.Runtime {
 	// indicator - omniparser runs on a single thread per transform. And ctx is
 	// is per transform.
 	addr := ptrAddrStr(unsafe.Pointer(ctx))
-	vm, _ := JSRuntimeCache.Get(addr, func(_ interface{}) (interface{}, error) {
+	vm, _ := JSRuntimeCache.Get(addr, func(interface{}) (interface{}, error) {
 		return goja.New(), nil
 	})
 	return vm.(*goja.Runtime)
@@ -115,13 +115,15 @@ func getNodeJSON(n *node.Node) string {
 		return nodes.JSONify2(n)
 	}
 	addr := ptrAddrStr(unsafe.Pointer(n))
-	j, _ := NodeToJSONCache.Get(addr, func(_ interface{}) (interface{}, error) {
+	j, _ := NodeToJSONCache.Get(addr, func(interface{}) (interface{}, error) {
 		return nodes.JSONify2(n), nil
 	})
 	return j.(string)
 }
 
-func javascript(ctx *transformctx.Ctx, n *node.Node, js string, args ...string) (string, error) {
+// javascriptWithContext is a custom_func that runs a javascript with optional arguments and
+// with current node JSON, if the context node is provided.
+func javascriptWithContext(ctx *transformctx.Ctx, n *node.Node, js string, args ...string) (string, error) {
 	if len(args)%2 != 0 {
 		return "", errors.New("invalid number of args to 'javascript'")
 	}
@@ -137,8 +139,9 @@ func javascript(ctx *transformctx.Ctx, n *node.Node, js string, args ...string) 
 		}
 		runtime.Set(n, v)
 	}
-	runtime.Set(argNameNode, getNodeJSON(n))
-
+	if n != nil {
+		runtime.Set(argNameNode, getNodeJSON(n))
+	}
 	v, err := runtime.RunProgram(program)
 	if err != nil {
 		return "", err
@@ -149,4 +152,10 @@ func javascript(ctx *transformctx.Ctx, n *node.Node, js string, args ...string) 
 	default:
 		return v.String(), nil
 	}
+}
+
+// javascript is a custom_func that runs a javascript with optional arguments and without context
+// node JSON provided.
+func javascript(ctx *transformctx.Ctx, js string, args ...string) (string, error) {
+	return javascriptWithContext(ctx, nil, js, args...)
 }

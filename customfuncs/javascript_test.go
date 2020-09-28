@@ -4,7 +4,6 @@ import (
 	"strings"
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/nodes"
@@ -168,7 +167,13 @@ func TestJavascript(t *testing.T) {
 		},
 	} {
 		testFn := func(t *testing.T) {
-			ret, err := javascript(nil, testNode, test.js, test.args...)
+			var ret string
+			var err error
+			if strings.Contains(test.js, "_node") {
+				ret, err = javascriptWithContext(nil, testNode, test.js, test.args...)
+			} else {
+				ret, err = javascript(nil, test.js, test.args...)
+			}
 			if test.err != "" {
 				assert.Error(t, err)
 				assert.Equal(t, test.err, err.Error())
@@ -252,7 +257,7 @@ func BenchmarkEval(b *testing.B) {
 func benchmarkJavascript(b *testing.B, cache bool) {
 	disableCache = !cache
 	for i := 0; i < b.N; i++ {
-		ret, err := javascript(nil, &node.Node{}, `
+		ret, err := javascript(nil, `
 			if (!title) {
 				""
 			} else if (!name) {

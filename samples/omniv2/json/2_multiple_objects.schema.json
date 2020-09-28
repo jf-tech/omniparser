@@ -14,7 +14,7 @@
                 "title": { "xpath": "title" },
                 "custom_func_demo": {
                     "custom_func": {
-                        "name": "javascript",
+                        "name": "javascript_with_context",
                         "args": [
                             { "const": "var n = JSON.parse(_node);n.author+'/'+n.title+'/'+press" },
                             { "const": "press:string" }, { "xpath": "../../name" }

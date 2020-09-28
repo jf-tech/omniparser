@@ -46,6 +46,7 @@ var builtinPublishedCustomFuncs = map[string]CustomFuncType{
 	"ifElse":                  ifElse,
 	"isEmpty":                 isEmpty,
 	"javascript":              javascript,
+	"javascript_with_context": javascriptWithContext,
 	"lower":                   lower,
 	"splitIntoJsonArray":      splitIntoJsonArray,
 	"substring":               substring,

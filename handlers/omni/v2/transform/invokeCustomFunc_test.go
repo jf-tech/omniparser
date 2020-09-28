@@ -74,7 +74,7 @@ func TestInvokeCustomFunc_Success(t *testing.T) {
 				{Const: strs.StrPtr("-"), kind: KindConst},
 				{
 					CustomFunc: &CustomFuncDecl{
-						Name: "javascript",
+						Name: "javascript_with_context",
 						Args: []*Decl{
 							{Const: strs.StrPtr("var n=JSON.parse(_node); '['+n.B+'/'+n.C+']'"), kind: KindConst},
 						},
