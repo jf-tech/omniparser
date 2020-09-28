@@ -194,6 +194,16 @@ func TestJavascript(t *testing.T) {
 	}
 }
 
+func TestJavascriptClearVarsAfterRunProgram(t *testing.T) {
+	r, err := javascriptWithContext(nil, nil, `v1 + v2`, "v1:int", "1", "v2:int", "2")
+	assert.NoError(t, err)
+	assert.Equal(t, "3", r)
+	// Note v1 should be cleared before second run.
+	r, err = javascriptWithContext(nil, nil, `v3 + v4 + v1`, "v3:int", "10", "v4:int", "20")
+	assert.NoError(t, err)
+	assert.Equal(t, "30", r)
+}
+
 // go test -bench=. -benchmem -benchtime=30s
 // BenchmarkIfElse-4                  	234978459	       152 ns/op	      69 B/op	       1 allocs/op
 // BenchmarkEval-4                    	19715643	      1871 ns/op	     576 B/op	      11 allocs/op

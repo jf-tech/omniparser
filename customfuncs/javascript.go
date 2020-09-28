@@ -132,12 +132,19 @@ func javascriptWithContext(ctx *transformctx.Ctx, n *node.Node, js string, args 
 		return "", fmt.Errorf("invalid javascript: %s", err.Error())
 	}
 	runtime := getRuntime(ctx)
+	var varnames []string
+	defer func() {
+		for i := range varnames {
+			runtime.Set(varnames[i], nil)
+		}
+	}()
 	for i := 0; i < len(args)/2; i++ {
-		n, v, err := parseArgTypeAndValue(args[i*2], args[i*2+1])
+		varname, val, err := parseArgTypeAndValue(args[i*2], args[i*2+1])
 		if err != nil {
 			return "", err
 		}
-		runtime.Set(n, v)
+		runtime.Set(varname, val)
+		varnames = append(varnames, varname)
 	}
 	if n != nil {
 		runtime.Set(argNameNode, getNodeJSON(n))
