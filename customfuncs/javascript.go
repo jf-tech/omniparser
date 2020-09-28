@@ -64,17 +64,24 @@ func parseArgTypeAndValue(argDecl, argValue string) (name string, value interfac
 	}
 }
 
-// For debugging/testing purpose so we can easily disable all the caches.
+// For debugging/testing purpose so we can easily disable all the caches. But not exported. We always
+// want caching in production.
 var disableCache = false
-var programCache = caches.NewLoadingCache()     // per schema so won't have too many, no need to put a hard cap.
-var runtimeCache = caches.NewLoadingCache(100)  // per transform, plus expensive, a smaller cap.
-var nodeJSONCache = caches.NewLoadingCache(100) // per transform, plus expensive, a smaller cap.
+
+// JSProgramCache caches *goja.Program. A *goja.Program is compiled javascript and it can be used
+// across multiple goroutines and across different *goja.Runtime.
+var JSProgramCache = caches.NewLoadingCache() // per schema so won't have too many, no need to put a hard cap.
+// JSRuntimeCache caches *goja.Runtime. A *goja.Runtime is a javascript VM. It can *not* be shared
+// across multiple goroutines.
+var JSRuntimeCache = caches.NewLoadingCache(100) // per transform, plus expensive, a smaller cap.
+// NodeToJSONCache caches *node.Node tree to translated JSON string.
+var NodeToJSONCache = caches.NewLoadingCache(100) // per transform, plus expensive, a smaller cap.
 
 func getProgram(js string) (*goja.Program, error) {
 	if disableCache {
 		return goja.Compile("", js, false)
 	}
-	p, err := programCache.Get(js, func(key interface{}) (interface{}, error) {
+	p, err := JSProgramCache.Get(js, func(key interface{}) (interface{}, error) {
 		return goja.Compile("", js, false)
 	})
 	if err != nil {
@@ -97,7 +104,7 @@ func getRuntime(ctx *transformctx.Ctx) *goja.Runtime {
 	// indicator - omniparser runs on a single thread per transform. And ctx is
 	// is per transform.
 	addr := ptrAddrStr(unsafe.Pointer(ctx))
-	vm, _ := runtimeCache.Get(addr, func(_ interface{}) (interface{}, error) {
+	vm, _ := JSRuntimeCache.Get(addr, func(_ interface{}) (interface{}, error) {
 		return goja.New(), nil
 	})
 	return vm.(*goja.Runtime)
@@ -108,7 +115,7 @@ func getNodeJSON(n *node.Node) string {
 		return nodes.JSONify2(n)
 	}
 	addr := ptrAddrStr(unsafe.Pointer(n))
-	j, _ := nodeJSONCache.Get(addr, func(_ interface{}) (interface{}, error) {
+	j, _ := NodeToJSONCache.Get(addr, func(_ interface{}) (interface{}, error) {
 		return nodes.JSONify2(n), nil
 	})
 	return j.(string)
