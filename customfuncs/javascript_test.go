@@ -4,7 +4,6 @@ import (
 	"strings"
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/nodes"
@@ -128,7 +127,14 @@ func TestJavascript(t *testing.T) {
 			name:     "invalid javascript",
 			js:       "var;",
 			args:     nil,
-			err:      "SyntaxError: (anonymous): Line 1:4 Unexpected token ; (and 1 more errors)",
+			err:      "invalid javascript: SyntaxError: (anonymous): Line 1:4 Unexpected token ; (and 1 more errors)",
+			expected: "",
+		},
+		{
+			name:     "javascript throws",
+			js:       "throw 'failure';",
+			args:     nil,
+			err:      "failure at <eval>:1:7(1)",
 			expected: "",
 		},
 		{
@@ -160,8 +166,14 @@ func TestJavascript(t *testing.T) {
 			expected: "",
 		},
 	} {
-		t.Run(test.name, func(t *testing.T) {
-			ret, err := javascript(nil, testNode, test.js, test.args...)
+		testFn := func(t *testing.T) {
+			var ret string
+			var err error
+			if strings.Contains(test.js, "_node") {
+				ret, err = javascriptWithContext(nil, testNode, test.js, test.args...)
+			} else {
+				ret, err = javascript(nil, test.js, test.args...)
+			}
 			if test.err != "" {
 				assert.Error(t, err)
 				assert.Equal(t, test.err, err.Error())
@@ -170,19 +182,34 @@ func TestJavascript(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, test.expected, ret)
 			}
+		}
+		t.Run(test.name+" (without cache)", func(t *testing.T) {
+			disableCache = true
+			testFn(t)
+		})
+		t.Run(test.name+" (with cache)", func(t *testing.T) {
+			disableCache = false
+			testFn(t)
 		})
 	}
 }
 
-// The following benchmarks compare 'ifElse' vs 'eval' vs 'javascript' and show that
-// while the flexibility and power increase from left to right, the performance
-// decreases, dramatically:
-//
-// BenchmarkIfElse-4       	 4385941	       270 ns/op	     133 B/op	       2 allocs/op
-// BenchmarkEval-4         	  642870	      1843 ns/op	     576 B/op	      11 allocs/op
-// BenchmarkJavascript-4   	    5566	    214070 ns/op	  136756 B/op	    1704 allocs/op
-//
-// So use 'javascript' only when expression/logic complexity warrants the performance tradeoff.
+func TestJavascriptClearVarsAfterRunProgram(t *testing.T) {
+	r, err := javascriptWithContext(nil, nil, `v1 + v2`, "v1:int", "1", "v2:int", "2")
+	assert.NoError(t, err)
+	assert.Equal(t, "3", r)
+	// Note v1 should be cleared before second run.
+	r, err = javascriptWithContext(nil, nil, `v3 + v4 + v1`, "v3:int", "10", "v4:int", "20")
+	assert.NoError(t, err)
+	assert.Equal(t, "30", r)
+}
+
+// go test -bench=. -benchmem -benchtime=30s
+// BenchmarkIfElse-4                  	234978459	       152 ns/op	      69 B/op	       1 allocs/op
+// BenchmarkEval-4                    	19715643	      1871 ns/op	     576 B/op	      11 allocs/op
+// BenchmarkJavascriptWithNoCache-4   	  165547	    218455 ns/op	  136733 B/op	    1704 allocs/op
+// BenchmarkJavascriptWithCache-4     	17685051	      2047 ns/op	     272 B/op	      15 allocs/op
+
 var (
 	benchTitles  = []string{"", "Dr", "Sir"}
 	benchNames   = []string{"", "Jane", "John"}
@@ -237,9 +264,10 @@ func BenchmarkEval(b *testing.B) {
 	}
 }
 
-func BenchmarkJavascript(b *testing.B) {
+func benchmarkJavascript(b *testing.B, cache bool) {
+	disableCache = !cache
 	for i := 0; i < b.N; i++ {
-		ret, err := javascript(nil, &node.Node{}, `
+		ret, err := javascript(nil, `
 			if (!title) {
 				""
 			} else if (!name) {
@@ -256,4 +284,12 @@ func BenchmarkJavascript(b *testing.B) {
 			b.FailNow()
 		}
 	}
+}
+
+func BenchmarkJavascriptWithNoCache(b *testing.B) {
+	benchmarkJavascript(b, false)
+}
+
+func BenchmarkJavascriptWithCache(b *testing.B) {
+	benchmarkJavascript(b, true)
 }

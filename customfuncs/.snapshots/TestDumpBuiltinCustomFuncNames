@@ -14,6 +14,7 @@
 	"ifElse",
 	"isEmpty",
 	"javascript",
+	"javascript_with_context",
 	"lower",
 	"splitIntoJsonArray",
 	"substring",
