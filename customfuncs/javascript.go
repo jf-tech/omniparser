@@ -135,7 +135,7 @@ func javascriptWithContext(ctx *transformctx.Ctx, n *node.Node, js string, args 
 	var varnames []string
 	defer func() {
 		for i := range varnames {
-			runtime.Set(varnames[i], nil)
+			runtime.Set(varnames[i], goja.Undefined())
 		}
 	}()
 	for i := 0; i < len(args)/2; i++ {

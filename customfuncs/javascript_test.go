@@ -195,11 +195,16 @@ func TestJavascript(t *testing.T) {
 }
 
 func TestJavascriptClearVarsAfterRunProgram(t *testing.T) {
-	r, err := javascriptWithContext(nil, nil, `v1 + v2`, "v1:int", "1", "v2:int", "2")
+	r, err := javascript(nil, `v1 + v2`, "v1:int", "1", "v2:int", "2")
 	assert.NoError(t, err)
 	assert.Equal(t, "3", r)
 	// Note v1 should be cleared before second run.
-	r, err = javascriptWithContext(nil, nil, `v3 + v4 + v1`, "v3:int", "10", "v4:int", "20")
+	r, err = javascript(nil, `v3 + v4 + v1`, "v3:int", "10", "v4:int", "20")
+	assert.Error(t, err)
+	assert.Equal(t, "result is NaN", err.Error())
+	assert.Equal(t, "", r)
+	// Run again without using v1.
+	r, err = javascript(nil, `v3 + v4`, "v3:int", "10", "v4:int", "20")
 	assert.NoError(t, err)
 	assert.Equal(t, "30", r)
 }
