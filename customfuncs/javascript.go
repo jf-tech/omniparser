@@ -73,8 +73,15 @@ var disableCache = false
 var JSProgramCache = caches.NewLoadingCache() // per schema so won't have too many, no need to put a hard cap.
 // JSRuntimeCache caches *goja.Runtime. A *goja.Runtime is a javascript VM. It can *not* be shared
 // across multiple goroutines.
+// TODO still not gonna work well in scenario where a service handles many requests, each of which does a simple
+// transform (that only deals with one record) involving a javascript custom_func. We had use case where each input
+// was a small json and a transform and ctx is created for each input and does a fast/simple transform. We probably
+// need to consider a workerpool for JS runtime so it can be shared globally. Consider using
+// https://github.com/gammazero/workerpool/
 var JSRuntimeCache = caches.NewLoadingCache(100) // per transform, plus expensive, a smaller cap.
 // NodeToJSONCache caches *node.Node tree to translated JSON string.
+// TODO if in the future we have *node.Node allocation recycling, then this by-addr caching won't work.
+// Ideally, we should have a node ID which refreshes upon recycling.
 var NodeToJSONCache = caches.NewLoadingCache(100) // per transform, plus expensive, a smaller cap.
 
 func getProgram(js string) (*goja.Program, error) {
