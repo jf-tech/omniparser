@@ -132,6 +132,8 @@ func normalizeAndReturnValue(decl *Decl, value interface{}) (interface{}, error)
 func (p *parseCtx) ParseNode(n *node.Node, decl *Decl) (interface{}, error) {
 	var cacheKey string
 	if !p.disableTransformCache {
+		// TODO if in the future we have *node.Node allocation recycling, then this by-addr caching won't work.
+		// Ideally, we should have a node ID which refreshes upon recycling.
 		cacheKey = nodePtrAddrStr(n) + "/" + decl.hash
 		if cacheValue, found := p.transformCache[cacheKey]; found {
 			return cacheValue, nil
