@@ -1,7 +1,6 @@
 package customfuncs
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -76,11 +75,11 @@ func coalesce(_ *transformctx.Ctx, strs ...string) (string, error) {
 }
 
 func concat(_ *transformctx.Ctx, strs ...string) (string, error) {
-	var b bytes.Buffer
+	var w strings.Builder
 	for _, s := range strs {
-		b.WriteString(s)
+		w.WriteString(s)
 	}
-	return b.String(), nil
+	return w.String(), nil
 }
 
 func containsPattern(_ *transformctx.Ctx, regexPattern string, strs ...string) (string, error) {
