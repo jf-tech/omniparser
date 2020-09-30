@@ -86,10 +86,6 @@ func resetCaches() {
 			// keep a minimum 10 idling VMs always around to reduce startup latency.
 			cfg.MinIdle = 10
 			cfg.TimeBetweenEvictionRuns = cfg.MinEvictableIdleTime // turn on eviction
-			// we don't ever want to block - we'd rather run slowly but let transform continue. So if
-			// pool is exhausted, just fail BorrowObject call and we'll create a new vm runtime (slowly)
-			// and continue.
-			cfg.BlockWhenExhausted = false
 			return cfg
 		}())
 	// per transform, plus expensive, a smaller cap.
