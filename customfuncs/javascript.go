@@ -29,17 +29,17 @@ const (
 )
 
 func parseArgTypeAndValue(argDecl, argValue string) (name string, value interface{}, err error) {
-	declParts := strings.Split(argDecl, ":")
-	if len(declParts) != 2 {
+	col := strings.IndexRune(argDecl, ':')
+	if col < 0 {
 		return "", nil, fmt.Errorf(
 			"arg decl must be in format of '<arg_name>:<arg_type>', instead got '%s'", argDecl)
 	}
-	name = declParts[0]
+	name = argDecl[:col]
 	if !strs.IsStrNonBlank(name) {
 		return "", nil, fmt.Errorf(
 			"arg_name in '<arg_name>:<arg_type>' cannot be a blank string, instead got '%s'", argDecl)
 	}
-	switch declParts[1] {
+	switch argDecl[col+1:] {
 	case argTypeString:
 		return name, argValue, nil
 	case argTypeInt:
@@ -61,7 +61,7 @@ func parseArgTypeAndValue(argDecl, argValue string) (name string, value interfac
 		}
 		return name, b, nil
 	default:
-		return "", nil, fmt.Errorf("arg_type '%s' in '<arg_name>:<arg_type>' is not supported", declParts[1])
+		return "", nil, fmt.Errorf("arg_type '%s' in '<arg_name>:<arg_type>' is not supported", argDecl[col+1:])
 	}
 }
 
