@@ -1,13 +1,10 @@
 package customfuncs
 
 import (
-	"context"
-	"errors"
 	"strings"
 	"sync"
 	"testing"
 
-	pool "github.com/jolestar/go-commons-pool"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/nodes"
@@ -209,26 +206,6 @@ func TestJavascript(t *testing.T) {
 	}
 }
 
-func TestJSRuntimePoolFailAndFallback(t *testing.T) {
-	prepCachesForTest(withCache)
-	JSRuntimePool = pool.NewObjectPoolWithDefaultConfig(
-		context.Background(),
-		pool.NewPooledObjectFactorySimple(
-			func(context.Context) (interface{}, error) {
-				return nil, errors.New("factory failure")
-			}))
-	assertPoolSize := func(size int) {
-		assert.Equal(t, size, JSRuntimePool.GetNumActive()+JSRuntimePool.GetNumIdle())
-	}
-	assertPoolSize(0)
-	// The runtime factory will fail but javascript call will still succeed with
-	// an ad-hoc vm runtime created and no vm runtime added into the pool.
-	r, err := javascript(nil, "1 + 2")
-	assert.NoError(t, err)
-	assert.Equal(t, "3", r)
-	assertPoolSize(0)
-}
-
 func TestJavascriptClearVarsAfterRunProgram(t *testing.T) {
 	prepCachesForTest(noCache)
 	r, err := javascript(nil, `v1 + v2`, "v1:int", "1", "v2:int", "2")
@@ -246,17 +223,12 @@ func TestJavascriptClearVarsAfterRunProgram(t *testing.T) {
 }
 
 // go test -bench=. -benchmem -benchtime=30s
-// BenchmarkIfElse-4                            	218432557	       156 ns/op	      69 B/op	       1 allocs/op
-// BenchmarkEval-4                              	19546273	      1876 ns/op	     576 B/op	      11 allocs/op
-// BenchmarkJavascriptWithNoCache-4             	  164118	    221029 ns/op	  136686 B/op	    1701 allocs/op
-// BenchmarkJavascriptWithCache-4               	13124720	      2789 ns/op	     224 B/op	      11 allocs/op
-// BenchmarkConcurrentJavascriptWithNoCache-4   	    1099	  33752282 ns/op	27344894 B/op	  340254 allocs/op
-// BenchmarkConcurrentJavascriptWithCache-4     	   51764	    698640 ns/op	   44879 B/op	    2335 allocs/op
-// --- BENCH: BenchmarkConcurrentJavascriptWithCache-4
-//     javascript_test.go:344: pool size: 4
-//     javascript_test.go:344: pool size: 5
-//     javascript_test.go:344: pool size: 47
-//     javascript_test.go:344: pool size: 68
+// BenchmarkIfElse-4                            	236776694	       152 ns/op	      69 B/op	       1 allocs/op
+// BenchmarkEval-4                              	19235595	      1872 ns/op	     576 B/op	      11 allocs/op
+// BenchmarkJavascriptWithNoCache-4             	  171214	    214641 ns/op	  136674 B/op	    1700 allocs/op
+// BenchmarkJavascriptWithCache-4               	18326389	      1976 ns/op	     193 B/op	      10 allocs/op
+// BenchmarkConcurrentJavascriptWithNoCache-4   	    1082	  33534133 ns/op	27341317 B/op	  340052 allocs/op
+// BenchmarkConcurrentJavascriptWithCache-4     	   59512	    564495 ns/op	   39899 B/op	    2152 allocs/op
 
 var (
 	benchTitles  = []string{"", "Dr", "Sir"}
@@ -382,5 +354,4 @@ func BenchmarkConcurrentJavascriptWithNoCache(b *testing.B) {
 func BenchmarkConcurrentJavascriptWithCache(b *testing.B) {
 	prepCachesForTest(withCache)
 	concurrentBenchmarkJavascript(b)
-	b.Logf("pool size: %d", JSRuntimePool.GetNumActive()+JSRuntimePool.GetNumIdle())
 }

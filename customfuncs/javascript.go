@@ -1,18 +1,17 @@
 package customfuncs
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"unsafe"
 
 	node "github.com/antchfx/xmlquery"
 	"github.com/dop251/goja"
 	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/strs"
-	pool "github.com/jolestar/go-commons-pool"
 
 	"github.com/jf-tech/omniparser/nodes"
 	"github.com/jf-tech/omniparser/transformctx"
@@ -66,47 +65,34 @@ func parseArgTypeAndValue(argDecl, argValue string) (name string, value interfac
 	}
 }
 
-// For debugging/testing purpose so we can easily disable all the caches. But not exported. We always
-// want caching in production.
-var disableCaching = false
-
-func resetCaches() {
-	// per schema so won't have too many, no need to put a small cap (default is 64k)
-	JSProgramCache = caches.NewLoadingCache()
-	JSRuntimePool = pool.NewObjectPool(
-		context.Background(),
-		pool.NewPooledObjectFactorySimple(
-			func(context.Context) (interface{}, error) {
-				return goja.New(), nil
-			}),
-		func() *pool.ObjectPoolConfig {
-			cfg := pool.NewDefaultPoolConfig()
-			cfg.MaxTotal = -1 // no limit
-			cfg.MaxIdle = -1  // no limit
-			// keep a minimum 10 idling VMs always around to reduce startup latency.
-			cfg.MinIdle = 10
-			cfg.TimeBetweenEvictionRuns = cfg.MinEvictableIdleTime // turn on eviction
-			return cfg
-		}())
-	// per transform, plus expensive, a smaller cap.
-	NodeToJSONCache = caches.NewLoadingCache(100)
-}
-
 // JSProgramCache caches *goja.Program. A *goja.Program is compiled javascript and it can be used
 // across multiple goroutines and across different *goja.Runtime. If default loading cache capacity
 // is not desirable, change JSProgramCache to a loading cache with a different capacity at package
 // init time. Be mindful this will be shared across all use cases inside your process.
 var JSProgramCache *caches.LoadingCache
 
-// JSRuntimePool caches *goja.Runtime whose creation is expensive such that we want to have a pool
+// jsRuntimePool caches *goja.Runtime whose creation is expensive such that we want to have a pool
 // of them to amortize the initialization cost. However, a *goja.Runtime cannot be used by two/more
-// javascript's at the same time, thus the use of resource pool. If the default pool configuration is
-// not desirable, change JSRuntimePool with a different config during package init time. Be mindful
-// this will be shared across all use cases inside your process.
-var JSRuntimePool *pool.ObjectPool
+// javascript's at the same time, thus the use of sync.Pool. Not user customizable.
+// var jsRuntimePool *resPool
+var jsRuntimePool sync.Pool
 
 // NodeToJSONCache caches *node.Node to JSON translations.
 var NodeToJSONCache *caches.LoadingCache
+
+// For debugging/testing purpose so we can easily disable all the caches. But not exported. We always
+// want caching in production.
+var disableCaching = false
+
+func resetCaches() {
+	JSProgramCache = caches.NewLoadingCache()
+	jsRuntimePool = sync.Pool{
+		New: func() interface{} {
+			return goja.New()
+		},
+	}
+	NodeToJSONCache = caches.NewLoadingCache()
+}
 
 func init() {
 	resetCaches()
@@ -140,15 +126,12 @@ func getNodeJSON(n *node.Node) string {
 
 func execProgram(program *goja.Program, args map[string]interface{}) (goja.Value, error) {
 	var vm *goja.Runtime
+	var poolObj interface{}
 	if disableCaching {
 		vm = goja.New()
 	} else {
-		poolObj, err := JSRuntimePool.BorrowObject(context.Background())
-		if err != nil {
-			vm = goja.New()
-		} else {
-			vm = poolObj.(*goja.Runtime)
-		}
+		poolObj = jsRuntimePool.Get()
+		vm = poolObj.(*goja.Runtime)
 	}
 	defer func() {
 		if vm != nil {
@@ -156,7 +139,9 @@ func execProgram(program *goja.Program, args map[string]interface{}) (goja.Value
 			for arg := range args {
 				vm.Set(arg, goja.Undefined())
 			}
-			_ = JSRuntimePool.ReturnObject(context.Background(), vm)
+		}
+		if poolObj != nil {
+			jsRuntimePool.Put(poolObj)
 		}
 	}()
 	for arg, val := range args {
