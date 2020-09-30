@@ -1,6 +1,7 @@
 package customfuncs
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	"github.com/dop251/goja"
 	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/strs"
+	pool "github.com/jolestar/go-commons-pool"
 
 	"github.com/jf-tech/omniparser/nodes"
 	"github.com/jf-tech/omniparser/transformctx"
@@ -66,26 +68,56 @@ func parseArgTypeAndValue(argDecl, argValue string) (name string, value interfac
 
 // For debugging/testing purpose so we can easily disable all the caches. But not exported. We always
 // want caching in production.
-var disableCache = false
+var disableCaching = false
+
+func resetCaches() {
+	// per schema so won't have too many, no need to put a small cap (default is 64k)
+	JSProgramCache = caches.NewLoadingCache()
+	JSRuntimePool = pool.NewObjectPool(
+		context.Background(),
+		pool.NewPooledObjectFactorySimple(
+			func(context.Context) (interface{}, error) {
+				return goja.New(), nil
+			}),
+		func() *pool.ObjectPoolConfig {
+			cfg := pool.NewDefaultPoolConfig()
+			cfg.MaxTotal = -1 // no limit
+			cfg.MaxIdle = -1  // no limit
+			// keep a minimum 10 idling VMs always around to reduce startup latency.
+			cfg.MinIdle = 10
+			cfg.TimeBetweenEvictionRuns = cfg.MinEvictableIdleTime // turn on eviction
+			// we don't ever want to block - we'd rather run slowly but let transform continue. So if
+			// pool is exhausted, just fail BorrowObject call and we'll create a new vm runtime (slowly)
+			// and continue.
+			cfg.BlockWhenExhausted = false
+			return cfg
+		}())
+	// per transform, plus expensive, a smaller cap.
+	NodeToJSONCache = caches.NewLoadingCache(100)
+}
 
 // JSProgramCache caches *goja.Program. A *goja.Program is compiled javascript and it can be used
-// across multiple goroutines and across different *goja.Runtime.
-var JSProgramCache = caches.NewLoadingCache() // per schema so won't have too many, no need to put a hard cap.
-// JSRuntimeCache caches *goja.Runtime. A *goja.Runtime is a javascript VM. It can *not* be shared
-// across multiple goroutines.
-// TODO still not gonna work well in scenario where a service handles many requests, each of which does a simple
-// transform (that only deals with one record) involving a javascript custom_func. We had use case where each input
-// was a small json and a transform and ctx is created for each input and does a fast/simple transform. We probably
-// need to consider a workerpool for JS runtime so it can be shared globally. Consider using
-// https://github.com/gammazero/workerpool/
-var JSRuntimeCache = caches.NewLoadingCache(100) // per transform, plus expensive, a smaller cap.
-// NodeToJSONCache caches *node.Node tree to translated JSON string.
-// TODO if in the future we have *node.Node allocation recycling, then this by-addr caching won't work.
-// Ideally, we should have a node ID which refreshes upon recycling.
-var NodeToJSONCache = caches.NewLoadingCache(100) // per transform, plus expensive, a smaller cap.
+// across multiple goroutines and across different *goja.Runtime. If default loading cache capacity
+// is not desirable, change JSProgramCache to a loading cache with a different capacity at package
+// init time. Be mindful this will be shared across all use cases inside your process.
+var JSProgramCache *caches.LoadingCache
+
+// JSRuntimePool caches *goja.Runtime whose creation is expensive such that we want to have a pool
+// of them to amortize the initialization cost. However, a *goja.Runtime cannot be used by two/more
+// javascript's at the same time, thus the use of resource pool. If the default pool configuration is
+// not desirable, change JSRuntimePool with a different config during package init time. Be mindful
+// this will be shared across all use cases inside your process.
+var JSRuntimePool *pool.ObjectPool
+
+// NodeToJSONCache caches *node.Node to JSON translations.
+var NodeToJSONCache *caches.LoadingCache
+
+func init() {
+	resetCaches()
+}
 
 func getProgram(js string) (*goja.Program, error) {
-	if disableCache {
+	if disableCaching {
 		return goja.Compile("", js, false)
 	}
 	p, err := JSProgramCache.Get(js, func(interface{}) (interface{}, error) {
@@ -97,39 +129,48 @@ func getProgram(js string) (*goja.Program, error) {
 	return p.(*goja.Program), nil
 }
 
-func ptrAddrStr(p unsafe.Pointer) string {
-	return strconv.FormatUint(uint64(uintptr(p)), 16)
-}
-
-func getRuntime(ctx *transformctx.Ctx) *goja.Runtime {
-	if disableCache {
-		return goja.New()
-	}
-	// a VM can be reused as long as not across thread. We don't have access to
-	// thread/goroutine id (nor do we want to use some hack to get it, see
-	// https://golang.org/doc/faq#no_goroutine_id). Instead, we use ctx as an
-	// indicator - omniparser runs on a single thread per transform. And ctx is
-	// is per transform.
-	addr := ptrAddrStr(unsafe.Pointer(ctx))
-	vm, _ := JSRuntimeCache.Get(addr, func(interface{}) (interface{}, error) {
-		return goja.New(), nil
-	})
-	return vm.(*goja.Runtime)
-}
-
 func getNodeJSON(n *node.Node) string {
-	if disableCache {
+	if disableCaching {
 		return nodes.JSONify2(n)
 	}
-	addr := ptrAddrStr(unsafe.Pointer(n))
+	// TODO if in the future we have *node.Node allocation recycling, then this by-addr caching
+	// won't work. Ideally, we should have a node ID which refreshes upon recycling.
+	addr := strconv.FormatUint(uint64(uintptr(unsafe.Pointer(n))), 16)
 	j, _ := NodeToJSONCache.Get(addr, func(interface{}) (interface{}, error) {
 		return nodes.JSONify2(n), nil
 	})
 	return j.(string)
 }
 
+func execProgram(program *goja.Program, args map[string]interface{}) (goja.Value, error) {
+	var vm *goja.Runtime
+	if disableCaching {
+		vm = goja.New()
+	} else {
+		poolObj, err := JSRuntimePool.BorrowObject(context.Background())
+		if err != nil {
+			vm = goja.New()
+		} else {
+			vm = poolObj.(*goja.Runtime)
+		}
+	}
+	defer func() {
+		if vm != nil {
+			// wipe out all the args (by setting them to undefined) in prep for next exec.
+			for arg := range args {
+				vm.Set(arg, goja.Undefined())
+			}
+			_ = JSRuntimePool.ReturnObject(context.Background(), vm)
+		}
+	}()
+	for arg, val := range args {
+		vm.Set(arg, val)
+	}
+	return vm.RunProgram(program)
+}
+
 // javascriptWithContext is a custom_func that runs a javascript with optional arguments and
-// with current node JSON, if the context node is provided.
+// with current node JSON, if node is provided.
 func javascriptWithContext(ctx *transformctx.Ctx, n *node.Node, js string, args ...string) (string, error) {
 	if len(args)%2 != 0 {
 		return "", errors.New("invalid number of args to 'javascript'")
@@ -138,25 +179,18 @@ func javascriptWithContext(ctx *transformctx.Ctx, n *node.Node, js string, args 
 	if err != nil {
 		return "", fmt.Errorf("invalid javascript: %s", err.Error())
 	}
-	runtime := getRuntime(ctx)
-	var varnames []string
-	defer func() {
-		for i := range varnames {
-			runtime.Set(varnames[i], goja.Undefined())
-		}
-	}()
+	vmArgs := make(map[string]interface{})
 	for i := 0; i < len(args)/2; i++ {
-		varname, val, err := parseArgTypeAndValue(args[i*2], args[i*2+1])
+		argName, val, err := parseArgTypeAndValue(args[i*2], args[i*2+1])
 		if err != nil {
 			return "", err
 		}
-		runtime.Set(varname, val)
-		varnames = append(varnames, varname)
+		vmArgs[argName] = val
 	}
 	if n != nil {
-		runtime.Set(argNameNode, getNodeJSON(n))
+		vmArgs[argNameNode] = getNodeJSON(n)
 	}
-	v, err := runtime.RunProgram(program)
+	v, err := execProgram(program, vmArgs)
 	if err != nil {
 		return "", err
 	}
