@@ -48,6 +48,8 @@ func init() {
 	}
 }
 
+// Benchmark2_Multiple_Objects-4   	    3112	    390401 ns/op	   98305 B/op	    2343 allocs/op
+
 func Benchmark2_Multiple_Objects(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		transform, err := benchSchema.NewTransform(
