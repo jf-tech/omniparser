@@ -74,7 +74,6 @@ var JSProgramCache *caches.LoadingCache
 // jsRuntimePool caches *goja.Runtime whose creation is expensive such that we want to have a pool
 // of them to amortize the initialization cost. However, a *goja.Runtime cannot be used by two/more
 // javascript's at the same time, thus the use of sync.Pool. Not user customizable.
-// var jsRuntimePool *resPool
 var jsRuntimePool sync.Pool
 
 // NodeToJSONCache caches *node.Node to JSON translations.
