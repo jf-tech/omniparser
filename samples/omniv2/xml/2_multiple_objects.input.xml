@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <lb0:library xmlns:lb0="...">
-    <books>
+    <lb0:books>
         <header>
             <publisher>Scholastic Press</publisher>
         </header>
@@ -13,8 +13,8 @@
             <year>1998</year>
         </book>
         <footer>Harry Potter Collection</footer>
-    </books>
-    <books>
+    </lb0:books>
+    <lb0:books>
         <header>
             <publisher>Harper &amp; Brothers</publisher>
         </header>
@@ -27,5 +27,5 @@
             <year>1900</year>
         </book>
         <footer>Kids Reading Collection</footer>
-    </books>
+    </lb0:books>
 </lb0:library>

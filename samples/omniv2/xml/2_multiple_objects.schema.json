@@ -4,7 +4,7 @@
         "file_format_type": "xml"
     },
     "transform_declarations": {
-        "FINAL_OUTPUT": { "xpath": "lb0:library/books", "object": {
+        "FINAL_OUTPUT": { "xpath": "lb0:library/lb0:books", "object": {
             "authors": { "array": [ { "xpath": "book/author" } ] },
             "book_titles": { "array": [ { "xpath": "book/@title" } ] },
             "books": { "array": [ { "xpath": "book", "template": "book_template" } ] },
