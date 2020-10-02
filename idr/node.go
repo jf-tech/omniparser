@@ -5,17 +5,17 @@ import (
 	"strings"
 )
 
-// NodeType is the type of a Node.
+// NodeType is the type of a Node in an IDR.
 type NodeType uint
 
 const (
-	// DocumentNode is the root of Node tree.
+	// DocumentNode is the type of the root Node in an IDR tree.
 	DocumentNode NodeType = iota
-	// ElementNode is an element.
+	// ElementNode is the type of an element Node in an IDR tree.
 	ElementNode
-	// TextNode is the text content of a node.
+	// TextNode is the type of an text/data Node in an IDR tree.
 	TextNode
-	// AttributeNode is an attribute of element.
+	// AttributeNode is the type of an attribute Node in an IDR tree.
 	AttributeNode
 )
 
@@ -35,11 +35,14 @@ func (nt NodeType) String() string {
 	}
 }
 
-// Node represents a node of element/data in an IDR ingested and created by the parser.
+// Node represents a node of element/data in an IDR (intermediate data representation) ingested and created
+// by the omniparser.
 // Credit: this is by and large a copy and some adaptation from
 // https://github.com/antchfx/xmlquery/blob/master/node.go. The reasons we want to have our own struct:
 // - more stability
-// - one struct to represent XML/JSON/EDI/CSV/txt/etc. Vs antchfx's work have one struct for each format.
+// - one struct to represent XML/JSON/EDI/CSV/txt/etc. Vs antchfx's work have one struct (in each repo)
+//   for each format.
+// - Node allocation recycling.
 type Node struct {
 	Parent, FirstChild, LastChild, PrevSibling, NextSibling *Node
 
@@ -49,7 +52,7 @@ type Node struct {
 	FormatSpecific interface{}
 }
 
-// CreateNode creates a generic *Node
+// CreateNode creates a generic *Node.
 func CreateNode(ntype NodeType, data string) *Node {
 	return &Node{
 		Type: ntype,
@@ -57,8 +60,8 @@ func CreateNode(ntype NodeType, data string) *Node {
 	}
 }
 
-// InnerText returns a Node's children's texts all concatenated.
-// Note in an XML Node tree, any AttributeNode's text will be ignored.
+// InnerText returns a Node's children's texts concatenated.
+// Note (in an XML IDR tree) none of the AttributeNode's text will be included.
 func (n *Node) InnerText() string {
 	var s strings.Builder
 	var captureText func(*Node)
@@ -92,8 +95,8 @@ func AddChild(parent, n *Node) {
 	parent.LastChild = n
 }
 
-// RemoveFromTree removes a node and its subtree from the IDR
-// tree it is in. If the node is the root of the tree, then it's no-op.
+// RemoveFromTree removes a node and its subtree from an IDR
+// tree it is in. If the node is the root of the tree, it's a no-op.
 func RemoveFromTree(n *Node) {
 	if n.Parent == nil {
 		return

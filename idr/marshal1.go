@@ -7,7 +7,7 @@ import (
 	"github.com/jf-tech/go-corelib/strs"
 )
 
-// j1NodePtrName returns a categorized name for a *Node pointer used in JSONify1
+// j1NodePtrName returns a categorized name for a *Node pointer used in JSONify1.
 func j1NodePtrName(n *Node) *string {
 	if n == nil {
 		return nil
