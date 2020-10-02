@@ -28,13 +28,13 @@ The first part of a `Node` contains the input format agnostic fields, such as tr
 part of a `Node` is format specific data blob. The blob not only offers a place to store format specific
 data it also gives IDR code and algorithms a hint on what input format the `Node` is about.
 
-Below we'll go through each input format we support and show how its corresponding IDR looks like.
+Below we'll go through each input format we support and show what its corresponding IDR looks like.
 
 ## XML
 
-Since XML is the most complex input format we'll deal with by IDR. Let's cover it first.
+Since XML is the most complex input format we have for IDR, let's cover it first.
 
-Let's take a look a simple example of XML (from [this sample](../samples/omniv2/xml/1_datetime_parse_and_format.input.xml)):
+Here is a simple XML (from [this sample](../samples/omniv2/xml/1_datetime_parse_and_format.input.xml)):
 ```
 <Root>
     <JustDate>2020/09/22</JustDate>
@@ -74,7 +74,7 @@ which we'll see in the [next example](../samples/omniv2/xml/2_multiple_objects.i
 ```
 In this example, we'll see how IDR deals with XML namespaces, as well as attributes.
 
-The IDR represents the example above looks like the following (note those "dummy" text nodes sprinkled
+The IDR for the example above looks like the following (note those "dummy" text nodes sprinkled
 in between element nodes are omitted here for clarity; also not including empty `XMLSpecific`):
 ```
 Node(Type: DocumentNode)
@@ -86,12 +86,12 @@ Node(Type: DocumentNode)
                 Node(Type: ElementNode, Data: "author")
                     Node(Type: TextNode, Data: "J. K. Rowling")
 ```
-Both `Node`'s represent `<lb0:library>` and `<lb0:books>` include non-empty `XMLSpecific`'s which
-contain their namespace prefixes and full URIs while their `Node.Data` contains the element name without
+Both `Node`'s representing `<lb0:library>` and `<lb0:books>` include non-empty `XMLSpecific`'s which
+contain their namespace prefixes and full URIs while their `Node.Data` contain the element names without
 the namespace prefixes.
 
-Note XML attributes on elements are represented as `Node`'s as well, `Type: AttributeNode` specifically.
-If an attribute is namespace prefixed, the `AttributeNode` typed `Node` will have a non-empty
-`XMLSpecific` set as well. An attribute's value is placed as a `TextNode` underneath its `ElementNode`.
+Note XML attributes on elements are represented as `Node`'s as well, with `Type: AttributeNode`
+specifically. If an attribute is namespace-prefixed, the `AttributeNode` typed `Node` will have a non-empty
+`XMLSpecific` set as well. An attribute's actual value is placed as a `TextNode` underneath its `ElementNode`.
 `AttributeNode`'s are guaranteed to be placed before any other child nodes (`TextNode`, or `ElementNode`)
 by IDR's XML reader.
