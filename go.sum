@@ -30,8 +30,8 @@ github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZm
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
 github.com/dlclark/regexp2 v1.2.1 h1:Ff/S0snjr1oZHUNOkvA/gP6KUaMg5vDDl3Qnhjnwgm8=
 github.com/dlclark/regexp2 v1.2.1/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
-github.com/dop251/goja v0.0.0-20200912112403-81ddb8a7cc41 h1:2P55x6IerzvQIv7bdKEQQWl93uIEQgh6417+uwHGtKQ=
-github.com/dop251/goja v0.0.0-20200912112403-81ddb8a7cc41/go.mod h1:Mw6PkjjMXWbTj+nnj4s3QPXq1jaT0s5pC0iFD4+BOAA=
+github.com/dop251/goja v0.0.0-20201002140143-8ce18d86df5f h1:pMGBGxUV2ht17Gb9tMuL/0YCZQ4YCqZ+kCDtac3WnJU=
+github.com/dop251/goja v0.0.0-20201002140143-8ce18d86df5f/go.mod h1:Mw6PkjjMXWbTj+nnj4s3QPXq1jaT0s5pC0iFD4+BOAA=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-chi/chi v4.1.2+incompatible h1:fGFk2Gmi/YKXk0OmGfBh0WgmN3XB8lVnEyNz34tQRec=
