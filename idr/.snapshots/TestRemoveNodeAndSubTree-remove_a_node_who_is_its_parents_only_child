@@ -7,12 +7,12 @@
 						{
 							"Children": null,
 							"Data": "data 11",
-							"FirstChild": "(nil)",
+							"FirstChild": null,
 							"FormatSpecific": null,
-							"LastChild": "(nil)",
-							"NextSibling": "(nil)",
+							"LastChild": null,
+							"NextSibling": null,
 							"Parent": "(ElementNode grandChild11)",
-							"PrevSibling": "(nil)",
+							"PrevSibling": null,
 							"Type": "TextNode"
 						}
 					],
@@ -22,7 +22,7 @@
 					"LastChild": "(TextNode 'data 11')",
 					"NextSibling": "(ElementNode grandChild12)",
 					"Parent": "(ElementNode child1)",
-					"PrevSibling": "(nil)",
+					"PrevSibling": null,
 					"Type": "ElementNode"
 				},
 				{
@@ -30,12 +30,12 @@
 						{
 							"Children": null,
 							"Data": "data 12",
-							"FirstChild": "(nil)",
+							"FirstChild": null,
 							"FormatSpecific": null,
-							"LastChild": "(nil)",
-							"NextSibling": "(nil)",
+							"LastChild": null,
+							"NextSibling": null,
 							"Parent": "(ElementNode grandChild12)",
-							"PrevSibling": "(nil)",
+							"PrevSibling": null,
 							"Type": "TextNode"
 						}
 					],
@@ -43,7 +43,7 @@
 					"FirstChild": "(TextNode 'data 12')",
 					"FormatSpecific": null,
 					"LastChild": "(TextNode 'data 12')",
-					"NextSibling": "(nil)",
+					"NextSibling": null,
 					"Parent": "(ElementNode child1)",
 					"PrevSibling": "(ElementNode grandChild11)",
 					"Type": "ElementNode"
@@ -55,15 +55,15 @@
 			"LastChild": "(ElementNode grandChild12)",
 			"NextSibling": "(ElementNode child2)",
 			"Parent": "(DocumentNode)",
-			"PrevSibling": "(nil)",
+			"PrevSibling": null,
 			"Type": "ElementNode"
 		},
 		{
 			"Children": null,
 			"Data": "child2",
-			"FirstChild": "(nil)",
+			"FirstChild": null,
 			"FormatSpecific": null,
-			"LastChild": "(nil)",
+			"LastChild": null,
 			"NextSibling": "(ElementNode child3)",
 			"Parent": "(DocumentNode)",
 			"PrevSibling": "(ElementNode child1)",
@@ -76,12 +76,12 @@
 						{
 							"Children": null,
 							"Data": "attr 31",
-							"FirstChild": "(nil)",
+							"FirstChild": null,
 							"FormatSpecific": null,
-							"LastChild": "(nil)",
-							"NextSibling": "(nil)",
+							"LastChild": null,
+							"NextSibling": null,
 							"Parent": "(AttributeNode grandChild31)",
-							"PrevSibling": "(nil)",
+							"PrevSibling": null,
 							"Type": "TextNode"
 						}
 					],
@@ -89,9 +89,9 @@
 					"FirstChild": "(TextNode 'attr 31')",
 					"FormatSpecific": null,
 					"LastChild": "(TextNode 'attr 31')",
-					"NextSibling": "(nil)",
+					"NextSibling": null,
 					"Parent": "(ElementNode child3)",
-					"PrevSibling": "(nil)",
+					"PrevSibling": null,
 					"Type": "AttributeNode"
 				}
 			],
@@ -99,7 +99,7 @@
 			"FirstChild": "(AttributeNode grandChild31)",
 			"FormatSpecific": null,
 			"LastChild": "(AttributeNode grandChild31)",
-			"NextSibling": "(nil)",
+			"NextSibling": null,
 			"Parent": "(DocumentNode)",
 			"PrevSibling": "(ElementNode child2)",
 			"Type": "ElementNode"
@@ -109,8 +109,8 @@
 	"FirstChild": "(ElementNode child1)",
 	"FormatSpecific": null,
 	"LastChild": "(ElementNode child3)",
-	"NextSibling": "(nil)",
-	"Parent": "(nil)",
-	"PrevSibling": "(nil)",
+	"NextSibling": null,
+	"Parent": null,
+	"PrevSibling": null,
 	"Type": "DocumentNode"
 }

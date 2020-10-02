@@ -4,12 +4,13 @@ import (
 	"fmt"
 
 	"github.com/jf-tech/go-corelib/jsons"
+	"github.com/jf-tech/go-corelib/strs"
 )
 
 // j1NodePtrName returns a categorized name for a *Node pointer used in JSONify1
-func j1NodePtrName(n *Node) string {
+func j1NodePtrName(n *Node) *string {
 	if n == nil {
-		return "(nil)"
+		return nil
 	}
 	name := func(n *Node) string {
 		if IsXML(n) && XMLSpecificOf(n).NamespacePrefix != "" {
@@ -19,13 +20,13 @@ func j1NodePtrName(n *Node) string {
 	}
 	switch n.Type {
 	case DocumentNode:
-		return fmt.Sprintf("(%s)", n.Type)
+		return strs.StrPtr(fmt.Sprintf("(%s)", n.Type))
 	case ElementNode, AttributeNode:
-		return fmt.Sprintf("(%s %s)", n.Type, name(n))
+		return strs.StrPtr(fmt.Sprintf("(%s %s)", n.Type, name(n)))
 	case TextNode:
-		return fmt.Sprintf("(%s '%s')", n.Type, n.Data)
+		return strs.StrPtr(fmt.Sprintf("(%s '%s')", n.Type, n.Data))
 	default:
-		return fmt.Sprintf("(unknown '%s')", n.Data)
+		return strs.StrPtr(fmt.Sprintf("(unknown '%s')", n.Data))
 	}
 }
 
