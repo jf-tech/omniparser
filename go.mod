@@ -8,7 +8,7 @@ require (
 	github.com/antchfx/xpath v1.1.10
 	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
 	github.com/dlclark/regexp2 v1.2.1 // indirect
-	github.com/dop251/goja v0.0.0-20200912112403-81ddb8a7cc41
+	github.com/dop251/goja v0.0.0-20201002140143-8ce18d86df5f
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/google/uuid v1.1.2

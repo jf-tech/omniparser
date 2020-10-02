@@ -134,9 +134,9 @@ func execProgram(program *goja.Program, args map[string]interface{}) (goja.Value
 	}
 	defer func() {
 		if vm != nil {
-			// wipe out all the args (by setting them to undefined) in prep for next exec.
+			// wipe out all the args in prep for next exec.
 			for arg := range args {
-				vm.Set(arg, goja.Undefined())
+				_ = vm.GlobalObject().Delete(arg)
 			}
 		}
 		if poolObj != nil {
