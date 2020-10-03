@@ -1,0 +1,82 @@
+{
+	"Children": [
+		{
+			"Children": [
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "data 21",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(ElementNode grandChild21)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "grandChild21",
+					"FirstChild": "(TextNode 'data 21')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode 'data 21')",
+					"NextSibling": null,
+					"Parent": "(ElementNode child2)",
+					"PrevSibling": null,
+					"Type": "ElementNode"
+				}
+			],
+			"Data": "child2",
+			"FirstChild": "(ElementNode grandChild21)",
+			"FormatSpecific": null,
+			"LastChild": "(ElementNode grandChild21)",
+			"NextSibling": "(ElementNode child3)",
+			"Parent": "(DocumentNode)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		},
+		{
+			"Children": [
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "attr 31",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(AttributeNode grandChild31)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "grandChild31",
+					"FirstChild": "(TextNode 'attr 31')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode 'attr 31')",
+					"NextSibling": null,
+					"Parent": "(ElementNode child3)",
+					"PrevSibling": null,
+					"Type": "AttributeNode"
+				}
+			],
+			"Data": "child3",
+			"FirstChild": "(AttributeNode grandChild31)",
+			"FormatSpecific": null,
+			"LastChild": "(AttributeNode grandChild31)",
+			"NextSibling": null,
+			"Parent": "(DocumentNode)",
+			"PrevSibling": "(ElementNode child2)",
+			"Type": "ElementNode"
+		}
+	],
+	"Data": "root",
+	"FirstChild": "(ElementNode child2)",
+	"FormatSpecific": null,
+	"LastChild": "(ElementNode child3)",
+	"NextSibling": null,
+	"Parent": null,
+	"PrevSibling": null,
+	"Type": "DocumentNode"
+}
