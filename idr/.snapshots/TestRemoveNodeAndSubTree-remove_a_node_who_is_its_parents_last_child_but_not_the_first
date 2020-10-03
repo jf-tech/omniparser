@@ -6,22 +6,28 @@
 					"Children": [
 						{
 							"Children": null,
-							"Data": "data 11",
+							"Data": "textA1",
 							"FirstChild": null,
-							"FormatSpecific": null,
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": ""
+							},
 							"LastChild": null,
 							"NextSibling": null,
-							"Parent": "(ElementNode grandChild11)",
+							"Parent": "(ElementNode elemA1)",
 							"PrevSibling": null,
 							"Type": "TextNode"
 						}
 					],
-					"Data": "grandChild11",
-					"FirstChild": "(TextNode 'data 11')",
-					"FormatSpecific": null,
-					"LastChild": "(TextNode 'data 11')",
-					"NextSibling": "(ElementNode grandChild12)",
-					"Parent": "(ElementNode child1)",
+					"Data": "elemA1",
+					"FirstChild": "(TextNode 'textA1')",
+					"FormatSpecific": {
+						"NamespacePrefix": "",
+						"NamespaceURI": ""
+					},
+					"LastChild": "(TextNode 'textA1')",
+					"NextSibling": "(ElementNode elemA2)",
+					"Parent": "(ElementNode elemA)",
 					"PrevSibling": null,
 					"Type": "ElementNode"
 				},
@@ -29,31 +35,40 @@
 					"Children": [
 						{
 							"Children": null,
-							"Data": "data 12",
+							"Data": "textA2",
 							"FirstChild": null,
-							"FormatSpecific": null,
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": ""
+							},
 							"LastChild": null,
 							"NextSibling": null,
-							"Parent": "(ElementNode grandChild12)",
+							"Parent": "(ElementNode elemA2)",
 							"PrevSibling": null,
 							"Type": "TextNode"
 						}
 					],
-					"Data": "grandChild12",
-					"FirstChild": "(TextNode 'data 12')",
-					"FormatSpecific": null,
-					"LastChild": "(TextNode 'data 12')",
+					"Data": "elemA2",
+					"FirstChild": "(TextNode 'textA2')",
+					"FormatSpecific": {
+						"NamespacePrefix": "",
+						"NamespaceURI": ""
+					},
+					"LastChild": "(TextNode 'textA2')",
 					"NextSibling": null,
-					"Parent": "(ElementNode child1)",
-					"PrevSibling": "(ElementNode grandChild11)",
+					"Parent": "(ElementNode elemA)",
+					"PrevSibling": "(ElementNode elemA1)",
 					"Type": "ElementNode"
 				}
 			],
-			"Data": "child1",
-			"FirstChild": "(ElementNode grandChild11)",
-			"FormatSpecific": null,
-			"LastChild": "(ElementNode grandChild12)",
-			"NextSibling": "(ElementNode child2)",
+			"Data": "elemA",
+			"FirstChild": "(ElementNode elemA1)",
+			"FormatSpecific": {
+				"NamespacePrefix": "",
+				"NamespaceURI": ""
+			},
+			"LastChild": "(ElementNode elemA2)",
+			"NextSibling": "(ElementNode elemB)",
 			"Parent": "(DocumentNode)",
 			"PrevSibling": null,
 			"Type": "ElementNode"
@@ -64,40 +79,52 @@
 					"Children": [
 						{
 							"Children": null,
-							"Data": "data 21",
+							"Data": "textB1",
 							"FirstChild": null,
-							"FormatSpecific": null,
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": ""
+							},
 							"LastChild": null,
 							"NextSibling": null,
-							"Parent": "(ElementNode grandChild21)",
+							"Parent": "(ElementNode elemB1)",
 							"PrevSibling": null,
 							"Type": "TextNode"
 						}
 					],
-					"Data": "grandChild21",
-					"FirstChild": "(TextNode 'data 21')",
-					"FormatSpecific": null,
-					"LastChild": "(TextNode 'data 21')",
+					"Data": "elemB1",
+					"FirstChild": "(TextNode 'textB1')",
+					"FormatSpecific": {
+						"NamespacePrefix": "",
+						"NamespaceURI": ""
+					},
+					"LastChild": "(TextNode 'textB1')",
 					"NextSibling": null,
-					"Parent": "(ElementNode child2)",
+					"Parent": "(ElementNode elemB)",
 					"PrevSibling": null,
 					"Type": "ElementNode"
 				}
 			],
-			"Data": "child2",
-			"FirstChild": "(ElementNode grandChild21)",
-			"FormatSpecific": null,
-			"LastChild": "(ElementNode grandChild21)",
+			"Data": "elemB",
+			"FirstChild": "(ElementNode elemB1)",
+			"FormatSpecific": {
+				"NamespacePrefix": "",
+				"NamespaceURI": ""
+			},
+			"LastChild": "(ElementNode elemB1)",
 			"NextSibling": null,
 			"Parent": "(DocumentNode)",
-			"PrevSibling": "(ElementNode child1)",
+			"PrevSibling": "(ElementNode elemA)",
 			"Type": "ElementNode"
 		}
 	],
 	"Data": "root",
-	"FirstChild": "(ElementNode child1)",
-	"FormatSpecific": null,
-	"LastChild": "(ElementNode child2)",
+	"FirstChild": "(ElementNode elemA)",
+	"FormatSpecific": {
+		"NamespacePrefix": "",
+		"NamespaceURI": ""
+	},
+	"LastChild": "(ElementNode elemB)",
 	"NextSibling": null,
 	"Parent": null,
 	"PrevSibling": null,
