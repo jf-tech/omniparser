@@ -57,113 +57,126 @@ func checkPointersInTree(t *testing.T, n *Node) {
 type testTree struct {
 	//
 	// root
-	//   child1                              child2                 child3
-	//     grandChild11E, grandchild12E        grandChild21E          grandChild31A
-	//       grandChild11T, grandchild12T        grandChild21T          grandChild31T
-	root                         *Node
-	child1, child2, child3       *Node
-	grandChild11E, grandChild11T *Node
-	grandChild12E, grandChild12T *Node
-	grandChild21E, grandChild21T *Node
-	grandChild31A, grandChild31T *Node
+	//   elemA                elemB         elemC
+	//     elemA1,elemA2        elemB1        attrC1,attrC2,elemC3,elemC4
+	//       textA1,textA2        textB1        textC1,textC2,textC3,textC4
+	root *Node
+
+	elemA          *Node
+	elemA1, textA1 *Node
+	elemA2, textA2 *Node
+
+	elemB          *Node
+	elemB1, textB1 *Node
+
+	elemC          *Node
+	attrC1, textC1 *Node
+	attrC2, textC2 *Node
+	elemC3, textC3 *Node
+	elemC4, textC4 *Node
 }
 
-func newTestTree(t *testing.T) *testTree {
-	root := CreateNode(DocumentNode, "root")
-	child1 := CreateNode(ElementNode, "child1")
-	child2 := CreateNode(ElementNode, "child2")
-	child3 := CreateNode(ElementNode, "child3")
-	grandChild11E := CreateNode(ElementNode, "grandChild11")
-	grandChild11T := CreateNode(TextNode, "data 11")
-	grandChild12E := CreateNode(ElementNode, "grandChild12")
-	grandChild12T := CreateNode(TextNode, "data 12")
-	grandChild21E := CreateNode(ElementNode, "grandChild21")
-	grandChild21T := CreateNode(TextNode, "data 21")
-	grandChild31A := CreateNode(AttributeNode, "grandChild31")
-	grandChild31T := CreateNode(TextNode, "attr 31")
+const (
+	testTreeXML    = true
+	testTreeNotXML = false
+)
 
-	AddChild(root, child1)
-	AddChild(root, child2)
-	AddChild(root, child3)
-	AddChild(child1, grandChild11E)
-	AddChild(child1, grandChild12E)
-	AddChild(child2, grandChild21E)
-	AddChild(child3, grandChild31A)
-	AddChild(grandChild11E, grandChild11T)
-	AddChild(grandChild12E, grandChild12T)
-	AddChild(grandChild21E, grandChild21T)
-	AddChild(grandChild31A, grandChild31T)
+func newTestTree(t *testing.T, xmlNode bool) *testTree {
+	mkNode := func(parent *Node, ntype NodeType, name string) *Node {
+		var node *Node
+		if xmlNode {
+			node = CreateXMLNode(ntype, name, XMLSpecific{})
+		} else {
+			node = CreateNode(ntype, name)
+		}
+		if parent != nil {
+			AddChild(parent, node)
+		}
+		return node
+	}
+	mkPair := func(parent *Node, ntype NodeType, name, text string) (*Node, *Node) {
+		node := mkNode(parent, ntype, name)
+		child := mkNode(node, TextNode, text)
+		return node, child
+	}
+
+	root := mkNode(nil, DocumentNode, "root")
+
+	elemA := mkNode(root, ElementNode, "elemA")
+	elemA1, textA1 := mkPair(elemA, ElementNode, "elemA1", "textA1")
+	elemA2, textA2 := mkPair(elemA, ElementNode, "elemA2", "textA2")
+
+	elemB := mkNode(root, ElementNode, "elemB")
+	elemB1, textB1 := mkPair(elemB, ElementNode, "elemB1", "textB1")
+
+	elemC := mkNode(root, ElementNode, "elemC")
+	attrC1, textC1 := mkPair(elemC, AttributeNode, "attrC1", "textC1")
+	attrC2, textC2 := mkPair(elemC, AttributeNode, "attrC2", "textC2")
+	elemC3, textC3 := mkPair(elemC, ElementNode, "elemC3", "textC3")
+	elemC4, textC4 := mkPair(elemC, ElementNode, "elemC4", "textC4")
 
 	checkPointersInTree(t, root)
-	checkPointersInTree(t, child1)
-	checkPointersInTree(t, child2)
-	checkPointersInTree(t, child3)
-	checkPointersInTree(t, grandChild11E)
-	checkPointersInTree(t, grandChild12E)
-	checkPointersInTree(t, grandChild21E)
-	checkPointersInTree(t, grandChild31A)
-	checkPointersInTree(t, grandChild11T)
-	checkPointersInTree(t, grandChild12T)
-	checkPointersInTree(t, grandChild21T)
-	checkPointersInTree(t, grandChild31T)
 
 	return &testTree{
-		root:          root,
-		child1:        child1,
-		child2:        child2,
-		child3:        child3,
-		grandChild11E: grandChild11E,
-		grandChild12E: grandChild12E,
-		grandChild21E: grandChild21E,
-		grandChild31A: grandChild31A,
-		grandChild11T: grandChild11T,
-		grandChild12T: grandChild12T,
-		grandChild21T: grandChild21T,
-		grandChild31T: grandChild31T,
+		root: root,
+
+		elemA:  elemA,
+		elemA1: elemA1, textA1: textA1,
+		elemA2: elemA2, textA2: textA2,
+
+		elemB:  elemB,
+		elemB1: elemB1, textB1: textB1,
+
+		elemC:  elemC,
+		attrC1: attrC1, textC1: textC1,
+		attrC2: attrC2, textC2: textC2,
+		elemC3: elemC3, textC3: textC3,
+		elemC4: elemC4, textC4: textC4,
 	}
 }
 
-func TestReferenceTestTreeWithJSONify1(t *testing.T) {
-	cupaloy.SnapshotT(t, JSONify1(newTestTree(t).root))
+func TestDumpTestTree(t *testing.T) {
+	cupaloy.SnapshotT(t, JSONify1(newTestTree(t, testTreeXML).root))
 }
 
 func TestInnerText(t *testing.T) {
-	tt := newTestTree(t)
-	assert.Equal(t, tt.grandChild11T.Data+tt.grandChild12T.Data, tt.child1.InnerText())
-	assert.Equal(t, tt.grandChild11T.Data+tt.grandChild12T.Data+tt.grandChild21T.Data, tt.root.InnerText())
+	tt := newTestTree(t, testTreeNotXML)
+	assert.Equal(t, tt.textA1.Data+tt.textA2.Data, tt.elemA.InnerText())
+	// Note attribute's texts are skipped in InnerText(), by design.
+	assert.Equal(t, tt.textC3.Data+tt.textC4.Data, tt.elemC.InnerText())
 }
 
 func TestRemoveNodeAndSubTree(t *testing.T) {
 	t.Run("remove a node who is its parents only child", func(t *testing.T) {
-		tt := newTestTree(t)
-		RemoveFromTree(tt.grandChild21E)
+		tt := newTestTree(t, testTreeXML)
+		RemoveFromTree(tt.elemB1)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
 	})
 
 	t.Run("remove a node who is its parents first child but not the last", func(t *testing.T) {
-		tt := newTestTree(t)
-		RemoveFromTree(tt.child1)
+		tt := newTestTree(t, testTreeXML)
+		RemoveFromTree(tt.elemA)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
 	})
 
 	t.Run("remove a node who is its parents middle child not the first not the last", func(t *testing.T) {
-		tt := newTestTree(t)
-		RemoveFromTree(tt.child2)
+		tt := newTestTree(t, testTreeXML)
+		RemoveFromTree(tt.elemB)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
 	})
 
 	t.Run("remove a node who is its parents last child but not the first", func(t *testing.T) {
-		tt := newTestTree(t)
-		RemoveFromTree(tt.child3)
+		tt := newTestTree(t, testTreeXML)
+		RemoveFromTree(tt.elemC)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
 	})
 
 	t.Run("remove a root does nothing", func(t *testing.T) {
-		tt := newTestTree(t)
+		tt := newTestTree(t, testTreeXML)
 		RemoveFromTree(tt.root)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
