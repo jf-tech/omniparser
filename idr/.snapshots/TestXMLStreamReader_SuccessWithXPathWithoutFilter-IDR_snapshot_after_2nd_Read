@@ -1,0 +1,332 @@
+{
+	"Children": [
+		{
+			"Children": null,
+			"Data": "\n\t",
+			"FirstChild": null,
+			"FormatSpecific": {
+				"NamespacePrefix": "",
+				"NamespaceURI": ""
+			},
+			"LastChild": null,
+			"NextSibling": "(ElementNode ROOT)",
+			"Parent": "(DocumentNode)",
+			"PrevSibling": null,
+			"Type": "TextNode"
+		},
+		{
+			"Children": [
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "uri://default",
+							"FirstChild": null,
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": ""
+							},
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(AttributeNode xmlns)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "xmlns",
+					"FirstChild": "(TextNode 'uri://default')",
+					"FormatSpecific": {
+						"NamespacePrefix": "",
+						"NamespaceURI": ""
+					},
+					"LastChild": "(TextNode 'uri://default')",
+					"NextSibling": "(AttributeNode xmlns:t)",
+					"Parent": "(ElementNode ROOT)",
+					"PrevSibling": null,
+					"Type": "AttributeNode"
+				},
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "uri://test",
+							"FirstChild": null,
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": ""
+							},
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(AttributeNode xmlns:t)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "t",
+					"FirstChild": "(TextNode 'uri://test')",
+					"FormatSpecific": {
+						"NamespacePrefix": "xmlns",
+						"NamespaceURI": ""
+					},
+					"LastChild": "(TextNode 'uri://test')",
+					"NextSibling": "(TextNode '\n\t\t')",
+					"Parent": "(ElementNode ROOT)",
+					"PrevSibling": "(AttributeNode xmlns)",
+					"Type": "AttributeNode"
+				},
+				{
+					"Children": null,
+					"Data": "\n\t\t",
+					"FirstChild": null,
+					"FormatSpecific": {
+						"NamespacePrefix": "",
+						"NamespaceURI": ""
+					},
+					"LastChild": null,
+					"NextSibling": "(ElementNode AAA)",
+					"Parent": "(ElementNode ROOT)",
+					"PrevSibling": "(AttributeNode xmlns:t)",
+					"Type": "TextNode"
+				},
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "\n\t\t\t",
+							"FirstChild": null,
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": ""
+							},
+							"LastChild": null,
+							"NextSibling": "(ElementNode CCC)",
+							"Parent": "(ElementNode AAA)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						},
+						{
+							"Children": [
+								{
+									"Children": null,
+									"Data": "c1",
+									"FirstChild": null,
+									"FormatSpecific": {
+										"NamespacePrefix": "",
+										"NamespaceURI": ""
+									},
+									"LastChild": null,
+									"NextSibling": null,
+									"Parent": "(ElementNode CCC)",
+									"PrevSibling": null,
+									"Type": "TextNode"
+								}
+							],
+							"Data": "CCC",
+							"FirstChild": "(TextNode 'c1')",
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": "uri://default"
+							},
+							"LastChild": "(TextNode 'c1')",
+							"NextSibling": "(TextNode '\n\t\t\t')",
+							"Parent": "(ElementNode AAA)",
+							"PrevSibling": "(TextNode '\n\t\t\t')",
+							"Type": "ElementNode"
+						},
+						{
+							"Children": null,
+							"Data": "\n\t\t\t",
+							"FirstChild": null,
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": ""
+							},
+							"LastChild": null,
+							"NextSibling": "(TextNode '\n\t\t\t')",
+							"Parent": "(ElementNode AAA)",
+							"PrevSibling": "(ElementNode CCC)",
+							"Type": "TextNode"
+						},
+						{
+							"Children": null,
+							"Data": "\n\t\t\t",
+							"FirstChild": null,
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": ""
+							},
+							"LastChild": null,
+							"NextSibling": "(ElementNode DDD)",
+							"Parent": "(ElementNode AAA)",
+							"PrevSibling": "(TextNode '\n\t\t\t')",
+							"Type": "TextNode"
+						},
+						{
+							"Children": [
+								{
+									"Children": null,
+									"Data": "d1",
+									"FirstChild": null,
+									"FormatSpecific": {
+										"NamespacePrefix": "",
+										"NamespaceURI": ""
+									},
+									"LastChild": null,
+									"NextSibling": null,
+									"Parent": "(ElementNode DDD)",
+									"PrevSibling": null,
+									"Type": "TextNode"
+								}
+							],
+							"Data": "DDD",
+							"FirstChild": "(TextNode 'd1')",
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": "uri://default"
+							},
+							"LastChild": "(TextNode 'd1')",
+							"NextSibling": "(TextNode '\n\t\t\t')",
+							"Parent": "(ElementNode AAA)",
+							"PrevSibling": "(TextNode '\n\t\t\t')",
+							"Type": "ElementNode"
+						},
+						{
+							"Children": null,
+							"Data": "\n\t\t\t",
+							"FirstChild": null,
+							"FormatSpecific": {
+								"NamespacePrefix": "",
+								"NamespaceURI": ""
+							},
+							"LastChild": null,
+							"NextSibling": "(ElementNode t:BBB)",
+							"Parent": "(ElementNode AAA)",
+							"PrevSibling": "(ElementNode DDD)",
+							"Type": "TextNode"
+						},
+						{
+							"Children": [
+								{
+									"Children": null,
+									"Data": "b2",
+									"FirstChild": null,
+									"FormatSpecific": {
+										"NamespacePrefix": "",
+										"NamespaceURI": ""
+									},
+									"LastChild": null,
+									"NextSibling": "(ElementNode ZZZ)",
+									"Parent": "(ElementNode t:BBB)",
+									"PrevSibling": null,
+									"Type": "TextNode"
+								},
+								{
+									"Children": [
+										{
+											"Children": [
+												{
+													"Children": null,
+													"Data": "1",
+													"FirstChild": null,
+													"FormatSpecific": {
+														"NamespacePrefix": "",
+														"NamespaceURI": ""
+													},
+													"LastChild": null,
+													"NextSibling": null,
+													"Parent": "(AttributeNode z)",
+													"PrevSibling": null,
+													"Type": "TextNode"
+												}
+											],
+											"Data": "z",
+											"FirstChild": "(TextNode '1')",
+											"FormatSpecific": {
+												"NamespacePrefix": "",
+												"NamespaceURI": ""
+											},
+											"LastChild": "(TextNode '1')",
+											"NextSibling": "(TextNode 'z1')",
+											"Parent": "(ElementNode ZZZ)",
+											"PrevSibling": null,
+											"Type": "AttributeNode"
+										},
+										{
+											"Children": null,
+											"Data": "z1",
+											"FirstChild": null,
+											"FormatSpecific": {
+												"NamespacePrefix": "",
+												"NamespaceURI": ""
+											},
+											"LastChild": null,
+											"NextSibling": null,
+											"Parent": "(ElementNode ZZZ)",
+											"PrevSibling": "(AttributeNode z)",
+											"Type": "TextNode"
+										}
+									],
+									"Data": "ZZZ",
+									"FirstChild": "(AttributeNode z)",
+									"FormatSpecific": {
+										"NamespacePrefix": "",
+										"NamespaceURI": "uri://default"
+									},
+									"LastChild": "(TextNode 'z1')",
+									"NextSibling": null,
+									"Parent": "(ElementNode t:BBB)",
+									"PrevSibling": "(TextNode 'b2')",
+									"Type": "ElementNode"
+								}
+							],
+							"Data": "BBB",
+							"FirstChild": "(TextNode 'b2')",
+							"FormatSpecific": {
+								"NamespacePrefix": "t",
+								"NamespaceURI": "uri://test"
+							},
+							"LastChild": "(ElementNode ZZZ)",
+							"NextSibling": null,
+							"Parent": "(ElementNode AAA)",
+							"PrevSibling": "(TextNode '\n\t\t\t')",
+							"Type": "ElementNode"
+						}
+					],
+					"Data": "AAA",
+					"FirstChild": "(TextNode '\n\t\t\t')",
+					"FormatSpecific": {
+						"NamespacePrefix": "",
+						"NamespaceURI": "uri://default"
+					},
+					"LastChild": "(ElementNode t:BBB)",
+					"NextSibling": null,
+					"Parent": "(ElementNode ROOT)",
+					"PrevSibling": "(TextNode '\n\t\t')",
+					"Type": "ElementNode"
+				}
+			],
+			"Data": "ROOT",
+			"FirstChild": "(AttributeNode xmlns)",
+			"FormatSpecific": {
+				"NamespacePrefix": "",
+				"NamespaceURI": "uri://default"
+			},
+			"LastChild": "(ElementNode AAA)",
+			"NextSibling": null,
+			"Parent": "(DocumentNode)",
+			"PrevSibling": "(TextNode '\n\t')",
+			"Type": "ElementNode"
+		}
+	],
+	"Data": "",
+	"FirstChild": "(TextNode '\n\t')",
+	"FormatSpecific": {
+		"NamespacePrefix": "",
+		"NamespaceURI": ""
+	},
+	"LastChild": "(ElementNode ROOT)",
+	"NextSibling": null,
+	"Parent": null,
+	"PrevSibling": null,
+	"Type": "DocumentNode"
+}
