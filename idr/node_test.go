@@ -15,7 +15,7 @@ func TestNodeType_String(t *testing.T) {
 	assert.Equal(t, "(unknown NodeType: 99)", NodeType(99).String())
 }
 
-func findRoot(n *Node) *Node {
+func rootOf(n *Node) *Node {
 	for ; n != nil && n.Parent != nil; n = n.Parent {
 	}
 	return n
