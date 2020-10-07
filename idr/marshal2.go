@@ -164,9 +164,9 @@ func J2NodeToInterface(n *Node) interface{} {
 			if c.Type == ElementNode {
 				// Both in XML and EDI, we can potentially have something like the following:
 				//   <abc>
-				//     <efg>1</abc>
-				//     <efg>2</abc>
-				//     <xyz>3</efg>
+				//     <efg>1</efg>
+				//     <efg>2</efg>
+				//     <xyz>3</xyz>
 				//   </abc>
 				// We don't want to overwrite first <efg> with second <efg>. So instead we
 				// will return something like this:

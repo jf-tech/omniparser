@@ -7,7 +7,7 @@ type JSONType uint
 const (
 	// JSONRoot is the type for the root Node in a JSON IDR tree.
 	JSONRoot JSONType = 1 << iota
-	// JSONRoot is the type for a Node in a JSON IDR tree whose value is an object.
+	// JSONObj is the type for a Node in a JSON IDR tree whose value is an object.
 	JSONObj
 	// JSONArr is the type for a Node in a JSON IDR tree whose value is an array.
 	JSONArr
