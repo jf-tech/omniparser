@@ -1,0 +1,36 @@
+{
+	"#attributes": {
+		"xmlns": "uri-default",
+		"xmlns:a": "uri-a"
+	},
+	"a:child": [
+		{
+			"#attributes": {
+				"a:attr1": "a1",
+				"a:attr2": "a2"
+			},
+			"a:grandchild": "g1"
+		},
+		{
+			"#attributes": {
+				"a:attr1": "a3",
+				"a:attr2": "a4"
+			},
+			"a:grandchild": "g2"
+		},
+		{
+			"#attributes": {
+				"a:attr1": "a7",
+				"a:attr2": "a8"
+			},
+			"a:grandchild": "g5"
+		}
+	],
+	"child": [
+		"g3",
+		"g4",
+		{
+			"greatgrandchild": "gg1"
+		}
+	]
+}
