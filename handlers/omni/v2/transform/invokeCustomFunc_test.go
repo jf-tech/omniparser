@@ -3,24 +3,25 @@ package transform
 import (
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/jf-tech/omniparser/idr"
 )
 
-func testNode() *node.Node {
+func testNode() *idr.Node {
 	// A
 	//    B
 	//    C
-	nodeA := &node.Node{Type: node.ElementNode, Data: "A"}
-	nodeB := &node.Node{Type: node.ElementNode, Data: "B"}
-	textB := &node.Node{Type: node.TextNode, Data: "b"}
-	nodeC := &node.Node{Type: node.ElementNode, Data: "C"}
-	textC := &node.Node{Type: node.TextNode, Data: "c"}
-	node.AddChild(nodeA, nodeB)
-	node.AddChild(nodeB, textB)
-	node.AddChild(nodeA, nodeC)
-	node.AddChild(nodeC, textC)
+	nodeA := idr.CreateNode(idr.ElementNode, "A")
+	nodeB := idr.CreateNode(idr.ElementNode, "B")
+	textB := idr.CreateNode(idr.TextNode, "b")
+	nodeC := idr.CreateNode(idr.ElementNode, "C")
+	textC := idr.CreateNode(idr.TextNode, "c")
+	idr.AddChild(nodeA, nodeB)
+	idr.AddChild(nodeB, textB)
+	idr.AddChild(nodeA, nodeC)
+	idr.AddChild(nodeC, textC)
 	return nodeA
 }
 

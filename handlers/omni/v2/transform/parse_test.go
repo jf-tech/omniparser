@@ -4,12 +4,11 @@ import (
 	"errors"
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/customfuncs"
-	"github.com/jf-tech/omniparser/nodes"
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -27,13 +26,13 @@ func testParseCtx() *parseCtx {
 			},
 			customfuncs.BuiltinCustomFuncs),
 		CustomParseFuncs{
-			"test_custom_parse_str": func(_ *transformctx.Ctx, _ *node.Node) (interface{}, error) {
+			"test_custom_parse_str": func(_ *transformctx.Ctx, _ *idr.Node) (interface{}, error) {
 				return "abc", nil
 			},
-			"test_custom_parse_int": func(_ *transformctx.Ctx, _ *node.Node) (interface{}, error) {
+			"test_custom_parse_int": func(_ *transformctx.Ctx, _ *idr.Node) (interface{}, error) {
 				return 123, nil
 			},
-			"test_custom_parse_err": func(_ *transformctx.Ctx, _ *node.Node) (interface{}, error) {
+			"test_custom_parse_err": func(_ *transformctx.Ctx, _ *idr.Node) (interface{}, error) {
 				return nil, errors.New("test_custom_parse_err")
 			},
 		})
@@ -373,7 +372,7 @@ func TestComputeXPath(t *testing.T) {
 
 func TestXPathMatchFlags(t *testing.T) {
 	dynamic := true
-	assert.Equal(t, nodes.DisableXPathCache, xpathMatchFlags(dynamic))
+	assert.Equal(t, idr.DisableXPathCache, xpathMatchFlags(dynamic))
 	dynamic = false
 	assert.Equal(t, uint(0), xpathMatchFlags(dynamic))
 }

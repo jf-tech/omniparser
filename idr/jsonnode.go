@@ -1,5 +1,9 @@
 package idr
 
+import (
+	"fmt"
+)
+
 // JSONType is the type of a JSON-specific Node.
 // Note multiple JSONType can be bit-wise OR'ed together.
 type JSONType uint
@@ -21,7 +25,33 @@ const (
 	JSONValueBool
 	// JSONValueNull is the type for a Node in a JSON IDR tree who is a null value.
 	JSONValueNull
+
+	jsonTypeEnd
 )
+
+// String converts JSONType to a string.
+func (jt JSONType) String() string {
+	switch jt {
+	case JSONRoot:
+		return "JSONRoot"
+	case JSONObj:
+		return "JSONObj"
+	case JSONArr:
+		return "JSONArr"
+	case JSONProp:
+		return "JSONProp"
+	case JSONValueStr:
+		return "JSONValueStr"
+	case JSONValueNum:
+		return "JSONValueNum"
+	case JSONValueBool:
+		return "JSONValueBool"
+	case JSONValueNull:
+		return "JSONValueNull"
+	default:
+		return fmt.Sprintf("(unknown JSONType: %d)", jt)
+	}
+}
 
 // IsJSON checks if a Node is of JSON.
 func IsJSON(n *Node) bool {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
-	"github.com/jf-tech/omniparser/nodes"
+	"github.com/jf-tech/omniparser/idr"
 )
 
 func TestValidateSchema(t *testing.T) {
@@ -81,12 +81,12 @@ func TestCreateFormatReader(t *testing.T) {
 	t.Run("B1", func(t *testing.T) {
 		n1, err := r.Read()
 		assert.NoError(t, err)
-		cupaloy.SnapshotT(t, nodes.JSONify1(n1))
+		cupaloy.SnapshotT(t, idr.JSONify1(n1))
 	})
 	t.Run("B2", func(t *testing.T) {
 		n2, err := r.Read()
 		assert.NoError(t, err)
-		cupaloy.SnapshotT(t, nodes.JSONify1(n2))
+		cupaloy.SnapshotT(t, idr.JSONify1(n2))
 	})
 	t.Run("EOF", func(t *testing.T) {
 		n3, err := r.Read()
@@ -97,6 +97,6 @@ func TestCreateFormatReader(t *testing.T) {
 
 	r, err = NewXMLFileFormat("test-schema").CreateFormatReader("test-input", strings.NewReader(""), "[invalid")
 	assert.Error(t, err)
-	assert.Equal(t, `invalid streamElementXPath '[invalid', err: expression must evaluate to a node-set`, err.Error())
+	assert.Equal(t, `invalid xpath '[invalid', err: expression must evaluate to a node-set`, err.Error())
 	assert.Nil(t, r)
 }

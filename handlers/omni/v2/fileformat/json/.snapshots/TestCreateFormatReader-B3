@@ -1,27 +1,23 @@
 {
-	"Attr": null,
 	"Children": [
 		{
-			"Attr": null,
 			"Children": null,
 			"Data": "B3",
-			"FirstChild": "(nil)",
-			"LastChild": "(nil)",
-			"NamespaceURI": "",
-			"NextSibling": "(nil)",
+			"FirstChild": null,
+			"FormatSpecific": 16,
+			"LastChild": null,
+			"NextSibling": null,
 			"Parent": "(ElementNode )",
-			"Prefix": "",
-			"PrevSibling": "(nil)",
+			"PrevSibling": null,
 			"Type": "TextNode"
 		}
 	],
 	"Data": "",
 	"FirstChild": "(TextNode 'B3')",
+	"FormatSpecific": 8,
 	"LastChild": "(TextNode 'B3')",
-	"NamespaceURI": "",
-	"NextSibling": "(nil)",
+	"NextSibling": null,
 	"Parent": "(DocumentNode)",
-	"Prefix": "",
-	"PrevSibling": "(nil)",
+	"PrevSibling": null,
 	"Type": "ElementNode"
 }

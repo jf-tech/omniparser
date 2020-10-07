@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	node "github.com/antchfx/xmlquery"
-
 	"github.com/jf-tech/omniparser/errs"
-	"github.com/jf-tech/omniparser/nodes"
+	"github.com/jf-tech/omniparser/idr"
 )
 
 // ErrNodeReadingFailed indicates the reader fails to read out a complete non-corrupted
@@ -29,10 +27,10 @@ func IsErrNodeReadingFailed(err error) bool {
 
 type reader struct {
 	inputName string
-	r         *nodes.JSONStreamReader
+	r         *idr.JSONStreamReader
 }
 
-func (r *reader) Read() (*node.Node, error) {
+func (r *reader) Read() (*idr.Node, error) {
 	n, err := r.r.Read()
 	if err == io.EOF {
 		return nil, errs.ErrEOF
@@ -57,7 +55,7 @@ func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 
 // NewReader creates an InputReader for JSON file format for omniv2 schema handler.
 func NewReader(inputName string, src io.Reader, xpath string) (*reader, error) {
-	sp, err := nodes.NewJSONStreamReader(src, xpath)
+	sp, err := idr.NewJSONStreamReader(src, xpath)
 	if err != nil {
 		return nil, err
 	}

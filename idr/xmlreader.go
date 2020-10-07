@@ -23,7 +23,7 @@ type XMLStreamReader struct {
 
 // streamCandidateCheck checks if sp.cur is a potential stream candidate.
 func (sp *XMLStreamReader) streamCandidateCheck() {
-	if sp.xpathExpr != nil && sp.stream == nil && AnyMatch(sp.root, sp.xpathExpr) {
+	if sp.xpathExpr != nil && sp.stream == nil && MatchAny(sp.root, sp.xpathExpr) {
 		sp.stream = sp.cur
 	}
 }
@@ -41,7 +41,7 @@ func (sp *XMLStreamReader) wrapUpCurAndTargetCheck() *Node {
 	if cur != sp.stream {
 		return nil
 	}
-	if sp.xpathFilterExpr == nil || AnyMatch(sp.root, sp.xpathFilterExpr) {
+	if sp.xpathFilterExpr == nil || MatchAny(sp.root, sp.xpathFilterExpr) {
 		return sp.stream
 	}
 	// This means while the sp.stream was marked as stream candidate by the initial

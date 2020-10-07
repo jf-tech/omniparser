@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/errs"
+	"github.com/jf-tech/omniparser/idr"
 )
 
 func TestIsErrNodeReadingFailed(t *testing.T) {
@@ -43,11 +43,15 @@ func TestReader_Read_Success(t *testing.T) {
 
 	n, err := r.Read()
 	assert.NoError(t, err)
-	assert.Equal(t, "john", node.FindOne(n, "name").InnerText())
+	name, err := idr.MatchSingle(n, "name")
+	assert.NoError(t, err)
+	assert.Equal(t, "john", name.InnerText())
 
 	n, err = r.Read()
 	assert.NoError(t, err)
-	assert.Equal(t, "jane", node.FindOne(n, "name").InnerText())
+	name, err = idr.MatchSingle(n, "name")
+	assert.NoError(t, err)
+	assert.Equal(t, "jane", name.InnerText())
 
 	n, err = r.Read()
 	assert.Error(t, err)

@@ -2,20 +2,18 @@ package jsonlogformat
 
 import (
 	"bufio"
-	"encoding/json"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
-	"sort"
-	"strconv"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/antchfx/xpath"
 	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/ios"
 	"github.com/jf-tech/go-corelib/strs"
 
 	"github.com/jf-tech/omniparser/errs"
+	"github.com/jf-tech/omniparser/idr"
 )
 
 // ErrLogReadingFailed indicates the reader fails to read out a complete non-corrupted
@@ -41,7 +39,7 @@ type reader struct {
 	filter    *xpath.Expr
 }
 
-func (r *reader) Read() (*node.Node, error) {
+func (r *reader) Read() (*idr.Node, error) {
 	for {
 		r.line++
 		l, err := ios.ReadLine(r.r)
@@ -66,56 +64,19 @@ func (r *reader) Read() (*node.Node, error) {
 		}
 		// Now we test this log-line-translated node (and its subtree) against the filter,
 		// if no match, then we'll move onto the next line.
-		if node.QuerySelector(n, r.filter) == nil {
+		if !idr.MatchAny(n, r.filter) {
 			continue
 		}
 		return n, nil
 	}
 }
 
-// Note parseJSON and parseJSONValue are borrowed and adapted from
-// https://github.com/antchfx/jsonquery/blob/master/node.go.
-
-func parseJSONValue(x interface{}, parent *node.Node) {
-	switch v := x.(type) {
-	case []interface{}:
-		for _, vv := range v {
-			n := &node.Node{Type: node.ElementNode}
-			node.AddChild(parent, n)
-			parseJSONValue(vv, n)
-		}
-	case map[string]interface{}:
-		var keys []string
-		for k := range v {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, key := range keys {
-			n := &node.Node{Data: key, Type: node.ElementNode}
-			node.AddChild(parent, n)
-			parseJSONValue(v[key], n)
-		}
-	case string:
-		node.AddChild(parent, &node.Node{Data: v, Type: node.TextNode})
-	case float64:
-		// The format fmt with 'f' means (-ddd.dddd, no exponent),
-		// The special precision -1 uses the smallest number of digits
-		s := strconv.FormatFloat(v, 'f', -1, 64)
-		node.AddChild(parent, &node.Node{Data: s, Type: node.TextNode})
-	case bool:
-		s := strconv.FormatBool(v)
-		node.AddChild(parent, &node.Node{Data: s, Type: node.TextNode})
-	}
-}
-
-func parseJSON(b []byte) (*node.Node, error) {
-	var v interface{}
-	if err := json.Unmarshal(b, &v); err != nil {
+func parseJSON(b []byte) (*idr.Node, error) {
+	p, err := idr.NewJSONStreamReader(bytes.NewReader(b), ".")
+	if err != nil {
 		return nil, err
 	}
-	doc := &node.Node{Type: node.DocumentNode}
-	parseJSONValue(v, doc)
-	return doc, nil
+	return p.Read()
 }
 
 func (r *reader) IsContinuableError(err error) bool {

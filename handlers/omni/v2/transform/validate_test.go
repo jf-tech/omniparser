@@ -3,13 +3,13 @@ package transform
 import (
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/customfuncs"
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -232,7 +232,7 @@ func TestValidateTransformDeclarations(t *testing.T) {
 					"test_func": func() {},
 				},
 				CustomParseFuncs{
-					"test_custom_parse": func(_ *transformctx.Ctx, _ *node.Node) (interface{}, error) {
+					"test_custom_parse": func(_ *transformctx.Ctx, _ *idr.Node) (interface{}, error) {
 						return nil, nil
 					},
 				})
