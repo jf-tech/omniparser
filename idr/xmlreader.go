@@ -28,26 +28,30 @@ func (sp *XMLStreamReader) streamCandidateCheck() {
 	}
 }
 
-// streamTargetCheck checks if the stream candidate is actually a stream target and ready to be
-// returned to the caller. A stream candidate is the target if:
+// wrapUpCurAndTargetCheck wraps sp.cur node processing and also checks if the sp.cur is the stream
+// candidate and if it is, then does a final check: a stream candidate is the target if:
 // - If it has finished processing (sp.cur == sp.stream)
 // - Either we don't have a stream filter xpath or the stream filter xpath matches.
-func (sp *XMLStreamReader) streamTargetCheck() *Node {
-	ret := (*Node)(nil)
-	if sp.cur == sp.stream {
-		if sp.xpathFilterExpr == nil || AnyMatch(sp.root, sp.xpathFilterExpr) {
-			ret = sp.stream
-		} else {
-			// This means while the sp.stream was marked as stream candidate by the initial
-			// sp.xpathExpr matching, now we've completed the construction of this node fully and
-			// discovered sp.xpathFilterExpr can't be satisfied, so this sp.stream isn't a
-			// stream target. To prevent future mismatch for other stream candidate, we need to
-			// remove it from Node tree completely. And reset sp.stream.
-			RemoveFromTree(sp.stream)
-			sp.stream = nil
-		}
+func (sp *XMLStreamReader) wrapUpCurAndTargetCheck() *Node {
+	cur := sp.cur
+	// No matter what outcome the wrapUpCurAndTargetCheck() is, the current node is done and
+	// we need to adjust sp.cur to its parent.
+	sp.cur = sp.cur.Parent
+	// Only do stream target check if the finished cur node is the stream candidate
+	if cur != sp.stream {
+		return nil
 	}
-	return ret
+	if sp.xpathFilterExpr == nil || AnyMatch(sp.root, sp.xpathFilterExpr) {
+		return sp.stream
+	}
+	// This means while the sp.stream was marked as stream candidate by the initial
+	// sp.xpathExpr matching, now we've completed the construction of this node fully and
+	// discovered sp.xpathFilterExpr can't be satisfied, so this sp.stream isn't a
+	// stream target. To prevent future mismatch for other stream candidate, we need to
+	// remove it from Node tree completely. And reset sp.stream.
+	RemoveFromTree(sp.stream)
+	sp.stream = nil
+	return nil
 }
 
 func (sp *XMLStreamReader) updateNamespaces(attrs []xml.Attr) {
@@ -147,17 +151,7 @@ func (sp *XMLStreamReader) parse() (*Node, error) {
 			}
 			sp.streamCandidateCheck()
 		case xml.EndElement:
-			// The reason we need to save sp.cur.Parent before sp.streamTargetCheck() call:
-			// it might remove sp.stream from the tree if the sp.stream is decided not
-			// a target. But doing so wipes the sp.stream.Parent pointer to nil, and guess
-			// what, sp.streamTargetCheck() only does target check if sp.cur == sp.stream
-			// thus wiping sp.stream.Parent pointer to nil, effectively making sp.cur.Parent
-			// unattached as well.
-			parent := sp.cur.Parent
-			ret := sp.streamTargetCheck()
-			// Now this element is done. Back off sp.cur to its parent node so future
-			// element nodes will be added a child of its parent and siblings of itself.
-			sp.cur = parent
+			ret := sp.wrapUpCurAndTargetCheck()
 			if ret != nil {
 				return ret, nil
 			}
