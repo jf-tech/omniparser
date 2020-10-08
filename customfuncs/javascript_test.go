@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/jf-tech/omniparser/nodes"
+	"github.com/jf-tech/omniparser/idr"
 )
 
 func TestParseArgTypeAndValue(t *testing.T) {
@@ -80,7 +80,7 @@ func prepCachesForTest(cache bool) {
 }
 
 func TestJavascript(t *testing.T) {
-	sp, err := nodes.NewJSONStreamReader(strings.NewReader(`
+	sp, err := idr.NewJSONStreamReader(strings.NewReader(`
 		{
 			"a": "one",
 			"b": 2

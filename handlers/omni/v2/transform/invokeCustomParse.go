@@ -3,18 +3,17 @@ package transform
 import (
 	"reflect"
 
-	node "github.com/antchfx/xmlquery"
-
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
 // CustomParseFuncType represents a custom_parse function type.
-type CustomParseFuncType func(*transformctx.Ctx, *node.Node) (interface{}, error)
+type CustomParseFuncType func(*transformctx.Ctx, *idr.Node) (interface{}, error)
 
 // CustomParseFuncs is a map from custom_parse names to an actual custom parse functions.
 type CustomParseFuncs = map[string]CustomParseFuncType
 
-func (p *parseCtx) invokeCustomParse(customParseFn CustomParseFuncType, n *node.Node) (interface{}, error) {
+func (p *parseCtx) invokeCustomParse(customParseFn CustomParseFuncType, n *idr.Node) (interface{}, error) {
 	result := reflect.ValueOf(customParseFn).Call(
 		[]reflect.Value{
 			reflect.ValueOf(p.opCtx),

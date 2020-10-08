@@ -8,11 +8,10 @@ import (
 	"strings"
 	"unsafe"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/jf-tech/go-corelib/strs"
 
 	"github.com/jf-tech/omniparser/customfuncs"
-	"github.com/jf-tech/omniparser/nodes"
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -38,7 +37,7 @@ func NewParseCtx(
 	}
 }
 
-func nodePtrAddrStr(n *node.Node) string {
+func nodePtrAddrStr(n *idr.Node) string {
 	// `uintptr` is faster than `fmt.Sprintf("%p"...)`
 	return strconv.FormatUint(uint64(uintptr(unsafe.Pointer(n))), 16)
 }
@@ -129,10 +128,10 @@ func normalizeAndReturnValue(decl *Decl, value interface{}) (interface{}, error)
 	return returnValue, nil
 }
 
-func (p *parseCtx) ParseNode(n *node.Node, decl *Decl) (interface{}, error) {
+func (p *parseCtx) ParseNode(n *idr.Node, decl *Decl) (interface{}, error) {
 	var cacheKey string
 	if !p.disableTransformCache {
-		// TODO if in the future we have *node.Node allocation recycling, then this by-addr caching won't work.
+		// TODO if in the future we have *idr.Node allocation recycling, then this by-addr caching won't work.
 		// Ideally, we should have a node ID which refreshes upon recycling.
 		cacheKey = nodePtrAddrStr(n) + "/" + decl.hash
 		if cacheValue, found := p.transformCache[cacheKey]; found {
@@ -192,7 +191,7 @@ func xpathQueryNeeded(decl *Decl) bool {
 		(decl.parent == nil || decl.parent.kind != KindArray)
 }
 
-func (p *parseCtx) computeXPath(n *node.Node, decl *Decl) (xpath string, dynamic bool, err error) {
+func (p *parseCtx) computeXPath(n *idr.Node, decl *Decl) (xpath string, dynamic bool, err error) {
 	switch {
 	case strs.IsStrPtrNonBlank(decl.XPath):
 		xpath, dynamic, err = *(decl.XPath), false, nil
@@ -205,7 +204,7 @@ func (p *parseCtx) computeXPath(n *node.Node, decl *Decl) (xpath string, dynamic
 	return xpath, dynamic, err
 }
 
-func (p *parseCtx) computeXPathDynamic(n *node.Node, xpathDynamicDecl *Decl) (string, error) {
+func (p *parseCtx) computeXPathDynamic(n *idr.Node, xpathDynamicDecl *Decl) (string, error) {
 	v, err := p.ParseNode(n, xpathDynamicDecl)
 	if err != nil {
 		return "", err
@@ -224,12 +223,12 @@ func (p *parseCtx) computeXPathDynamic(n *node.Node, xpathDynamicDecl *Decl) (st
 
 func xpathMatchFlags(dynamic bool) uint {
 	if dynamic {
-		return nodes.DisableXPathCache
+		return idr.DisableXPathCache
 	}
 	return 0
 }
 
-func (p *parseCtx) querySingleNodeFromXPath(n *node.Node, decl *Decl) (*node.Node, error) {
+func (p *parseCtx) querySingleNodeFromXPath(n *idr.Node, decl *Decl) (*idr.Node, error) {
 	if !xpathQueryNeeded(decl) {
 		return n, nil
 	}
@@ -237,11 +236,11 @@ func (p *parseCtx) querySingleNodeFromXPath(n *node.Node, decl *Decl) (*node.Nod
 	if err != nil {
 		return nil, nil
 	}
-	resultNode, err := nodes.MatchSingle(n, xpath, xpathMatchFlags(dynamic))
+	resultNode, err := idr.MatchSingle(n, xpath, xpathMatchFlags(dynamic))
 	switch {
-	case err == nodes.ErrNoMatch:
+	case err == idr.ErrNoMatch:
 		return nil, nil
-	case err == nodes.ErrMoreThanExpected:
+	case err == idr.ErrMoreThanExpected:
 		return nil, fmt.Errorf("xpath query '%s' on '%s' yielded more than one result", xpath, decl.fqdn)
 	case err != nil:
 		return nil, fmt.Errorf("xpath query '%s' on '%s' failed: %s", xpath, decl.fqdn, err.Error())
@@ -249,7 +248,7 @@ func (p *parseCtx) querySingleNodeFromXPath(n *node.Node, decl *Decl) (*node.Nod
 	return resultNode, nil
 }
 
-func (p *parseCtx) parseField(n *node.Node, decl *Decl) (interface{}, error) {
+func (p *parseCtx) parseField(n *idr.Node, decl *Decl) (interface{}, error) {
 	n, err := p.querySingleNodeFromXPath(n, decl)
 	if err != nil {
 		return nil, err
@@ -257,18 +256,15 @@ func (p *parseCtx) parseField(n *node.Node, decl *Decl) (interface{}, error) {
 	if n == nil {
 		return normalizeAndReturnValue(decl, nil)
 	}
-	if decl.resultType() == ResultTypeObject && n.Type == node.ElementNode {
+	if decl.resultType() == ResultTypeObject && n.Type == idr.ElementNode {
 		// When a field's result_type is marked "object", we'll simply copy the selected
-		// node and all its children over directly. Note it doesn't/won't work pretty with
-		// XML input files, as XML might contains attributes, which can't really nicely
-		// translate into map[string]interface{}. All other file format types
-		// (csv/edi/fixed-length/json) are fine. Well, so be it the limitation.
-		return normalizeAndReturnValue(decl, nodes.J2NodeToInterface(n))
+		// node and all its children over directly.
+		return normalizeAndReturnValue(decl, idr.J2NodeToInterface(n))
 	}
 	return normalizeAndReturnValue(decl, n.InnerText())
 }
 
-func (p *parseCtx) parseCustomFunc(n *node.Node, decl *Decl) (interface{}, error) {
+func (p *parseCtx) parseCustomFunc(n *idr.Node, decl *Decl) (interface{}, error) {
 	n, err := p.querySingleNodeFromXPath(n, decl)
 	if err != nil {
 		return nil, err
@@ -290,7 +286,7 @@ func (p *parseCtx) parseCustomFunc(n *node.Node, decl *Decl) (interface{}, error
 	return normalizeAndReturnValue(decl, funcValue)
 }
 
-func (p *parseCtx) parseCustomParse(n *node.Node, decl *Decl) (interface{}, error) {
+func (p *parseCtx) parseCustomParse(n *idr.Node, decl *Decl) (interface{}, error) {
 	n, err := p.querySingleNodeFromXPath(n, decl)
 	if err != nil {
 		return nil, err
@@ -305,7 +301,7 @@ func (p *parseCtx) parseCustomParse(n *node.Node, decl *Decl) (interface{}, erro
 	return normalizeAndReturnValue(decl, v)
 }
 
-func (p *parseCtx) parseObject(n *node.Node, decl *Decl) (interface{}, error) {
+func (p *parseCtx) parseObject(n *idr.Node, decl *Decl) (interface{}, error) {
 	n, err := p.querySingleNodeFromXPath(n, decl)
 	if err != nil {
 		return nil, err
@@ -328,7 +324,7 @@ func (p *parseCtx) parseObject(n *node.Node, decl *Decl) (interface{}, error) {
 	return normalizeAndReturnValue(decl, object)
 }
 
-func (p *parseCtx) parseArray(n *node.Node, decl *Decl) (interface{}, error) {
+func (p *parseCtx) parseArray(n *idr.Node, decl *Decl) (interface{}, error) {
 	var array []interface{}
 	for _, childDecl := range decl.children {
 		// if a particular child Decl has xpath, then we'll multi-select nodes based on that
@@ -342,7 +338,7 @@ func (p *parseCtx) parseArray(n *node.Node, decl *Decl) (interface{}, error) {
 		if err != nil {
 			continue
 		}
-		childNodes, err := nodes.MatchAll(n, xpath, xpathMatchFlags(dynamic))
+		childNodes, err := idr.MatchAll(n, xpath, xpathMatchFlags(dynamic))
 		if err != nil {
 			return nil, fmt.Errorf("xpath query '%s' on '%s' failed: %s", xpath, childDecl.fqdn, err.Error())
 		}

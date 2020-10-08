@@ -8,12 +8,11 @@ import (
 	"sync"
 	"unsafe"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/dop251/goja"
 	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/strs"
 
-	"github.com/jf-tech/omniparser/nodes"
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -76,7 +75,7 @@ var JSProgramCache *caches.LoadingCache
 // javascript's at the same time, thus the use of sync.Pool. Not user customizable.
 var jsRuntimePool sync.Pool
 
-// NodeToJSONCache caches *node.Node to JSON translations.
+// NodeToJSONCache caches *idr.Node to JSON translations.
 var NodeToJSONCache *caches.LoadingCache
 
 // For debugging/testing purpose so we can easily disable all the caches. But not exported. We always
@@ -110,15 +109,15 @@ func getProgram(js string) (*goja.Program, error) {
 	return p.(*goja.Program), nil
 }
 
-func getNodeJSON(n *node.Node) string {
+func getNodeJSON(n *idr.Node) string {
 	if disableCaching {
-		return nodes.JSONify2(n)
+		return idr.JSONify2(n)
 	}
-	// TODO if in the future we have *node.Node allocation recycling, then this by-addr caching
+	// TODO if in the future we have *idr.Node allocation recycling, then this by-addr caching
 	// won't work. Ideally, we should have a node ID which refreshes upon recycling.
 	addr := strconv.FormatUint(uint64(uintptr(unsafe.Pointer(n))), 16)
 	j, _ := NodeToJSONCache.Get(addr, func(interface{}) (interface{}, error) {
-		return nodes.JSONify2(n), nil
+		return idr.JSONify2(n), nil
 	})
 	return j.(string)
 }
@@ -151,7 +150,7 @@ func execProgram(program *goja.Program, args map[string]interface{}) (goja.Value
 
 // javascriptWithContext is a custom_func that runs a javascript with optional arguments and
 // with current node JSON, if node is provided.
-func javascriptWithContext(ctx *transformctx.Ctx, n *node.Node, js string, args ...string) (string, error) {
+func javascriptWithContext(_ *transformctx.Ctx, n *idr.Node, js string, args ...string) (string, error) {
 	if len(args)%2 != 0 {
 		return "", errors.New("invalid number of args to 'javascript'")
 	}

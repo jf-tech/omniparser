@@ -105,10 +105,10 @@ func TestAnyMatch(t *testing.T) {
 	caches.XPathExprCache = caches.NewLoadingCache()
 	expr, err := caches.GetXPathExpr(".")
 	assert.NoError(t, err)
-	assert.True(t, AnyMatch(tt.elemB, expr))
+	assert.True(t, MatchAny(tt.elemB, expr))
 	expr, err = caches.GetXPathExpr("not_existing")
 	assert.NoError(t, err)
-	assert.False(t, AnyMatch(tt.elemB, expr))
+	assert.False(t, MatchAny(tt.elemB, expr))
 }
 
 func TestMatchAll_Dot(t *testing.T) {

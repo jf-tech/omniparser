@@ -1,27 +1,29 @@
 {
-	"Attr": [],
 	"Children": [
 		{
-			"Attr": null,
 			"Children": null,
 			"Data": "data1",
-			"FirstChild": "(nil)",
-			"LastChild": "(nil)",
-			"NamespaceURI": "",
-			"NextSibling": "(nil)",
+			"FirstChild": null,
+			"FormatSpecific": {
+				"NamespacePrefix": "",
+				"NamespaceURI": ""
+			},
+			"LastChild": null,
+			"NextSibling": null,
 			"Parent": "(ElementNode B)",
-			"Prefix": "",
-			"PrevSibling": "(nil)",
-			"Type": "CharDataNode"
+			"PrevSibling": null,
+			"Type": "TextNode"
 		}
 	],
 	"Data": "B",
-	"FirstChild": "(CharDataNode 'data1')",
-	"LastChild": "(CharDataNode 'data1')",
-	"NamespaceURI": "",
-	"NextSibling": "(nil)",
+	"FirstChild": "(TextNode 'data1')",
+	"FormatSpecific": {
+		"NamespacePrefix": "",
+		"NamespaceURI": ""
+	},
+	"LastChild": "(TextNode 'data1')",
+	"NextSibling": null,
 	"Parent": "(ElementNode A)",
-	"Prefix": "",
-	"PrevSibling": "(nil)",
+	"PrevSibling": null,
 	"Type": "ElementNode"
 }

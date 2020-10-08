@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"reflect"
 
-	node "github.com/antchfx/xmlquery"
-
 	"github.com/jf-tech/omniparser/customfuncs"
-	"github.com/jf-tech/omniparser/nodes"
+	"github.com/jf-tech/omniparser/idr"
 )
 
-func (p *parseCtx) invokeCustomFunc(n *node.Node, customFuncDecl *CustomFuncDecl) (string, error) {
+func (p *parseCtx) invokeCustomFunc(n *idr.Node, customFuncDecl *CustomFuncDecl) (string, error) {
 	// In validation, we've validated the custom func exists.
 	fn, _ := p.customFuncs[customFuncDecl.Name]
 	argValues, err := p.prepArgValues(n, customFuncDecl, fn)
@@ -34,20 +32,20 @@ func (p *parseCtx) invokeCustomFunc(n *node.Node, customFuncDecl *CustomFuncDecl
 	return "", fmt.Errorf("'%s' failed: %s", customFuncDecl.fqdn, err.Error())
 }
 
-func (p *parseCtx) prepDefaultArgValues(n *node.Node, fn customfuncs.CustomFuncType) []reflect.Value {
+func (p *parseCtx) prepDefaultArgValues(n *idr.Node, fn customfuncs.CustomFuncType) []reflect.Value {
 	// All custom_func's must have 0-th arg of *transformctx.Ctx
 	argValues := []reflect.Value{reflect.ValueOf(p.opCtx)}
-	// Some newer custom_func's can have *node.Node as secondary default arg.
+	// Some newer custom_func's can have *idr.Node as secondary default arg.
 	fnType := reflect.TypeOf(fn)
 	argNum := fnType.NumIn()
-	if argNum >= 2 && fnType.In(1) == reflect.TypeOf((*node.Node)(nil)) {
+	if argNum >= 2 && fnType.In(1) == reflect.TypeOf((*idr.Node)(nil)) {
 		argValues = append(argValues, reflect.ValueOf(n))
 	}
 	return argValues
 }
 
 func (p *parseCtx) prepArgValues(
-	n *node.Node, customFuncDecl *CustomFuncDecl, fn customfuncs.CustomFuncType) ([]reflect.Value, error) {
+	n *idr.Node, customFuncDecl *CustomFuncDecl, fn customfuncs.CustomFuncType) ([]reflect.Value, error) {
 
 	argValues := p.prepDefaultArgValues(n, fn)
 	appendArgValue := func(argDecl *Decl, value interface{}) {
@@ -87,7 +85,7 @@ func (p *parseCtx) prepArgValues(
 			if err != nil {
 				return nil, err
 			}
-			argValueNodes, err := nodes.MatchAll(n, xpath, xpathMatchFlags(dynamic))
+			argValueNodes, err := idr.MatchAll(n, xpath, xpathMatchFlags(dynamic))
 			if err != nil {
 				return nil, fmt.Errorf("xpath query '%s' for '%s' failed: %s", xpath, argDecl.fqdn, err.Error())
 			}

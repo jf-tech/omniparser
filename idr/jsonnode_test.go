@@ -3,8 +3,19 @@ package idr
 import (
 	"testing"
 
+	"github.com/bradleyjkemp/cupaloy"
+	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestJSONType_String(t *testing.T) {
+	var jts []string
+	for jt := JSONRoot; jt < jsonTypeEnd; jt <<= 1 {
+		jts = append(jts, jt.String())
+	}
+	jts = append(jts, JSONType(99).String())
+	cupaloy.SnapshotT(t, jsons.BPM(jts))
+}
 
 func TestIsJSON(t *testing.T) {
 	assert.True(t, IsJSON(CreateJSONNode(DocumentNode, "", JSONRoot)))

@@ -1,0 +1,11 @@
+[
+	"JSONRoot",
+	"JSONObj",
+	"JSONArr",
+	"JSONProp",
+	"JSONValueStr",
+	"JSONValueNum",
+	"JSONValueBool",
+	"JSONValueNull",
+	"(unknown JSONType: 99)"
+]

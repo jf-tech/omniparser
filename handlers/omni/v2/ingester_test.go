@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
+	"github.com/jf-tech/omniparser/idr"
 )
 
 var errContinuableInTest = errors.New("continuable error")
 
 type testReader struct {
-	result []*node.Node
+	result []*idr.Node
 	err    []error
 }
 
-func (r *testReader) Read() (*node.Node, error) {
+func (r *testReader) Read() (*idr.Node, error) {
 	if len(r.result) == 0 {
 		return nil, errs.ErrEOF
 	}
@@ -38,7 +38,7 @@ func (r *testReader) FmtErr(format string, args ...interface{}) error {
 
 func TestIngester_Read_ReadFailure(t *testing.T) {
 	g := &ingester{
-		reader: &testReader{result: []*node.Node{nil}, err: []error{errors.New("test failure")}},
+		reader: &testReader{result: []*idr.Node{nil}, err: []error{errors.New("test failure")}},
 	}
 	b, err := g.Read()
 	assert.Error(t, err)
@@ -56,7 +56,7 @@ func TestIngester_Read_ParseNodeFailure(t *testing.T) {
 	assert.NoError(t, err)
 	g := &ingester{
 		finalOutputDecl: finalOutputDecl,
-		reader:          &testReader{result: []*node.Node{nil}, err: []error{nil}},
+		reader:          &testReader{result: []*idr.Node{nil}, err: []error{nil}},
 	}
 	b, err := g.Read()
 	assert.Error(t, err)
@@ -78,7 +78,7 @@ func TestIngester_Read_Success(t *testing.T) {
 	assert.NoError(t, err)
 	g := &ingester{
 		finalOutputDecl: finalOutputDecl,
-		reader:          &testReader{result: []*node.Node{nil}, err: []error{nil}},
+		reader:          &testReader{result: []*idr.Node{nil}, err: []error{nil}},
 	}
 	b, err := g.Read()
 	assert.NoError(t, err)

@@ -51,8 +51,8 @@ func QueryIter(n *Node, expr *xpath.Expr) *xpath.NodeIterator {
 	return expr.Select(createNavigator(n))
 }
 
-// AnyMatch returns true if the xpath query 'expr' against an IDR tree rooted at 'n' yields any result.
-func AnyMatch(n *Node, expr *xpath.Expr) bool {
+// MatchAny returns true if the xpath query 'expr' against an IDR tree rooted at 'n' yields any result.
+func MatchAny(n *Node, expr *xpath.Expr) bool {
 	return QueryIter(n, expr).MoveNext()
 }
 

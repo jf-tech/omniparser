@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/customfuncs"
@@ -17,6 +16,7 @@ import (
 	omniv2json "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/json"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
 	"github.com/jf-tech/omniparser/header"
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -51,7 +51,7 @@ type testFormatReader struct {
 	runtime   interface{}
 }
 
-func (r testFormatReader) Read() (*node.Node, error)           { panic("implement me") }
+func (r testFormatReader) Read() (*idr.Node, error)            { panic("implement me") }
 func (r testFormatReader) IsContinuableError(error) bool       { panic("implement me") }
 func (r testFormatReader) FmtErr(string, ...interface{}) error { panic("implement me") }
 
@@ -224,7 +224,7 @@ func TestCreateHandler_CustomParseFuncs_Success(t *testing.T) {
 				}`),
 			HandlerParams: &HandlerParams{
 				CustomParseFuncs: transform.CustomParseFuncs{
-					"test_custom_parse": func(_ *transformctx.Ctx, _n *node.Node) (interface{}, error) {
+					"test_custom_parse": func(_ *transformctx.Ctx, _n *idr.Node) (interface{}, error) {
 						return "test", nil
 					},
 				},

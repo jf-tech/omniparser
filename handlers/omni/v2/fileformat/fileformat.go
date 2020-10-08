@@ -3,10 +3,9 @@ package omniv2fileformat
 import (
 	"io"
 
-	node "github.com/antchfx/xmlquery"
-
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
+	"github.com/jf-tech/omniparser/idr"
 )
 
 // FileFormat defines how an omni v2's specific file format should behave.
@@ -28,7 +27,7 @@ type FileFormat interface {
 type FormatReader interface {
 	// Read returns a *Node and its subtree that will eventually be parsed and transformed into an
 	// output record.
-	Read() (*node.Node, error)
+	Read() (*idr.Node, error)
 	// IsContinuableError determines whether an FormatReader returned error is continuable or not.
 	// For certain errors (like EOF or corruption) there is no point to keep on trying; while others
 	// can be safely ignored.

@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/stretchr/testify/assert"
@@ -15,6 +14,7 @@ import (
 	"github.com/jf-tech/omniparser"
 	omniv2 "github.com/jf-tech/omniparser/handlers/omni/v2"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -64,7 +64,7 @@ func TestSample(t *testing.T) {
 // - you can return a struct that is JSON marshalable, if lookup yields a complex structure.
 
 // These are very contrived examples, only for illustration purposes.
-func employeePersonalDetailsLookup(_ *transformctx.Ctx, node *node.Node) (interface{}, error) {
+func employeePersonalDetailsLookup(_ *transformctx.Ctx, node *idr.Node) (interface{}, error) {
 	id := node.InnerText()
 	// Pretend some complex logic and/or RPC calls...
 	// This custom_parse demonstrates how to return a complex object with map[string]interface{}
@@ -84,7 +84,7 @@ func employeePersonalDetailsLookup(_ *transformctx.Ctx, node *node.Node) (interf
 	}, nil
 }
 
-func employeeBusinessDetailsLookup(_ *transformctx.Ctx, node *node.Node) (interface{}, error) {
+func employeeBusinessDetailsLookup(_ *transformctx.Ctx, node *idr.Node) (interface{}, error) {
 	id := node.InnerText()
 	// Pretend some complex logic and/or RPC calls...
 	// This custom_parse demonstrates how to return a complex object with golang struct
@@ -108,7 +108,7 @@ func employeeBusinessDetailsLookup(_ *transformctx.Ctx, node *node.Node) (interf
 	}, nil
 }
 
-func employeeTempLookup(_ *transformctx.Ctx, node *node.Node) (interface{}, error) {
+func employeeTempLookup(_ *transformctx.Ctx, node *idr.Node) (interface{}, error) {
 	id := node.InnerText()
 	// Pretend some complex logic and/or RPC calls...
 	// This custom_parse demonstrates how to return a single string value.

@@ -30,6 +30,10 @@
 			}
 		],
 		"first_book": {
+			"#attributes": {
+				"price": "9.99",
+				"title": "Harry Potter and the Philosopher's Stone"
+			},
 			"author": "J. K. Rowling",
 			"year": "1997"
 		},
@@ -68,6 +72,10 @@
 			}
 		],
 		"first_book": {
+			"#attributes": {
+				"price": "5.99",
+				"title": "Goodnight Moon"
+			},
 			"author": "Margaret Wise Brown",
 			"year": "1947"
 		},

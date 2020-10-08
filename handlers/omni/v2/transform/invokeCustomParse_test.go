@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	node "github.com/antchfx/xmlquery"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -14,29 +14,29 @@ func TestInvokeCustomParse(t *testing.T) {
 	for _, test := range []struct {
 		name        string
 		customParse CustomParseFuncType
-		n           *node.Node
+		n           *idr.Node
 		expected    interface{}
 		expectedErr string
 	}{
 		{
 			name: "success",
-			customParse: func(ctx *transformctx.Ctx, n *node.Node) (interface{}, error) {
+			customParse: func(ctx *transformctx.Ctx, n *idr.Node) (interface{}, error) {
 				assert.Equal(t, "test-input", ctx.InputName)
 				assert.Equal(t, "123", n.InnerText())
 				return "321", nil
 			},
-			n:           &node.Node{Type: node.TextNode, Data: "123"},
+			n:           idr.CreateNode(idr.TextNode, "123"),
 			expected:    "321",
 			expectedErr: "",
 		},
 		{
 			name: "failure",
-			customParse: func(ctx *transformctx.Ctx, n *node.Node) (interface{}, error) {
+			customParse: func(ctx *transformctx.Ctx, n *idr.Node) (interface{}, error) {
 				assert.Equal(t, "test-input", ctx.InputName)
 				assert.Equal(t, "123", n.InnerText())
 				return nil, errors.New("test failure")
 			},
-			n:           &node.Node{Type: node.TextNode, Data: "123"},
+			n:           idr.CreateNode(idr.TextNode, "123"),
 			expected:    nil,
 			expectedErr: "test failure",
 		},
