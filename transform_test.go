@@ -3,6 +3,7 @@ package omniparser
 import (
 	"errors"
 	"fmt"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,7 +48,7 @@ func TestTransform_EndWithEOF(t *testing.T) {
 				{record: []byte("1st good read")},
 				{err: continuableErr1},
 				{record: []byte("2nd good read")},
-				{err: errs.ErrEOF},
+				{err: io.EOF},
 			},
 			continuableErrs: map[error]bool{continuableErr1: true},
 		},
@@ -72,14 +73,14 @@ func TestTransform_EndWithEOF(t *testing.T) {
 	assert.False(t, tfm.Next())
 	record, err = tfm.Read()
 	assert.Error(t, err)
-	assert.Equal(t, errs.ErrEOF, err)
+	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, record)
 
 	// Verifying when EOF is reached, repeatedly calling Next will still get you EOF.
 	assert.False(t, tfm.Next())
 	record, err = tfm.Read()
 	assert.Error(t, err)
-	assert.Equal(t, errs.ErrEOF, err)
+	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, record)
 }
 

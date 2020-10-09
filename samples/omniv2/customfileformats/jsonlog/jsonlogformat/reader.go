@@ -12,7 +12,6 @@ import (
 	"github.com/jf-tech/go-corelib/ios"
 	"github.com/jf-tech/go-corelib/strs"
 
-	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/idr"
 )
 
@@ -44,7 +43,7 @@ func (r *reader) Read() (*idr.Node, error) {
 		r.line++
 		l, err := ios.ReadLine(r.r)
 		if err == io.EOF {
-			return nil, errs.ErrEOF
+			return nil, io.EOF
 		}
 		if err != nil {
 			// If we fail to read a log line out (permission issue, disk issue, whatever)
@@ -80,7 +79,7 @@ func parseJSON(b []byte) (*idr.Node, error) {
 }
 
 func (r *reader) IsContinuableError(err error) bool {
-	return !IsErrLogReadingFailed(err) && err != errs.ErrEOF
+	return !IsErrLogReadingFailed(err) && err != io.EOF
 }
 
 func (r *reader) FmtErr(format string, args ...interface{}) error {
@@ -91,7 +90,7 @@ func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 	return fmt.Sprintf("input '%s' line %d: %s", r.inputName, r.line, fmt.Sprintf(format, args...))
 }
 
-// NewReader creates an InputReader for this sample jsonlog file format.
+// NewReader creates an FormatReader for this sample jsonlog file format.
 func NewReader(inputName string, src io.Reader, filterXPath string) (*reader, error) {
 	filter, err := caches.GetXPathExpr(filterXPath)
 	if err != nil {

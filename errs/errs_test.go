@@ -1,6 +1,7 @@
 package errs
 
 import (
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,5 +10,5 @@ import (
 func TestIsErrTransformFailed(t *testing.T) {
 	assert.True(t, IsErrTransformFailed(ErrTransformFailed("test")))
 	assert.Equal(t, "test", ErrTransformFailed("test").Error())
-	assert.False(t, IsErrTransformFailed(ErrEOF))
+	assert.False(t, IsErrTransformFailed(io.EOF))
 }
