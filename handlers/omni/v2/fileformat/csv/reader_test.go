@@ -122,7 +122,7 @@ func TestReader(t *testing.T) {
 			decl: &fileDecl{
 				Delimiter:      ",",
 				HeaderRowIndex: testlib.IntPtr(2),
-				DataRowIndex:   4,
+				DataRowIndex:   5,
 				Columns: []column{
 					{Name: "a"},
 					{Name: "b"},

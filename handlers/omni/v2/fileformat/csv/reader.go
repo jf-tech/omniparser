@@ -62,15 +62,16 @@ read:
 }
 
 func (r *reader) checkHeader() error {
+	var err error
+	var header []string
 	if r.decl.HeaderRowIndex == nil {
-		_ = r.jumpTo(r.decl.DataRowIndex - 1)
-		return nil
+		goto skipToDataRow
 	}
-	err := r.jumpTo(*r.decl.HeaderRowIndex - 1)
-	if err == io.EOF {
+	err = r.jumpTo(*r.decl.HeaderRowIndex - 1)
+	if err != nil {
 		return ErrInvalidHeader(r.fmtErrStr("unable to read header: %s", err.Error()))
 	}
-	header, err := r.r.Read()
+	header, err = r.r.Read()
 	if err != nil {
 		return ErrInvalidHeader(r.fmtErrStr("unable to read header: %s", err.Error()))
 	}
@@ -86,15 +87,24 @@ func (r *reader) checkHeader() error {
 				index+1, strings.TrimSpace(header[index]), strings.TrimSpace(column.Name)))
 		}
 	}
-	_ = r.jumpTo(r.decl.DataRowIndex - 1)
+skipToDataRow:
+	if err = r.jumpTo(r.decl.DataRowIndex - 1); err != nil {
+		return err
+	}
 	return nil
 }
 
+// the only possible error this jumpTo returns is io.EOF. if there is any reading error, we'll ignore
+// because we really don't care about what's corrupted in a line. Now it's possible, but very very
+// rarely, that the input reader's underlying media fails to read due memory/disk/IO issue. Since we
+// can't reliably tease apart those failures from a simple line corruption failure, we'll choose to
+// ignore them equally. And those underlying media failures most likely will repeat and cause subsequent
+// read to fail, and then the reader will fail out entirely.
 func (r *reader) jumpTo(rowIndex int) error {
 	for r.r.LineNum() < rowIndex {
 		_, err := r.r.Read()
 		if err == io.EOF {
-			return err
+			return io.EOF
 		}
 	}
 	return nil
