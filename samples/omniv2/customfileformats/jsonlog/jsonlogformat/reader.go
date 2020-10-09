@@ -54,7 +54,11 @@ func (r *reader) Read() (*idr.Node, error) {
 		if !strs.IsStrNonBlank(l) {
 			continue
 		}
-		n, err := parseJSON([]byte(l))
+		p, err := idr.NewJSONStreamReader(bytes.NewReader([]byte(l)), ".")
+		if err != nil {
+			return nil, err
+		}
+		n, err := p.Read()
 		if err != nil {
 			// If we read out a log line fine, but unable to parse it, that shouldn't be
 			// a fatal error, thus not wrapping the error in non-continuable error
@@ -70,12 +74,10 @@ func (r *reader) Read() (*idr.Node, error) {
 	}
 }
 
-func parseJSON(b []byte) (*idr.Node, error) {
-	p, err := idr.NewJSONStreamReader(bytes.NewReader(b), ".")
-	if err != nil {
-		return nil, err
+func (r *reader) Release(n *idr.Node) {
+	if n != nil {
+		idr.RemoveAndReleaseTree(n)
 	}
-	return p.Read()
 }
 
 func (r *reader) IsContinuableError(err error) bool {

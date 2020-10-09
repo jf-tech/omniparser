@@ -165,6 +165,7 @@ func TestReader(t *testing.T) {
 				expectedJSON, ok := test.expected[0].(string)
 				assert.True(t, ok)
 				assert.Equal(t, jsons.BPJ(expectedJSON), jsons.BPJ(idr.JSONify2(n)))
+				r.Release(n)
 				test.expected = test.expected[1:]
 			}
 		})

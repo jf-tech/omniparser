@@ -20,13 +20,14 @@ type ingester struct {
 }
 
 func (g *ingester) Read() ([]byte, error) {
-	node, err := g.reader.Read()
+	n, err := g.reader.Read()
 	if err != nil {
 		// Read() supposed to have already done CtxAwareErr error wrapping. So directly return.
 		return nil, err
 	}
+	defer g.reader.Release(n)
 	result, err := transform.NewParseCtx(
-		g.ctx, g.customFuncs, g.customParseFuncs).ParseNode(node, g.finalOutputDecl)
+		g.ctx, g.customFuncs, g.customParseFuncs).ParseNode(n, g.finalOutputDecl)
 	if err != nil {
 		// ParseNode() error not CtxAwareErr wrapped, so wrap it.
 		// Note errs.ErrorTransformFailed is a continuable error.

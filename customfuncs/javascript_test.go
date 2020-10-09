@@ -223,12 +223,12 @@ func TestJavascriptClearVarsAfterRunProgram(t *testing.T) {
 }
 
 // go test -bench=. -benchmem -benchtime=30s
-// BenchmarkIfElse-4                            	368017143	      98.1 ns/op	       8 B/op	       1 allocs/op
-// BenchmarkEval-4                              	26409430	      1386 ns/op	     418 B/op	       8 allocs/op
-// BenchmarkJavascriptWithNoCache-4             	  172803	    210958 ns/op	  136608 B/op	    1698 allocs/op
-// BenchmarkJavascriptWithCache-4               	23059004	      1572 ns/op	     129 B/op	       8 allocs/op
-// BenchmarkConcurrentJavascriptWithNoCache-4   	    1140	  32729941 ns/op	27328924 B/op	  339654 allocs/op
-// BenchmarkConcurrentJavascriptWithCache-4     	   70977	    504870 ns/op	   26568 B/op	    1745 allocs/op
+// BenchmarkIfElse-4                            	352522934	        97.9 ns/op	       8 B/op	       1 allocs/op
+// BenchmarkEval-4                              	25887961	      1405 ns/op	     418 B/op	       8 allocs/op
+// BenchmarkJavascriptWithNoCache-4             	  172342	    210129 ns/op	  136607 B/op	    1698 allocs/op
+// BenchmarkJavascriptWithCache-4               	15996846	      2062 ns/op	     128 B/op	       8 allocs/op
+// BenchmarkConcurrentJavascriptWithNoCache-4   	    1143	  33140598 ns/op	27328719 B/op	  339653 allocs/op
+// BenchmarkConcurrentJavascriptWithCache-4     	   65140	    543091 ns/op	   26608 B/op	    1746 allocs/op
 
 var (
 	benchTitles  = []string{"", "Dr", "Sir"}

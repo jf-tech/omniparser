@@ -21,37 +21,37 @@ func rootOf(n *Node) *Node {
 	return n
 }
 
-func checkPointersInTree(t *testing.T, n *Node) {
+func checkPointersInTree(tb testing.TB, n *Node) {
 	if n == nil {
 		return
 	}
 	if n.FirstChild != nil {
-		assert.True(t, n == n.FirstChild.Parent)
+		assert.True(tb, n == n.FirstChild.Parent)
 	}
 	if n.LastChild != nil {
-		assert.True(t, n == n.LastChild.Parent)
+		assert.True(tb, n == n.LastChild.Parent)
 	}
-	checkPointersInTree(t, n.FirstChild)
-	// There is no need to call checkPointersInTree(t, n.LastChild)
-	// because checkPointersInTree(t, n.FirstChild) will traverse all its
+	checkPointersInTree(tb, n.FirstChild)
+	// There is no need to call checkPointersInTree(tb, n.LastChild)
+	// because checkPointersInTree(tb, n.FirstChild) will traverse all its
 	// siblings to the end, and if the last one isn't n.LastChild then it will fail.
 	parent := n.Parent // could be nil if n is the root of a tree.
 	// Verify the PrevSibling chain
 	cur, prev := n, n.PrevSibling
 	for ; prev != nil; cur, prev = prev, prev.PrevSibling {
-		assert.True(t, prev.Parent == parent)
-		assert.True(t, prev.NextSibling == cur)
+		assert.True(tb, prev.Parent == parent)
+		assert.True(tb, prev.NextSibling == cur)
 	}
-	assert.True(t, cur.PrevSibling == nil)
-	assert.True(t, parent == nil || parent.FirstChild == cur)
+	assert.True(tb, cur.PrevSibling == nil)
+	assert.True(tb, parent == nil || parent.FirstChild == cur)
 	// Verify the NextSibling chain
 	cur, next := n, n.NextSibling
 	for ; next != nil; cur, next = next, next.NextSibling {
-		assert.True(t, next.Parent == parent)
-		assert.True(t, next.PrevSibling == cur)
+		assert.True(tb, next.Parent == parent)
+		assert.True(tb, next.PrevSibling == cur)
 	}
-	assert.True(t, cur.NextSibling == nil)
-	assert.True(t, parent == nil || parent.LastChild == cur)
+	assert.True(tb, cur.NextSibling == nil)
+	assert.True(tb, parent == nil || parent.LastChild == cur)
 }
 
 type testTree struct {
@@ -81,7 +81,7 @@ const (
 	testTreeNotXML = false
 )
 
-func newTestTree(t *testing.T, xmlNode bool) *testTree {
+func newTestTree(tb testing.TB, xmlNode bool) *testTree {
 	mkNode := func(parent *Node, ntype NodeType, name string) *Node {
 		var node *Node
 		if xmlNode {
@@ -115,7 +115,7 @@ func newTestTree(t *testing.T, xmlNode bool) *testTree {
 	elemC3, textC3 := mkPair(elemC, ElementNode, "elemC3", "textC3")
 	elemC4, textC4 := mkPair(elemC, ElementNode, "elemC4", "textC4")
 
-	checkPointersInTree(t, root)
+	checkPointersInTree(tb, root)
 
 	return &testTree{
 		root: root,
@@ -135,50 +135,87 @@ func newTestTree(t *testing.T, xmlNode bool) *testTree {
 	}
 }
 
+const (
+	testNodeCachingOn  = true
+	testNodeCachingOff = false
+)
+
+func setupTestNodeCaching(caching bool) {
+	resetNodePool()
+	nodeCaching = caching
+}
+
 func TestDumpTestTree(t *testing.T) {
+	setupTestNodeCaching(testNodeCachingOff)
 	cupaloy.SnapshotT(t, JSONify1(newTestTree(t, testTreeXML).root))
 }
 
 func TestInnerText(t *testing.T) {
+	setupTestNodeCaching(testNodeCachingOff)
 	tt := newTestTree(t, testTreeNotXML)
 	assert.Equal(t, tt.textA1.Data+tt.textA2.Data, tt.elemA.InnerText())
 	// Note attribute's texts are skipped in InnerText(), by design.
 	assert.Equal(t, tt.textC3.Data+tt.textC4.Data, tt.elemC.InnerText())
 }
 
-func TestRemoveNodeAndSubTree(t *testing.T) {
+func TestRemoveAndReleaseTree(t *testing.T) {
 	t.Run("remove a node who is its parents only child", func(t *testing.T) {
+		setupTestNodeCaching(testNodeCachingOn)
 		tt := newTestTree(t, testTreeXML)
-		RemoveFromTree(tt.elemB1)
+		RemoveAndReleaseTree(tt.elemB1)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
 	})
 
 	t.Run("remove a node who is its parents first child but not the last", func(t *testing.T) {
+		setupTestNodeCaching(testNodeCachingOn)
 		tt := newTestTree(t, testTreeXML)
-		RemoveFromTree(tt.elemA)
+		RemoveAndReleaseTree(tt.elemA)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
 	})
 
 	t.Run("remove a node who is its parents middle child not the first not the last", func(t *testing.T) {
+		setupTestNodeCaching(testNodeCachingOn)
 		tt := newTestTree(t, testTreeXML)
-		RemoveFromTree(tt.elemB)
+		RemoveAndReleaseTree(tt.elemB)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
 	})
 
 	t.Run("remove a node who is its parents last child but not the first", func(t *testing.T) {
+		setupTestNodeCaching(testNodeCachingOn)
 		tt := newTestTree(t, testTreeXML)
-		RemoveFromTree(tt.elemC)
+		RemoveAndReleaseTree(tt.elemC)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
 	})
 
-	t.Run("remove a root does nothing", func(t *testing.T) {
+	t.Run("remove a root does nothing (when node caching is off)", func(t *testing.T) {
+		setupTestNodeCaching(testNodeCachingOff)
 		tt := newTestTree(t, testTreeXML)
-		RemoveFromTree(tt.root)
+		RemoveAndReleaseTree(tt.root)
 		checkPointersInTree(t, tt.root)
 		cupaloy.SnapshotT(t, JSONify1(tt.root))
 	})
+}
+
+// go test -bench=. -benchmem -benchtime=30s
+// BenchmarkCreateAndDestroyTree_NoCache-4     	20421031	      1736 ns/op	    1872 B/op	      19 allocs/op
+// BenchmarkCreateAndDestroyTree_WithCache-4   	22744428	      1559 ns/op	     144 B/op	       1 allocs/op
+
+func BenchmarkCreateAndDestroyTree_NoCache(b *testing.B) {
+	setupTestNodeCaching(testNodeCachingOff)
+	for i := 0; i < b.N; i++ {
+		tt := newTestTree(b, false)
+		RemoveAndReleaseTree(tt.root)
+	}
+}
+
+func BenchmarkCreateAndDestroyTree_WithCache(b *testing.B) {
+	setupTestNodeCaching(testNodeCachingOn)
+	for i := 0; i < b.N; i++ {
+		tt := newTestTree(b, false)
+		RemoveAndReleaseTree(tt.root)
+	}
 }

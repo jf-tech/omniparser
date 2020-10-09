@@ -14,10 +14,12 @@ import (
 )
 
 var errContinuableInTest = errors.New("continuable error")
+var ingesterTestNode = idr.CreateNode(idr.ElementNode, "test")
 
 type testReader struct {
-	result []*idr.Node
-	err    []error
+	result        []*idr.Node
+	err           []error
+	releaseCalled int
 }
 
 func (r *testReader) Read() (*idr.Node, error) {
@@ -30,6 +32,8 @@ func (r *testReader) Read() (*idr.Node, error) {
 	r.err = r.err[1:]
 	return result, err
 }
+
+func (r *testReader) Release(n *idr.Node) { r.releaseCalled++ }
 
 func (r *testReader) IsContinuableError(err error) bool { return err == errContinuableInTest }
 
@@ -45,6 +49,7 @@ func TestIngester_Read_ReadFailure(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "test failure", err.Error())
 	assert.Nil(t, b)
+	assert.Equal(t, 0, g.reader.(*testReader).releaseCalled)
 }
 
 func TestIngester_Read_ParseNodeFailure(t *testing.T) {
@@ -57,7 +62,7 @@ func TestIngester_Read_ParseNodeFailure(t *testing.T) {
 	assert.NoError(t, err)
 	g := &ingester{
 		finalOutputDecl: finalOutputDecl,
-		reader:          &testReader{result: []*idr.Node{nil}, err: []error{nil}},
+		reader:          &testReader{result: []*idr.Node{ingesterTestNode}, err: []error{nil}},
 	}
 	b, err := g.Read()
 	assert.Error(t, err)
@@ -67,6 +72,7 @@ func TestIngester_Read_ParseNodeFailure(t *testing.T) {
 		`ctx: fail to transform. err: fail to convert value 'abc' to type 'int' on 'FINAL_OUTPUT', err: strconv.ParseFloat: parsing "abc": invalid syntax`,
 		err.Error())
 	assert.Nil(t, b)
+	assert.Equal(t, 1, g.reader.(*testReader).releaseCalled)
 }
 
 func TestIngester_Read_Success(t *testing.T) {
@@ -79,11 +85,12 @@ func TestIngester_Read_Success(t *testing.T) {
 	assert.NoError(t, err)
 	g := &ingester{
 		finalOutputDecl: finalOutputDecl,
-		reader:          &testReader{result: []*idr.Node{nil}, err: []error{nil}},
+		reader:          &testReader{result: []*idr.Node{ingesterTestNode}, err: []error{nil}},
 	}
 	b, err := g.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, "123", string(b))
+	assert.Equal(t, 1, g.reader.(*testReader).releaseCalled)
 }
 
 func TestIsContinuableError(t *testing.T) {

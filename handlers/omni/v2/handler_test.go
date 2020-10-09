@@ -52,6 +52,7 @@ type testFormatReader struct {
 }
 
 func (r testFormatReader) Read() (*idr.Node, error)            { panic("implement me") }
+func (r testFormatReader) Release(*idr.Node)                   { panic("implement me") }
 func (r testFormatReader) IsContinuableError(error) bool       { panic("implement me") }
 func (r testFormatReader) FmtErr(string, ...interface{}) error { panic("implement me") }
 

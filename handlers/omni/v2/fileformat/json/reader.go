@@ -40,6 +40,12 @@ func (r *reader) Read() (*idr.Node, error) {
 	return n, nil
 }
 
+func (r *reader) Release(n *idr.Node) {
+	if n != nil {
+		r.r.Release(n)
+	}
+}
+
 func (r *reader) IsContinuableError(err error) bool {
 	return !IsErrNodeReadingFailed(err) && err != io.EOF
 }

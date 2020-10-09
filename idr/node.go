@@ -3,6 +3,8 @@ package idr
 import (
 	"fmt"
 	"strings"
+	"sync"
+	"sync/atomic"
 )
 
 // NodeType is the type of a Node in an IDR.
@@ -44,6 +46,12 @@ func (nt NodeType) String() string {
 //   for each format.
 // - Node allocation recycling.
 type Node struct {
+	// ID uniquely identifies a Node, whether it's newly created or recycled and reused from
+	// the node allocation cache. Previously we sometimes used a *Node's pointer address as a
+	// unique ID which isn't sufficiently unique anymore given the introduction of using
+	// sync.Pool for node allocation caching.
+	ID int64
+
 	Parent, FirstChild, LastChild, PrevSibling, NextSibling *Node
 
 	Type NodeType
@@ -52,12 +60,55 @@ type Node struct {
 	FormatSpecific interface{}
 }
 
+// Give test a chance to turn node caching on/off. Not exported; always caching in production code.
+var nodeCaching = true
+var nodePool sync.Pool
+
+func allocNode() *Node {
+	n := &Node{}
+	n.reset()
+	return n
+}
+
+func resetNodePool() {
+	nodePool = sync.Pool{
+		New: func() interface{} {
+			return allocNode()
+		},
+	}
+}
+
+func init() {
+	resetNodePool()
+}
+
 // CreateNode creates a generic *Node.
 func CreateNode(ntype NodeType, data string) *Node {
-	return &Node{
-		Type: ntype,
-		Data: data,
+	if nodeCaching {
+		// Node out of pool has already been reset.
+		n := nodePool.Get().(*Node)
+		n.Type = ntype
+		n.Data = data
+		return n
 	}
+	n := allocNode()
+	n.Type = ntype
+	n.Data = data
+	return n
+}
+
+var nodeID = int64(0)
+
+func newNodeID() int64 {
+	return atomic.AddInt64(&nodeID, 1)
+}
+
+func (n *Node) reset() {
+	n.ID = newNodeID()
+	n.Parent, n.FirstChild, n.LastChild, n.PrevSibling, n.NextSibling = nil, nil, nil, nil, nil
+	n.Type = 0
+	n.Data = ""
+	n.FormatSpecific = nil
 }
 
 // InnerText returns a Node's children's texts concatenated.
@@ -95,11 +146,11 @@ func AddChild(parent, n *Node) {
 	parent.LastChild = n
 }
 
-// RemoveFromTree removes a node and its subtree from an IDR
-// tree it is in. If the node is the root of the tree, it's a no-op.
-func RemoveFromTree(n *Node) {
+// RemoveAndReleaseTree removes a node and its subtree from an IDR tree it is in and
+// release the resources (Node allocation) associated with the node and its subtree.
+func RemoveAndReleaseTree(n *Node) {
 	if n.Parent == nil {
-		return
+		goto recycle
 	}
 	if n.Parent.FirstChild == n {
 		if n.Parent.LastChild == n {
@@ -118,7 +169,21 @@ func RemoveFromTree(n *Node) {
 			n.NextSibling.PrevSibling = n.PrevSibling
 		}
 	}
-	n.Parent = nil
-	n.PrevSibling = nil
-	n.NextSibling = nil
+recycle:
+	recycle(n)
+}
+
+func recycle(n *Node) {
+	if !nodeCaching {
+		return
+	}
+	for c := n.FirstChild; c != nil; {
+		// Have to save c.NextSibling before recycle(c) call or
+		// c.NextSibling would be wiped out during the call.
+		next := c.NextSibling
+		recycle(c)
+		c = next
+	}
+	n.reset()
+	nodePool.Put(n)
 }
