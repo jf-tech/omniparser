@@ -43,8 +43,8 @@ func TestXMLStreamReader_SuccessWithXPathWithFilter(t *testing.T) {
 	t.Run("IDR snapshot after 1st Read", func(t *testing.T) {
 		cupaloy.SnapshotT(t, JSONify1(rootOf(n)))
 	})
-	// intentionally not calling sp.Release() to see if subsequent sp.Read()
-	// call would do the right thing and free the stream node or not.
+	// intentionally not calling sp.Release() to verify subsequent sp.Read()
+	// call does the right thing and frees the stream node.
 	assert.Equal(t, 5, sp.AtLine())
 
 	// Second `<t:BBB>` read
