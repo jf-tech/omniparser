@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/idr"
 )
 
@@ -33,7 +32,7 @@ type reader struct {
 func (r *reader) Read() (*idr.Node, error) {
 	n, err := r.r.Read()
 	if err == io.EOF {
-		return nil, errs.ErrEOF
+		return nil, io.EOF
 	}
 	if err != nil {
 		return nil, ErrNodeReadingFailed(r.fmtErrStr(err.Error()))
@@ -42,7 +41,7 @@ func (r *reader) Read() (*idr.Node, error) {
 }
 
 func (r *reader) IsContinuableError(err error) bool {
-	return !IsErrNodeReadingFailed(err) && err != errs.ErrEOF
+	return !IsErrNodeReadingFailed(err) && err != io.EOF
 }
 
 func (r *reader) FmtErr(format string, args ...interface{}) error {
@@ -53,7 +52,7 @@ func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 	return fmt.Sprintf("input '%s' before/near line %d: %s", r.inputName, r.r.AtLine(), fmt.Sprintf(format, args...))
 }
 
-// NewReader creates an InputReader for JSON file format for omniv2 schema handler.
+// NewReader creates an FormatReader for JSON file format for omniv2 schema handler.
 func NewReader(inputName string, src io.Reader, xpath string) (*reader, error) {
 	sp, err := idr.NewJSONStreamReader(src, xpath)
 	if err != nil {

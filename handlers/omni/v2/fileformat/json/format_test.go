@@ -1,6 +1,7 @@
 package omniv2json
 
 import (
+	"io"
 	"strings"
 	"testing"
 
@@ -91,7 +92,7 @@ func TestCreateFormatReader(t *testing.T) {
 	t.Run("EOF", func(t *testing.T) {
 		n3, err := r.Read()
 		assert.Error(t, err)
-		assert.Equal(t, errs.ErrEOF, err)
+		assert.Equal(t, io.EOF, err)
 		assert.Nil(t, n3)
 	})
 

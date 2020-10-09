@@ -26,7 +26,7 @@ type FileFormat interface {
 // stream content before doing the xpath/node based parsing.
 type FormatReader interface {
 	// Read returns a *Node and its subtree that will eventually be parsed and transformed into an
-	// output record.
+	// output record. If EOF has been reached, io.EOF must be returned.
 	Read() (*idr.Node, error)
 	// IsContinuableError determines whether an FormatReader returned error is continuable or not.
 	// For certain errors (like EOF or corruption) there is no point to keep on trying; while others

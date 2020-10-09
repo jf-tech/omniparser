@@ -2,6 +2,7 @@ package omniv2json
 
 import (
 	"errors"
+	"io"
 	"strings"
 	"testing"
 
@@ -55,7 +56,7 @@ func TestReader_Read_Success(t *testing.T) {
 
 	n, err = r.Read()
 	assert.Error(t, err)
-	assert.Equal(t, errs.ErrEOF, err)
+	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
@@ -83,7 +84,7 @@ func TestReader_FmtErr(t *testing.T) {
 func TestReader_IsContinuableError(t *testing.T) {
 	r, err := NewReader("test", strings.NewReader(""), "/A/B")
 	assert.NoError(t, err)
-	assert.False(t, r.IsContinuableError(errs.ErrEOF))
+	assert.False(t, r.IsContinuableError(io.EOF))
 	assert.False(t, r.IsContinuableError(ErrNodeReadingFailed("failure")))
 	assert.True(t, r.IsContinuableError(errs.ErrTransformFailed("failure")))
 	assert.True(t, r.IsContinuableError(errors.New("failure")))

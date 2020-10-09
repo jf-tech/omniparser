@@ -3,6 +3,7 @@ package omniv2
 import (
 	"errors"
 	"fmt"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,7 +22,7 @@ type testReader struct {
 
 func (r *testReader) Read() (*idr.Node, error) {
 	if len(r.result) == 0 {
-		return nil, errs.ErrEOF
+		return nil, io.EOF
 	}
 	result := r.result[0]
 	err := r.err[0]

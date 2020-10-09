@@ -1,6 +1,8 @@
 package omniparser
 
 import (
+	"io"
+
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/handlers"
 )
@@ -39,7 +41,7 @@ func (o *transform) Next() bool {
 			o.curRecord = record
 			o.curErr = nil
 			return true
-		case err == errs.ErrEOF:
+		case err == io.EOF:
 			o.curErr = err
 			o.curRecord = nil
 			// No more processing needed.
