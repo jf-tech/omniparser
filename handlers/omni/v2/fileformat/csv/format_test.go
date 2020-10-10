@@ -1,17 +1,19 @@
 package omniv2csv
 
 import (
+	"io"
+	"strings"
+	"testing"
+
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/jf-tech/go-corelib/testlib"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
 	"github.com/jf-tech/omniparser/idr"
-	"github.com/stretchr/testify/assert"
-	"io"
-	"strings"
-	"testing"
 )
 
 func TestValidateSchema(t *testing.T) {

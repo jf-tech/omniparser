@@ -3,7 +3,6 @@ package omniv2csv
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jf-tech/omniparser/validation"
 	"io"
 	"strings"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/jf-tech/omniparser/errs"
 	omniv2fileformat "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
+	"github.com/jf-tech/omniparser/validation"
 )
 
 const (

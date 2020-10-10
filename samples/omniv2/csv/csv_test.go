@@ -2,15 +2,15 @@ package xml
 
 import (
 	"bytes"
-	"github.com/jf-tech/omniparser"
-	"github.com/jf-tech/omniparser/transformctx"
 	"io/ioutil"
 	"testing"
 
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/jf-tech/go-corelib/jsons"
 
+	"github.com/jf-tech/omniparser"
 	"github.com/jf-tech/omniparser/samples/sampleutil"
+	"github.com/jf-tech/omniparser/transformctx"
 )
 
 func Test1_Weather_Data_CSV(t *testing.T) {

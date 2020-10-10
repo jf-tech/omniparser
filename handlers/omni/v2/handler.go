@@ -2,12 +2,12 @@ package omniv2
 
 import (
 	"fmt"
-	omniv2csv "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/csv"
 	"io"
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/handlers"
 	omniv2fileformat "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat"
+	omniv2csv "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/csv"
 	omniv2json "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/json"
 	omniv2xml "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/xml"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
