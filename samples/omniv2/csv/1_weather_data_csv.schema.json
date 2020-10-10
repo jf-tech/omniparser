@@ -1,0 +1,116 @@
+{
+    "parser_settings": {
+        "version": "omni.2.0",
+        "file_format_type": "csv"
+    },
+    "file_declaration": {
+        "delimiter": "|",
+        "replace_double_quotes": true,
+        "header_row_index": 1,
+        "data_row_index": 2,
+        "columns": [
+            { "name": "DATE" },
+            { "name": "HIGH TEMP C", "alias": "HIGH_TEMP_C" },
+            { "name": "LOW TEMP F", "alias": "LOW_TEMP_F" },
+            { "name": "WIND DIR", "alias": "WIND_DIR" },
+            { "name": "WIND SPEED KMH", "alias": "WIND_SPEED_KMH" },
+            { "name": "NOTE" },
+            { "name": "LAT" },
+            { "name": "LONG" },
+            { "name": "UV INDEX", "alias": "UV_INDEX"}
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": ".[DATE != 'N/A']" ,"object": {
+            "uv_index": {
+                "result_type": "object",
+                "custom_func": {
+                    "name": "splitIntoJsonArray",
+                    "args": [
+                        { "xpath": "UV_INDEX" },
+                        { "const": "/", "_comment": "separator" },
+                        { "const": "true", "_comment": "trim"}
+                    ]
+                }
+            },
+            "date": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DATE" },
+                    { "const": "", "_comment": "input timezone" },
+                    { "const": "", "_comment": "output timezone" }
+                ]
+            }},
+            "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
+            "low_temperature_fahrenheit": {
+                "custom_func": {
+                    "name": "floor",
+                    "args": [
+                        { "xpath": "LOW_TEMP_F" },
+                        { "const": "1", "_comment": "decimal places" }
+                    ]
+                },
+                "result_type": "float"
+            },
+            "wind": { "custom_func": {
+                "name": "concat",
+                "args": [
+                    { "xpath": "WIND_DIR", "template": "wind_acronym_mapping" },
+                    { "const": " ", "keep_leading_trailing_space": true },
+                    {
+                        "custom_func": {
+                            "name": "floor",
+                            "args": [
+                                { "custom_func": {
+                                    "name": "javascript",
+                                    "args": [
+                                        { "const": "kmh * 0.621371" },
+                                        { "const": "kmh:float" }, { "xpath": "WIND_SPEED_KMH" }
+                                    ]
+                                }},
+                                { "const": "2", "_comment": "decimal places" }
+                            ]
+                        }
+                    },
+                    { "const": " mph", "keep_leading_trailing_space": true }
+                ]
+            }},
+            "latitude": { "xpath": "LAT", "result_type": "float" },
+            "longitude": { "xpath": "LONG", "result_type": "float" },
+            "note": { "xpath": "NOTE" }
+        }},
+        "template_c_to_f": {
+            "custom_func": {
+                "name": "floor",
+                "args": [
+                    { "custom_func": {
+                        "name": "javascript",
+                        "args": [
+                            { "const": "temp_c * 9 / 5 + 32" },
+                            { "const": "temp_c:float" }, { "xpath": "." }
+                        ]
+                    }},
+                    { "const": "1", "_comment": "decimal places" }
+                ]
+            },
+            "result_type": "float"
+        },
+        "wind_acronym_mapping": {
+            "custom_func": {
+                "name": "switch",
+                "args": [
+                    { "xpath": "." },
+                    { "const": "N" },  { "const": "North" },
+                    { "const": "NE" }, { "const": "North East" },
+                    { "const": "E" },  { "const": "East" },
+                    { "const": "SE" }, { "const": "South East" },
+                    { "const": "S" },  { "const": "South" },
+                    { "const": "SW" }, { "const": "South West" },
+                    { "const": "W" },  { "const": "West" },
+                    { "const": "NW" }, { "const": "North West" },
+                    { "const": "Tornado" }
+                ]
+            }
+        }
+    }
+}

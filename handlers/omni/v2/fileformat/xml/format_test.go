@@ -34,7 +34,7 @@ func TestValidateSchema(t *testing.T) {
 			format:      fileFormatXML,
 			decl:        nil,
 			expected:    nil,
-			expectedErr: `schema 'test-schema': 'FINAL_OUTPUT' decl is nil`,
+			expectedErr: `schema 'test-schema': 'FINAL_OUTPUT' is missing`,
 		},
 		{
 			name:        "FINAL_OUTPUT has not 'xpath' set",
@@ -48,7 +48,7 @@ func TestValidateSchema(t *testing.T) {
 			format:      fileFormatXML,
 			decl:        &transform.Decl{XPath: strs.StrPtr("[invalid")},
 			expected:    nil,
-			expectedErr: `schema 'test-schema': 'xpath' on 'FINAL_OUTPUT' (value: '[invalid') is invalid, err: expression must evaluate to a node-set`,
+			expectedErr: `schema 'test-schema': 'FINAL_OUTPUT.xpath' (value: '[invalid') is invalid, err: expression must evaluate to a node-set`,
 		},
 		{
 			name:        "success",

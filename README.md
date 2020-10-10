@@ -119,9 +119,12 @@ Take a detailed look at samples here:
     extension repo/package; the rest of the library is just golang 1.12.
 
 ## Recent Feature Additions
-- added trie based high performance `times.SmartParse`.
-- command line interface (one-off `transform` cmd or long-running http `server` mode).
-- javascript engine integration as a custom_func.
+- Added CSV file format support in omniv2 handler.
+- Introduced IDR node cache for allocation recycling. 
+- Introduced [IDR](./idr/README.md) for in-memory data representation.
+- Added trie based high performance `times.SmartParse`.
+- Command line interface (one-off `transform` cmd or long-running http `server` mode).
+- `javascript` engine integration as a custom_func.
 - JSON stream parser.
 - Extensibility:
     - Ability to provide custom functions.

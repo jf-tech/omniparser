@@ -655,6 +655,112 @@ func TestSubstring(t *testing.T) {
 	}
 }
 
+func TestSwitchFunc(t *testing.T) {
+	for _, test := range []struct {
+		name         string
+		expr         string
+		casesReturns []string
+		err          string
+		expected     string
+	}{
+		{
+			name:         "empty casesReturns",
+			expr:         "abc",
+			casesReturns: nil,
+			err:          "length of 'casesReturns' must be odd, but got: 0",
+		},
+		{
+			name:         "even casesReturns length",
+			expr:         "abc",
+			casesReturns: []string{"1", "2", "3", "4"},
+			err:          "length of 'casesReturns' must be odd, but got: 4",
+		},
+		{
+			name:         "no case, just default",
+			expr:         "abc",
+			casesReturns: []string{"default"},
+			expected:     "default",
+		},
+		{
+			name: "case string contains special characters",
+			expr: "How do you do",
+			casesReturns: []string{
+				"How do you do?", "Wrong",
+				"How do you do", "Correct",
+				"Huh"},
+			expected: "Correct",
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			result, err := switchFunc(nil, test.expr, test.casesReturns...)
+			if test.err != "" {
+				assert.Error(t, err)
+				assert.Equal(t, test.err, err.Error())
+				assert.Equal(t, "", result)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, test.expected, result)
+			}
+		})
+	}
+}
+
+func TestSwitchByPattern(t *testing.T) {
+	for _, test := range []struct {
+		name            string
+		expr            string
+		patternsReturns []string
+		err             string
+		expected        string
+	}{
+		{
+			name:            "empty patternsReturns",
+			expr:            "abc",
+			patternsReturns: nil,
+			err:             "length of 'patternsReturns' must be odd, but got: 0",
+		},
+		{
+			name:            "even patternsReturns length",
+			expr:            "abc",
+			patternsReturns: []string{"1", "2", "3", "4"},
+			err:             "length of 'patternsReturns' must be odd, but got: 4",
+		},
+		{
+			name:            "regex invalid",
+			expr:            "abc",
+			patternsReturns: []string{"[", "2", "3"},
+			err:             "invalid pattern '[', err: error parsing regexp: missing closing ]: `[`",
+		},
+		{
+			name:            "no pattern, only default",
+			expr:            "abc",
+			patternsReturns: []string{"default"},
+			expected:        "default",
+		},
+		{
+			name: "case string contains special characters",
+			expr: "2019/02/23",
+			patternsReturns: []string{
+				"^[0-9]{2}/[0-9]{2}/[0-9]{4}$", "Wrong",
+				"^[0-9]{4}/[0-9]{2}/[0-9]{2}$", "Correct",
+				"Huh"},
+			expected: "Correct",
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			result, err := switchByPattern(nil, test.expr, test.patternsReturns...)
+			if test.err != "" {
+				assert.Error(t, err)
+				assert.Equal(t, test.err, err.Error())
+				assert.Equal(t, "", result)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, test.expected, result)
+			}
+		})
+	}
+}
+
 func TestUpper(t *testing.T) {
 	s, err := upper(nil, "")
 	assert.NoError(t, err)
