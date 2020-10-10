@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"unsafe"
 
 	"github.com/dop251/goja"
 	"github.com/jf-tech/go-corelib/caches"
@@ -113,10 +112,7 @@ func getNodeJSON(n *idr.Node) string {
 	if disableCaching {
 		return idr.JSONify2(n)
 	}
-	// TODO if in the future we have *idr.Node allocation recycling, then this by-addr caching
-	// won't work. Ideally, we should have a node ID which refreshes upon recycling.
-	addr := strconv.FormatUint(uint64(uintptr(unsafe.Pointer(n))), 16)
-	j, _ := NodeToJSONCache.Get(addr, func(interface{}) (interface{}, error) {
+	j, _ := NodeToJSONCache.Get(n.ID, func(interface{}) (interface{}, error) {
 		return idr.JSONify2(n), nil
 	})
 	return j.(string)

@@ -125,6 +125,12 @@ func (r *reader) recordToNode(record []string) *idr.Node {
 	return root
 }
 
+func (r *reader) Release(n *idr.Node) {
+	if n != nil {
+		idr.RemoveAndReleaseTree(n)
+	}
+}
+
 func (r *reader) IsContinuableError(err error) bool {
 	return !IsErrInvalidHeader(err) && err != io.EOF
 }

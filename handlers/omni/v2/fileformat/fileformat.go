@@ -28,6 +28,9 @@ type FormatReader interface {
 	// Read returns a *Node and its subtree that will eventually be parsed and transformed into an
 	// output record. If EOF has been reached, io.EOF must be returned.
 	Read() (*idr.Node, error)
+	// Release gives the reader a chance to free resources of the *Node and its subtree that it returned
+	// to caller in a previous Read() call.
+	Release(*idr.Node)
 	// IsContinuableError determines whether an FormatReader returned error is continuable or not.
 	// For certain errors (like EOF or corruption) there is no point to keep on trying; while others
 	// can be safely ignored.

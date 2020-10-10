@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"unsafe"
 
 	"github.com/jf-tech/go-corelib/strs"
 
@@ -35,11 +34,6 @@ func NewParseCtx(
 		disableTransformCache: false,
 		transformCache:        map[string]interface{}{},
 	}
-}
-
-func nodePtrAddrStr(n *idr.Node) string {
-	// `uintptr` is faster than `fmt.Sprintf("%p"...)`
-	return strconv.FormatUint(uint64(uintptr(unsafe.Pointer(n))), 16)
 }
 
 func resultTypeConversion(decl *Decl, value string) (interface{}, error) {
@@ -131,9 +125,7 @@ func normalizeAndReturnValue(decl *Decl, value interface{}) (interface{}, error)
 func (p *parseCtx) ParseNode(n *idr.Node, decl *Decl) (interface{}, error) {
 	var cacheKey string
 	if !p.disableTransformCache {
-		// TODO if in the future we have *idr.Node allocation recycling, then this by-addr caching won't work.
-		// Ideally, we should have a node ID which refreshes upon recycling.
-		cacheKey = nodePtrAddrStr(n) + "/" + decl.hash
+		cacheKey = strconv.FormatInt(n.ID, 16) + "/" + decl.hash
 		if cacheValue, found := p.transformCache[cacheKey]; found {
 			return cacheValue, nil
 		}

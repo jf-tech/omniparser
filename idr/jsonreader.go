@@ -48,7 +48,7 @@ func (sp *JSONStreamReader) wrapUpCurAndTargetCheck() *Node {
 	// node fully and discovered sp.xpathFilterExpr can't be satisfied, so this
 	// sp.stream isn't a target. To prevent future mismatch for other stream candidate,
 	// we need to remove it from Node tree completely. And reset sp.stream.
-	RemoveFromTree(sp.stream)
+	RemoveAndReleaseTree(sp.stream)
 	sp.stream = nil
 	return nil
 }
@@ -192,12 +192,23 @@ func (sp *JSONStreamReader) parse() (*Node, error) {
 // Read returns a *Node that matches the xpath streaming criteria.
 func (sp *JSONStreamReader) Read() (*Node, error) {
 	// Because this is a streaming read, we need to release/remove last
-	// stream node from the node tree to free up memory.
+	// stream node from the node tree to free up memory. If Release() is
+	// called after Read() call, then sp.stream is already cleaned up;
+	// adding this piece of code here just in case Release() isn't called.
 	if sp.stream != nil {
-		RemoveFromTree(sp.stream)
+		RemoveAndReleaseTree(sp.stream)
 		sp.stream = nil
 	}
 	return sp.parse()
+}
+
+// Release releases the *Node (and its subtree) that Read() has previously
+// returned.
+func (sp *JSONStreamReader) Release(n *Node) {
+	if n == sp.stream {
+		sp.stream = nil
+	}
+	RemoveAndReleaseTree(n)
 }
 
 // AtLine returns the **rough** line number of the current JSON decoder.

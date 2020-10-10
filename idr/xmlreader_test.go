@@ -43,6 +43,8 @@ func TestXMLStreamReader_SuccessWithXPathWithFilter(t *testing.T) {
 	t.Run("IDR snapshot after 1st Read", func(t *testing.T) {
 		cupaloy.SnapshotT(t, JSONify1(rootOf(n)))
 	})
+	// intentionally not calling sp.Release() to verify subsequent sp.Read()
+	// call does the right thing and frees the stream node.
 	assert.Equal(t, 5, sp.AtLine())
 
 	// Second `<t:BBB>` read
@@ -52,6 +54,7 @@ func TestXMLStreamReader_SuccessWithXPathWithFilter(t *testing.T) {
 	t.Run("IDR snapshot after 2nd Read", func(t *testing.T) {
 		cupaloy.SnapshotT(t, JSONify1(rootOf(n)))
 	})
+	sp.Release(n)
 	assert.Equal(t, 7, sp.AtLine())
 
 	// Third `<t:BBB>` read (Note we will skip 'b3' since the streamElementFilter excludes it)
@@ -61,6 +64,7 @@ func TestXMLStreamReader_SuccessWithXPathWithFilter(t *testing.T) {
 	t.Run("IDR snapshot after 3rd Read", func(t *testing.T) {
 		cupaloy.SnapshotT(t, JSONify1(rootOf(n)))
 	})
+	sp.Release(n)
 	assert.Equal(t, 11, sp.AtLine())
 
 	n, err = sp.Read()
@@ -104,6 +108,7 @@ func TestXMLStreamReader_SuccessWithXPathWithoutFilter(t *testing.T) {
 	t.Run("IDR snapshot after 2nd Read", func(t *testing.T) {
 		cupaloy.SnapshotT(t, JSONify1(rootOf(n)))
 	})
+	sp.Release(n)
 	assert.Equal(t, 7, sp.AtLine())
 
 	// Third `<t:BBB>` read
@@ -113,6 +118,7 @@ func TestXMLStreamReader_SuccessWithXPathWithoutFilter(t *testing.T) {
 	t.Run("IDR snapshot after 3rd Read", func(t *testing.T) {
 		cupaloy.SnapshotT(t, JSONify1(rootOf(n)))
 	})
+	sp.Release(n)
 	assert.Equal(t, 8, sp.AtLine())
 
 	// Fourth `<t:BBB>` read
@@ -122,6 +128,7 @@ func TestXMLStreamReader_SuccessWithXPathWithoutFilter(t *testing.T) {
 	t.Run("IDR snapshot after 4th Read", func(t *testing.T) {
 		cupaloy.SnapshotT(t, JSONify1(rootOf(n)))
 	})
+	sp.Release(n)
 	assert.Equal(t, 11, sp.AtLine())
 
 	n, err = sp.Read()

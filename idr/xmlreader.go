@@ -49,7 +49,7 @@ func (sp *XMLStreamReader) wrapUpCurAndTargetCheck() *Node {
 	// discovered sp.xpathFilterExpr can't be satisfied, so this sp.stream isn't a
 	// stream target. To prevent future mismatch for other stream candidate, we need to
 	// remove it from Node tree completely. And reset sp.stream.
-	RemoveFromTree(sp.stream)
+	RemoveAndReleaseTree(sp.stream)
 	sp.stream = nil
 	return nil
 }
@@ -167,13 +167,24 @@ func (sp *XMLStreamReader) Read() (n *Node, err error) {
 		return nil, sp.err
 	}
 	// Because this is a streaming read, we need to remove the last
-	// stream node from the node tree to free up memory.
+	// stream node from the node tree to free up memory. If Release()
+	// is called after Read() call, then sp.stream is already cleaned up;
+	// adding this piece of code here just in case Release() isn't called.
 	if sp.stream != nil {
-		RemoveFromTree(sp.stream)
+		RemoveAndReleaseTree(sp.stream)
 		sp.stream = nil
 	}
 	n, sp.err = sp.parse()
 	return n, sp.err
+}
+
+// Release releases the *Node (and its subtree) that Read() has previously
+// returned.
+func (sp *XMLStreamReader) Release(n *Node) {
+	if n == sp.stream {
+		sp.stream = nil
+	}
+	RemoveAndReleaseTree(n)
 }
 
 // AtLine returns the **rough** line number of the current XML decoder.

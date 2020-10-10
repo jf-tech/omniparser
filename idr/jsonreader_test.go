@@ -119,6 +119,7 @@ func TestJSONStreamReader(t *testing.T) {
 					assert.NoError(t, err)
 					assert.True(t, len(test.expected) > 0)
 					assert.Equal(t, test.expected[0], JSONify2(n))
+					sp.Release(n)
 					test.expected = test.expected[1:]
 				}
 				assert.Equal(t, 2, sp.AtLine())

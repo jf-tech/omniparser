@@ -9,6 +9,7 @@ import (
 )
 
 func navTestSetup(t *testing.T) (*testTree, *navigator, func(*Node)) {
+	setupTestNodeCaching(testNodeCachingOff)
 	tt := newTestTree(t, testTreeXML)
 	nav := createNavigator(tt.root)
 	moveTo := func(n *Node) { nav.cur = n }
@@ -120,8 +121,8 @@ func TestMoveToChild(t *testing.T) {
 	moveTo(tt.attrC1)
 	assert.False(t, nav.MoveToChild())
 	// remove elemC3/elemC4, so elemC now only has attrC1 and attrC2
-	RemoveFromTree(tt.elemC3)
-	RemoveFromTree(tt.elemC4)
+	RemoveAndReleaseTree(tt.elemC3)
+	RemoveAndReleaseTree(tt.elemC4)
 	moveTo(tt.elemC)
 	assert.False(t, nav.MoveToChild())
 	moveTo(tt.elemB)

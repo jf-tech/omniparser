@@ -24,6 +24,7 @@ func TestReader_Read_Success(t *testing.T) {
 			<Root>
 				<Node>1</Node>
 				<Node>2</Node>
+				<Node>3</Node>
 			</Root>`),
 		"Root/Node[. != '2']")
 	assert.NoError(t, err)
@@ -34,6 +35,14 @@ func TestReader_Read_Success(t *testing.T) {
 	assert.Equal(t, "1", n.InnerText())
 	// xml.Decoder seems to keeps line at the end of whatever inside an element closing tag.
 	assert.Equal(t, 3, r.r.AtLine())
+	// intentionally not calling r.Release(n) to verify that the
+	// stream node is freed up by a subsequent Read() call.
+
+	n, err = r.Read()
+	assert.NoError(t, err)
+	assert.Equal(t, "3", n.InnerText())
+	assert.Equal(t, 5, r.r.AtLine())
+	r.Release(n)
 
 	n, err = r.Read()
 	assert.Error(t, err)

@@ -47,12 +47,15 @@ func TestReader_Read_Success(t *testing.T) {
 	name, err := idr.MatchSingle(n, "name")
 	assert.NoError(t, err)
 	assert.Equal(t, "john", name.InnerText())
+	// intentionally not calling r.Release(n) to verify that the
+	// stream node is freed up by a subsequent Read() call.
 
 	n, err = r.Read()
 	assert.NoError(t, err)
 	name, err = idr.MatchSingle(n, "name")
 	assert.NoError(t, err)
 	assert.Equal(t, "jane", name.InnerText())
+	r.Release(n)
 
 	n, err = r.Read()
 	assert.Error(t, err)
