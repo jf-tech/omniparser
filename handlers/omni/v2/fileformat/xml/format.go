@@ -33,15 +33,12 @@ func (f *xmlFileFormat) ValidateSchema(format string, _ []byte, finalOutputDecl 
 	if finalOutputDecl == nil {
 		return nil, f.FmtErr("'FINAL_OUTPUT' is missing")
 	}
-	if !strs.IsStrPtrNonBlank(finalOutputDecl.XPath) {
-		return nil, f.FmtErr("'FINAL_OUTPUT' must have 'xpath' specified")
-	}
-	_, err := caches.GetXPathExpr(*finalOutputDecl.XPath)
+	xpath := strs.StrPtrOrElse(finalOutputDecl.XPath, ".")
+	_, err := caches.GetXPathExpr(xpath)
 	if err != nil {
-		return nil, f.FmtErr("'FINAL_OUTPUT.xpath' (value: '%s') is invalid, err: %s",
-			*finalOutputDecl.XPath, err.Error())
+		return nil, f.FmtErr("'FINAL_OUTPUT.xpath' (value: '%s') is invalid, err: %s", xpath, err.Error())
 	}
-	return *finalOutputDecl.XPath, nil
+	return xpath, nil
 }
 
 func (f *xmlFileFormat) CreateFormatReader(

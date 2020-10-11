@@ -4,7 +4,7 @@
         "file_format_type": "xml"
     },
     "transform_declarations": {
-        "FINAL_OUTPUT": { "xpath": ".", "object": {
+        "FINAL_OUTPUT": { "object": {
             "no_tz_date": { "custom_func": {
                 "name": "dateTimeToRFC3339",
                 "args": [
