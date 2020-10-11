@@ -1,0 +1,19 @@
+{
+	"file_declaration": {
+		"delimiter": ",",
+		"replace_double_quotes": true,
+		"header_row_index": 2,
+		"data_row_index": 4,
+		"columns": [
+			{
+				"name": "col1",
+				"alias": null
+			},
+			{
+				"name": "col  2",
+				"alias": "col2"
+			}
+		]
+	},
+	"XPath": ".[col1 != 'skip']"
+}

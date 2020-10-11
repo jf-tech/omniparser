@@ -19,6 +19,8 @@
 	"splitIntoJsonArray",
 	"substring",
 	"sum",
+	"switch",
+	"switchByPattern",
 	"upper",
 	"uuidv3"
 ]

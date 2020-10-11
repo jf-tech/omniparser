@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -50,6 +51,8 @@ var builtinPublishedCustomFuncs = map[string]CustomFuncType{
 	"splitIntoJsonArray":      splitIntoJsonArray,
 	"substring":               substring,
 	"sum":                     sum,
+	"switch":                  switchFunc,
+	"switchByPattern":         switchByPattern,
 	"upper":                   upper,
 	"uuidv3":                  uuidv3,
 }
@@ -206,6 +209,36 @@ func substring(_ *transformctx.Ctx, str, startIndex, lengthStr string) (string, 
 			"start %d + length %d is out of bounds (string length is %d)", start, length, runeLen)
 	}
 	return string(runes[start : start+length]), nil
+}
+
+func switchFunc(ctx *transformctx.Ctx, expr string, casesReturns ...string) (string, error) {
+	if len(casesReturns)%2 != 1 {
+		return "", fmt.Errorf("length of 'casesReturns' must be odd, but got: %d", len(casesReturns))
+	}
+	patternsReturns := make([]string, len(casesReturns))
+	for i := 0; i < len(patternsReturns)/2; i++ {
+		patternsReturns[2*i] = "^" + regexp.QuoteMeta(casesReturns[2*i]) + "$"
+		patternsReturns[2*i+1] = casesReturns[2*i+1]
+	}
+	patternsReturns[len(casesReturns)-1] = casesReturns[len(casesReturns)-1]
+	return switchByPattern(ctx, expr, patternsReturns...)
+}
+
+func switchByPattern(_ *transformctx.Ctx, expr string, patternsReturns ...string) (string, error) {
+	if len(patternsReturns)%2 != 1 {
+		return "", fmt.Errorf(
+			"length of 'patternsReturns' must be odd, but got: %d", len(patternsReturns))
+	}
+	for i := 0; i < len(patternsReturns)/2; i++ {
+		re, err := caches.GetRegex(patternsReturns[2*i])
+		if err != nil {
+			return "", fmt.Errorf(`invalid pattern '%s', err: %s`, patternsReturns[2*i], err.Error())
+		}
+		if re.MatchString(expr) {
+			return patternsReturns[(2*i)+1], nil
+		}
+	}
+	return patternsReturns[len(patternsReturns)-1], nil
 }
 
 func upper(_ *transformctx.Ctx, s string) (string, error) {

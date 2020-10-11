@@ -1,4 +1,4 @@
-package json
+package xml
 
 import (
 	"bytes"
@@ -13,23 +13,13 @@ import (
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
-func Test1_Single_Object(t *testing.T) {
+func Test1_Weather_Data_CSV(t *testing.T) {
 	cupaloy.SnapshotT(t, jsons.BPJ(sampleutil.SampleTestCommon(
-		t, "./1_single_object.schema.json", "./1_single_object.input.json")))
+		t, "./1_weather_data_csv.schema.json", "./1_weather_data_csv.input.csv")))
 }
 
-func Test2_Multiple_Objects(t *testing.T) {
-	cupaloy.SnapshotT(t, jsons.BPJ(sampleutil.SampleTestCommon(t,
-		"./2_multiple_objects.schema.json", "./2_multiple_objects.input.json")))
-}
-
-func Test3_XPathDynamic(t *testing.T) {
-	cupaloy.SnapshotT(t, jsons.BPJ(sampleutil.SampleTestCommon(t,
-		"./3_xpathdynamic.schema.json", "./3_xpathdynamic.input.json")))
-}
-
-var benchSchemaFile = "./2_multiple_objects.schema.json"
-var benchInputFile = "./2_multiple_objects.input.json"
+var benchSchemaFile = "./1_weather_data_csv.schema.json"
+var benchInputFile = "./1_weather_data_csv.input.csv"
 var benchSchema omniparser.Schema
 var benchInput []byte
 
@@ -49,9 +39,9 @@ func init() {
 }
 
 // go test -bench=. -benchmem -benchtime=30s
-// Benchmark2_Multiple_Objects-4   	   95775	    381437 ns/op	   84870 B/op	    2180 allocs/op
+// Benchmark1_Weather_Data_CSV-8   	  148292	    240290 ns/op	   78183 B/op	    1622 allocs/op
 
-func Benchmark2_Multiple_Objects(b *testing.B) {
+func Benchmark1_Weather_Data_CSV(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		transform, err := benchSchema.NewTransform(
 			"bench", bytes.NewReader(benchInput), &transformctx.Ctx{})

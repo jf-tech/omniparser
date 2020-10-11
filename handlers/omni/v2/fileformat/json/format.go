@@ -30,14 +30,14 @@ func (f *jsonFileFormat) ValidateSchema(format string, _ []byte, finalOutputDecl
 		return nil, errs.ErrSchemaNotSupported
 	}
 	if finalOutputDecl == nil {
-		return nil, f.FmtErr("'FINAL_OUTPUT' decl is nil")
+		return nil, f.FmtErr("'FINAL_OUTPUT' is missing")
 	}
 	if !strs.IsStrPtrNonBlank(finalOutputDecl.XPath) {
 		return nil, f.FmtErr("'FINAL_OUTPUT' must have 'xpath' specified")
 	}
 	_, err := caches.GetXPathExpr(*finalOutputDecl.XPath)
 	if err != nil {
-		return nil, f.FmtErr("'xpath' on 'FINAL_OUTPUT' (value: '%s') is invalid, err: %s",
+		return nil, f.FmtErr("'FINAL_OUTPUT.xpath' (value: '%s') is invalid, err: %s",
 			*finalOutputDecl.XPath, err.Error())
 	}
 	return *finalOutputDecl.XPath, nil

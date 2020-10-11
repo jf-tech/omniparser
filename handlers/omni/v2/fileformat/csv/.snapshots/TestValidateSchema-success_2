@@ -1,0 +1,15 @@
+{
+	"file_declaration": {
+		"delimiter": ",",
+		"replace_double_quotes": false,
+		"header_row_index": null,
+		"data_row_index": 1,
+		"columns": [
+			{
+				"name": "col1",
+				"alias": null
+			}
+		]
+	},
+	"XPath": ""
+}

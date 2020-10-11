@@ -7,6 +7,7 @@ import (
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/handlers"
 	omniv2fileformat "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat"
+	omniv2csv "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/csv"
 	omniv2json "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/json"
 	omniv2xml "github.com/jf-tech/omniparser/handlers/omni/v2/fileformat/xml"
 	"github.com/jf-tech/omniparser/handlers/omni/v2/transform"
@@ -80,6 +81,7 @@ func customParseFuncs(ctx *handlers.HandlerCtx) transform.CustomParseFuncs {
 
 func fileFormats(ctx *handlers.HandlerCtx) []omniv2fileformat.FileFormat {
 	formats := []omniv2fileformat.FileFormat{
+		omniv2csv.NewCSVFileFormat(ctx.Name),
 		omniv2json.NewJSONFileFormat(ctx.Name),
 		omniv2xml.NewXMLFileFormat(ctx.Name),
 		// TODO more built-in omniv2 file formats to come.
