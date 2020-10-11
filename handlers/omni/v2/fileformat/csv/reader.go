@@ -111,7 +111,7 @@ func (r *reader) jumpTo(rowIndex int) error {
 }
 
 func (r *reader) recordToNode(record []string) *idr.Node {
-	root := idr.CreateNode(idr.ElementNode, "")
+	root := idr.CreateNode(idr.DocumentNode, "")
 	// - If actual record has more columns than declared in schema, we'll only use up to
 	//   what's declared in the schema;
 	// - conversely, if the actual record has less columns than declared in schema, we'll
