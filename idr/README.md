@@ -15,6 +15,8 @@ The basic building block of an IDR is a `Node` and an IDR is in fact a `Node` tr
 two parts (see actual code [here](./node.go)):
 ```
 type Node struct {
+	ID int64
+
 	Parent, FirstChild, LastChild, PrevSibling, NextSibling *Node
 
 	Type NodeType
@@ -23,12 +25,22 @@ type Node struct {
 	FormatSpecific interface{}
 }
 ```
-The first part of a `Node` contains the input format agnostic fields, such as tree pointers (like
+The first part of a `Node` contains the input format agnostic fields, such as `ID`, tree pointers (like
 `Parent`, `FirstChild`, etc), `Type` and `Data`, which we'll explain more in details later. The second
 part of a `Node` is format specific data blob. The blob not only offers a place to store format specific
 data it also gives IDR code and algorithms a hint on what input format the `Node` is about.
 
-Below we'll go through each input format we support and show what its corresponding IDR looks like.
+We'll go through each input format we support and show what its corresponding IDR looks like. But before
+we dive into format specific IDR, let's take a look what `ID` is about.
+
+## Node.ID
+During ingester reading and processing, tons of `Node` will be allocated on heap causing lots of GCs. We
+introduced `Node` caching and recycling in this [commit](https://github.com/jf-tech/omniparser/commit/9c55da752971f8329a3a756e8a54cf95b2d246eb)
+to alleviate GC pressure. Prior to this, sometimes, we use the memory address of a `Node` as a unique
+identifier but that trick was no longer valid, since now `Node` can be recycled and reused. This new `int64`
+`ID` is added to help uniquely identify a `Node`'s use, whether the `Node` is allocated brand new for the
+use or is recycled for this use. The `ID` value is monotonically increasing but it really doesn't matter - what
+it matters is each "acquisition" of a new use of a `Node` will be guaranteed to have a new and unique `ID` value.
 
 ## XML
 
@@ -42,7 +54,7 @@ Here is a simple XML (from [this sample](../samples/omniv2/xml/1_datetime_parse_
 </Root>
 ```
 This is a simple XML blob with no non-default namespaces and with no attributes. Its corresponding IDR
-looks like this (with empty field omitted and tree pointers omitted for clarity):
+looks like this (with `ID`, empty fields and tree pointers omitted for clarity):
 ```
 Node(Type: DocumentNode, FormatSpecific: XMLSpecific())
     Node(Type: ElementNode, Data: "Root", FormatSpecific: XMLSpecific())
@@ -95,3 +107,85 @@ specifically. If an attribute is namespace-prefixed, the `AttributeNode` typed `
 `XMLSpecific` set as well. An attribute's actual value is placed as a `TextNode` underneath its `ElementNode`.
 `AttributeNode`'s are guaranteed to be placed before any other child nodes (`TextNode`, or `ElementNode`)
 by IDR's XML reader.
+
+## JSON
+
+Here is a sample JSON (adapted from [this sample](../samples/omniv2/json/1_single_object.input.json)):
+```
+{
+    "order_id": "1234567",
+    "items": [
+        {
+            "number_purchased": 5
+        },
+        {
+            "item_price": 3.99
+            "refundable": false
+            "refund_id": null
+        }
+    ]
+}
+```
+Its corresponding IDR looks like this (with `ID`, and tree pointers omitted for clarity):
+```
+Node(Type: DocumentNode, FormatSpecific: JSONRoot|JSONObj)
+    Node(Type: ElementNode, Data: "order_id", FormatSpecific: JSONProp)
+        Node(Type: TextNode, Data: "1234567", FormatSpecific: JSONValueStr)
+    Node(Type: ElementNode, Data: "items", FormatSpecific: JSONProp|JSONArr)
+        Node(Type: ElementNode, Data: "", FormatSpecific: JSONObj)
+            Node(Type: ElementNode, Data: "number_purchased", FormatSpecific: JSONProp)
+                Node(Type: TextNode, Data: "5", FormatSpecific: JSONValueNum)
+        Node(Type: ElementNode, Data: "", FormatSpecific: JSONObj)
+            Node(Type: ElementNode, Data: "item_price", FormatSpecific: JSONProp)
+                Node(Type: TextNode, Data: "3.99", FormatSpecific: JSONValueNum)
+            Node(Type: ElementNode, Data: "refundable", FormatSpecific: JSONProp)
+                Node(Type: TextNode, Data: "false", FormatSpecific: JSONValueBool)
+            Node(Type: ElementNode, Data: "refund_id", FormatSpecific: JSONProp)
+                Node(Type: TextNode, Data: "", FormatSpecific: JSONValueNull)
+```
+For JSON IDR, the `FormatSpecific` field contains [`JSONType`](./node.go#L9). `JSONType` are a bunch of
+bit-wise flags that can be combined: in this example above, the root flag is `JSONRoot|JSONObj` because it
+is the root at the same time, it is an object. If we have a JSON looks like this:
+```
+[
+    ...
+]
+```
+Then the root flag would be `JSONRoot|JSONArr`. Such combination can also be seen on `items` field: its
+flag is `JSONProp|JSONArr`, indicating `items` is a property of array value.
+
+Similar to XML case, values (string/number/boolean/null) are added as `TextNode` and anchored below its
+corresponding `ElementNode` parent.
+
+## CSV (aka delimited)
+
+Here is a sample CSV (adapted from [this sample](../samples/omniv2/csv/1_weather_data_csv.input.csv)):
+```
+DATE|HIGH TEMP C|LOW TEMP F|WIND DIR|WIND SPEED KMH|NOTE|LAT|LONG|UV INDEX
+2019/01/31T12:34:56-0800|10.5|30.2|N|33|note 1|37.7749|122.4194|12/4/6
+```
+The omniparser builtin CSV reader will only return data rows as IDR trees, so for this example, the row
+2 will be returned as:
+```
+Node(Type: DocumentNode)
+    Node(Type: ElementNode, Data: "DATE")
+        Node(Type: TextNode, Data: "2019/01/31T12:34:56-0800")
+    Node(Type: ElementNode, Data: "HIGH_TEMP_C")
+        Node(Type: TextNode, Data: "10.5")
+    Node(Type: ElementNode, Data: "LOW_TEMP_F")
+        Node(Type: TextNode, Data: "30.2")
+    Node(Type: ElementNode, Data: "WIND_DIR")
+        Node(Type: TextNode, Data: "N")
+    Node(Type: ElementNode, Data: "WIND_SPEED_KMH")
+        Node(Type: TextNode, Data: "33")
+    Node(Type: ElementNode, Data: "NOTE")
+        Node(Type: TextNode, Data: "note 1")
+    Node(Type: ElementNode, Data: "LAT")
+        Node(Type: TextNode, Data: "37.7749")
+    Node(Type: ElementNode, Data: "LONG")
+        Node(Type: TextNode, Data: "122.4194")
+    Node(Type: ElementNode, Data: "UV_INDEX")
+        Node(Type: TextNode, Data: "12/4/6")
+```
+Note some of the `ElementNode.Data` values are from its [schema](../samples/omniv2/csv/1_weather_data_csv.schema.json)
+to avoid column name containing space, which isn't xpath query friendly.
