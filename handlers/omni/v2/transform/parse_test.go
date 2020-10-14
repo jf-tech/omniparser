@@ -123,7 +123,7 @@ func TestResultTypeConversion(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			linkParent(test.decl)
-			typedValue, err := resultTypeConversion(test.decl, test.value)
+			typedValue, err := castByPrimitiveResultType(test.decl, test.value)
 			switch test.expectedErr {
 			case "":
 				assert.NoError(t, err)
@@ -527,9 +527,6 @@ func TestParseExternal(t *testing.T) {
 	}
 }
 
-func resultTypePtr(t ResultType) *ResultType {
-	return &t
-}
 func TestParseCtx_ParseField(t *testing.T) {
 	for _, test := range []struct {
 		name          string

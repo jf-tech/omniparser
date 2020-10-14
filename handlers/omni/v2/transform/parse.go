@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
-	"strings"
 
 	"github.com/jf-tech/go-corelib/strs"
 
@@ -34,92 +33,6 @@ func NewParseCtx(
 		disableTransformCache: false,
 		transformCache:        map[string]interface{}{},
 	}
-}
-
-func resultTypeConversion(decl *Decl, value string) (interface{}, error) {
-	if decl.resultType() == ResultTypeString {
-		return value, nil
-	}
-	// after this point, result type isn't of string.
-	// Omit the field in final result if it is empty with non-string type.
-	if !strs.IsStrNonBlank(value) {
-		return nil, nil
-	}
-	switch decl.resultType() {
-	case ResultTypeInt:
-		f, err := strconv.ParseFloat(value, 64)
-		if err != nil {
-			return nil, err
-		}
-		return int64(f), nil
-	case ResultTypeFloat:
-		f, err := strconv.ParseFloat(value, 64)
-		if err != nil {
-			return nil, err
-		}
-		return f, nil
-	case ResultTypeBoolean:
-		b, err := strconv.ParseBool(value)
-		if err != nil {
-			return nil, err
-		}
-		return b, nil
-	default:
-		return value, nil
-	}
-}
-
-func normalizeAndSaveValue(decl *Decl, value interface{}, save func(interface{})) error {
-	if value == nil {
-		if decl.KeepEmptyOrNull {
-			save(nil)
-		}
-		return nil
-	}
-	// Now value != nil
-	switch reflect.ValueOf(value).Kind() {
-	case reflect.String:
-		strValue := value.(string)
-		if !decl.KeepLeadingTrailingSpace {
-			strValue = strings.TrimSpace(strValue)
-		}
-		if strValue == "" && !decl.KeepEmptyOrNull {
-			return nil
-		}
-		typedResult, err := resultTypeConversion(decl, strValue)
-		if err != nil {
-			return fmt.Errorf("fail to convert value '%s' to type '%s' on '%s', err: %s",
-				strValue, decl.resultType(), decl.fqdn, err.Error())
-		}
-		if typedResult != nil || decl.KeepEmptyOrNull {
-			save(typedResult)
-		}
-		return nil
-	case reflect.Slice:
-		if len(value.([]interface{})) > 0 || decl.KeepEmptyOrNull {
-			save(value)
-		}
-		return nil
-	case reflect.Map:
-		if len(value.(map[string]interface{})) > 0 || decl.KeepEmptyOrNull {
-			save(value)
-		}
-		return nil
-	default:
-		save(value)
-		return nil
-	}
-}
-
-func normalizeAndReturnValue(decl *Decl, value interface{}) (interface{}, error) {
-	var returnValue interface{}
-	err := normalizeAndSaveValue(decl, value, func(normalizedValue interface{}) {
-		returnValue = normalizedValue
-	})
-	if err != nil {
-		return nil, err
-	}
-	return returnValue, nil
 }
 
 func (p *parseCtx) ParseNode(n *idr.Node, decl *Decl) (interface{}, error) {
@@ -201,16 +114,14 @@ func (p *parseCtx) computeXPathDynamic(n *idr.Node, xpathDynamicDecl *Decl) (str
 	if err != nil {
 		return "", err
 	}
-	// if v is straight out nil, then we should fail out
-	// if v isn't nil, it could be an interface{} type whose value is nil; or it could be some valid values.
-	// note we need to guard the IsNil call as it would panic if v kind isn't interface/chan/func/map/slice/ptr.
-	// note we only need to ensure for kind == interface, because  ParseNode will never return
-	// chan/func/ptr. It's possible to return map/slice, but in earlier validation (validateXPath) we already
-	// ensured `xpath_dynamic` result type is string.
-	if v == nil || (reflect.ValueOf(v).Kind() == reflect.Interface && reflect.ValueOf(v).IsNil()) {
-		return "", fmt.Errorf("'%s' failed to yield a single value: no node matched", xpathDynamicDecl.fqdn)
+	if reflect.ValueOf(v).Kind() != reflect.String {
+		return "", fmt.Errorf("xpath_dynamic on '%s' yields a non-string value '%v'", xpathDynamicDecl.fqdn, v)
 	}
-	return v.(string), nil
+	xpathDynamic := v.(string)
+	if !strs.IsStrNonBlank(xpathDynamic) {
+		return "", fmt.Errorf("xpath_dynamic on '%s' yields empty value", xpathDynamicDecl.fqdn)
+	}
+	return xpathDynamic, nil
 }
 
 func xpathMatchFlags(dynamic bool) uint {
@@ -248,10 +159,16 @@ func (p *parseCtx) parseField(n *idr.Node, decl *Decl) (interface{}, error) {
 	if n == nil {
 		return normalizeAndReturnValue(decl, nil)
 	}
-	if decl.resultType() == ResultTypeObject && n.Type == idr.ElementNode {
-		// When a field's result_type is marked "object", we'll simply copy the selected
-		// node and all its children over directly.
-		return normalizeAndReturnValue(decl, idr.J2NodeToInterface(n))
+	// A special case for back-compat:
+	//    { "xpath": "....", "result_type": "object" }
+	// In this case, we'll simply copy verbatim the current idr.Node & its subtree over as the result.
+	// However, this usage is now deprecated. Use custom_func 'copy' instead (TODO: implementation).
+	if decl.ResultType != nil && *decl.ResultType == ResultTypeObject {
+		// Call J2NodeToInterface with useJSONType == false to be strictly back-compat -- given
+		// all data stored in idr.Node is string, in old omni implementation, we simply copy string
+		// over. In new idr.J2NodeToInterface we do best effort type conversion based on JSONType if
+		// the idr.Node is from JSON input. Disabling that for this legacy use case to be back-compat.
+		return normalizeAndReturnValue(decl, idr.J2NodeToInterface(n, false))
 	}
 	return normalizeAndReturnValue(decl, n.InnerText())
 }
@@ -264,18 +181,24 @@ func (p *parseCtx) parseCustomFunc(n *idr.Node, decl *Decl) (interface{}, error)
 	if n == nil {
 		return normalizeAndReturnValue(decl, nil)
 	}
-	funcValue, err := p.invokeCustomFunc(n, decl.CustomFunc)
+	funcResult, err := p.invokeCustomFunc(n, decl.CustomFunc)
 	if err != nil {
 		return nil, err
 	}
-	if decl.resultType() == ResultTypeObject && funcValue != "" {
+	// Another weird case we have to preserve for back-compat:
+	//   { "custom_func": { ... }, "result_type": "object" }
+	// We only used it for "splitIntoJsonArray" custom_func, where the resulting string `[ "a", "b", ..., "c" ]`
+	// needs to be converted into `[]string`. Now `splitIntoJsonArray` is deprecated in favor of using 'javascript'
+	// (TODO: adding example in samples)
+	if decl.ResultType != nil && *decl.ResultType == ResultTypeObject &&
+		reflect.ValueOf(funcResult).Kind() == reflect.String {
 		var obj interface{}
-		if err := json.Unmarshal([]byte(funcValue), &obj); err != nil {
+		if err := json.Unmarshal([]byte(funcResult.(string)), &obj); err != nil {
 			return nil, err
 		}
 		return normalizeAndReturnValue(decl, obj)
 	}
-	return normalizeAndReturnValue(decl, funcValue)
+	return normalizeAndReturnValue(decl, funcResult)
 }
 
 func (p *parseCtx) parseCustomParse(n *idr.Node, decl *Decl) (interface{}, error) {
@@ -301,7 +224,7 @@ func (p *parseCtx) parseObject(n *idr.Node, decl *Decl) (interface{}, error) {
 	if n == nil {
 		return normalizeAndReturnValue(decl, nil)
 	}
-	object := map[string]interface{}{}
+	obj := map[string]interface{}{}
 	for _, childDecl := range decl.children {
 		childValue, err := p.ParseNode(n, childDecl)
 		if err != nil {
@@ -310,10 +233,10 @@ func (p *parseCtx) parseObject(n *idr.Node, decl *Decl) (interface{}, error) {
 		// value returned by p.ParseNode is already normalized, thus this
 		// normalizeAndSaveValue won't fail.
 		_ = normalizeAndSaveValue(childDecl, childValue, func(normalizedValue interface{}) {
-			object[strs.LastNameletOfFQDN(childDecl.fqdn)] = normalizedValue
+			obj[strs.LastNameletOfFQDN(childDecl.fqdn)] = normalizedValue
 		})
 	}
-	return normalizeAndReturnValue(decl, object)
+	return normalizeAndReturnValue(decl, obj)
 }
 
 func (p *parseCtx) parseArray(n *idr.Node, decl *Decl) (interface{}, error) {

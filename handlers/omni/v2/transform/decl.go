@@ -7,10 +7,11 @@ import (
 )
 
 // Kind specifies the types of omni schema's input elements.
+// Note in omniv2 schema, there is no such a field 'kind'. Kind
+// is inferred.
 type Kind string
 
 const (
-	KindUnknown     Kind = "unknown"
 	KindConst       Kind = "const"
 	KindExternal    Kind = "external"
 	KindField       Kind = "field"
@@ -22,17 +23,21 @@ const (
 )
 
 // ResultType specifies the types of omni schema's output elements.
+// It corresponds to omniv2 schema's 'result_type' field.
 type ResultType string
 
 const (
-	ResultTypeUnknown ResultType = "unknown"
+	// These ResultType's are publicly specified in schema.
 	ResultTypeInt     ResultType = "int"
 	ResultTypeFloat   ResultType = "float"
 	ResultTypeBoolean ResultType = "boolean"
 	ResultTypeString  ResultType = "string"
 	ResultTypeObject  ResultType = "object"
-	ResultTypeArray   ResultType = "array"
 )
+
+func resultTypePtr(typ ResultType) *ResultType {
+	return &typ
+}
 
 const (
 	// FinalOutput is the special name of a Decl that is designated for the output
@@ -44,7 +49,8 @@ const (
 type CustomFuncDecl struct {
 	Name                         string  `json:"name,omitempty"`
 	Args                         []*Decl `json:"args,omitempty"`
-	IgnoreErrorAndReturnEmptyStr bool    `json:"ignore_error_and_return_empty_str,omitempty"`
+	IgnoreErrorAndReturnEmptyStr *bool   `json:"ignore_error_and_return_empty_str,omitempty"` // deprecated
+	IgnoreError                  *bool   `json:"ignore_error,omitempty"`
 	fqdn                         string  // internal; never unmarshaled from a schema.
 }
 
@@ -60,6 +66,14 @@ func (d CustomFuncDecl) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func deepCopyBoolPtr(b *bool) *bool {
+	if b == nil {
+		return nil
+	}
+	v := *b
+	return &v
+}
+
 // Note only deep-copy all the public fields, those internal computed fields are not copied.
 func (d *CustomFuncDecl) deepCopy() *CustomFuncDecl {
 	dest := &CustomFuncDecl{}
@@ -68,8 +82,19 @@ func (d *CustomFuncDecl) deepCopy() *CustomFuncDecl {
 	for _, argDecl := range d.Args {
 		dest.Args = append(dest.Args, argDecl.deepCopy())
 	}
-	dest.IgnoreErrorAndReturnEmptyStr = d.IgnoreErrorAndReturnEmptyStr
+	dest.IgnoreErrorAndReturnEmptyStr = deepCopyBoolPtr(d.IgnoreErrorAndReturnEmptyStr)
+	dest.IgnoreError = deepCopyBoolPtr(d.IgnoreError)
 	return dest
+}
+
+func (d *CustomFuncDecl) ignoreError() bool {
+	if d.IgnoreError != nil {
+		return *d.IgnoreError
+	}
+	if d.IgnoreErrorAndReturnEmptyStr != nil {
+		return *d.IgnoreErrorAndReturnEmptyStr
+	}
+	return false
 }
 
 // Decl is the type for omni schema's `transform_declarations` declarations.
@@ -99,7 +124,7 @@ type Decl struct {
 	// KeepEmptyOrNull specifies whether or not keep an empty/null output or not.
 	KeepEmptyOrNull bool `json:"keep_empty_or_null,omitempty"`
 
-	// Internal runtime fields that are not unmarshaled from a schema.
+	// Internal fields are computed at schema loading time.
 	fqdn     string
 	kind     Kind
 	hash     string
@@ -140,37 +165,24 @@ func (d Decl) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (d *Decl) resultType() ResultType {
-	switch d.ResultType {
-	case nil:
-		switch d.kind {
-		case KindConst, KindExternal, KindField, KindCustomFunc:
-			return ResultTypeString
-		case KindObject, KindCustomParse:
-			// By default KindCustomParse is considered to be returning
-			// object (If schema writer wants wants it to return string
-			// or any other type, that's fine, as long as that specific
-			// result_type is explicitly stated in the schema.
-			return ResultTypeObject
-		case KindArray:
-			return ResultTypeArray
-		default:
-			return ResultTypeUnknown
-		}
+func (d *Decl) resolveKind() {
+	switch {
+	case d.Const != nil:
+		d.kind = KindConst
+	case d.External != nil:
+		d.kind = KindExternal
+	case d.CustomFunc != nil:
+		d.kind = KindCustomFunc
+	case d.CustomParse != nil:
+		d.kind = KindCustomParse
+	case d.Object != nil:
+		d.kind = KindObject
+	case d.Array != nil:
+		d.kind = KindArray
+	case d.Template != nil:
+		d.kind = KindTemplate
 	default:
-		return *d.ResultType
-	}
-}
-
-func (d *Decl) isPrimitiveKind() bool {
-	switch d.kind {
-	case KindConst, KindExternal, KindField, KindCustomFunc:
-		// Don't put KindTemplate here because we don't know what actual kind the template
-		// will resolve into: a template can resolve into a const/field/external/etc or it
-		// can resolve into an array or object, so better be safe.
-		return true
-	default:
-		return false
+		d.kind = KindField
 	}
 }
 

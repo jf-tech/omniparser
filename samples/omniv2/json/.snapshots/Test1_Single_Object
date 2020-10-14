@@ -3,11 +3,11 @@
 		"items": [
 			{
 				"sku": "AB123",
-				"total_price": "61.7"
+				"total_price": 61.7
 			},
 			{
 				"sku": "CK763",
-				"total_price": "6.24"
+				"total_price": 6.24
 			}
 		],
 		"order_id": "1234567",

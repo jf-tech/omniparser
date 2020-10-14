@@ -98,14 +98,14 @@ func TestDeclResultType(t *testing.T) {
 }
 
 func TestIsPrimitiveKind(t *testing.T) {
-	assert.True(t, (&Decl{kind: KindConst}).isPrimitiveKind())
-	assert.True(t, (&Decl{kind: KindExternal}).isPrimitiveKind())
-	assert.True(t, (&Decl{kind: KindField}).isPrimitiveKind())
-	assert.True(t, (&Decl{kind: KindCustomFunc}).isPrimitiveKind())
+	assert.True(t, (&Decl{kind: KindConst}).isResultTypePrimitive())
+	assert.True(t, (&Decl{kind: KindExternal}).isResultTypePrimitive())
+	assert.True(t, (&Decl{kind: KindField}).isResultTypePrimitive())
+	assert.True(t, (&Decl{kind: KindCustomFunc}).isResultTypePrimitive())
 
-	assert.False(t, (&Decl{kind: KindObject}).isPrimitiveKind())
-	assert.False(t, (&Decl{kind: KindArray}).isPrimitiveKind())
-	assert.False(t, (&Decl{kind: KindTemplate}).isPrimitiveKind())
+	assert.False(t, (&Decl{kind: KindObject}).isResultTypePrimitive())
+	assert.False(t, (&Decl{kind: KindArray}).isResultTypePrimitive())
+	assert.False(t, (&Decl{kind: KindTemplate}).isResultTypePrimitive())
 }
 
 func TestIsXPathSet(t *testing.T) {

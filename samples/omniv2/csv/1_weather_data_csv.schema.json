@@ -23,13 +23,11 @@
     "transform_declarations": {
         "FINAL_OUTPUT": { "xpath": ".[DATE != 'N/A']" ,"object": {
             "uv_index": {
-                "result_type": "object",
                 "custom_func": {
-                    "name": "splitIntoJsonArray",
+                    "name": "javascript",
                     "args": [
-                        { "xpath": "UV_INDEX" },
-                        { "const": "/", "_comment": "separator" },
-                        { "const": "true", "_comment": "trim"}
+                        { "const":  "uv.split(',').map(function(s){return s.trim();}).filter(function(s){return !!s;});" },
+                        { "const": "uv" }, { "xpath": "UV_INDEX" }
                     ]
                 }
             },
@@ -37,8 +35,8 @@
                 "name": "dateTimeToRFC3339",
                 "args": [
                     { "xpath": "DATE" },
-                    { "const": "", "_comment": "input timezone" },
-                    { "const": "", "_comment": "output timezone" }
+                    { "const": "", "keep_leading_trailing_space": true, "_comment": "input timezone" },
+                    { "const": "", "keep_leading_trailing_space": true, "_comment": "output timezone" }
                 ]
             }},
             "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
@@ -65,7 +63,7 @@
                                     "name": "javascript",
                                     "args": [
                                         { "const": "kmh * 0.621371" },
-                                        { "const": "kmh:float" }, { "xpath": "WIND_SPEED_KMH" }
+                                        { "const": "kmh" }, { "xpath": "WIND_SPEED_KMH", "result_type": "float" }
                                     ]
                                 }},
                                 { "const": "2", "_comment": "decimal places" }
@@ -87,7 +85,7 @@
                         "name": "javascript",
                         "args": [
                             { "const": "temp_c * 9 / 5 + 32" },
-                            { "const": "temp_c:float" }, { "xpath": "." }
+                            { "const": "temp_c" }, { "xpath": ".", "result_type": "float" }
                         ]
                     }},
                     { "const": "1", "_comment": "decimal places" }

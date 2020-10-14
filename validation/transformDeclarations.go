@@ -50,6 +50,7 @@ const (
         "value_comment": { "type": "string" },
         "value_keep_leading_trailing_space": { "type": "boolean" },
         "value_ignore_error_and_return_empty_str": { "type": "boolean" },
+        "value_ignore_error": { "type": "boolean" },
         "value_keep_empty_or_null": { "type": "boolean" },
         "value_name": {
             "type": "string",
@@ -125,9 +126,10 @@ const (
                         ]
                     }
                 },
-                "ignore_error_and_return_empty_str": { "$ref": "#/definitions/value_ignore_error_and_return_empty_str" }
+                "ignore_error_and_return_empty_str": { "$ref": "#/definitions/value_ignore_error_and_return_empty_str" },
+                "ignore_error": { "$ref": "#/definitions/value_ignore_error" }
             },
-            "required": [ "name", "args" ],
+            "required": [ "name" ],
             "additionalProperties": false
         },
         "value_custom_parse": {
@@ -138,7 +140,6 @@ const (
         "result_type": {
             "type": "string",
             "enum": [
-                "array",
                 "boolean",
                 "float",
                 "int",

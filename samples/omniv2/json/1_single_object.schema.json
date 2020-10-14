@@ -23,8 +23,8 @@
                     "name": "javascript",
                     "args": [
                         { "const": "num * price" },
-                        { "const": "num:int" }, { "xpath": "number_purchased" },
-                        { "const": "price:float" }, { "xpath": "item_price" }
+                        { "const": "num" }, { "xpath": "number_purchased", "result_type": "int" },
+                        { "const": "price" }, { "xpath": "item_price", "result_type": "float" }
                     ]
                 }}
             }}]}

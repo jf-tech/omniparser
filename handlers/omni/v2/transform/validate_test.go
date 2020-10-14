@@ -305,11 +305,6 @@ func TestDetectKind(t *testing.T) {
 			decl:         &Decl{XPathDynamic: &Decl{}},
 			expectedKind: KindField,
 		},
-		{
-			name:         "unknown",
-			decl:         &Decl{},
-			expectedKind: KindUnknown,
-		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			actualKind := detectKind(test.decl)

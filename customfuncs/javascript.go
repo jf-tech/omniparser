@@ -3,13 +3,10 @@ package customfuncs
 import (
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/dop251/goja"
 	"github.com/jf-tech/go-corelib/caches"
-	"github.com/jf-tech/go-corelib/strs"
 
 	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
@@ -25,43 +22,6 @@ const (
 const (
 	argNameNode = "_node"
 )
-
-func parseArgTypeAndValue(argDecl, argValue string) (name string, value interface{}, err error) {
-	col := strings.IndexRune(argDecl, ':')
-	if col < 0 {
-		return "", nil, fmt.Errorf(
-			"arg decl must be in format of '<arg_name>:<arg_type>', instead got '%s'", argDecl)
-	}
-	name = argDecl[:col]
-	if !strs.IsStrNonBlank(name) {
-		return "", nil, fmt.Errorf(
-			"arg_name in '<arg_name>:<arg_type>' cannot be a blank string, instead got '%s'", argDecl)
-	}
-	switch argDecl[col+1:] {
-	case argTypeString:
-		return name, argValue, nil
-	case argTypeInt:
-		f, err := strconv.ParseFloat(argValue, 64)
-		if err != nil {
-			return "", nil, err
-		}
-		return name, int64(f), nil
-	case argTypeFloat:
-		f, err := strconv.ParseFloat(argValue, 64)
-		if err != nil {
-			return "", nil, err
-		}
-		return name, f, nil
-	case argTypeBoolean:
-		b, err := strconv.ParseBool(argValue)
-		if err != nil {
-			return "", nil, err
-		}
-		return name, b, nil
-	default:
-		return "", nil, fmt.Errorf("arg_type '%s' in '<arg_name>:<arg_type>' is not supported", argDecl[col+1:])
-	}
-}
 
 // JSProgramCache caches *goja.Program. A *goja.Program is compiled javascript and it can be used
 // across multiple goroutines and across different *goja.Runtime. If default loading cache capacity
@@ -146,7 +106,7 @@ func execProgram(program *goja.Program, args map[string]interface{}) (goja.Value
 
 // javascriptWithContext is a custom_func that runs a javascript with optional arguments and
 // with current node JSON, if node is provided.
-func javascriptWithContext(_ *transformctx.Ctx, n *idr.Node, js string, args ...string) (string, error) {
+func javascriptWithContext(_ *transformctx.Ctx, n *idr.Node, js string, args ...interface{}) (interface{}, error) {
 	if len(args)%2 != 0 {
 		return "", errors.New("invalid number of args to 'javascript'")
 	}
@@ -156,11 +116,7 @@ func javascriptWithContext(_ *transformctx.Ctx, n *idr.Node, js string, args ...
 	}
 	vmArgs := make(map[string]interface{})
 	for i := 0; i < len(args)/2; i++ {
-		argName, val, err := parseArgTypeAndValue(args[i*2], args[i*2+1])
-		if err != nil {
-			return "", err
-		}
-		vmArgs[argName] = val
+		vmArgs[args[i*2].(string)] = args[i*2+1]
 	}
 	if n != nil {
 		vmArgs[argNameNode] = getNodeJSON(n)
@@ -173,12 +129,12 @@ func javascriptWithContext(_ *transformctx.Ctx, n *idr.Node, js string, args ...
 	case goja.IsNaN(v), goja.IsInfinity(v), goja.IsNull(v), goja.IsUndefined(v):
 		return "", fmt.Errorf("result is %s", v.String())
 	default:
-		return v.String(), nil
+		return v.Export(), nil
 	}
 }
 
 // javascript is a custom_func that runs a javascript with optional arguments and without context
 // node JSON provided.
-func javascript(ctx *transformctx.Ctx, js string, args ...string) (string, error) {
+func javascript(ctx *transformctx.Ctx, js string, args ...interface{}) (interface{}, error) {
 	return javascriptWithContext(ctx, nil, js, args...)
 }

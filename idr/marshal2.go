@@ -7,14 +7,18 @@ import (
 	"github.com/jf-tech/go-corelib/strs"
 )
 
-func j2NodeName(n *Node) string {
+type ctx struct {
+	useJSONType bool
+}
+
+func (ctx *ctx) j2NodeName(n *Node) string {
 	if IsXML(n) && XMLSpecificOf(n).NamespacePrefix != "" {
 		return XMLSpecificOf(n).NamespacePrefix + ":" + n.Data
 	}
 	return n.Data
 }
 
-func isChildText(n *Node) bool {
+func (ctx *ctx) isChildText(n *Node) bool {
 	// For non XML node, situations are quite simple: if there is a text child node, then it will
 	// be the one and only one child.
 	// But for XML, some complexities:
@@ -60,8 +64,8 @@ func isChildText(n *Node) bool {
 	return textNodeFound && !elemNodeFound
 }
 
-func isChildArray(n *Node) bool {
-	if IsJSONArr(n) {
+func (ctx *ctx) isChildArray(n *Node) bool {
+	if ctx.useJSONType && IsJSONArr(n) {
 		return true
 	}
 	// CSV or fixed-length formats won't produce array.
@@ -97,8 +101,8 @@ func isChildArray(n *Node) bool {
 		}
 		elemNum++
 		if elemName == nil {
-			elemName = strs.StrPtr(j2NodeName(c))
-		} else if j2NodeName(c) != *elemName {
+			elemName = strs.StrPtr(ctx.j2NodeName(c))
+		} else if ctx.j2NodeName(c) != *elemName {
 			// We have differently named child element nodes, clearly
 			// this isn't an array case.
 			return false
@@ -111,8 +115,8 @@ func isChildArray(n *Node) bool {
 	return elemNum > 1 || (elemNum == 1 && *elemName == "")
 }
 
-func getChildText(n *Node) interface{} {
-	if !IsJSON(n) {
+func (ctx *ctx) getChildData(n *Node) interface{} {
+	if !IsJSON(n) || !ctx.useJSONType {
 		return n.InnerText()
 	}
 	n = n.FirstChild
@@ -131,11 +135,11 @@ func getChildText(n *Node) interface{} {
 }
 
 // J2NodeToInterface converts *Node into an interface{} that, once marshaled, is JSON friendly.
-func J2NodeToInterface(n *Node) interface{} {
+func (ctx *ctx) nodeToInterface(n *Node) interface{} {
 	switch {
-	case isChildText(n):
-		return getChildText(n)
-	case isChildArray(n):
+	case ctx.isChildText(n):
+		return ctx.getChildData(n)
+	case ctx.isChildArray(n):
 		arr := make([]interface{}, 0)
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
 			// unfortunately there doesn't seem to be a way to include AttributeNode elegantly
@@ -151,16 +155,16 @@ func J2NodeToInterface(n *Node) interface{} {
 			if c.Type != ElementNode {
 				continue
 			}
-			arr = append(arr, J2NodeToInterface(c))
+			arr = append(arr, ctx.nodeToInterface(c))
 		}
 		return arr
 	default:
-		fields := make(map[string]interface{})
+		obj := make(map[string]interface{})
 		attrs := make(map[string]interface{})
 		fieldIsArr := make(map[string]bool)
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			name := j2NodeName(c)
-			value := J2NodeToInterface(c)
+			name := ctx.j2NodeName(c)
+			value := ctx.nodeToInterface(c)
 			if c.Type == ElementNode {
 				// Both in XML and EDI, we can potentially have something like the following:
 				//   <abc>
@@ -174,32 +178,36 @@ func J2NodeToInterface(n *Node) interface{} {
 				//    "efg": [ "1", "2" ],
 				//    "xyz": "3"
 				//  }
-				if _, found := fields[name]; found {
+				if _, found := obj[name]; found {
 					if fieldIsArr[name] {
-						fields[name] = append(fields[name].([]interface{}), value)
+						obj[name] = append(obj[name].([]interface{}), value)
 					} else {
-						fields[name] = []interface{}{fields[name], value}
+						obj[name] = []interface{}{obj[name], value}
 						fieldIsArr[name] = true
 					}
 				} else {
-					fields[name] = value
+					obj[name] = value
 				}
 			} else if c.Type == AttributeNode {
-				attrs[name] = J2NodeToInterface(c)
+				attrs[name] = ctx.nodeToInterface(c)
 			}
 		}
 		if len(attrs) > 0 {
 			// Given AttributeNode is only possible/present in XML case, and in
 			// XML, legal element names cannot contain '#', so we use '#' prefix
 			// here to indicate this is a special field.
-			fields["#attributes"] = attrs
+			obj["#attributes"] = attrs
 		}
-		return fields
+		return obj
 	}
+}
+
+func J2NodeToInterface(n *Node, useJSONType bool) interface{} {
+	return (&ctx{useJSONType: useJSONType}).nodeToInterface(n)
 }
 
 // JSONify2 JSON marshals a *Node into a minified JSON string.
 func JSONify2(n *Node) string {
-	b, _ := json.Marshal(J2NodeToInterface(n))
+	b, _ := json.Marshal(J2NodeToInterface(n, true))
 	return string(b)
 }

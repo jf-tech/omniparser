@@ -12,6 +12,7 @@ import (
 	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/strs"
 
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -39,6 +40,7 @@ var builtinPublishedCustomFuncs = map[string]CustomFuncType{
 	"coalesce":                coalesce,
 	"concat":                  concat,
 	"containsPattern":         containsPattern,
+	"copy":                    copyFunc,
 	"dateTimeLayoutToRFC3339": dateTimeLayoutToRFC3339,
 	"dateTimeToEpoch":         dateTimeToEpoch,
 	"dateTimeToRFC3339":       dateTimeToRFC3339,
@@ -96,6 +98,10 @@ func containsPattern(_ *transformctx.Ctx, regexPattern string, strs ...string) (
 		}
 	}
 	return "false", nil
+}
+
+func copyFunc(_ *transformctx.Ctx, n *idr.Node) (interface{}, error) {
+	return idr.J2NodeToInterface(n, true), nil
 }
 
 func external(ctx *transformctx.Ctx, name string) (string, error) {

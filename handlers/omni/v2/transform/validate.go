@@ -51,8 +51,8 @@ func (ctx *validateCtx) validateDecl(fqdn string, decl *Decl, templateRefStack [
 	}
 
 	decl.fqdn = fqdn
+	decl.resolveKind()
 
-	decl.kind = detectKind(decl)
 	switch decl.kind {
 	case KindObject:
 		err := ctx.validateObject(fqdn, decl, templateRefStack)
@@ -90,7 +90,6 @@ func (ctx *validateCtx) validateXPath(fqdn string, decl *Decl, templateRefStack 
 	if decl.XPath != nil && decl.XPathDynamic != nil {
 		return fmt.Errorf("'%s' cannot set both 'xpath' and 'xpath_dynamic' at the same time", fqdn)
 	}
-
 	// unlike `xpath` which is a constant string, `xpath_dynamic` value comes from the computation of
 	// regular decl and it can be of a const/field/custom_func/template/external, so we need to parse
 	// and validate the decl as well.
@@ -101,16 +100,7 @@ func (ctx *validateCtx) validateXPath(fqdn string, decl *Decl, templateRefStack 
 		if err != nil {
 			return err
 		}
-		if decl.XPathDynamic.resultType() != ResultTypeString {
-			return fmt.Errorf("expected 'result_type' '%s' for '%s', but got '%s'",
-				ResultTypeString, decl.XPathDynamic.fqdn, decl.XPathDynamic.resultType())
-		}
-		if !decl.XPathDynamic.isPrimitiveKind() {
-			return fmt.Errorf("expected primitive decl kind for '%s', but got '%s'",
-				decl.XPathDynamic.fqdn, decl.XPathDynamic.kind)
-		}
 	}
-
 	return nil
 }
 
@@ -125,8 +115,8 @@ func (ctx *validateCtx) validateObject(fqdn string, decl *Decl, templateRefStack
 		decl.children = append(decl.children, childDecl)
 	}
 	// Sort the `children` array for unit test snapshot stability.
-	// Given this schema parsing is usually done rarely in any use cases, so this sorting for testing
-	// shouldn't incur any major latency penalty.
+	// Given this schema parsing/loading is usually done infrequently, the sorting here shouldn't
+	// incur too much latency penalty for production code path.
 	if len(decl.children) > 0 {
 		sort.Slice(decl.children, func(i, j int) bool { return decl.children[i].fqdn < decl.children[j].fqdn })
 	}
@@ -154,7 +144,6 @@ func (ctx *validateCtx) validateCustomFunc(fqdn string, decl *Decl, templateRefS
 	if _, found := ctx.customFuncs[decl.CustomFunc.Name]; !found {
 		return fmt.Errorf("unknown custom_func '%s' on '%s'", decl.CustomFunc.Name, fqdn)
 	}
-
 	decl.CustomFunc.fqdn = strs.BuildFQDN(fqdn, fmt.Sprintf("custom_func(%s)", decl.CustomFunc.Name))
 	for i := 0; i < len(decl.CustomFunc.Args); i++ {
 		argDecl, err := ctx.validateDecl(
@@ -163,14 +152,6 @@ func (ctx *validateCtx) validateCustomFunc(fqdn string, decl *Decl, templateRefS
 			templateRefStack)
 		if err != nil {
 			return err
-		}
-		if argDecl.resultType() != ResultTypeString && argDecl.resultType() != ResultTypeArray {
-			return fmt.Errorf("expected 'result_type' '%s' or '%s' for '%s', but got '%s'",
-				ResultTypeString, ResultTypeArray, argDecl.fqdn, argDecl.resultType())
-		}
-		if !argDecl.isPrimitiveKind() && argDecl.kind != KindArray {
-			return fmt.Errorf(
-				"expected primitive decl or array kind for '%s', but got '%s'", argDecl.fqdn, argDecl.kind)
 		}
 		decl.CustomFunc.Args[i] = argDecl
 		decl.children = append(decl.children, argDecl)
@@ -217,30 +198,6 @@ func (ctx *validateCtx) validateTemplate(fqdn string, decl *Decl, templateRefSta
 	}
 
 	return ctx.validateDecl(fqdn, declNew, templateRefStack)
-}
-
-func detectKind(decl *Decl) Kind {
-	switch {
-	case decl.Const != nil:
-		return KindConst
-	case decl.External != nil:
-		return KindExternal
-	case decl.CustomFunc != nil:
-		return KindCustomFunc
-	case decl.CustomParse != nil:
-		return KindCustomParse
-	case decl.Object != nil:
-		return KindObject
-	case decl.Array != nil:
-		return KindArray
-	case decl.Template != nil:
-		return KindTemplate
-	// `xpath` or `xpath_dynamic` if used alone indicates this element in the schema is a field.
-	case decl.XPath != nil || decl.XPathDynamic != nil:
-		return KindField
-	default:
-		return KindUnknown
-	}
 }
 
 func computeDeclHash(decl *Decl, declHashes map[string]string) string {
