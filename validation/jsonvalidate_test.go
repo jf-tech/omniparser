@@ -57,7 +57,7 @@ func TestSchemaValidate(t *testing.T) {
 						"unknown": "blah"
 					}
 				}`,
-			expectedErr: "schema 'test-schema' validation failed:\nparser_settings: file_format_type is required\nparser_settings: Additional property unknown is not allowed",
+			expectedErr: "schema 'test-schema' validation failed:\nparser_settings: Additional property unknown is not allowed\nparser_settings: file_format_type is required",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

@@ -39,7 +39,7 @@ func TestNewSchema(t *testing.T) {
 			name:   "json schema validation for header failed",
 			schema: `{"parser_settings": {"versionx": "9999", "file_format_type": "exe" }}`,
 			exts:   nil,
-			err:    "schema 'test-schema' validation failed:\nparser_settings: version is required\nparser_settings: Additional property versionx is not allowed",
+			err:    "schema 'test-schema' validation failed:\nparser_settings: Additional property versionx is not allowed\nparser_settings: version is required",
 		},
 		{
 			name:   "no supported schema handler",
