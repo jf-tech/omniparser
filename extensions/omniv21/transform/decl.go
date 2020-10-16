@@ -12,6 +12,7 @@ import (
 type Kind string
 
 const (
+	// KindConst and rest are kinds for all transform decls.
 	KindConst       Kind = "const"
 	KindExternal    Kind = "external"
 	KindField       Kind = "field"
@@ -27,6 +28,7 @@ const (
 type ResultType string
 
 const (
+	// ResultTypeInt and rest are the possible ResultType values.
 	ResultTypeInt     ResultType = "int"
 	ResultTypeFloat   ResultType = "float"
 	ResultTypeBoolean ResultType = "boolean"
