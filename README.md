@@ -14,8 +14,9 @@ for trying out schemas and inputs, yours and from sample library, to see how tra
 ![](./cli/cmd/web/playground-demo.gif)
 
 Take a detailed look at samples here:
-- [json examples](./samples/omniv2/json)
-- [xml examples](./samples/omniv2/xml).
+- [csv examples](extensions/omniv21/samples/csv)
+- [json examples](extensions/omniv21/samples/json)
+- [xml examples](extensions/omniv21/samples/xml).
 
 ## Simple Example (JSON -> JSON Transform)
 - Input:
@@ -41,11 +42,11 @@ Take a detailed look at samples here:
     ```
     {
         "parser_settings": {
-            "version": "omni.2.0",
+            "version": "omni.2.1",
             "file_format_type": "json"
         },
         "transform_declarations": {
-            "FINAL_OUTPUT": { "xpath": ".", "object": {
+            "FINAL_OUTPUT": { "object": {
                 "order_id": { "xpath": "order_id" },
                 "tracking_number": { "custom_func": {
                     "name": "upper",
@@ -53,19 +54,18 @@ Take a detailed look at samples here:
                 }},
                 "items": { "array": [{ "xpath": "items/*", "object": {
                     "sku":  { "custom_func": {
-                        "name": "substring",
+                        "name": "javascript",
                         "args": [
-                            { "custom_func": { "name": "upper", "args": [ { "xpath": "item_sku" }]}},
-                            { "const": "0", "_comment": "start index" },
-                            { "const": "5", "_comment": "sub length" }
+                            { "const": "sku.toUpperCase().substring(0, 5)" },
+                            { "const": "sku" }, { "xpath": "item_sku" }
                         ]
                     }},
                     "total_price": { "custom_func": {
                         "name": "javascript",
                         "args": [
                             { "const": "num * price" },
-                            { "const": "num:int" }, { "xpath": "number_purchased" },
-                            { "const": "price:float" }, { "xpath": "item_price" }
+                            { "const": "num" }, { "xpath": "number_purchased", "type": "int" },
+                            { "const": "price" }, { "xpath": "item_price", "type": "float" }
                         ]
                     }}
                 }}]}
@@ -92,11 +92,11 @@ Take a detailed look at samples here:
         "items": [
             {
                 "sku": "AB123",
-                "total_price": "61.7"
+                "total_price": 61.7
             },
             {
                 "sku": "CK763",
-                "total_price": "6.24"
+                "total_price": 6.24
             }
         ]
     }
@@ -119,6 +119,18 @@ Take a detailed look at samples here:
     extension repo/package; the rest of the library is just golang 1.12.
 
 ## Recent Feature Additions
+- Major restructure/refactoring
+    - Upgrade omni schema version to `omni.2.1` due a number of incompatible schema changes:
+        - `'result_type'` -> `'type'`
+        - `'ignore_error_and_return_empty_str` -> `'ignore_error'`
+        - `'keep_leading_trailing_space'` -> `'no_trim'` 
+    - Changed how we handle custom functions: previously we always use strings as in param type as well as result param
+    type. Not anymore, all types are supported for custom function in and out params.
+    - Changed the way how we package custom functions for extensions: previously we collect custom functions from all
+    extensions and then pass all of them to the extension that is used; This feels weird, now changed to only the custom
+    functions included in a particular extension are used in that extension.
+    - Deprecated/removed most of the custom functions in favor of using 'javascript'. 
+    - A number of package renaming.
 - Added CSV file format support in omniv2 handler.
 - Introduced IDR node cache for allocation recycling. 
 - Introduced [IDR](./idr/README.md) for in-memory data representation.

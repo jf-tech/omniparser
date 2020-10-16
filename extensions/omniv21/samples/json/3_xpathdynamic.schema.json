@@ -1,0 +1,35 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "json"
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": "/*", "object": {
+            "order_info": { "object": {
+                "order_items": { "array": [
+                    { "xpath": "line_items/*", "object": {
+                        "id": { "xpath": "id", "type": "int" },
+                        "color": { "xpath_dynamic": {
+                            "custom_func": {
+                                "name": "concat",
+                                "args": [
+                                    { "const": "product/variant/option" },
+                                    { "xpath": "product/options/*[name='color/pattern']/index" }
+                                ]
+                            }
+                        }},
+                        "size": { "xpath_dynamic": {
+                            "custom_func": {
+                                "name": "concat",
+                                "args": [
+                                    { "const": "product/variant/option" },
+                                    { "xpath": "product/options/*[name='Size']/index" }
+                                ]
+                            }
+                        }}
+                    }}
+                ]}
+            }}
+        }}
+    }
+}

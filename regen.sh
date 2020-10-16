@@ -25,6 +25,10 @@ cd $SCRIPT_DIR/validation || panic_fail_op
 green_printf "go:generate in 'validation'...\n"
 go generate || panic_fail_op
 
+cd $SCRIPT_DIR/extensions/omniv21/validation || panic_fail_op
+green_printf "go:generate in 'extensions/omniv21/validation'...\n"
+go generate || panic_fail_op
+
 cd $SCRIPT_DIR/
 green_printf "Remove all existing test '.snapshots' directories...\n"
 find . -type d | grep -e "\.snapshots$" | xargs rm -rf || panic_fail_op

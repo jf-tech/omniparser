@@ -1,7 +1,6 @@
 package customfuncs
 
 import (
-	"errors"
 	"strconv"
 	"time"
 
@@ -101,24 +100,4 @@ func dateTimeLayoutToRFC3339(_ *transformctx.Ctx, datetime, layout, layoutTZ, fr
 		return "", err
 	}
 	return rfc3339(t, hasTZ), nil
-}
-
-func dateTimeToEpoch(_ *transformctx.Ctx, datetime, fromTZ, epochUnit string) (string, error) {
-	if datetime == "" {
-		return "", nil
-	}
-	t, _, err := parseDateTime(datetime, "", false, fromTZ, "")
-	if err != nil {
-		return "", err
-	}
-	epoch := int64(0)
-	switch epochUnit {
-	case second:
-		epoch = t.Unix()
-	case millisecond:
-		epoch = t.UnixNano() / int64(time.Millisecond)
-	default:
-		return "", errors.New("unsupported time unit '" + epochUnit + "'")
-	}
-	return strconv.FormatInt(epoch, 10), nil
 }

@@ -10,9 +10,10 @@ import (
 
 	"github.com/jf-tech/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/errs"
-	"github.com/jf-tech/omniparser/handlers"
-	omniv2 "github.com/jf-tech/omniparser/handlers/omni/v2"
+	"github.com/jf-tech/omniparser/extensions/omniv21"
+	v21 "github.com/jf-tech/omniparser/extensions/omniv21/customfuncs"
 	"github.com/jf-tech/omniparser/header"
+	"github.com/jf-tech/omniparser/schemahandler"
 	"github.com/jf-tech/omniparser/transformctx"
 	"github.com/jf-tech/omniparser/validation"
 )
@@ -38,38 +39,32 @@ type schema struct {
 	name    string
 	header  header.Header
 	content []byte
-	handler handlers.SchemaHandler
+	handler schemahandler.SchemaHandler
 }
 
 // Extension allows user of omniparser to add new schema handlers, and/or new custom functions
 // in addition to the builtin handlers and functions.
 type Extension struct {
-	CreateHandler handlers.CreateHandlerFunc
-	HandlerParams interface{}
-	CustomFuncs   customfuncs.CustomFuncs
+	CreateSchemaHandler       schemahandler.CreateFunc
+	CreateSchemaHandlerParams interface{}
+	CustomFuncs               customfuncs.CustomFuncs
 }
 
 var (
-	defaultExtOmniV2Handler = Extension{
-		CreateHandler: omniv2.CreateHandler,
-	}
-	defaultExtBuiltinCustomFuncs = Extension{
-		CustomFuncs: customfuncs.BuiltinCustomFuncs,
-	}
-	defaultExts = []Extension{
-		defaultExtOmniV2Handler,
-		defaultExtBuiltinCustomFuncs,
+	defaultExt = Extension{
+		// 'omni.2.1' extension
+		CreateSchemaHandler: omniv21.CreateSchemaHandler,
+		CustomFuncs:         customfuncs.Merge(customfuncs.CommonCustomFuncs, v21.OmniV21CustomFuncs),
 	}
 )
 
 // NewSchema creates a new instance of Schema. Caller can use the optional Extensions for customization.
-// NewSchema will scan through exts left to right to find the first extension with a schema handler (by
-// specifying CreateHandler field) that supports the input schema. If no ext provided or no ext with a
-// handler that supports the schema, then NewSchema will fall back to builtin handlers. If the input
-// schema is still not supported by builtin handlers, NewSchema will fail with ErrSchemaNotSupported.
-// During the ext schema support probing, NewSchema will provide to it with all the custom funcs supplied
-// in ALL the exts plus the builtin ones. If there are custom func naming collisions, the earlier exts'
-// collided funcs will be trumped by later exts'; ext funcs will be trumped by builtin ones.
+// NewSchema will scan through exts left to right to find the first extension with a schema handler (specified
+// by CreateSchemaHandler field) that supports the input schema. If no ext provided or no ext with a handler
+// that supports the schema, then NewSchema will fall back to builtin extension (currently for schema version
+// 'omni.2.1'. If the input schema is still not supported by builtin extension, NewSchema will fail with
+// ErrSchemaNotSupported. Each extension much be fully self-contained meaning all the custom functions it
+// intends to use in the schemas supported by it must be included in the same extension.
 func NewSchema(name string, schemaReader io.Reader, exts ...Extension) (Schema, error) {
 	content, err := ioutil.ReadAll(schemaReader)
 	if err != nil {
@@ -86,24 +81,23 @@ func NewSchema(name string, schemaReader io.Reader, exts ...Extension) (Schema, 
 	_ = json.Unmarshal(content, &h)
 
 	allExts := append([]Extension(nil), exts...)
-	allExts = append(allExts, defaultExts...)
-	allCustomFuncs := collectCustomFuncs(allExts)
+	allExts = append(allExts, defaultExt)
 	for _, ext := range allExts {
-		if ext.CreateHandler == nil {
+		if ext.CreateSchemaHandler == nil {
 			continue
 		}
-		handler, err := ext.CreateHandler(&handlers.HandlerCtx{
-			Name:          name,
-			Header:        h,
-			Content:       content,
-			CustomFuncs:   allCustomFuncs,
-			HandlerParams: ext.HandlerParams,
+		handler, err := ext.CreateSchemaHandler(&schemahandler.CreateCtx{
+			Name:         name,
+			Header:       h,
+			Content:      content,
+			CustomFuncs:  ext.CustomFuncs,
+			CreateParams: ext.CreateSchemaHandlerParams,
 		})
 		if err == errs.ErrSchemaNotSupported {
 			continue
 		}
 		if err != nil {
-			// The err from handler's CreateHandler is already ctxAwareErr formatted, so directly return.
+			// The err from handler's CreateSchemaHandler is already ctxAwareErr formatted, so directly return.
 			return nil, err
 		}
 		return &schema{
@@ -114,14 +108,6 @@ func NewSchema(name string, schemaReader io.Reader, exts ...Extension) (Schema, 
 		}, nil
 	}
 	return nil, errs.ErrSchemaNotSupported
-}
-
-func collectCustomFuncs(exts []Extension) customfuncs.CustomFuncs {
-	cfs := customfuncs.CustomFuncs(nil)
-	for _, ext := range exts {
-		cfs = customfuncs.Merge(cfs, ext.CustomFuncs)
-	}
-	return cfs
 }
 
 // NewTransform creates and returns an instance of Transform for a given input stream.

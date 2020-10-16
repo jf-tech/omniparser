@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"github.com/jf-tech/omniparser/errs"
-	"github.com/jf-tech/omniparser/handlers"
+	"github.com/jf-tech/omniparser/schemahandler"
 )
 
 // Transform is an interface that represents one input stream ingestion and transform
@@ -18,7 +18,7 @@ type Transform interface {
 }
 
 type transform struct {
-	ingester  handlers.Ingester
+	ingester  schemahandler.Ingester
 	curErr    error
 	curRecord []byte
 }
