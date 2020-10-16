@@ -11,8 +11,8 @@ import (
 
 	"github.com/jf-tech/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/errs"
-	"github.com/jf-tech/omniparser/handlers"
 	"github.com/jf-tech/omniparser/header"
+	"github.com/jf-tech/omniparser/schemahandler"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -36,12 +36,18 @@ func TestNewSchema(t *testing.T) {
 			err:    "unable to perform schema validation: invalid character 'i' looking for beginning of value",
 		},
 		{
+			name:   "json schema validation for header failed",
+			schema: `{"parser_settings": {"versionx": "9999", "file_format_type": "exe" }}`,
+			exts:   nil,
+			err:    "schema 'test-schema' validation failed:\nparser_settings: version is required\nparser_settings: Additional property versionx is not allowed",
+		},
+		{
 			name:   "no supported schema handler",
 			schema: `{"parser_settings": {"version": "9999", "file_format_type": "exe" }}`,
 			exts: []Extension{
 				{}, // Empty to test if we skip empty 3rd party handler config properly or not.
 				{
-					CreateHandler: func(_ *handlers.HandlerCtx) (handlers.SchemaHandler, error) {
+					CreateSchemaHandler: func(_ *schemahandler.CreateCtx) (schemahandler.SchemaHandler, error) {
 						return nil, errs.ErrSchemaNotSupported
 					},
 				},
@@ -49,17 +55,11 @@ func TestNewSchema(t *testing.T) {
 			err: errs.ErrSchemaNotSupported.Error(),
 		},
 		{
-			name:   "supported schema handler found, but json schema validation for parser_settings failed",
-			schema: `{"parser_settings": {"versionx": "9999", "file_format_type": "exe" }}`,
-			exts:   nil,
-			err:    "schema 'test-schema' validation failed:\nparser_settings: version is required\nparser_settings: Additional property versionx is not allowed",
-		},
-		{
 			name:   "supported schema handler found, but schema validation failed",
 			schema: `{"parser_settings": {"version": "9999", "file_format_type": "exe" }}`,
 			exts: []Extension{
 				{
-					CreateHandler: func(_ *handlers.HandlerCtx) (handlers.SchemaHandler, error) {
+					CreateSchemaHandler: func(_ *schemahandler.CreateCtx) (schemahandler.SchemaHandler, error) {
 						return nil, errors.New("invalid schema")
 					},
 				},
@@ -72,22 +72,18 @@ func TestNewSchema(t *testing.T) {
 			exts: []Extension{
 				{
 					CustomFuncs: customfuncs.CustomFuncs{
-						"upper":            nil,
-						"very_very_unique": func() {},
+						"upper": func() {},
+						"lower": func() {},
 					},
-					CreateHandler: func(ctx *handlers.HandlerCtx) (handlers.SchemaHandler, error) {
-						// since there is a naming collision for "upper", this handler only
-						// adds one new custom func 'very_very_unique' in the end.
-						assert.Equal(t, len(customfuncs.BuiltinCustomFuncs)+1, len(ctx.CustomFuncs))
-						// make sure the name-collided 'upper' is overwritten by builtin one.
+					CreateSchemaHandler: func(ctx *schemahandler.CreateCtx) (schemahandler.SchemaHandler, error) {
+						assert.Equal(t, 2, len(ctx.CustomFuncs))
 						assert.NotNil(t, ctx.CustomFuncs["upper"])
-						// make sure 'very_very_unique' is added.
-						assert.NotNil(t, ctx.CustomFuncs["very_very_unique"])
-						// make sure handler param is passed in correctly.
-						assert.Equal(t, 13, ctx.HandlerParams.(int))
+						assert.NotNil(t, ctx.CustomFuncs["lower"])
+						// make sure create params are passed in correctly.
+						assert.Equal(t, 13, ctx.CreateParams.(int))
 						return nil, nil
 					},
-					HandlerParams: 13,
+					CreateSchemaHandlerParams: 13,
 				},
 			},
 			err: "",
@@ -130,7 +126,7 @@ type testSchemaHandler struct {
 	newIngesterErr error
 }
 
-func (t testSchemaHandler) NewIngester(_ *transformctx.Ctx, _ io.Reader) (handlers.Ingester, error) {
+func (t testSchemaHandler) NewIngester(_ *transformctx.Ctx, _ io.Reader) (schemahandler.Ingester, error) {
 	if t.newIngesterErr != nil {
 		return nil, t.newIngesterErr
 	}
@@ -151,11 +147,11 @@ func TestSchema_NewTransform_NewIngesterFailure(t *testing.T) {
 }
 
 func TestSchema_NewTransform_NameAndCtxAwareErrOverwrite(t *testing.T) {
-	header := header.Header{
+	h := header.Header{
 		ParserSettings: header.ParserSettings{Version: "999", FileFormatType: "exe"},
 	}
 	s := &schema{
-		header:  header,
+		header:  h,
 		content: []byte("test schema content"),
 		handler: testSchemaHandler{},
 	}
@@ -166,6 +162,6 @@ func TestSchema_NewTransform_NameAndCtxAwareErrOverwrite(t *testing.T) {
 	assert.Equal(t, "test input", ctx.InputName)
 	assert.NotNil(t, ctx.CtxAwareErr)
 
-	assert.Equal(t, header, s.Header())
+	assert.Equal(t, h, s.Header())
 	assert.Equal(t, "test schema content", string(s.Content()))
 }

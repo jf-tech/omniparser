@@ -149,7 +149,7 @@ func httpPostTransform(w http.ResponseWriter, r *http.Request) {
 }
 
 var (
-	sampleDir                  = "../../samples/omniv2/"
+	sampleDir                  = "../../extensions/omniv21/samples/"
 	sampleFormats              = []string{"csv", "json", "xml"}
 	sampleInputFilenamePattern = regexp.MustCompile("^([0-9]+[_a-zA-Z]+)\\.input\\.[a-z]+$")
 )

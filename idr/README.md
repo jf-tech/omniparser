@@ -46,7 +46,7 @@ it matters is each "acquisition" of a new use of a `Node` will be guaranteed to 
 
 Since XML is the most complex input format we have for IDR, let's cover it first.
 
-Here is a simple XML (from [this sample](../samples/omniv2/xml/1_datetime_parse_and_format.input.xml)):
+Here is a simple XML (from [this sample](../extensions/omniv21/samples/xml/1_datetime_parse_and_format.input.xml)):
 ```
 <Root>
     <JustDate>2020/09/22</JustDate>
@@ -74,7 +74,7 @@ as a `TextNode`.
 
 Also note in this simple case, each of the `Node` has an empty but none-nil `FormatSpecific`, typed as
 [`XMLSpecific`](./xmlnode.go). `XMLSpecific` contains XML namespace information for each of the node,
-which we'll see in the [next example](../samples/omniv2/xml/2_multiple_objects.input.xml):
+which we'll see in the [next example](../extensions/omniv21/samples/xml/2_multiple_objects.input.xml):
 ```
 <lb0:library xmlns:lb0="uri://something">
     <lb0:books>
@@ -110,7 +110,7 @@ by IDR's XML reader.
 
 ## JSON
 
-Here is a sample JSON (adapted from [this sample](../samples/omniv2/json/1_single_object.input.json)):
+Here is a sample JSON (adapted from [this sample](../extensions/omniv21/samples/json/1_single_object.input.json)):
 ```
 {
     "order_id": "1234567",
@@ -159,7 +159,7 @@ corresponding `ElementNode` parent.
 
 ## CSV (aka delimited)
 
-Here is a sample CSV (adapted from [this sample](../samples/omniv2/csv/1_weather_data_csv.input.csv)):
+Here is a sample CSV (adapted from [this sample](../extensions/omniv21/samples/csv/1_weather_data_csv.input.csv)):
 ```
 DATE|HIGH TEMP C|LOW TEMP F|WIND DIR|WIND SPEED KMH|NOTE|LAT|LONG|UV INDEX
 2019/01/31T12:34:56-0800|10.5|30.2|N|33|note 1|37.7749|122.4194|12/4/6
@@ -187,5 +187,5 @@ Node(Type: DocumentNode)
     Node(Type: ElementNode, Data: "UV_INDEX")
         Node(Type: TextNode, Data: "12/4/6")
 ```
-Note some of the `ElementNode.Data` values are from its [schema](../samples/omniv2/csv/1_weather_data_csv.schema.json)
+Note some of the `ElementNode.Data` values are from its [schema](../extensions/omniv21/samples/csv/1_weather_data_csv.schema.json)
 to avoid column name containing space, which isn't xpath query friendly.

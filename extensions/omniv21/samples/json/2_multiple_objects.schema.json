@@ -1,0 +1,48 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "json"
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": "/publishers/*", "object": {
+            "authors": { "array": [ { "xpath": "books/*/author" } ] },
+            "book_titles": { "array": [ { "xpath": "books/*/title" } ] },
+            "books": { "array": [ { "xpath": "books/*", "object": {
+                "author": { "xpath": "author" },
+                "year": { "xpath": "year", "type": "int" },
+                "price": { "xpath": "price", "type": "float" },
+                "title": { "xpath": "title" }
+            }} ] },
+            "publisher": { "xpath": "name" },
+            "first_book": { "xpath": "books/*[position() = 1]", "custom_func": { "name": "copy" }},
+            "original_book_array": { "xpath": "books", "custom_func": { "name": "copy" }},
+            "sum_price_times_10": {
+                "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const": "t=0; for (i=0; i<prices.length; i++) { t+=prices[i]*10; } Math.floor(t*100)/100;" },
+                        { "const": "prices" }, { "array": [ { "xpath": "books/*/price", "type": "float" } ] }
+                    ]
+                }
+            },
+            "avg_price": {
+                "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const": "t=0; for(i=0; i<prices.length; i++) { t+=prices[i]; } Math.floor(t*100/prices.length)/100;" },
+                        { "const": "prices" }, { "array": [ { "xpath": "books/*/price", "type": "float" } ] }
+                    ]
+                }
+            },
+            "title_author": {
+                "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const": "'\\'' + book.title + '\\'' + ' by ' + (book.author ? book.author : 'Unknown');" },
+                        { "const": "book" }, { "xpath": "books/*[position() = 2]", "custom_func": { "name":  "copy" }}
+                    ]
+                }
+            }
+        }}
+    }
+}

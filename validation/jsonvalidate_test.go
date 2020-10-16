@@ -18,19 +18,20 @@ func TestSchemaValidate(t *testing.T) {
 			jsonSchema: JSONSchemaParserSettings,
 			schemaContent: `{
 					"parser_settings": {
-						"version": "omni.2.0",
-						"file_format_type": "xml"
+						"version": "test-version",
+						"file_format_type": "test-format",
+						"encoding": "utf-8"
 					}
 				}`,
 			expectedErr: "",
 		},
 		{
-			name:       "invalid json schema",
+			name:       "invalid json",
 			jsonSchema: ">>",
 			schemaContent: `{
 					"parser_settings": {
-						"version": "omni.2.0",
-						"file_format_type": "xml"
+						"version": "test-version",
+						"file_format_type": "test-format"
 					}
 				}`,
 			expectedErr: `unable to perform schema validation: invalid character '>' looking for beginning of value`,
@@ -40,8 +41,8 @@ func TestSchemaValidate(t *testing.T) {
 			jsonSchema: JSONSchemaParserSettings,
 			schemaContent: `{
 					"parser_settings": {
-						"version": "omni.2.0",
-						"file_format_type": "xml",
+						"version": "test-version",
+						"file_format_type": "test-format",
 						"encoding": "invalid"
 					}
 				}`,
@@ -52,7 +53,7 @@ func TestSchemaValidate(t *testing.T) {
 			jsonSchema: JSONSchemaParserSettings,
 			schemaContent: `{
 					"parser_settings": {
-						"version": "omni.2.0",
+						"version": "test-version",
 						"unknown": "blah"
 					}
 				}`,

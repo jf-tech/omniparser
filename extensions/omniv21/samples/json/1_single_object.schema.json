@@ -1,0 +1,32 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "json"
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "object": {
+            "order_id": { "xpath": "order_id" },
+            "tracking_number": { "custom_func": {
+                "name": "upper",
+                "args": [ { "xpath": "tracking_number" } ]
+            }},
+            "items": { "array": [{ "xpath": "items/*", "object": {
+                "sku":  { "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const": "sku.toUpperCase().substring(0, 5)" },
+                        { "const": "sku" }, { "xpath": "item_sku" }
+                    ]
+                }},
+                "total_price": { "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const": "num * price" },
+                        { "const": "num" }, { "xpath": "number_purchased", "type": "int" },
+                        { "const": "price" }, { "xpath": "item_price", "type": "float" }
+                    ]
+                }}
+            }}]}
+        }}
+    }
+}

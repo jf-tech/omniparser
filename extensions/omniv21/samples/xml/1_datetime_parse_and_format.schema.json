@@ -1,0 +1,104 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "xml"
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "object": {
+            "no_tz_date": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "JustDate" },
+                    { "const": "", "_comment": "fromTZ" },
+                    { "const": "", "_comment": "toTZ" }
+                ]
+            }},
+
+            "no_tz_date_time": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DateTimeWithNoTZ" },
+                    { "const": "", "_comment": "fromTZ" },
+                    { "const": "", "_comment": "toTZ" }
+                ]
+            }},
+            "no_tz_date_time_use_from_tz": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DateTimeWithNoTZ" },
+                    { "const": "America/New_York", "_comment": "fromTZ" },
+                    { "const": "", "_comment": "toTZ" }
+                ]
+            }},
+            "no_tz_date_time_use_to_tz": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DateTimeWithNoTZ" },
+                    { "const": "", "_comment": "fromTZ" },
+                    { "const": "America/Los_Angeles", "_comment": "toTZ" }
+                ]
+            }},
+            "no_tz_date_time_use_both_from_and_to_tz": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DateTimeWithNoTZ" },
+                    { "const": "America/New_York", "_comment": "fromTZ" },
+                    { "const": "America/Los_Angeles", "_comment": "toTZ" }
+                ]
+            }},
+
+            "utc_date_time": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DateTimeUTC" },
+                    { "const": "", "_comment": "fromTZ" },
+                    { "const": "", "_comment": "toTZ" }
+                ]
+            }},
+            "utc_date_time_from_tz_ignored": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DateTimeUTC" },
+                    { "const": "America/Chicago", "_comment": "fromTZ" },
+                    { "const": "", "_comment": "toTZ" }
+                ]
+            }},
+            "utc_date_time_use_to_tz": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DateTimeUTC" },
+                    { "const": "", "_comment": "fromTZ" },
+                    { "const": "America/Chicago", "_comment": "toTZ" }
+                ]
+            }},
+
+            "iana_tz_date_time": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DateTimeWithIANA_TZ" },
+                    { "const": "", "_comment": "fromTZ" },
+                    { "const": "", "_comment": "toTZ" }
+                ]
+            }},
+            "iana_tz_date_time_use_to_tz": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DateTimeWithIANA_TZ" },
+                    { "const": "", "_comment": "fromTZ" },
+                    { "const": "America/Los_Angeles", "_comment": "toTZ" }
+                ]
+            }},
+
+            "custom_layout_day_before_month": { "custom_func": {
+                "name": "dateTimeLayoutToRFC3339",
+                "args": [
+                    { "xpath": "DayBeforeMonth" },
+                    { "const": "02/01/06T15:04:05", "_comment": "layout" },
+                    { "const": "false", "_comment": "layoutTZ" },
+                    { "const": "Pacific/Auckland", "_comment": "fromTZ" },
+                    { "const": "America/Los_Angeles", "_comment": "toTZ" }
+                ]
+            }}
+        }}
+    }
+}

@@ -1,0 +1,52 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "xml"
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": "lb0:library/lb0:books", "object": {
+            "authors": { "array": [ { "xpath": "book/author" } ] },
+            "book_titles": { "array": [ { "xpath": "book/@title" } ] },
+            "books": { "array": [ { "xpath": "book", "template": "book_template" } ] },
+            "first_book": { "xpath": "book[position() = 1]", "custom_func": { "name": "copy"} },
+            "footer": { "template": "footer_template1" },
+            "header": { "xpath": "header", "object": {
+                "publisher": { "xpath": "publisher" }
+            }},
+            "total_price": { "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const": "t=0; for (i=0; i<prices.length; i++) { t+=prices[i]; } t;" },
+                    { "const": "prices" }, { "array": [ { "xpath": "book/@price", "type": "float" } ] }
+                ]
+            }},
+            "avg_price": { "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const": "t=0; for(i=0; i<prices.length; i++) { t+=prices[i]; } t/prices.length;" },
+                    { "const": "prices" }, { "array": [ { "xpath": "book/@price", "type": "float" } ] }
+                ]
+            }}
+        }},
+        "footer_template1": { "xpath": "footer" },
+        "book_template": { "keep_empty_or_null": true, "object": {
+            "planet": { "const": "earth" },
+            "author": { "xpath": "author" },
+            "year": { "type": "int", "xpath": "year" },
+            "price": { "type": "float", "xpath": "@price" },
+            "title": { "xpath": "@title" },
+            "custom_func_demo": { "keep_empty_or_null": true, "custom_func": {
+                "name": "concat",
+                "args": [
+                    { "xpath": "author" },
+                    { "custom_func": { "name": "concat", "args": [ { "const": "<" }, { "const": ">" } ] } },
+                    { "xpath": "@title" },
+                    { "const": "-" },
+                    { "xpath": "../header/publisher" }
+                ]
+            }},
+            "footer": { "template": "footer_template2" }
+        }},
+        "footer_template2": { "xpath": "../footer" }
+    }
+}
