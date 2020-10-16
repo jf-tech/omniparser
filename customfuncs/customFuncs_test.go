@@ -36,6 +36,21 @@ func TestMerge(t *testing.T) {
 		Merge(fs1, fs2, nil))
 }
 
+func TestCoalesce(t *testing.T) {
+	r, err := Coalesce(nil)
+	assert.NoError(t, err)
+	assert.Equal(t, "", r)
+	r, err = Coalesce(nil, "", "")
+	assert.NoError(t, err)
+	assert.Equal(t, "", r)
+	r, err = Coalesce(nil, "", "", "    ", "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, "    ", r)
+	r, err = Coalesce(nil, "", "", "abc", "")
+	assert.NoError(t, err)
+	assert.Equal(t, "abc", r)
+}
+
 func TestConcat(t *testing.T) {
 	for _, test := range []struct {
 		name     string
@@ -64,7 +79,7 @@ func TestConcat(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			result, err := concat(nil, test.strs...)
+			result, err := Concat(nil, test.strs...)
 			assert.NoError(t, err)
 			assert.Equal(t, test.expected, result)
 		})
@@ -72,31 +87,31 @@ func TestConcat(t *testing.T) {
 }
 
 func TestLower(t *testing.T) {
-	s, err := lower(nil, "")
+	s, err := Lower(nil, "")
 	assert.NoError(t, err)
 	assert.Equal(t, "", s)
 
-	s, err = lower(nil, "AbCeDfG 0123456789")
+	s, err = Lower(nil, "AbCeDfG 0123456789")
 	assert.NoError(t, err)
 	assert.Equal(t, "abcedfg 0123456789", s)
 }
 
 func TestUpper(t *testing.T) {
-	s, err := upper(nil, "")
+	s, err := Upper(nil, "")
 	assert.NoError(t, err)
 	assert.Equal(t, "", s)
 
-	s, err = upper(nil, "abCeDfG 0123456789")
+	s, err = Upper(nil, "abCeDfG 0123456789")
 	assert.NoError(t, err)
 	assert.Equal(t, "ABCEDFG 0123456789", s)
 }
 
-func TestUUIDV3(t *testing.T) {
-	result, err := uuidv3(nil, "")
+func TestUUIDv3(t *testing.T) {
+	result, err := UUIDv3(nil, "")
 	assert.NoError(t, err)
 	assert.Equal(t, "4ae71336-e44b-39bf-b9d2-752e234818a5", result)
 
-	result, err = uuidv3(nil, "abc")
+	result, err = UUIDv3(nil, "abc")
 	assert.NoError(t, err)
 	assert.Equal(t, "522ec739-ca63-3ec5-b082-08ce08ad65e2", result)
 }

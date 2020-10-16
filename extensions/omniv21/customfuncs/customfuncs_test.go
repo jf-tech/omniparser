@@ -27,7 +27,7 @@ func TestCopyFunc(t *testing.T) {
 	assert.NoError(t, err)
 	n, err := r.Read()
 	assert.NoError(t, err)
-	dest, err := copyFunc(nil, n)
+	dest, err := CopyFunc(nil, n)
 	assert.NoError(t, err)
 	cupaloy.SnapshotT(t, jsons.BPM(dest))
 }

@@ -30,15 +30,32 @@ func Merge(funcs ...CustomFuncs) CustomFuncs {
 // for all versions of schemas.
 var CommonCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
-	"concat":                  concat,
-	"dateTimeLayoutToRFC3339": dateTimeLayoutToRFC3339,
-	"dateTimeToRFC3339":       dateTimeToRFC3339,
-	"lower":                   lower,
-	"upper":                   upper,
-	"uuidv3":                  uuidv3,
+	"coalesce":                Coalesce,
+	"concat":                  Concat,
+	"dateTimeLayoutToRFC3339": DateTimeLayoutToRFC3339,
+	"dateTimeToEpoch":         DateTimeToEpoch,
+	"dateTimeToRFC3339":       DateTimeToRFC3339,
+	"epochToDateTimeRFC3339":  EpochToDateTimeRFC3339,
+	"lower":                   Lower,
+	"now":                     Now,
+	"upper":                   Upper,
+	"uuidv3":                  UUIDv3,
 }
 
-func concat(_ *transformctx.Ctx, strs ...string) (string, error) {
+// Coalesce returns the first non-empty string of the input strings. If no input strings are given or
+// all of them are empty, then empty string is returned. Note: a blank string (with only whitespaces)
+// is not considered as empty.
+func Coalesce(_ *transformctx.Ctx, strs ...string) (string, error) {
+	for _, str := range strs {
+		if str != "" {
+			return str, nil
+		}
+	}
+	return "", nil
+}
+
+// Concat custom_func concatenates a number of strings together. If no strings specified, "" is returned.
+func Concat(_ *transformctx.Ctx, strs ...string) (string, error) {
 	var w strings.Builder
 	for _, s := range strs {
 		w.WriteString(s)
@@ -46,14 +63,17 @@ func concat(_ *transformctx.Ctx, strs ...string) (string, error) {
 	return w.String(), nil
 }
 
-func lower(_ *transformctx.Ctx, s string) (string, error) {
+// Lower lowers the case of an input string.
+func Lower(_ *transformctx.Ctx, s string) (string, error) {
 	return strings.ToLower(s), nil
 }
 
-func upper(_ *transformctx.Ctx, s string) (string, error) {
+// Upper uppers the case of an input string.
+func Upper(_ *transformctx.Ctx, s string) (string, error) {
 	return strings.ToUpper(s), nil
 }
 
-func uuidv3(_ *transformctx.Ctx, s string) (string, error) {
+// UUIDv3 uses MD5 to produce a consistent/stable UUID for an input string.
+func UUIDv3(_ *transformctx.Ctx, s string) (string, error) {
 	return uuid.NewMD5(uuid.Nil, []byte(s)).String(), nil
 }

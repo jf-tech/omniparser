@@ -96,9 +96,9 @@ func execProgram(program *goja.Program, args map[string]interface{}) (goja.Value
 	return vm.RunProgram(program)
 }
 
-// javascriptWithContext is a custom_func that runs a javascript with optional arguments and
-// with current node JSON, if node is provided.
-func javascriptWithContext(_ *transformctx.Ctx, n *idr.Node, js string, args ...interface{}) (interface{}, error) {
+// JavaScriptWithContext is a custom_func that runs a javascript with optional arguments and
+// with contextual '_node' JSON, if idr.Node is provided.
+func JavaScriptWithContext(_ *transformctx.Ctx, n *idr.Node, js string, args ...interface{}) (interface{}, error) {
 	if len(args)%2 != 0 {
 		return nil, fmt.Errorf("number of args must be even, but got %d", len(args))
 	}
@@ -125,8 +125,8 @@ func javascriptWithContext(_ *transformctx.Ctx, n *idr.Node, js string, args ...
 	}
 }
 
-// javascript is a custom_func that runs a javascript with optional arguments and without context
-// node JSON provided.
-func javascript(ctx *transformctx.Ctx, js string, args ...interface{}) (interface{}, error) {
-	return javascriptWithContext(ctx, nil, js, args...)
+// JavaScript is a custom_func that runs a javascript with optional arguments and without contextual
+// '_node' JSON provided.
+func JavaScript(ctx *transformctx.Ctx, js string, args ...interface{}) (interface{}, error) {
+	return JavaScriptWithContext(ctx, nil, js, args...)
 }
