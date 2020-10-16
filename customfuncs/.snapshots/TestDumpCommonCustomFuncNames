@@ -1,8 +1,12 @@
 [
+	"coalesce",
 	"concat",
 	"dateTimeLayoutToRFC3339",
+	"dateTimeToEpoch",
 	"dateTimeToRFC3339",
+	"epochToDateTimeRFC3339",
 	"lower",
+	"now",
 	"upper",
 	"uuidv3"
 ]

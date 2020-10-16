@@ -1,9 +1,11 @@
 package customfuncs
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
+	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/times"
 
 	"github.com/jf-tech/omniparser/transformctx"
@@ -72,7 +74,10 @@ func rfc3339(t time.Time, hasTZ bool) string {
 	return t.Format(rfc3339NoTZ)
 }
 
-func dateTimeToRFC3339(_ *transformctx.Ctx, datetime, fromTZ, toTZ string) (string, error) {
+// DateTimeToRFC3339 parses a 'datetime' string intelligently, normalizes and returns it in RFC3339 format.
+// 'fromTZ' is only used if 'datetime' doesn't contain TZ info; if not specified, the parser will keep the
+// original TZ (or lack of it) of 'datetime'. 'toTZ' decides what TZ the output RFC3339 date time will be in.
+func DateTimeToRFC3339(_ *transformctx.Ctx, datetime, fromTZ, toTZ string) (string, error) {
 	if datetime == "" {
 		return "", nil
 	}
@@ -83,7 +88,13 @@ func dateTimeToRFC3339(_ *transformctx.Ctx, datetime, fromTZ, toTZ string) (stri
 	return rfc3339(t, hasTZ), nil
 }
 
-func dateTimeLayoutToRFC3339(_ *transformctx.Ctx, datetime, layout, layoutTZ, fromTZ, toTZ string) (string, error) {
+// DateTimeLayoutToRFC3339 parses a 'datetime' string according a given 'layout' and normalizes and returns it
+// in RFC3339 format. 'layoutTZ' specifies whether the 'layout' contains timezone info (such as tz offset, tz
+// short names lik 'PST', or standard IANA tz long name, such as 'America/Los_Angeles'); note 'layoutTZ' is a
+// string with two possible values "true" or "false". 'fromTZ' is only used if 'datetime'/'layout' don't contain
+// TZ info; if not specified, the parser will keep the original TZ (or lack of it) of 'datetime'. 'toTZ' decides
+// what TZ the output RFC3339 date time will be in.
+func DateTimeLayoutToRFC3339(_ *transformctx.Ctx, datetime, layout, layoutTZ, fromTZ, toTZ string) (string, error) {
 	layoutTZFlag := false
 	if layout != "" && layoutTZ != "" {
 		var err error
@@ -100,4 +111,69 @@ func dateTimeLayoutToRFC3339(_ *transformctx.Ctx, datetime, layout, layoutTZ, fr
 		return "", err
 	}
 	return rfc3339(t, hasTZ), nil
+}
+
+const (
+	EpochUnitMilliseconds = "MILLISECOND"
+	EpochUnitSeconds      = "SECOND"
+)
+
+// DateTimeToEpoch parses a 'datetime' string intelligently, and returns its epoch number. 'fromTZ'
+// is only used if 'datetime' doesn't contain TZ info; if not specified, the parser will keep the
+// original TZ (or lack of it) of 'datetime'. 'unit' determines the time unit resolution of the
+// output epoch number.
+func DateTimeToEpoch(_ *transformctx.Ctx, datetime, fromTZ, unit string) (string, error) {
+	if datetime == "" {
+		return "", nil
+	}
+	t, _, err := parseDateTime(datetime, "", false, fromTZ, "")
+	if err != nil {
+		return "", err
+	}
+	switch unit {
+	case EpochUnitMilliseconds:
+		return strconv.FormatInt(t.UnixNano()/int64(time.Millisecond), 10), nil
+	case EpochUnitSeconds:
+		return strconv.FormatInt(t.Unix(), 10), nil
+	default:
+		return "", fmt.Errorf("unknown epoch unit '%s'", unit)
+	}
+}
+
+// EpochToDateTimeRFC3339 translates the 'epoch' timestamp under the given 'unit' into an RFC3339 formatted
+// datetime string in the given timezone 'tz', if specified.
+func EpochToDateTimeRFC3339(_ *transformctx.Ctx, epoch, unit string, tz ...string) (string, error) {
+	if epoch == "" {
+		return "", nil
+	}
+	if len(tz) > 1 {
+		return "", fmt.Errorf("cannot specify tz argument more than once")
+	}
+	n, err := strconv.ParseInt(epoch, 10, 64)
+	if err != nil {
+		return "", err
+	}
+	timezone := "UTC"
+	if len(tz) == 1 {
+		timezone = tz[0]
+	}
+	loc, err := caches.GetTimeLocation(timezone)
+	if err != nil {
+		return "", err
+	}
+	var t time.Time
+	switch unit {
+	case EpochUnitSeconds:
+		t = time.Unix(n, 0)
+	case EpochUnitMilliseconds:
+		t = time.Unix(0, n*(int64(time.Millisecond)))
+	default:
+		return "", fmt.Errorf("unknown epoch unit '%s'", unit)
+	}
+	return rfc3339(t.In(loc), true), nil
+}
+
+// Now returns the current time in UTC in RFC3339 format.
+func Now(_ *transformctx.Ctx) (string, error) {
+	return rfc3339(time.Now().UTC(), true), nil
 }

@@ -20,7 +20,7 @@ func prepCachesForTest(cache bool) {
 	resetCaches()
 }
 
-func TestJavascript(t *testing.T) {
+func TestJavaScript(t *testing.T) {
 	sp, err := idr.NewJSONStreamReader(strings.NewReader(`
 		{
 			"a": "one",
@@ -115,9 +115,9 @@ func TestJavascript(t *testing.T) {
 			var ret interface{}
 			var err error
 			if strings.Contains(test.js, "_node") {
-				ret, err = javascriptWithContext(nil, testNode, test.js, test.args...)
+				ret, err = JavaScriptWithContext(nil, testNode, test.js, test.args...)
 			} else {
-				ret, err = javascript(nil, test.js, test.args...)
+				ret, err = JavaScript(nil, test.js, test.args...)
 			}
 			if test.err != "" {
 				assert.Error(t, err)
@@ -140,27 +140,27 @@ func TestJavascript(t *testing.T) {
 	}
 }
 
-func TestJavascriptClearVarsAfterRunProgram(t *testing.T) {
+func TestJavaScriptClearVarsAfterRunProgram(t *testing.T) {
 	prepCachesForTest(noCache)
-	r, err := javascript(nil, `v1 + v2`, "v1", 1, "v2", 2)
+	r, err := JavaScript(nil, `v1 + v2`, "v1", 1, "v2", 2)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(3), r)
 	// Note v1 should be cleared before second run.
-	r, err = javascript(nil, `v3 + v4 + v1`, "v3", 10, "v4", 20)
+	r, err = JavaScript(nil, `v3 + v4 + v1`, "v3", 10, "v4", 20)
 	assert.Error(t, err)
 	assert.Equal(t, `ReferenceError: v1 is not defined at <eval>:1:11(3)`, err.Error())
 	assert.Nil(t, r)
 	// Run again without using v1.
-	r, err = javascript(nil, `v3 + v4`, "v3", 10, "v4", 20)
+	r, err = JavaScript(nil, `v3 + v4`, "v3", 10, "v4", 20)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(30), r)
 }
 
 // go test -bench=. -benchmem -benchtime=30s
-// BenchmarkJavascriptWithNoCache-8             	  225940	    160696 ns/op	  136620 B/op	    1698 allocs/op
-// BenchmarkJavascriptWithCache-8               	22289469	      1612 ns/op	     140 B/op	       9 allocs/op
-// BenchmarkConcurrentJavascriptWithNoCache-8   	    1479	  24486799 ns/op	27331471 B/op	  339793 allocs/op
-// BenchmarkConcurrentJavascriptWithCache-8     	   69219	    517898 ns/op	   34722 B/op	    1952 allocs/op
+// BenchmarkJavaScriptWithNoCache-8             	  225940	    160696 ns/op	  136620 B/op	    1698 allocs/op
+// BenchmarkJavaScriptWithCache-8               	22289469	      1612 ns/op	     140 B/op	       9 allocs/op
+// BenchmarkConcurrentJavaScriptWithNoCache-8   	    1479	  24486799 ns/op	27331471 B/op	  339793 allocs/op
+// BenchmarkConcurrentJavaScriptWithCache-8     	   69219	    517898 ns/op	   34722 B/op	    1952 allocs/op
 
 var (
 	benchTitles  = []string{"", "Dr", "Sir"}
@@ -168,9 +168,9 @@ var (
 	benchResults = []string{"", "Dr Jane", "Sir John"}
 )
 
-func benchmarkJavascript(b *testing.B) {
+func benchmarkJavaScript(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ret, err := javascript(nil, `
+		ret, err := JavaScript(nil, `
 			if (!title) {
 				""
 			} else if (!name) {
@@ -189,17 +189,17 @@ func benchmarkJavascript(b *testing.B) {
 	}
 }
 
-func BenchmarkJavascriptWithNoCache(b *testing.B) {
+func BenchmarkJavaScriptWithNoCache(b *testing.B) {
 	prepCachesForTest(noCache)
-	benchmarkJavascript(b)
+	benchmarkJavaScript(b)
 }
 
-func BenchmarkJavascriptWithCache(b *testing.B) {
+func BenchmarkJavaScriptWithCache(b *testing.B) {
 	prepCachesForTest(withCache)
-	benchmarkJavascript(b)
+	benchmarkJavaScript(b)
 }
 
-func concurrentBenchmarkJavascript(b *testing.B) {
+func concurrentBenchmarkJavaScript(b *testing.B) {
 	concurrency := 200
 	for i := 0; i < b.N; i++ {
 		wg := &sync.WaitGroup{}
@@ -208,7 +208,7 @@ func concurrentBenchmarkJavascript(b *testing.B) {
 			index := i
 			go func() {
 				defer wg.Done()
-				ret, err := javascript(nil, `
+				ret, err := JavaScript(nil, `
 					if (!title) {
 						""
 					} else if (!name) {
@@ -230,12 +230,12 @@ func concurrentBenchmarkJavascript(b *testing.B) {
 	}
 }
 
-func BenchmarkConcurrentJavascriptWithNoCache(b *testing.B) {
+func BenchmarkConcurrentJavaScriptWithNoCache(b *testing.B) {
 	prepCachesForTest(noCache)
-	concurrentBenchmarkJavascript(b)
+	concurrentBenchmarkJavaScript(b)
 }
 
-func BenchmarkConcurrentJavascriptWithCache(b *testing.B) {
+func BenchmarkConcurrentJavaScriptWithCache(b *testing.B) {
 	prepCachesForTest(withCache)
-	concurrentBenchmarkJavascript(b)
+	concurrentBenchmarkJavaScript(b)
 }

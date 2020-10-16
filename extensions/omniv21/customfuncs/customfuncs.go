@@ -9,11 +9,12 @@ import (
 // OmniV21CustomFuncs contains 'omni.2.1' specific custom funcs.
 var OmniV21CustomFuncs = map[string]customfuncs.CustomFuncType{
 	// keep these custom funcs lexically sorted
-	"copy":                    copyFunc,
-	"javascript":              javascript,
-	"javascript_with_context": javascriptWithContext,
+	"copy":                    CopyFunc,
+	"javascript":              JavaScript,
+	"javascript_with_context": JavaScriptWithContext,
 }
 
-func copyFunc(_ *transformctx.Ctx, n *idr.Node) (interface{}, error) {
+// CopyFunc copies the current contextual idr.Node and returns it as a JSON marshaling friendly interface{}.
+func CopyFunc(_ *transformctx.Ctx, n *idr.Node) (interface{}, error) {
 	return idr.J2NodeToInterface(n, true), nil
 }
