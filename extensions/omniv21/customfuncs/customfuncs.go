@@ -6,7 +6,7 @@ import (
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
-// omniv21 specific custom funcs.
+// OmniV21CustomFuncs contains 'omni.2.1' specific custom funcs.
 var OmniV21CustomFuncs = map[string]customfuncs.CustomFuncType{
 	// keep these custom funcs lexically sorted
 	"copy":                    copyFunc,

@@ -26,6 +26,8 @@ func Merge(funcs ...CustomFuncs) CustomFuncs {
 	return merged
 }
 
+// CommonCustomFuncs contains the most basic and frequently-used custom functions that are suitable
+// for all versions of schemas.
 var CommonCustomFuncs = map[string]CustomFuncType{
 	// keep these custom funcs lexically sorted
 	"concat":                  concat,
