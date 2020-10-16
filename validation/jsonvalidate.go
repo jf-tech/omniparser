@@ -4,6 +4,7 @@ package validation
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/xeipuuv/gojsonschema"
@@ -25,6 +26,7 @@ func SchemaValidate(schemaName string, schemaContent []byte, jsonSchema string) 
 	for _, err := range result.Errors() {
 		errs = append(errs, err.String())
 	}
+	sort.Strings(errs)
 	if len(errs) == 1 {
 		return fmt.Errorf("schema '%s' validation failed: %s", schemaName, errs[0])
 	}
