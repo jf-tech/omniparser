@@ -35,8 +35,8 @@
                 "name": "dateTimeToRFC3339",
                 "args": [
                     { "xpath": "DATE" },
-                    { "const": "", "keep_empty_or_null": true, "_comment": "input timezone" },
-                    { "const": "", "keep_empty_or_null": true, "_comment": "output timezone" }
+                    { "const": "", "_comment": "input timezone" },
+                    { "const": "", "_comment": "output timezone" }
                 ]
             }},
             "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
