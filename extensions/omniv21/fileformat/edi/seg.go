@@ -2,7 +2,6 @@ package edi
 
 import (
 	"github.com/jf-tech/go-corelib/maths"
-	"github.com/jf-tech/go-corelib/strs"
 )
 
 const (
@@ -11,7 +10,8 @@ const (
 )
 
 const (
-	fqdnDelim = "/"
+	fqdnDelim   = "/"
+	rootSegName = "#root"
 )
 
 type elem struct {
@@ -29,6 +29,7 @@ type segDecl struct {
 	Max      *int       `json:"max,omitempty"`
 	Elems    []elem     `json:"elements,omitempty"`
 	Children []*segDecl `json:"child_segments,omitempty"`
+	fqdn     string     // internal computed field
 }
 
 func (d *segDecl) isGroup() bool {
@@ -38,6 +39,7 @@ func (d *segDecl) isGroup() bool {
 func (d *segDecl) minOccurs() int {
 	switch d.Min {
 	case nil:
+		// for majority cases, segments have min=1, max=1, so default nil to 1
 		return 1
 	default:
 		return *d.Min
@@ -47,60 +49,18 @@ func (d *segDecl) minOccurs() int {
 func (d *segDecl) maxOccurs() int {
 	switch {
 	case d.Max == nil:
+		// for majority cases, segments have min=1, max=1, so default nil to 1
 		return 1
 	case *d.Max < 0:
+		// typically schema writer uses -1 to indicate infinite; practically max int is good enough :)
 		return maths.MaxIntValue
 	default:
 		return *d.Max
 	}
 }
 
-type segDeclRuntime struct {
-	decl           *segDecl
-	children       []*segDeclRuntime
-	parent         *segDeclRuntime
-	containsTarget bool // whether this seg itself or any of its children has is_target == true
-	occurred       int
-	fqdn           string
-}
-
-const (
-	rootSegName = "#root"
-)
-
-func newSegDeclRuntimeTree(segDecls ...*segDecl) *segDeclRuntime {
-	return newSegDeclRuntime(
-		nil,
-		&segDecl{
-			Name:     rootSegName,
-			Type:     strs.StrPtr(segTypeGroup),
-			Children: segDecls,
-		})
-}
-
-func newSegDeclRuntime(parent *segDeclRuntime, segDecl *segDecl) *segDeclRuntime {
-	rt := segDeclRuntime{decl: segDecl, parent: parent}
-	if parent != nil {
-		// we don't set fqdn on root.
-		if parent.fqdn != "" {
-			rt.fqdn = strs.BuildFQDN2(fqdnDelim, parent.fqdn, segDecl.Name)
-		} else {
-			// we don't include rootSegName as part of fqdn.
-			rt.fqdn = segDecl.Name
-		}
-	}
-	containsTarget := segDecl.IsTarget
-	for _, child := range segDecl.Children {
-		childRt := newSegDeclRuntime(&rt, child)
-		containsTarget = containsTarget || childRt.containsTarget
-		rt.children = append(rt.children, childRt)
-	}
-	rt.containsTarget = containsTarget
-	return &rt
-}
-
-func (rt *segDeclRuntime) matchSegName(segName string) bool {
-	switch rt.decl.isGroup() {
+func (d *segDecl) matchSegName(segName string) bool {
+	switch d.isGroup() {
 	case true:
 		// Group (or so called loop) itself doesn't have a segment name in EDI file (we do assign a
 		// name to it for xpath query reference, but that name isn't a segment name per se). A
@@ -113,15 +73,8 @@ func (rt *segDeclRuntime) matchSegName(segName string) bool {
 		//    "...loop is optional, but if any segment in the loop is used, the first segment
 		//    within the loop becomes mandatory..."
 		//  - https://github.com/smooks/smooks-edi-cartridge/blob/54f97e89156114e13e1acd3b3c46fe9a4234918c/edi-sax/src/main/java/org/smooks/edi/edisax/model/internal/SegmentGroup.java#L68
-		return len(rt.children) > 0 && rt.children[0].matchSegName(segName)
+		return len(d.Children) > 0 && d.Children[0].matchSegName(segName)
 	default:
-		return rt.decl.Name == segName
-	}
-}
-
-func (rt *segDeclRuntime) resetChildrenOccurred() {
-	for _, child := range rt.children {
-		child.occurred = 0
-		child.resetChildrenOccurred()
+		return d.Name == segName
 	}
 }
