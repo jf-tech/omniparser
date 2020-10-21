@@ -32,6 +32,8 @@ func TestRawSeg(t *testing.T) {
 	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedSegData.elems))
 }
 
+// Adding a benchmark for rawSeg operation to ensure there is no alloc:
+// BenchmarkRawSeg-8   	81410766	        13.9 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkRawSeg(b *testing.B) {
 	rawSegName := "test"
 	rawSegData := []byte("test data")
@@ -92,4 +94,19 @@ func TestStack(t *testing.T) {
 		})
 	assert.Equal(t, newEntry1, *r.shrinkStack())
 	assert.Nil(t, r.shrinkStack())
+}
+
+// Adding a benchmark for stack operation to ensure there is no alloc:
+// BenchmarkStack-8    	12901227	        89.0 ns/op	       0 B/op	       0 allocs/op
+func BenchmarkStack(b *testing.B) {
+	r := ediReader{
+		stack: newStack(),
+	}
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < 20; j++ {
+			r.growStack(stackEntry{})
+		}
+		for r.shrinkStack() != nil {
+		}
+	}
 }
