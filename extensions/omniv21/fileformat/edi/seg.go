@@ -4,6 +4,21 @@ import (
 	"github.com/jf-tech/go-corelib/maths"
 )
 
+// variable/func naming guide:
+//
+// full name      | short name
+// -----------------------------------
+// segment        | seg
+// component      | comp
+// element        | elem
+// node           | n
+// reader         | r
+// delimiter      | delim
+// current        | cur
+// number         | num
+// declaration    | decl
+// character      | char
+
 const (
 	segTypeSeg   = "segment"
 	segTypeGroup = "segment_group"
@@ -17,7 +32,7 @@ const (
 type elem struct {
 	Name           string `json:"name,omitempty"`
 	Index          int    `json:"index,omitempty"`
-	ComponentIndex *int   `json:"component_index,omitempty"`
+	CompIndex      *int   `json:"component_index,omitempty"`
 	EmptyIfMissing bool   `json:"empty_if_missing,omitempty"`
 }
 
