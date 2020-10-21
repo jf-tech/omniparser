@@ -14,18 +14,15 @@ func TestRawSeg(t *testing.T) {
 	r := ediReader{
 		unprocessedSegData: newRawSeg(),
 	}
-	assert.False(t, r.unprocessedSegData.valid)
 	assert.Equal(t, "", r.unprocessedSegData.name)
 	assert.Nil(t, r.unprocessedSegData.raw)
 	assert.Equal(t, 0, len(r.unprocessedSegData.elems))
 	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedSegData.elems))
-	r.unprocessedSegData.valid = true
 	r.unprocessedSegData.name = rawSegName
 	r.unprocessedSegData.raw = rawSegData
 	r.unprocessedSegData.elems = append(
 		r.unprocessedSegData.elems, rawSegElem{1, 1, rawSegData[0:4]}, rawSegElem{2, 1, rawSegData[5:]})
 	r.resetRawSeg()
-	assert.False(t, r.unprocessedSegData.valid)
 	assert.Equal(t, "", r.unprocessedSegData.name)
 	assert.Nil(t, r.unprocessedSegData.raw)
 	assert.Equal(t, 0, len(r.unprocessedSegData.elems))
@@ -42,7 +39,6 @@ func BenchmarkRawSeg(b *testing.B) {
 	}
 	for i := 0; i < b.N; i++ {
 		r.resetRawSeg()
-		r.unprocessedSegData.valid = true
 		r.unprocessedSegData.name = rawSegName
 		r.unprocessedSegData.raw = rawSegData
 		r.unprocessedSegData.elems = append(

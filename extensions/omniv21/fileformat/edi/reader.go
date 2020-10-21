@@ -14,7 +14,6 @@ type rawSegElem struct {
 }
 
 type rawSeg struct {
-	valid bool
 	name  string       // name of the segment, e.g. 'ISA', 'GS', etc.
 	raw   []byte       // the raw data of the entire segment, including segment delimiter.
 	elems []rawSegElem // all the broken down pieces of elements of the segment.
@@ -63,7 +62,6 @@ func inRange(i, lowerBoundInclusive, upperBoundInclusive int) bool {
 }
 
 func (r *ediReader) resetRawSeg() {
-	r.unprocessedSegData.valid = false
 	r.unprocessedSegData.name = ""
 	r.unprocessedSegData.raw = nil
 	r.unprocessedSegData.elems = r.unprocessedSegData.elems[:0]
