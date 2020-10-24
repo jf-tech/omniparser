@@ -298,66 +298,66 @@ IEA*00001*000001644
 
 	benchDeclNoCompNoReleaseCharJSON = `
 {
-        "segment_delimiter": "\n",
-        "element_delimiter": "*",
-        "segment_declarations": [
-            {
-                "name": "ISA",
-                "child_segments": [
-                    {
-                        "name": "GS",
-                        "child_segments": [
-                            {
-                                "name": "scanInfo", "type": "segment_group", "min": 0, "max": -1, "is_target": true,
-                                "child_segments": [
-                                    { "name": "ST" },
-                                    { "name": "B10", "elements": [ { "name": "shipmentIdentificationNumber", "index": 2 } ] },
-                                    { "name": "L11" },
-                                    { "name": "L11" },
-                                    { "name": "N1" },
-                                    { "name": "N1" },
-                                    { "name": "N3" },
-                                    {
-                                        "name": "N4",
-                                        "elements": [
-                                            { "name": "cityName", "index": 1 },
-                                            { "name": "provinceCode", "index": 2 },
-                                            { "name": "postalCode", "index": 3 },
-                                            { "name": "countryCode", "index": 4 }
-                                        ]
-                                    },
-                                    { "name": "LX" },
-                                    {
-                                        "name": "AT7",
-                                        "elements": [
-                                            { "name": "shipmentStatusCode", "index": 1 },
-                                            { "name": "shipmentStatusReasonCode", "index": 2 },
-                                            { "name": "date", "index": 5 },
-                                            { "name": "time", "index": 6 },
-                                            { "name": "timeCode", "index": 7 }
-                                        ]
-                                    },
-                                    {
-                                        "name": "MS1",
-                                        "elements": [
-                                            { "name": "cityName", "index": 1 },
-                                            { "name": "provinceCode", "index": 2 },
-                                            { "name": "countryCode", "index": 3 }
-                                        ]
-                                    },
-                                    { "name": "L11", "min": 0 },
-                                    { "name": "AT8" },
-                                    { "name": "SE" }
-                                ]
-                            }
-                        ]
-                    },
-                    { "name": "GE" }
-                ]
-            },
-            { "name": "IEA" }
-        ]
-    }`
+	"segment_delimiter": "\n",
+	"element_delimiter": "*",
+	"segment_declarations": [
+		{
+			"name": "ISA",
+			"child_segments": [
+				{
+					"name": "GS",
+					"child_segments": [
+						{
+							"name": "scanInfo", "type": "segment_group", "min": 0, "max": -1, "is_target": true,
+							"child_segments": [
+								{ "name": "ST" },
+								{ "name": "B10", "elements": [ { "name": "shipment_id", "index": 2 } ] },
+								{ "name": "L11" },
+								{ "name": "L11" },
+								{ "name": "N1" },
+								{ "name": "N1" },
+								{ "name": "N3" },
+								{
+									"name": "N4",
+									"elements": [
+										{ "name": "city", "index": 1 },
+										{ "name": "province", "index": 2 },
+										{ "name": "zip", "index": 3 },
+										{ "name": "country", "index": 4 }
+									]
+								},
+								{ "name": "LX" },
+								{
+									"name": "AT7",
+									"elements": [
+										{ "name": "status_code", "index": 1 },
+										{ "name": "reason_code", "index": 2 },
+										{ "name": "date", "index": 5 },
+										{ "name": "time", "index": 6 },
+										{ "name": "time_code", "index": 7 }
+									]
+								},
+								{
+									"name": "MS1",
+									"elements": [
+										{ "name": "city", "index": 1 },
+										{ "name": "province", "index": 2 },
+										{ "name": "country", "index": 3 }
+									]
+								},
+								{ "name": "L11", "min": 0 },
+								{ "name": "AT8" },
+								{ "name": "SE" }
+							]
+						}
+					]
+				},
+				{ "name": "GE" }
+			]
+		},
+		{ "name": "IEA" }
+	]
+}`
 )
 
 var (
@@ -375,6 +375,140 @@ var (
 func BenchmarkGetUnprocessedRawSeg_NoCompNoReleaseChar(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		reader := NewReader("test", strings.NewReader(benchInputNoCompNoReleaseChar), benchDeclNoCompNoReleaseChar)
+		for {
+			_, err := reader.getUnprocessedRawSeg()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				b.FailNow()
+			}
+			reader.resetRawSeg()
+		}
+	}
+}
+
+const (
+	benchInputWithCompAndRelease    = `UNA:+.? 'UNB+UNOC:3+7080000714520:14+BPGARMIN:ZZZ+202502:1715+20202502171538'UNH+1+IFTSTA:D:04A:UN:BIG07'BGM+77+70726206369762052+9'DTM+137:202025021715:203'NAD+CZ+20000181402::87'CNI+1+70726206369762052'STS+1+S::87:REFORWARDED'RFF+CU:171577008'DTM+78:202002251728:203'LOC+14+01530:16::VANTAA+FI:162'GID+1+1'PCI+30+370726206369762060'STS+1+V::87:ERROR OCCURED IN PROCESSING+99::87:Other / unknown reason+Z::87:Other / unknown reason'RFF+CU:171577008'DTM+78:202002251729:203'LOC+14+01530:16::VANTAA+FI:162'GID+1+1'PCI+30+370726206369762060'STS+1+S::87:REFORWARDED'RFF+CU:171577008'DTM+78:202002251732:203'LOC+14+01530:16::VANTAA+FI:162'GID+1+1'PCI+30+370726206369762060'UNT+24+1'UNH+2+IFTSTA:D:04A:UN:BIG07'BGM+77+70726206369728447+9'DTM+137:202025021715:203'NAD+CZ+20000181410::87'CNI+1+70726206369728447'STS+1+I::87:DELIVERED'RFF+CU:171452065'DTM+78:202002251709:203'LOC+14+0701:16::OSLO+NO:162'GID+1+1'PCI+30+370726206369728455'UNT+12+2'UNH+3+IFTSTA:D:04A:UN:BIG07'BGM+77+70726206369754293+9'DTM+137:202025021715:203'NAD+CZ+20000181410::87'CNI+1+70726206369754293'STS+1+I::87:DELIVERED'RFF+CU:171559197'DTM+78:202002251704:203'LOC+14+6101:16::VOLDA+NO:162'GID+1+1'PCI+30+370726206369754300'UNT+12+3'UNH+4+IFTSTA:D:04A:UN:BIG07'BGM+77+70726206369762663+9'DTM+137:202025021715:203'NAD+CZ+20000181410::87'CNI+1+70726206369762663'STS+1+Q::87:ARRIVED AT POST OFFICE'RFF+CU:171577030'DTM+78:202002251709:203'LOC+14+7480:16::TRONDHEIM+NO:162'GID+1+1'PCI+30+370726206369762671'UNT+12+4'UNH+5+IFTSTA:D:04A:UN:BIG07'BGM+77+70726206369768672+9'DTM+137:202025021715:203'NAD+CZ+20000181410::87'CNI+1+70726206369768672'STS+1+Q::87:ARRIVED AT POST OFFICE'RFF+CU:171608297'DTM+78:202002251709:203'LOC+14+1442:16::DRBAK+NO:162'GID+1+1'PCI+30+370726206369768680'UNT+12+5'UNZ+5+20202502171538'`
+	benchDeclWithCompAndReleaseJSON = `
+{
+	"release_character": "?",
+	"element_delimiter": "+",
+	"component_delimiter": ":",
+	"segment_delimiter": "'",
+	"segment_declarations": [
+		{
+			"name": "UNA",
+			"child_segments": [
+				{ "name": "UNB" },
+				{
+					"name": "SG0", "type": "segment_group", "min": 0, "max": -1,
+					"child_segments": [
+						{ "name": "UNH" },
+						{ "name": "BGM" },
+						{ "name": "DTM", "min": 0 },
+						{
+							"name": "SG1_1", "type": "segment_group", "min": 0,
+							"child_segments": [
+								{ "name": "NAD" },
+								{
+									"name": "SG2", "type": "segment_group", "min": 0,
+									"child_segments": [
+										{ "name": "CTA" },
+										{ "name": "COM" }
+									]
+								}
+							]
+						},
+						{
+							"name": "SG1_2", "type": "segment_group", "min": 0,
+							"child_segments": [
+								{ "name": "NAD" }
+							]
+						},
+						{
+							"name": "SG4", "type": "segment_group", "is_target": true, "min": 0, "max": -1,
+							"child_segments": [
+								{
+									"name": "CNI",
+									"elements": [
+										{ "name": "tracking_number", "index": 2 }
+									]
+								},
+								{
+									"name": "SG5", "type": "segment_group", "max": -1,
+									"child_segments": [
+										{
+											"name": "STS", "min": 0,
+											"elements": [
+												{ "name": "status_code", "index":  2, "component_index": 1 },
+												{ "name": "description", "index":  2, "component_index":  4, "empty_if_missing": true }
+											]
+										},
+										{ "name": "RFF", "min": 0 },
+										{
+											"name": "DTM", "min": 0,
+											"elements": [
+												{ "name": "event_datetime", "index": 1, "component_index": 2, "empty_if_missing": true },
+												{ "name": "event_datetime_format", "index": 1, "component_index": 3, "empty_if_missing": true }
+											]
+										},
+										{ "name": "FTX", "min": 0 },
+										{
+											"name": "SG6", "type": "segment_group", "min": 0,
+											"child_segments": [
+												{ "name": "NAD" }
+											]
+										},
+										{
+											"name": "LOC", "min": 0,
+											"elements": [
+												{ "name": "city", "index": 2, "component_index": 4, "empty_if_missing": true },
+												{ "name": "country", "index": 3, "empty_if_missing": true }
+											]
+										},
+										{
+											"name": "SG14", "type": "segment_group", "min": 0,
+											"child_segments": [
+												{ "name": "GID" },
+												{
+													"name": "SG17", "type": "segment_group", "min": 0, "max": -1,
+													"child_segments": [
+														{ "name": "PCI" },
+														{ "name": "GIN", "min": 0 }
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{ "name": "UNT" }
+					]
+				},
+				{ "name": "UNZ" }
+			]
+		}
+	]
+}`
+)
+
+var (
+	benchDeclWithCompAndRelease = func() *fileDecl {
+		var fd fileDecl
+		err := json.Unmarshal([]byte(benchDeclWithCompAndReleaseJSON), &fd)
+		if err != nil {
+			panic(err)
+		}
+		return &fd
+	}()
+)
+
+// BenchmarkGetUnprocessedRawSeg_WithCompAndRelease-8    	    7077	    168176 ns/op	  227497 B/op	     816 allocs/op
+func BenchmarkGetUnprocessedRawSeg_WithCompAndRelease(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		reader := NewReader("test", strings.NewReader(benchInputWithCompAndRelease), benchDeclWithCompAndRelease)
 		for {
 			_, err := reader.getUnprocessedRawSeg()
 			if err == io.EOF {
