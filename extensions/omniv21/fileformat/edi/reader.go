@@ -2,18 +2,40 @@ package edi
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io"
+	"unicode/utf8"
+
+	"github.com/jf-tech/go-corelib/ios"
+	"github.com/jf-tech/go-corelib/strs"
 
 	"github.com/jf-tech/omniparser/idr"
 )
 
+// ErrInvalidEDI indicates the EDI content is corrupted. This is a fatal, non-continuable error.
+type ErrInvalidEDI string
+
+func (e ErrInvalidEDI) Error() string { return string(e) }
+
+// IsErrInvalidEDI checks if an err is of ErrInvalidEDI type.
+func IsErrInvalidEDI(err error) bool {
+	switch err.(type) {
+	case ErrInvalidEDI:
+		return true
+	default:
+		return false
+	}
+}
+
 type rawSegElem struct {
-	elemIndex int // for this piece of data, the index of which element it belongs to. 1-based.
-	compIndex int // for this piece of data, the index of which component it belongs to. 1-based.
-	data      []byte
+	elemIndex int    // for this piece of data, the index of which element it belongs to. 1-based.
+	compIndex int    // for this piece of data, the index of which component it belongs to. 1-based.
+	data      []byte // READONLY elem/comp raw data (unescaped, so it might contain 'releaseChar' in it.
 }
 
 type rawSeg struct {
+	valid bool
 	name  string       // name of the segment, e.g. 'ISA', 'GS', etc.
 	raw   []byte       // the raw data of the entire segment, including segment delimiter.
 	elems []rawSegElem // all the broken down pieces of elements of the segment.
@@ -37,34 +59,45 @@ type stackEntry struct {
 }
 
 const (
-	defaultStackDepth = 50
+	defaultStackDepth = 10
 )
 
 func newStack() []stackEntry {
 	return make([]stackEntry, 0, defaultStackDepth)
 }
 
+type delim struct {
+	s string
+	b []byte
+	r []rune
+}
+
+func newDelim(s *string) *delim {
+	if s == nil {
+		return nil
+	}
+	return &delim{
+		s: *s,
+		b: []byte(*s),
+		r: []rune(*s),
+	}
+}
+
 type ediReader struct {
-	filename           string
+	inputName          string
 	scanner            *bufio.Scanner
-	segDelim           string
-	elemDelim          string
-	compDelim          *string
+	segDelim           delim
+	elemDelim          delim
+	compDelim          *delim
 	releaseChar        *rune
 	stack              []stackEntry
 	target             *idr.Node
-	runeCount          int
-	unprocessedSegData rawSeg
+	runeBegin, runeEnd int
+	unprocessedRawSeg  rawSeg
 }
 
 func inRange(i, lowerBoundInclusive, upperBoundInclusive int) bool {
 	return i >= lowerBoundInclusive && i <= upperBoundInclusive
-}
-
-func (r *ediReader) resetRawSeg() {
-	r.unprocessedSegData.name = ""
-	r.unprocessedSegData.raw = nil
-	r.unprocessedSegData.elems = r.unprocessedSegData.elems[:0]
 }
 
 // stackTop returns the pointer to the 'frame'-th stack entry from the top.
@@ -101,4 +134,154 @@ func (r *ediReader) shrinkStack() *stackEntry {
 // growStack adds a new stack entry to the top of the stack.
 func (r *ediReader) growStack(e stackEntry) {
 	r.stack = append(r.stack, e)
+}
+
+func (r *ediReader) resetRawSeg() {
+	r.unprocessedRawSeg.valid = false
+	r.unprocessedRawSeg.name = ""
+	r.unprocessedRawSeg.raw = nil
+	r.unprocessedRawSeg.elems = r.unprocessedRawSeg.elems[:0]
+}
+
+func runeCountAndHasOnlyCRLF(b []byte) (int, bool) {
+	runeCount := 0
+	onlyCRLF := true
+	for {
+		r, size := utf8.DecodeRune(b)
+		if r == utf8.RuneError {
+			return runeCount, onlyCRLF
+		}
+		if r != '\n' && r != '\r' {
+			onlyCRLF = false
+		}
+		runeCount++
+		b = b[size:]
+	}
+}
+
+func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
+	if r.unprocessedRawSeg.valid {
+		return r.unprocessedRawSeg, nil
+	}
+	var token []byte
+	for r.scanner.Scan() {
+		b := r.scanner.Bytes()
+		// In rare occasions inputs are not strict EDI per se - they sometimes have trailing empty lines
+		// with only CR and/or LF. Let's be not so strict and ignore those lines.
+		count, onlyCRLF := runeCountAndHasOnlyCRLF(b)
+		r.runeBegin = r.runeEnd
+		r.runeEnd += count
+		if onlyCRLF {
+			continue
+		}
+		token = b
+		break
+	}
+	// We are here because:
+	// 1. we find next token (i.e. segment), great, let's process it, OR
+	// 2. r.scanner.Scan() returns false and it's EOF (note scanner never returns EOF, it just returns false
+	//    on Scan() and Err() returns nil). We need to return EOF, OR
+	// 3. r.scanner.Scan() returns false Err() returns err, need to return the err wrapped.
+	err := r.scanner.Err()
+	if err != nil {
+		return rawSeg{}, ErrInvalidEDI(r.fmtErrStr("cannot read segment, err: %s", err.Error()))
+	}
+	if token == nil {
+		return rawSeg{}, io.EOF
+	}
+	// From now on, the important thing is to operate on token (of []byte)without modification and without
+	// allocation to keep performance.
+	r.unprocessedRawSeg.raw = token
+	// First we need to drop the trailing segment delimiter.
+	noSegDelim := token[:len(token)-len(r.segDelim.b)]
+	// In rare occasions, input uses '\n' as segment delimiter, but '\r' somehow
+	// gets included as well (more common in business platform running on Windows)
+	// Drop that '\r' as well.
+	if r.segDelim.s == "\n" && bytes.HasSuffix(noSegDelim, []byte{'\r'}) {
+		noSegDelim = noSegDelim[:len(noSegDelim)-utf8.RuneLen('\r')]
+	}
+	for i, elem := range r.split(noSegDelim, r.elemDelim, r.releaseChar) {
+		if r.compDelim == nil {
+			// if we don't have comp delimiter, treat the entire element as one component.
+			r.unprocessedRawSeg.elems = append(
+				r.unprocessedRawSeg.elems,
+				rawSegElem{
+					// while (element) index in schema starts with 1, it actually refers to the first element
+					// AFTER the seg name element, thus we use can i as elemIndex directly.
+					elemIndex: i,
+					// comp_index always starts with 1
+					compIndex: 1,
+					data:      elem,
+				})
+			continue
+		}
+		for j, comp := range r.split(elem, *r.compDelim, r.releaseChar) {
+			r.unprocessedRawSeg.elems = append(
+				r.unprocessedRawSeg.elems,
+				rawSegElem{
+					elemIndex: i,
+					compIndex: j + 1,
+					data:      comp,
+				})
+		}
+	}
+	if len(r.unprocessedRawSeg.elems) == 0 || len(r.unprocessedRawSeg.elems[0].data) == 0 {
+		return rawSeg{}, ErrInvalidEDI(r.fmtErrStr("segment is malformed, missing segment name"))
+	}
+	r.unprocessedRawSeg.name = string(r.unprocessedRawSeg.elems[0].data)
+	r.unprocessedRawSeg.valid = true
+	return r.unprocessedRawSeg, nil
+}
+
+func (r *ediReader) split(s []byte, delim delim, esc *rune) [][]byte {
+	if esc == nil {
+		return bytes.Split(s, delim.b)
+	}
+	return strs.ByteSplitWithEsc(s, delim.r, *esc, defaultElemsPerSeg)
+}
+
+func (r *ediReader) fmtErrStr(format string, args ...interface{}) string {
+	return fmt.Sprintf("input '%s' between character [%d,%d]: %s",
+		r.inputName, r.runeBegin, r.runeEnd, fmt.Sprintf(format, args...))
+}
+
+const (
+	scannerFlags = ios.ScannerByDelimFlagEofNotAsDelim | ios.ScannerByDelimFlagIncludeDelimInReturn
+)
+
+var (
+	// Default buf size for EDI reader. Making it too small might increase mem-alloc and gc;
+	// making it too big increases the initial memory consumption footprint (unnecessarily)
+	// for each reader creation which eventually leads to gc as well.
+	// Make it exported so caller can experiment and set their optimal value.
+	ReaderBufSize = 128
+)
+
+// NewReader creates an FormatReader for EDI file format.
+func NewReader(inputName string, r io.Reader, decl *fileDecl) *ediReader {
+	releaseChar := (*rune)(nil)
+	if decl.ReleaseChar != nil && len([]rune(*decl.ReleaseChar)) > 0 {
+		releaseChar = strs.RunePtr([]rune(*decl.ReleaseChar)[0])
+	}
+	reader := &ediReader{
+		inputName:         inputName,
+		scanner:           ios.NewScannerByDelim3(r, decl.SegDelim, releaseChar, scannerFlags, make([]byte, ReaderBufSize)),
+		segDelim:          *newDelim(&decl.SegDelim),
+		elemDelim:         *newDelim(&decl.ElemDelim),
+		compDelim:         newDelim(decl.CompDelim),
+		releaseChar:       releaseChar,
+		stack:             newStack(),
+		runeBegin:         1,
+		runeEnd:           1,
+		unprocessedRawSeg: newRawSeg(),
+	}
+	reader.growStack(stackEntry{
+		segDecl: &segDecl{
+			Name:     rootSegName,
+			Type:     strs.StrPtr(segTypeGroup),
+			Children: decl.SegDecls,
+			fqdn:     rootSegName,
+		},
+	})
+	return reader
 }
