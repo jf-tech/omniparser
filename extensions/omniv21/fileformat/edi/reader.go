@@ -257,13 +257,6 @@ var (
 	ReaderBufSize = 128
 )
 
-func strPtrToBytes(s *string) []byte {
-	if s != nil {
-		return []byte(*s)
-	}
-	return nil
-}
-
 // NewReader creates an FormatReader for EDI file format.
 func NewReader(inputName string, r io.Reader, decl *fileDecl) *ediReader {
 	segDelim := newStrPtrByte(&decl.SegDelim)
