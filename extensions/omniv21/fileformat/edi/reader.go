@@ -42,11 +42,15 @@ type rawSeg struct {
 }
 
 const (
-	defaultElemsPerSeg = 20
+	defaultElemsPerSeg  = 32
+	defaultCompsPerElem = 8
 )
 
 func newRawSeg() rawSeg {
 	return rawSeg{
+		// don't want to over-allocate (defaultElemsPerSeg * defaultCompsPerElem), since
+		// most EDI segments don't have equal number of components for each element --
+		// using defaultElemsPerSeg is probably good enough.
 		elems: make([]rawSegElem, 0, defaultElemsPerSeg),
 	}
 }
@@ -66,30 +70,29 @@ func newStack() []stackEntry {
 	return make([]stackEntry, 0, defaultStackDepth)
 }
 
-type delim struct {
-	s string
-	b []byte
-	r []rune
+type strPtrByte struct {
+	strptr *string
+	b      []byte
 }
 
-func newDelim(s *string) *delim {
-	if s == nil {
-		return nil
+func newStrPtrByte(strptr *string) strPtrByte {
+	var b []byte
+	if strptr != nil {
+		b = []byte(*strptr)
 	}
-	return &delim{
-		s: *s,
-		b: []byte(*s),
-		r: []rune(*s),
+	return strPtrByte{
+		strptr: strptr,
+		b:      b,
 	}
 }
 
 type ediReader struct {
 	inputName          string
 	scanner            *bufio.Scanner
-	segDelim           delim
-	elemDelim          delim
-	compDelim          *delim
-	releaseChar        *rune
+	segDelim           strPtrByte
+	elemDelim          strPtrByte
+	compDelim          strPtrByte
+	releaseChar        strPtrByte
 	stack              []stackEntry
 	target             *idr.Node
 	runeBegin, runeEnd int
@@ -159,6 +162,10 @@ func runeCountAndHasOnlyCRLF(b []byte) (int, bool) {
 	}
 }
 
+var (
+	crBytes = []byte("\r")
+)
+
 func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 	if r.unprocessedRawSeg.valid {
 		return r.unprocessedRawSeg, nil
@@ -197,11 +204,11 @@ func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 	// In rare occasions, input uses '\n' as segment delimiter, but '\r' somehow
 	// gets included as well (more common in business platform running on Windows)
 	// Drop that '\r' as well.
-	if r.segDelim.s == "\n" && bytes.HasSuffix(noSegDelim, []byte{'\r'}) {
+	if *r.segDelim.strptr == "\n" && bytes.HasSuffix(noSegDelim, crBytes) {
 		noSegDelim = noSegDelim[:len(noSegDelim)-utf8.RuneLen('\r')]
 	}
-	for i, elem := range r.split(noSegDelim, r.elemDelim, r.releaseChar) {
-		if r.compDelim == nil {
+	for i, elem := range strs.ByteSplitWithEsc(noSegDelim, r.elemDelim.b, r.releaseChar.b, defaultElemsPerSeg) {
+		if len(r.compDelim.b) == 0 {
 			// if we don't have comp delimiter, treat the entire element as one component.
 			r.unprocessedRawSeg.elems = append(
 				r.unprocessedRawSeg.elems,
@@ -215,7 +222,7 @@ func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 				})
 			continue
 		}
-		for j, comp := range r.split(elem, *r.compDelim, r.releaseChar) {
+		for j, comp := range strs.ByteSplitWithEsc(elem, r.compDelim.b, r.releaseChar.b, defaultCompsPerElem) {
 			r.unprocessedRawSeg.elems = append(
 				r.unprocessedRawSeg.elems,
 				rawSegElem{
@@ -231,13 +238,6 @@ func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 	r.unprocessedRawSeg.name = string(r.unprocessedRawSeg.elems[0].data)
 	r.unprocessedRawSeg.valid = true
 	return r.unprocessedRawSeg, nil
-}
-
-func (r *ediReader) split(s []byte, delim delim, esc *rune) [][]byte {
-	if esc == nil {
-		return bytes.Split(s, delim.b)
-	}
-	return strs.ByteSplitWithEsc(s, delim.r, *esc, defaultElemsPerSeg)
 }
 
 func (r *ediReader) fmtErrStr(format string, args ...interface{}) string {
@@ -257,18 +257,25 @@ var (
 	ReaderBufSize = 128
 )
 
+func strPtrToBytes(s *string) []byte {
+	if s != nil {
+		return []byte(*s)
+	}
+	return nil
+}
+
 // NewReader creates an FormatReader for EDI file format.
 func NewReader(inputName string, r io.Reader, decl *fileDecl) *ediReader {
-	releaseChar := (*rune)(nil)
-	if decl.ReleaseChar != nil && len([]rune(*decl.ReleaseChar)) > 0 {
-		releaseChar = strs.RunePtr([]rune(*decl.ReleaseChar)[0])
-	}
+	segDelim := newStrPtrByte(&decl.SegDelim)
+	elemDelim := newStrPtrByte(&decl.ElemDelim)
+	compDelim := newStrPtrByte(decl.CompDelim)
+	releaseChar := newStrPtrByte(decl.ReleaseChar)
 	reader := &ediReader{
 		inputName:         inputName,
-		scanner:           ios.NewScannerByDelim3(r, decl.SegDelim, releaseChar, scannerFlags, make([]byte, ReaderBufSize)),
-		segDelim:          *newDelim(&decl.SegDelim),
-		elemDelim:         *newDelim(&decl.ElemDelim),
-		compDelim:         newDelim(decl.CompDelim),
+		scanner:           ios.NewScannerByDelim3(r, segDelim.b, releaseChar.b, scannerFlags, make([]byte, ReaderBufSize)),
+		segDelim:          segDelim,
+		elemDelim:         elemDelim,
+		compDelim:         compDelim,
 		releaseChar:       releaseChar,
 		stack:             newStack(),
 		runeBegin:         1,

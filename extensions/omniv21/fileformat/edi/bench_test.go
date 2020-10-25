@@ -371,7 +371,7 @@ var (
 	}()
 )
 
-// BenchmarkGetUnprocessedRawSeg_NoCompNoReleaseChar-8   	    8971	    114907 ns/op	   48024 B/op	     747 allocs/op
+// BenchmarkGetUnprocessedRawSeg_NoCompNoReleaseChar-8   	   10000	    103945 ns/op	   27080 B/op	     515 allocs/op
 func BenchmarkGetUnprocessedRawSeg_NoCompNoReleaseChar(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		reader := NewReader("test", strings.NewReader(benchInputNoCompNoReleaseChar), benchDeclNoCompNoReleaseChar)
@@ -505,7 +505,7 @@ var (
 	}()
 )
 
-// BenchmarkGetUnprocessedRawSeg_WithCompAndRelease-8    	    7077	    168176 ns/op	  227497 B/op	     816 allocs/op
+// BenchmarkGetUnprocessedRawSeg_WithCompAndRelease-8    	   14174	     84115 ns/op	  102880 B/op	     385 allocs/op
 func BenchmarkGetUnprocessedRawSeg_WithCompAndRelease(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		reader := NewReader("test", strings.NewReader(benchInputWithCompAndRelease), benchDeclWithCompAndRelease)
