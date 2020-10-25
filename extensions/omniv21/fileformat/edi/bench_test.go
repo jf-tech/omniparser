@@ -5,6 +5,8 @@ import (
 	"io"
 	"strings"
 	"testing"
+
+	"github.com/jf-tech/go-corelib/testlib"
 )
 
 // Adding a benchmark for rawSeg operation to ensure there is no alloc:
@@ -21,7 +23,8 @@ func BenchmarkRawSeg(b *testing.B) {
 		r.unprocessedRawSeg.name = rawSegName
 		r.unprocessedRawSeg.raw = rawSegData
 		r.unprocessedRawSeg.elems = append(
-			r.unprocessedRawSeg.elems, rawSegElem{1, 1, rawSegData[0:4]}, rawSegElem{2, 1, rawSegData[5:]})
+			r.unprocessedRawSeg.elems,
+			rawSegElem{1, 1, rawSegData[0:4], false}, rawSegElem{2, 1, rawSegData[5:], false})
 	}
 }
 
@@ -518,6 +521,44 @@ func BenchmarkGetUnprocessedRawSeg_WithCompAndRelease(b *testing.B) {
 				b.FailNow()
 			}
 			reader.resetRawSeg()
+		}
+	}
+}
+
+var (
+	benchRawSegToNodeRawSeg = rawSeg{
+		valid: true,
+		name:  "ISA",
+		raw:   []byte("ISA*0*1:2*3*"),
+		elems: []rawSegElem{
+			{0, 1, []byte("ISA"), false},
+			{1, 1, []byte("0"), false},
+			{2, 1, []byte("1"), false},
+			{2, 2, []byte("2"), false},
+			{3, 1, []byte("3"), false},
+		},
+	}
+	benchRawSegToNodeDecl = &segDecl{
+		Elems: []elem{
+			{Name: "e1", Index: 1},
+			{Name: "e2c1", Index: 2, CompIndex: testlib.IntPtr(1)},
+			{Name: "e2c2", Index: 2, CompIndex: testlib.IntPtr(2)},
+			{Name: "e3", Index: 3},
+		},
+		fqdn: "ISA",
+	}
+	// we can do this (reusing reader and its rawSeg again & again in benchmark
+	// because there is no release-char thus there is no data modification in
+	// rawSeg.elems
+	benchRawSegToNodeReader = &ediReader{unprocessedRawSeg: benchRawSegToNodeRawSeg}
+)
+
+// BenchmarkRawSegToNode-8                               	  674935	      1777 ns/op	     864 B/op	       9 allocs/op
+func BenchmarkRawSegToNode(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, err := benchRawSegToNodeReader.rawSegToNode(benchRawSegToNodeDecl)
+		if err != nil {
+			b.FailNow()
 		}
 	}
 }
