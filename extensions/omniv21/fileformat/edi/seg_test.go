@@ -9,6 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestElemCompIndex(t *testing.T) {
+	assert.Equal(t, 1, elem{}.compIndex())
+	assert.Equal(t, 123, elem{CompIndex: testlib.IntPtr(123)}.compIndex())
+}
+
 func TestSegDeclIsGroup(t *testing.T) {
 	assert.False(t, (&segDecl{}).isGroup())
 	assert.False(t, (&segDecl{Type: strs.StrPtr(segTypeSeg)}).isGroup())

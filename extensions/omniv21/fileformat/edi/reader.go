@@ -29,9 +29,10 @@ func IsErrInvalidEDI(err error) bool {
 }
 
 type rawSegElem struct {
-	elemIndex int    // for this piece of data, the index of which element it belongs to. 1-based.
-	compIndex int    // for this piece of data, the index of which component it belongs to. 1-based.
-	data      []byte // READONLY elem/comp raw data (unescaped, so it might contain 'releaseChar' in it.
+	elemIndex     int // for this piece of data, the index of which element it belongs to. 1-based.
+	compIndex     int // for this piece of data, the index of which component it belongs to. 1-based.
+	data          []byte
+	dateUnescaped bool
 }
 
 type rawSeg struct {
@@ -238,6 +239,42 @@ func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 	r.unprocessedRawSeg.name = string(r.unprocessedRawSeg.elems[0].data)
 	r.unprocessedRawSeg.valid = true
 	return r.unprocessedRawSeg, nil
+}
+
+func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
+	if !r.unprocessedRawSeg.valid {
+		panic("invalid state - unprocessedRawSeg is not valid")
+	}
+	if segDecl.FixedLengthInBytes != nil && len(r.unprocessedRawSeg.raw) != *segDecl.FixedLengthInBytes {
+		return nil, ErrInvalidEDI(
+			r.fmtErrStr("segment '%s' expected length %d byte(s), but got: %d byte(s)",
+				segDecl.fqdn, *segDecl.FixedLengthInBytes, len(r.unprocessedRawSeg.raw)))
+	}
+	n := idr.CreateNode(idr.ElementNode, segDecl.Name)
+	for _, elem := range segDecl.Elems {
+		index := -1
+		for i := 0; i < len(r.unprocessedRawSeg.elems); i++ {
+			if r.unprocessedRawSeg.elems[i].elemIndex == elem.Index &&
+				r.unprocessedRawSeg.elems[i].compIndex == elem.compIndex() {
+				index = i
+				break
+			}
+		}
+		if index >= 0 || elem.EmptyIfMissing {
+			data := ""
+			if index >= 0 {
+				data = string(strs.ByteUnescape(r.unprocessedRawSeg.elems[index].data, r.releaseChar.b, true))
+				r.unprocessedRawSeg.elems[index].dateUnescaped = true
+			}
+			elemN := idr.CreateNode(idr.ElementNode, elem.Name)
+			idr.AddChild(n, elemN)
+			elemV := idr.CreateNode(idr.TextNode, data)
+			idr.AddChild(elemN, elemV)
+			continue
+		}
+		return nil, ErrInvalidEDI(r.fmtErrStr("unable to find element '%s' on segment '%s'", elem.Name, segDecl.fqdn))
+	}
+	return n, nil
 }
 
 func (r *ediReader) fmtErrStr(format string, args ...interface{}) string {

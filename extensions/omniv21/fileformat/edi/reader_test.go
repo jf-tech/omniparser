@@ -34,7 +34,7 @@ func TestRawSeg(t *testing.T) {
 	r.unprocessedRawSeg.name = rawSegName
 	r.unprocessedRawSeg.raw = rawSegData
 	r.unprocessedRawSeg.elems = append(
-		r.unprocessedRawSeg.elems, rawSegElem{1, 1, rawSegData[0:4]}, rawSegElem{2, 1, rawSegData[5:]})
+		r.unprocessedRawSeg.elems, rawSegElem{1, 1, rawSegData[0:4], false}, rawSegElem{2, 1, rawSegData[5:], false})
 	r.resetRawSeg()
 	assert.False(t, r.unprocessedRawSeg.valid)
 	assert.Equal(t, "", r.unprocessedRawSeg.name)
@@ -301,6 +301,106 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 				reader.resetRawSeg()
 			}
 			assert.Equal(t, 0, len(test.expected))
+		})
+	}
+}
+
+func TestRawSegToNode(t *testing.T) {
+	assert.PanicsWithValue(t, "invalid state - unprocessedRawSeg is not valid", func() {
+		_, _ = (&ediReader{unprocessedRawSeg: rawSeg{valid: false}}).rawSegToNode(nil)
+	})
+
+	for _, test := range []struct {
+		name     string
+		rawSeg   rawSeg
+		decl     *segDecl
+		err      string
+		expected string
+	}{
+		{
+			name: "fixed_length_in_bytes wrong",
+			rawSeg: rawSeg{
+				valid: true,
+				name:  "ISA",
+				raw:   []byte("0123456789"),
+			},
+			decl: &segDecl{
+				FixedLengthInBytes: testlib.IntPtr(11),
+				fqdn:               "ISA",
+			},
+			err:      `input 'test' between character [10,20]: segment 'ISA' expected length 11 byte(s), but got: 10 byte(s)`,
+			expected: "",
+		},
+		{
+			name: "element not found",
+			rawSeg: rawSeg{
+				valid: true,
+				name:  "ISA",
+				raw:   []byte("ISA*0*1:2*3?**"),
+				elems: []rawSegElem{
+					{0, 1, []byte("ISA"), false},
+					{1, 1, []byte("0"), false},
+					{2, 1, []byte("1"), false},
+					{2, 2, []byte("2"), false},
+					{3, 1, []byte("3?*"), false},
+				},
+			},
+			decl: &segDecl{
+				Elems: []elem{
+					{Name: "e1", Index: 1},
+					{Name: "e2c1", Index: 2, CompIndex: testlib.IntPtr(1)},
+					{Name: "e2c2", Index: 2, CompIndex: testlib.IntPtr(2)},
+					{Name: "e3", Index: 4}, // this one doesn't exist
+				},
+				fqdn: "ISA",
+			},
+			err:      `input 'test' between character [10,20]: unable to find element 'e3' on segment 'ISA'`,
+			expected: "",
+		},
+		{
+			name: "success",
+			rawSeg: rawSeg{
+				valid: true,
+				name:  "ISA",
+				raw:   []byte("ISA*0*1:2*3?**"),
+				elems: []rawSegElem{
+					{0, 1, []byte("ISA"), false},
+					{1, 1, []byte("0"), false},
+					{2, 1, []byte("1"), false},
+					{2, 2, []byte("2"), false},
+					{3, 1, []byte("3?*"), false},
+				},
+			},
+			decl: &segDecl{
+				Elems: []elem{
+					{Name: "e1", Index: 1},
+					{Name: "e2c1", Index: 2, CompIndex: testlib.IntPtr(1)},
+					{Name: "e2c2", Index: 2, CompIndex: testlib.IntPtr(2)},
+					{Name: "e3", Index: 3},
+				},
+				fqdn: "ISA",
+			},
+			err:      "",
+			expected: `{"e1":"0","e2c1":"1","e2c2":"2","e3":"3*"}`,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			r := ediReader{
+				inputName:         "test",
+				releaseChar:       newStrPtrByte(strs.StrPtr("?")),
+				unprocessedRawSeg: test.rawSeg,
+				runeBegin:         10,
+				runeEnd:           20,
+			}
+			n, err := r.rawSegToNode(test.decl)
+			if test.err != "" {
+				assert.Error(t, err)
+				assert.Equal(t, test.err, err.Error())
+				assert.Nil(t, n)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, test.expected, idr.JSONify2(n))
+			}
 		})
 	}
 }

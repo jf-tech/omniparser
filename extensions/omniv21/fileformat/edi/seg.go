@@ -36,15 +36,23 @@ type elem struct {
 	EmptyIfMissing bool   `json:"empty_if_missing,omitempty"`
 }
 
+func (e elem) compIndex() int {
+	if e.CompIndex == nil {
+		return 1
+	}
+	return *e.CompIndex
+}
+
 type segDecl struct {
-	Name     string     `json:"name,omitempty"`
-	Type     *string    `json:"type,omitempty"`
-	IsTarget bool       `json:"is_target,omitempty"`
-	Min      *int       `json:"min,omitempty"`
-	Max      *int       `json:"max,omitempty"`
-	Elems    []elem     `json:"elements,omitempty"`
-	Children []*segDecl `json:"child_segments,omitempty"`
-	fqdn     string     // internal computed field
+	Name               string     `json:"name,omitempty"`
+	Type               *string    `json:"type,omitempty"`
+	IsTarget           bool       `json:"is_target,omitempty"`
+	FixedLengthInBytes *int       `json:"fixed_length_in_bytes,omitempty"`
+	Min                *int       `json:"min,omitempty"`
+	Max                *int       `json:"max,omitempty"`
+	Elems              []elem     `json:"elements,omitempty"`
+	Children           []*segDecl `json:"child_segments,omitempty"`
+	fqdn               string     // internal computed field
 }
 
 func (d *segDecl) isGroup() bool {
