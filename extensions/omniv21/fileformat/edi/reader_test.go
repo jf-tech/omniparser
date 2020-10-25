@@ -1,49 +1,46 @@
 package edi
 
 import (
+	"errors"
+	"io"
+	"strings"
 	"testing"
 
+	"github.com/jf-tech/go-corelib/strs"
+	"github.com/jf-tech/go-corelib/testlib"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/idr"
 )
 
+func TestIsErrInvalidEDI(t *testing.T) {
+	assert.True(t, IsErrInvalidEDI(ErrInvalidEDI("test")))
+	assert.Equal(t, "test", ErrInvalidEDI("test").Error())
+	assert.False(t, IsErrInvalidEDI(errors.New("test")))
+}
+
 func TestRawSeg(t *testing.T) {
 	rawSegName := "test"
 	rawSegData := []byte("test data")
 	r := ediReader{
-		unprocessedSegData: newRawSeg(),
+		unprocessedRawSeg: newRawSeg(),
 	}
-	assert.Equal(t, "", r.unprocessedSegData.name)
-	assert.Nil(t, r.unprocessedSegData.raw)
-	assert.Equal(t, 0, len(r.unprocessedSegData.elems))
-	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedSegData.elems))
-	r.unprocessedSegData.name = rawSegName
-	r.unprocessedSegData.raw = rawSegData
-	r.unprocessedSegData.elems = append(
-		r.unprocessedSegData.elems, rawSegElem{1, 1, rawSegData[0:4]}, rawSegElem{2, 1, rawSegData[5:]})
+	assert.False(t, r.unprocessedRawSeg.valid)
+	assert.Equal(t, "", r.unprocessedRawSeg.name)
+	assert.Nil(t, r.unprocessedRawSeg.raw)
+	assert.Equal(t, 0, len(r.unprocessedRawSeg.elems))
+	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedRawSeg.elems))
+	r.unprocessedRawSeg.valid = true
+	r.unprocessedRawSeg.name = rawSegName
+	r.unprocessedRawSeg.raw = rawSegData
+	r.unprocessedRawSeg.elems = append(
+		r.unprocessedRawSeg.elems, rawSegElem{1, 1, rawSegData[0:4]}, rawSegElem{2, 1, rawSegData[5:]})
 	r.resetRawSeg()
-	assert.Equal(t, "", r.unprocessedSegData.name)
-	assert.Nil(t, r.unprocessedSegData.raw)
-	assert.Equal(t, 0, len(r.unprocessedSegData.elems))
-	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedSegData.elems))
-}
-
-// Adding a benchmark for rawSeg operation to ensure there is no alloc:
-// BenchmarkRawSeg-8   	81410766	        13.9 ns/op	       0 B/op	       0 allocs/op
-func BenchmarkRawSeg(b *testing.B) {
-	rawSegName := "test"
-	rawSegData := []byte("test data")
-	r := ediReader{
-		unprocessedSegData: newRawSeg(),
-	}
-	for i := 0; i < b.N; i++ {
-		r.resetRawSeg()
-		r.unprocessedSegData.name = rawSegName
-		r.unprocessedSegData.raw = rawSegData
-		r.unprocessedSegData.elems = append(
-			r.unprocessedSegData.elems, rawSegElem{1, 1, rawSegData[0:4]}, rawSegElem{2, 1, rawSegData[5:]})
-	}
+	assert.False(t, r.unprocessedRawSeg.valid)
+	assert.Equal(t, "", r.unprocessedRawSeg.name)
+	assert.Nil(t, r.unprocessedRawSeg.raw)
+	assert.Equal(t, 0, len(r.unprocessedRawSeg.elems))
+	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedRawSeg.elems))
 }
 
 func TestStack(t *testing.T) {
@@ -92,17 +89,218 @@ func TestStack(t *testing.T) {
 	assert.Nil(t, r.shrinkStack())
 }
 
-// Adding a benchmark for stack operation to ensure there is no alloc:
-// BenchmarkStack-8    	12901227	        89.0 ns/op	       0 B/op	       0 allocs/op
-func BenchmarkStack(b *testing.B) {
-	r := ediReader{
-		stack: newStack(),
+func TestRuneCountAndHasOnlyCRLF(t *testing.T) {
+	for _, test := range []struct {
+		name             string
+		input            []byte
+		expectedCount    int
+		expectedOnlyCRLF bool
+	}{
+		{
+			name:             "nil",
+			input:            nil,
+			expectedCount:    0,
+			expectedOnlyCRLF: true,
+		},
+		{
+			name:             "empty",
+			input:            []byte{},
+			expectedCount:    0,
+			expectedOnlyCRLF: true,
+		},
+		{
+			name:             "single LF",
+			input:            []byte("\n"),
+			expectedCount:    1,
+			expectedOnlyCRLF: true,
+		},
+		{
+			name:             "single CR",
+			input:            []byte("\r"),
+			expectedCount:    1,
+			expectedOnlyCRLF: true,
+		},
+		{
+			name:             "multiple CR, LF",
+			input:            []byte("\r\n\n\r\r"),
+			expectedCount:    5,
+			expectedOnlyCRLF: true,
+		},
+		{
+			name:             "leading space + LF",
+			input:            []byte("   \n"),
+			expectedCount:    4,
+			expectedOnlyCRLF: false,
+		},
+		{
+			name:             "trailing space + CR",
+			input:            []byte("\r   "),
+			expectedCount:    4,
+			expectedOnlyCRLF: false,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			count, onlyCRLF := runeCountAndHasOnlyCRLF(test.input)
+			assert.Equal(t, test.expectedCount, count)
+			assert.Equal(t, test.expectedOnlyCRLF, onlyCRLF)
+		})
 	}
-	for i := 0; i < b.N; i++ {
-		for j := 0; j < 20; j++ {
-			r.growStack(stackEntry{})
-		}
-		for r.shrinkStack() != nil {
-		}
+}
+
+func verifyErr(t *testing.T, expectedErr string, actual error) {
+	if expectedErr == "" {
+		assert.NoError(t, actual)
+		return
+	}
+	assert.Error(t, actual)
+	assert.Equal(t, expectedErr, actual.Error())
+}
+
+func TestGetUnprocessedRawSeg(t *testing.T) {
+	type result struct {
+		rawSeg rawSeg
+		err    string
+	}
+	for _, test := range []struct {
+		name     string
+		input    io.Reader
+		decl     fileDecl
+		expected []result
+	}{
+		{
+			name:  "empty input",
+			input: strings.NewReader(""),
+			decl: fileDecl{
+				SegDelim:  "|",
+				ElemDelim: ":",
+			},
+			expected: []result{
+				{rawSeg: rawSeg{}, err: io.EOF.Error()},
+			},
+		},
+		{
+			name:  "reading error",
+			input: testlib.NewMockReadCloser("read failure", nil),
+			decl: fileDecl{
+				SegDelim:  "|",
+				ElemDelim: ":",
+			},
+			expected: []result{
+				{rawSeg: rawSeg{}, err: `input 'test' between character [1,1]: cannot read segment, err: read failure`},
+			},
+		},
+		{
+			name: "CR seg-delim; multi-seg; CRLF only line; LF included; with comp-delim; with release-char",
+			input: strings.NewReader(
+				"seg1:c00:c01*e10*c20:c21" + "\r\n" +
+					"\n" +
+					"seg2*c10?*c10:c11*e20?*e20" + "\n"),
+			decl: fileDecl{
+				SegDelim:    "\n",
+				ElemDelim:   "*",
+				CompDelim:   strs.StrPtr(":"),
+				ReleaseChar: strs.StrPtr("?"),
+			},
+			expected: []result{
+				{
+					rawSeg: rawSeg{
+						valid: true,
+						name:  "seg1",
+						raw:   []byte("seg1:c00:c01*e10*c20:c21" + "\r\n"),
+						elems: []rawSegElem{
+							{elemIndex: 0, compIndex: 1, data: []byte("seg1")},
+							{elemIndex: 0, compIndex: 2, data: []byte("c00")},
+							{elemIndex: 0, compIndex: 3, data: []byte("c01")},
+							{elemIndex: 1, compIndex: 1, data: []byte("e10")},
+							{elemIndex: 2, compIndex: 1, data: []byte("c20")},
+							{elemIndex: 2, compIndex: 2, data: []byte("c21")},
+						},
+					},
+				},
+				{
+					rawSeg: rawSeg{
+						valid: true,
+						name:  "seg2",
+						raw:   []byte("seg2*c10?*c10:c11*e20?*e20" + "\n"),
+						elems: []rawSegElem{
+							{elemIndex: 0, compIndex: 1, data: []byte("seg2")},
+							{elemIndex: 1, compIndex: 1, data: []byte("c10?*c10")},
+							{elemIndex: 1, compIndex: 2, data: []byte("c11")},
+							{elemIndex: 2, compIndex: 1, data: []byte("e20?*e20")},
+						},
+					},
+				},
+				{rawSeg: rawSeg{}, err: io.EOF.Error()},
+			},
+		},
+		{
+			name:  "missing seg name",
+			input: strings.NewReader("|seg2*e3|"),
+			decl: fileDecl{
+				SegDelim:  "|",
+				ElemDelim: "*",
+			},
+			expected: []result{
+				{rawSeg: rawSeg{}, err: `input 'test' between character [1,2]: segment is malformed, missing segment name`},
+			},
+		},
+		{
+			name:  "| seg-delim; multi-seg; no comp-delim; no release-char",
+			input: strings.NewReader("seg1*e1*e2|seg2*e3|"),
+			decl: fileDecl{
+				SegDelim:  "|",
+				ElemDelim: "*",
+			},
+			expected: []result{
+				{
+					rawSeg: rawSeg{
+						valid: true,
+						name:  "seg1",
+						raw:   []byte("seg1*e1*e2|"),
+						elems: []rawSegElem{
+							{elemIndex: 0, compIndex: 1, data: []byte("seg1")},
+							{elemIndex: 1, compIndex: 1, data: []byte("e1")},
+							{elemIndex: 2, compIndex: 1, data: []byte("e2")},
+						},
+					},
+				},
+				{
+					rawSeg: rawSeg{
+						valid: true,
+						name:  "seg2",
+						raw:   []byte("seg2*e3|"),
+						elems: []rawSegElem{
+							{elemIndex: 0, compIndex: 1, data: []byte("seg2")},
+							{elemIndex: 1, compIndex: 1, data: []byte("e3")},
+						},
+					},
+				},
+				{rawSeg: rawSeg{}, err: io.EOF.Error()},
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			reader := NewReader("test", test.input, &test.decl)
+			for {
+				if len(test.expected) == 0 {
+					assert.FailNow(t, "reader has more content than expected")
+				}
+				rawSeg, err := reader.getUnprocessedRawSeg()
+				verifyErr(t, test.expected[0].err, err)
+				assert.Equal(t, test.expected[0].rawSeg, rawSeg)
+				// test a second read without resetting returns exactly the same thing.
+				if err == nil {
+					rawSeg, err = reader.getUnprocessedRawSeg()
+					verifyErr(t, test.expected[0].err, err)
+					assert.Equal(t, test.expected[0].rawSeg, rawSeg)
+				}
+				test.expected = test.expected[1:]
+				if err != nil {
+					break
+				}
+				reader.resetRawSeg()
+			}
+			assert.Equal(t, 0, len(test.expected))
+		})
 	}
 }
