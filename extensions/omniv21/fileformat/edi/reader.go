@@ -250,10 +250,10 @@ const (
 )
 
 var (
-	// Default buf size for EDI reader. Making it too small might increase mem-alloc and gc;
-	// making it too big increases the initial memory consumption footprint (unnecessarily)
-	// for each reader creation which eventually leads to gc as well.
-	// Make it exported so caller can experiment and set their optimal value.
+	// ReaderBufSize is the default buf size for EDI reader. Making it too small might increase
+	// mem-alloc and gc; making it too big increases the initial memory consumption footprint
+	// (unnecessarily) for each reader creation which eventually leads to gc as well. Make it
+	// exported so caller can experiment and set their optimal value.
 	ReaderBufSize = 128
 )
 
