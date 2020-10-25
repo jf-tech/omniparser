@@ -306,7 +306,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 }
 
 func TestRawSegToNode(t *testing.T) {
-	assert.PanicsWithValue(t, "invalid state - unprocessedRawSeg is not valid", func() {
+	assert.PanicsWithValue(t, "unprocessedRawSeg is not valid", func() {
 		_, _ = (&ediReader{unprocessedRawSeg: rawSeg{valid: false}}).rawSegToNode(nil)
 	})
 
@@ -377,11 +377,13 @@ func TestRawSegToNode(t *testing.T) {
 					{Name: "e2c1", Index: 2, CompIndex: testlib.IntPtr(1)},
 					{Name: "e2c2", Index: 2, CompIndex: testlib.IntPtr(2)},
 					{Name: "e3", Index: 3},
+					{Name: "e4", Index: 4, EmptyIfMissing: true},
+					{Name: "e5", Index: 5, EmptyIfMissing: true},
 				},
 				fqdn: "ISA",
 			},
 			err:      "",
-			expected: `{"e1":"0","e2c1":"1","e2c2":"2","e3":"3*"}`,
+			expected: `{"e1":"0","e2c1":"1","e2c2":"2","e3":"3*","e4":"","e5":""}`,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

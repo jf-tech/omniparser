@@ -243,7 +243,7 @@ func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 
 func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 	if !r.unprocessedRawSeg.valid {
-		panic("invalid state - unprocessedRawSeg is not valid")
+		panic("unprocessedRawSeg is not valid")
 	}
 	if segDecl.FixedLengthInBytes != nil && len(r.unprocessedRawSeg.raw) != *segDecl.FixedLengthInBytes {
 		return nil, ErrInvalidEDI(
@@ -251,28 +251,32 @@ func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 				segDecl.fqdn, *segDecl.FixedLengthInBytes, len(r.unprocessedRawSeg.raw)))
 	}
 	n := idr.CreateNode(idr.ElementNode, segDecl.Name)
-	for _, elem := range segDecl.Elems {
-		index := -1
-		for i := 0; i < len(r.unprocessedRawSeg.elems); i++ {
-			if r.unprocessedRawSeg.elems[i].elemIndex == elem.Index &&
-				r.unprocessedRawSeg.elems[i].compIndex == elem.compIndex() {
-				index = i
+	// Note: we assume segDecl.Elems are sorted by elemIndex/compIndex.
+	// TODO: do the sorting validation.
+	rawElemIndex := 0
+	rawElems := r.unprocessedRawSeg.elems
+	for _, elemDecl := range segDecl.Elems {
+		for ; rawElemIndex < len(rawElems); rawElemIndex++ {
+			if rawElems[rawElemIndex].elemIndex == elemDecl.Index &&
+				rawElems[rawElemIndex].compIndex == elemDecl.compIndex() {
 				break
 			}
 		}
-		if index >= 0 || elem.EmptyIfMissing {
+		if rawElemIndex < len(rawElems) || elemDecl.EmptyIfMissing {
 			data := ""
-			if index >= 0 {
-				data = string(strs.ByteUnescape(r.unprocessedRawSeg.elems[index].data, r.releaseChar.b, true))
-				r.unprocessedRawSeg.elems[index].dateUnescaped = true
+			if rawElemIndex < len(rawElems) {
+				data = string(strs.ByteUnescape(rawElems[rawElemIndex].data, r.releaseChar.b, true))
+				rawElems[rawElemIndex].dateUnescaped = true
+				rawElemIndex++
 			}
-			elemN := idr.CreateNode(idr.ElementNode, elem.Name)
+			elemN := idr.CreateNode(idr.ElementNode, elemDecl.Name)
 			idr.AddChild(n, elemN)
 			elemV := idr.CreateNode(idr.TextNode, data)
 			idr.AddChild(elemN, elemV)
 			continue
 		}
-		return nil, ErrInvalidEDI(r.fmtErrStr("unable to find element '%s' on segment '%s'", elem.Name, segDecl.fqdn))
+		return nil, ErrInvalidEDI(
+			r.fmtErrStr("unable to find element '%s' on segment '%s'", elemDecl.Name, segDecl.fqdn))
 	}
 	return n, nil
 }
