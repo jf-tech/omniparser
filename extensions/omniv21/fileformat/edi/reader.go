@@ -281,7 +281,7 @@ func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 	return n, nil
 }
 
-// segDone wraps up the processing of an instance of current segment (which include the processing of
+// segDone wraps up the processing of an instance of current segment (which includes the processing of
 // the instances of its child segments). segDone marks streaming target if necessary. If the number of
 // instance occurrences is over the current segment's max limit, segDone calls segNext to move to the
 // next segment in sequence; If the number of instances is still within max limit, segDone does no more
@@ -318,8 +318,9 @@ func (r *ediReader) segDone() {
 func (r *ediReader) segNext() error {
 	cur := r.stackTop()
 	if cur.occurred < cur.segDecl.minOccurs() {
-		// current [begin, end] still covers the previous seg and this error is about the missing
-		// next seg so just move begin to the end before constructing the fatal error.
+		// the current values of [begin, end] cover the current instance of the current seg. But the error
+		// we're about to create is about the missing of next instance of the current seg. So just assign
+		// 'end' to 'begin' to make the error msg less confusing.
 		r.runeBegin = r.runeEnd
 		return ErrInvalidEDI(r.fmtErrStr("segment '%s' needs min occur %d, but only got %d",
 			cur.segDecl.Name, cur.segDecl.minOccurs(), cur.occurred))
