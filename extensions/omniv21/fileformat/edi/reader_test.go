@@ -321,20 +321,6 @@ func TestRawSegToNode(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "fixed_length_in_bytes wrong",
-			rawSeg: rawSeg{
-				valid: true,
-				name:  "ISA",
-				raw:   []byte("0123456789"),
-			},
-			decl: &segDecl{
-				FixedLengthInBytes: testlib.IntPtr(11),
-				fqdn:               "ISA",
-			},
-			err:      `input 'test' between character [10,20]: segment 'ISA' expected length 11 byte(s), but got: 10 byte(s)`,
-			expected: "",
-		},
-		{
 			name: "element not found",
 			rawSeg: rawSeg{
 				valid: true,

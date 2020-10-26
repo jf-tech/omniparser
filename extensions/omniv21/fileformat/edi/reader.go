@@ -245,11 +245,6 @@ func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 	if !r.unprocessedRawSeg.valid {
 		panic("unprocessedRawSeg is not valid")
 	}
-	if segDecl.FixedLengthInBytes != nil && len(r.unprocessedRawSeg.raw) != *segDecl.FixedLengthInBytes {
-		return nil, ErrInvalidEDI(
-			r.fmtErrStr("segment '%s' expected length %d byte(s), but got: %d byte(s)",
-				segDecl.fqdn, *segDecl.FixedLengthInBytes, len(r.unprocessedRawSeg.raw)))
-	}
 	n := idr.CreateNode(idr.ElementNode, segDecl.Name)
 	// Note: we assume segDecl.Elems are sorted by elemIndex/compIndex.
 	// TODO: do the sorting validation.
