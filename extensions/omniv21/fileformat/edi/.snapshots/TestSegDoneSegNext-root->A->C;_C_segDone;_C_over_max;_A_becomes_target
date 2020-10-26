@@ -1,0 +1,17 @@
+{
+	"Stack": [
+		{
+			"SegDecl": "#root",
+			"SegNode": "#root",
+			"CurChild": 0,
+			"Occurred": 0
+		},
+		{
+			"SegDecl": "A",
+			"SegNode": "A",
+			"CurChild": 0,
+			"Occurred": 1
+		}
+	],
+	"Target": "A"
+}
