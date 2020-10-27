@@ -562,3 +562,35 @@ func BenchmarkRawSegToNode(b *testing.B) {
 		}
 	}
 }
+
+// BenchmarkRead_NoCompNoReleaseChar-8                   	    6943	    177692 ns/op	   29620 B/op	     766 allocs/op
+func BenchmarkRead_NoCompNoReleaseChar(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		reader := NewReader("test", strings.NewReader(benchInputNoCompNoReleaseChar), benchDeclNoCompNoReleaseChar)
+		for {
+			_, err := reader.Read()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				b.FailNow()
+			}
+		}
+	}
+}
+
+// BenchmarkRead_WithCompAndRelease-8                    	    9795	    120079 ns/op	  107591 B/op	     464 allocs/op
+func BenchmarkRead_WithCompAndRelease(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		reader := NewReader("test", strings.NewReader(benchInputWithCompAndRelease), benchDeclWithCompAndRelease)
+		for {
+			_, err := reader.Read()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				b.FailNow()
+			}
+		}
+	}
+}

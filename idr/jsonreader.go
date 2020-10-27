@@ -203,7 +203,8 @@ func (sp *JSONStreamReader) Read() (*Node, error) {
 }
 
 // Release releases the *Node (and its subtree) that Read() has previously
-// returned.
+// returned. Note even if Release is not explicitly called, next Read() call
+// will still release the current streaming target node.
 func (sp *JSONStreamReader) Release(n *Node) {
 	if n == sp.stream {
 		sp.stream = nil

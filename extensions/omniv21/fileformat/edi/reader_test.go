@@ -1,11 +1,14 @@
 package edi
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 	"strings"
 	"testing"
 
+	"github.com/bradleyjkemp/cupaloy"
+	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/jf-tech/go-corelib/testlib"
 	"github.com/stretchr/testify/assert"
@@ -241,7 +244,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 				ElemDelim: "*",
 			},
 			expected: []result{
-				{rawSeg: rawSeg{}, err: `input 'test' between character [1,2]: segment is malformed, missing segment name`},
+				{rawSeg: rawSeg{}, err: `input 'test' between character [1,2]: missing segment name`},
 			},
 		},
 		{
@@ -318,20 +321,6 @@ func TestRawSegToNode(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "fixed_length_in_bytes wrong",
-			rawSeg: rawSeg{
-				valid: true,
-				name:  "ISA",
-				raw:   []byte("0123456789"),
-			},
-			decl: &segDecl{
-				FixedLengthInBytes: testlib.IntPtr(11),
-				fqdn:               "ISA",
-			},
-			err:      `input 'test' between character [10,20]: segment 'ISA' expected length 11 byte(s), but got: 10 byte(s)`,
-			expected: "",
-		},
-		{
 			name: "element not found",
 			rawSeg: rawSeg{
 				valid: true,
@@ -403,6 +392,419 @@ func TestRawSegToNode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, test.expected, idr.JSONify2(n))
 			}
+		})
+	}
+}
+
+func (s stackEntry) MarshalJSON() ([]byte, error) {
+	type Alias stackEntry
+	return json.Marshal(&struct {
+		SegDecl  string
+		SegNode  *string
+		CurChild int
+		Occurred int
+	}{
+		SegDecl: s.segDecl.Name,
+		SegNode: func() *string {
+			if s.segNode == nil {
+				return nil
+			}
+			return strs.StrPtr(s.segNode.Data)
+		}(),
+		CurChild: s.curChild,
+		Occurred: s.occurred,
+	})
+}
+
+func TestSegDoneSegNext(t *testing.T) {
+	// the following is indicates the test segDecl tree structure. The numbers in () are min/max.
+	//  root (1/1)
+	//    A (1/-1)   <-- target
+	//      B (0/1)
+	//      C (1/2)
+	//    D (0/1)
+	segDeclB := &segDecl{
+		Name: "B",
+		Type: strs.StrPtr(segTypeSeg),
+		Min:  testlib.IntPtr(0),
+	}
+	segDeclC := &segDecl{
+		Name: "C",
+		Type: strs.StrPtr(segTypeSeg),
+		Max:  testlib.IntPtr(2),
+	}
+	segDeclA := &segDecl{
+		Name:     "A",
+		Type:     strs.StrPtr(segTypeSeg),
+		IsTarget: true,
+		Max:      testlib.IntPtr(-1),
+		Children: []*segDecl{segDeclB, segDeclC},
+	}
+	segDeclD := &segDecl{
+		Name: "D",
+		Type: strs.StrPtr(segTypeSeg),
+		Min:  testlib.IntPtr(0),
+	}
+	segDeclRoot := &segDecl{
+		Name:     rootSegName,
+		Type:     strs.StrPtr(segTypeGroup),
+		Children: []*segDecl{segDeclA, segDeclD},
+	}
+	for _, test := range []struct {
+		name        string
+		stack       []stackEntry
+		target      *idr.Node
+		callSegDone bool
+		panicStr    string
+		err         string
+	}{
+		{
+			name: "root->A->B; B segDone; moves to C; no target",
+			stack: []stackEntry{
+				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
+				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 0, 0},
+				{segDeclB, idr.CreateNode(idr.ElementNode, "B"), 0, 0},
+			},
+			target:      nil,
+			callSegDone: true,
+			panicStr:    "",
+			err:         "",
+		},
+		{
+			name: "root->A->C; C segDone; stay; no target",
+			stack: []stackEntry{
+				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
+				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 1, 0},
+				{segDeclC, idr.CreateNode(idr.ElementNode, "C"), 0, 0},
+			},
+			target:      nil,
+			callSegDone: true,
+			panicStr:    "",
+			err:         "",
+		},
+		{
+			name: "root->A->C; C segDone; C over max; A becomes target",
+			stack: []stackEntry{
+				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
+				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 1, 0},
+				{segDeclC, idr.CreateNode(idr.ElementNode, "C"), 0, 1},
+			},
+			target:      nil,
+			callSegDone: true,
+			panicStr:    "",
+			err:         "",
+		},
+		{
+			name: "root->D; D segDone",
+			stack: []stackEntry{
+				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 1, 0},
+				{segDeclD, idr.CreateNode(idr.ElementNode, "D"), 0, 0},
+			},
+			target:      nil,
+			callSegDone: true,
+			panicStr:    "",
+			err:         "",
+		},
+		{
+			name: "root->A->C; C.occurred = 1; C segNext",
+			stack: []stackEntry{
+				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
+				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 1, 0},
+				{segDeclC, idr.CreateNode(idr.ElementNode, "C"), 0, 0},
+			},
+			target:      nil,
+			callSegDone: false,
+			panicStr:    "",
+			err:         `input 'test' between character [20,20]: segment 'C' needs min occur 1, but only got 0`,
+		},
+		{
+			name: "root->A->C; C segDone; C over max; A becomes target; but r.target not nil",
+			stack: []stackEntry{
+				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
+				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 1, 0},
+				{segDeclC, idr.CreateNode(idr.ElementNode, "C"), 0, 1},
+			},
+			target:      idr.CreateNode(idr.ElementNode, ""),
+			callSegDone: true,
+			panicStr:    `r.target != nil`,
+			err:         "",
+		},
+		{
+			name: "root->A->C; C segDone; C over max; A becomes target; but A.segNode is nil",
+			stack: []stackEntry{
+				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
+				{segDeclA, nil, 1, 0},
+				{segDeclC, idr.CreateNode(idr.ElementNode, "C"), 0, 1},
+			},
+			target:      nil,
+			callSegDone: true,
+			panicStr:    `cur.segNode == nil`,
+			err:         "",
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			r := &ediReader{inputName: "test", stack: test.stack, target: test.target, runeBegin: 10, runeEnd: 20}
+			var err error
+			testCall := func() {
+				if test.callSegDone {
+					r.segDone()
+				} else {
+					err = r.segNext()
+				}
+			}
+			if test.panicStr != "" {
+				assert.PanicsWithValue(t, test.panicStr, testCall)
+				return
+			}
+			testCall()
+			if test.err != "" {
+				assert.Error(t, err)
+				assert.Equal(t, test.err, err.Error())
+				return
+			}
+			assert.NoError(t, err)
+			cupaloy.SnapshotT(t, jsons.BPM(
+				struct {
+					Stack  []stackEntry
+					Target *string
+				}{
+					Stack: r.stack,
+					Target: func() *string {
+						if r.target == nil {
+							return nil
+						}
+						return strs.StrPtr(r.target.Data)
+					}(),
+				}))
+		})
+	}
+}
+
+func TestRead(t *testing.T) {
+	for _, test := range []struct {
+		name     string
+		input    string
+		declJSON string
+	}{
+		{
+			name:  "empty input; success",
+			input: "",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{ "name": "ISA", "min": 0 }
+					]
+				}`,
+		},
+		{
+			name:  "single seg decl; multiple seg instances; success",
+			input: "ISA*0*1*2\nISA*3\n",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{
+							"name": "ISA",
+							"is_target": true,
+							"max": -1,
+							"elements": [
+								{ "name": "e1", "index":  1 },
+								{ "name": "e2", "index":  2, "empty_if_missing": true },
+								{ "name": "e3", "index":  3, "empty_if_missing": true }
+							]
+						}
+					]
+				}`,
+		},
+		{
+			name:  "2 seg decls; success",
+			input: "ISA*0*1*2\nISA*3*4*5\nIEA*6\n",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{
+							"name": "ISA",
+							"is_target": true,
+							"max": -1,
+							"elements": [
+								{ "name": "e1", "index":  1 },
+								{ "name": "e2", "index":  2, "empty_if_missing": true },
+								{ "name": "e3", "index":  3, "empty_if_missing": true }
+							]
+						},
+						{
+							"name": "IEA",
+							"elements": [
+								{ "name": "e1", "index":  1 }
+							]
+						}
+					]
+				}`,
+		},
+		{
+			name:  "2 seg groups; success",
+			input: "ISA*0*1*2\nISA*3*4*5\nIEA*6\n",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{
+							"name": "isa_group",
+							"type": "segment_group",
+							"max": -1,
+							"child_segments": [
+								{
+									"name": "ISA",
+									"is_target": true,
+									"elements": [
+										{ "name": "e1", "index":  1 },
+										{ "name": "e2", "index":  2, "empty_if_missing": true },
+										{ "name": "e3", "index":  3, "empty_if_missing": true }
+									]
+								}
+							]
+						},
+						{
+							"name": "iea_group",
+							"type": "segment_group",
+							"child_segments": [
+								{
+									"name": "IEA",
+									"elements": [
+										{ "name": "e1", "index":  1 }
+									]
+								}
+							]
+						}
+					]
+				}`,
+		},
+		{
+			name:  "seg min not satisfied before EOF; failure",
+			input: "ISA*0*1*2\n",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{
+							"name": "ISA",
+							"is_target": true,
+							"max": -1,
+							"elements": [
+								{ "name": "e1", "index":  1 },
+								{ "name": "e2", "index":  2, "empty_if_missing": true },
+								{ "name": "e3", "index":  3, "empty_if_missing": true }
+							]
+						},
+						{
+							"name": "IEA",
+							"elements": [
+								{ "name": "e1", "index":  1 }
+							]
+						}
+					]
+				}`,
+		},
+		{
+			name:  "missing raw seg name; failure",
+			input: "*0*1\n",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{
+							"name": "ISA",
+							"is_target": true,
+							"max": -1,
+							"elements": [
+								{ "name": "e1", "index":  1 },
+								{ "name": "e2", "index":  2 }
+							]
+						}
+					]
+				}`,
+		},
+		{
+			name:  "raw seg processing wrong; failure",
+			input: "ISA*0\n",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{
+							"name": "ISA",
+							"is_target": true,
+							"max": -1,
+							"elements": [
+								{ "name": "e1", "index":  1 },
+								{ "name": "e2", "index":  2 }
+							]
+						}
+					]
+				}`,
+		},
+		{
+			name:  "seg min not satisfied before next seg appearance; failure",
+			input: "IEA*0\n",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{
+							"name": "ISA",
+							"is_target": true,
+							"elements": [
+								{ "name": "e1", "index":  1 }
+							]
+						},
+						{
+							"name": "IEA",
+							"elements": [
+								{ "name": "e1", "index":  1 }
+							]
+						}
+					]
+				}`,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			var decl fileDecl
+			err := json.Unmarshal([]byte(test.declJSON), &decl)
+			assert.NoError(t, err)
+			reader := NewReader("test", strings.NewReader(test.input), &decl)
+			var records []string
+			var finalErr error
+			for {
+				n, err := reader.Read()
+				if err != nil {
+					finalErr = err
+					break
+				}
+				records = append(records, strings.ReplaceAll(idr.JSONify2(n), `"`, `'`))
+			}
+			cupaloy.SnapshotT(t, jsons.BPM(
+				struct {
+					Records  []string
+					FinalErr string
+				}{
+					Records: records,
+					FinalErr: func() string {
+						if finalErr == nil {
+							return ""
+						}
+						return finalErr.Error()
+					}(),
+				}))
 		})
 	}
 }

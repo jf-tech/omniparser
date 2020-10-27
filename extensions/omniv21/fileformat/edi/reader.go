@@ -234,7 +234,7 @@ func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 		}
 	}
 	if len(r.unprocessedRawSeg.elems) == 0 || len(r.unprocessedRawSeg.elems[0].data) == 0 {
-		return rawSeg{}, ErrInvalidEDI(r.fmtErrStr("segment is malformed, missing segment name"))
+		return rawSeg{}, ErrInvalidEDI(r.fmtErrStr("missing segment name"))
 	}
 	r.unprocessedRawSeg.name = string(r.unprocessedRawSeg.elems[0].data)
 	r.unprocessedRawSeg.valid = true
@@ -244,11 +244,6 @@ func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 	if !r.unprocessedRawSeg.valid {
 		panic("unprocessedRawSeg is not valid")
-	}
-	if segDecl.FixedLengthInBytes != nil && len(r.unprocessedRawSeg.raw) != *segDecl.FixedLengthInBytes {
-		return nil, ErrInvalidEDI(
-			r.fmtErrStr("segment '%s' expected length %d byte(s), but got: %d byte(s)",
-				segDecl.fqdn, *segDecl.FixedLengthInBytes, len(r.unprocessedRawSeg.raw)))
 	}
 	n := idr.CreateNode(idr.ElementNode, segDecl.Name)
 	// Note: we assume segDecl.Elems are sorted by elemIndex/compIndex.
@@ -279,6 +274,127 @@ func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 			r.fmtErrStr("unable to find element '%s' on segment '%s'", elemDecl.Name, segDecl.fqdn))
 	}
 	return n, nil
+}
+
+// segDone wraps up the processing of an instance of current segment (which includes the processing of
+// the instances of its child segments). segDone marks streaming target if necessary. If the number of
+// instance occurrences is over the current segment's max limit, segDone calls segNext to move to the
+// next segment in sequence; If the number of instances is still within max limit, segDone does no more
+// action so the current segment will remain on top of the stack and potentially process more instances
+// of this segment. Note: segDone is potentially recursive: segDone -> segNext -> segDone -> ...
+func (r *ediReader) segDone() {
+	cur := r.stackTop()
+	cur.curChild = 0
+	cur.occurred++
+	if cur.segDecl.IsTarget {
+		if r.target != nil {
+			panic("r.target != nil")
+		}
+		if cur.segNode == nil {
+			panic("cur.segNode == nil")
+		}
+		r.target = cur.segNode
+	}
+	if cur.occurred < cur.segDecl.maxOccurs() {
+		return
+	}
+	// we're here because `cur.occurred >= cur.segDecl.maxOccurs()`
+	// and the only path segNext() can fail is to have
+	// `cur.occurred < cur.segDecl.minOccurs()`, which means
+	// the calling to segNext() from segDone() will never fail,
+	// if our validation makes sure min<=max.
+	_ = r.segNext()
+}
+
+// segNext is called when the top-of-stack (aka current) segment is done its full processing and needs to move
+// to the next segment. If the current segment has a subsequent sibling, that sibling will be the next segment;
+// If not, it indicates the current segment's parent segment is fully done its processing, thus parent's segDone
+// is called. Note: segNext is potentially recursive: segNext -> segDone -> segNext -> ...
+func (r *ediReader) segNext() error {
+	cur := r.stackTop()
+	if cur.occurred < cur.segDecl.minOccurs() {
+		// the current values of [begin, end] cover the current instance of the current seg. But the error
+		// we're about to create is about the missing of next instance of the current seg. So just assign
+		// 'end' to 'begin' to make the error msg less confusing.
+		r.runeBegin = r.runeEnd
+		return ErrInvalidEDI(r.fmtErrStr("segment '%s' needs min occur %d, but only got %d",
+			cur.segDecl.Name, cur.segDecl.minOccurs(), cur.occurred))
+	}
+	if len(r.stack) <= 1 {
+		return nil
+	}
+	cur = r.shrinkStack()
+	if cur.curChild < len(cur.segDecl.Children)-1 {
+		cur.curChild++
+		r.growStack(stackEntry{segDecl: cur.segDecl.Children[cur.curChild]})
+		return nil
+	}
+	r.segDone()
+	return nil
+}
+
+// Read processes EDI input and returns an instance of the streaming target (aka the segment marked with is_target=true)
+// The basic idea is a forever for-loop, inside which it reads out an unprocessed segment data, tries to see
+// if the segment data matches what's the current segment decl we're processing: if matches, great, creates a new
+// instance of the current segment decl with the data; if not, we call segNext to move the next segment decl inline, and
+// continue the for-loop so next iteration, the same unprocessed data will be matched against the new segment decl.
+func (r *ediReader) Read() (*idr.Node, error) {
+	if r.target != nil {
+		// This is just in case Release() isn't called by ingester.
+		idr.RemoveAndReleaseTree(r.target)
+		r.target = nil
+	}
+	for {
+		if r.target != nil {
+			return r.target, nil
+		}
+		rawSeg, err := r.getUnprocessedRawSeg()
+		if err == io.EOF {
+			// When the input is done, we still need to verified all the
+			// remaining segs' min occurs are satisfied. We can do so by
+			// simply keeping on moving to the next seg: we call segNext()
+			// once at a time - in case after the segNext() call, the reader
+			// yields another target node. We can safely do this (1 segNext()
+			// call at a time after we counter EOF) is because getUnprocessedRawSeg()
+			// will repeatedly return EOF.
+			if len(r.stack) <= 1 {
+				return nil, io.EOF
+			}
+			err = r.segNext()
+			if err != nil {
+				return nil, err
+			}
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		cur := r.stackTop()
+		if !cur.segDecl.matchSegName(rawSeg.name) {
+			err := r.segNext()
+			if err != nil {
+				return nil, err
+			}
+			continue
+		}
+		if !cur.segDecl.isGroup() {
+			cur.segNode, err = r.rawSegToNode(cur.segDecl)
+			if err != nil {
+				return nil, err
+			}
+			r.resetRawSeg()
+		} else {
+			cur.segNode = idr.CreateNode(idr.ElementNode, cur.segDecl.Name)
+		}
+		if len(r.stack) > 1 {
+			idr.AddChild(r.stackTop(1).segNode, cur.segNode)
+		}
+		if len(cur.segDecl.Children) > 0 {
+			r.growStack(stackEntry{segDecl: cur.segDecl.Children[0]})
+			continue
+		}
+		r.segDone()
+	}
 }
 
 func (r *ediReader) fmtErrStr(format string, args ...interface{}) string {
@@ -323,6 +439,12 @@ func NewReader(inputName string, r io.Reader, decl *fileDecl) *ediReader {
 			Children: decl.SegDecls,
 			fqdn:     rootSegName,
 		},
+		segNode: idr.CreateNode(idr.DocumentNode, rootSegName),
 	})
+	if len(decl.SegDecls) > 0 {
+		reader.growStack(stackEntry{
+			segDecl: decl.SegDecls[0],
+		})
+	}
 	return reader
 }
