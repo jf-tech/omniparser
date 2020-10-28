@@ -429,7 +429,7 @@ func NewReader(inputName string, r io.Reader, decl *fileDecl, targetXPath string
 	compDelim := newStrPtrByte(decl.CompDelim)
 	releaseChar := newStrPtrByte(decl.ReleaseChar)
 	scanner := ios.NewScannerByDelim3(r, segDelim.b, releaseChar.b, scannerFlags, make([]byte, ReaderBufSize))
-	targetXPathExr, err := func() (*xpath.Expr, error) {
+	targetXPathExpr, err := func() (*xpath.Expr, error) {
 		if targetXPath == "" || targetXPath == "." {
 			return nil, nil
 		}
@@ -446,7 +446,7 @@ func NewReader(inputName string, r io.Reader, decl *fileDecl, targetXPath string
 		compDelim:         compDelim,
 		releaseChar:       releaseChar,
 		stack:             newStack(),
-		targetXPath:       targetXPathExr,
+		targetXPath:       targetXPathExpr,
 		runeBegin:         1,
 		runeEnd:           1,
 		unprocessedRawSeg: newRawSeg(),
