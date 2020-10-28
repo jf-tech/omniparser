@@ -377,7 +377,11 @@ var (
 // BenchmarkGetUnprocessedRawSeg_NoCompNoReleaseChar-8   	   10000	    103945 ns/op	   27080 B/op	     515 allocs/op
 func BenchmarkGetUnprocessedRawSeg_NoCompNoReleaseChar(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		reader := NewReader("test", strings.NewReader(benchInputNoCompNoReleaseChar), benchDeclNoCompNoReleaseChar)
+		reader, err := NewReader(
+			"test", strings.NewReader(benchInputNoCompNoReleaseChar), benchDeclNoCompNoReleaseChar, "")
+		if err != nil {
+			b.FailNow()
+		}
 		for {
 			_, err := reader.getUnprocessedRawSeg()
 			if err == io.EOF {
@@ -511,7 +515,11 @@ var (
 // BenchmarkGetUnprocessedRawSeg_WithCompAndRelease-8    	   14174	     84115 ns/op	  102880 B/op	     385 allocs/op
 func BenchmarkGetUnprocessedRawSeg_WithCompAndRelease(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		reader := NewReader("test", strings.NewReader(benchInputWithCompAndRelease), benchDeclWithCompAndRelease)
+		reader, err := NewReader(
+			"test", strings.NewReader(benchInputWithCompAndRelease), benchDeclWithCompAndRelease, "")
+		if err != nil {
+			b.FailNow()
+		}
 		for {
 			_, err := reader.getUnprocessedRawSeg()
 			if err == io.EOF {
@@ -566,7 +574,11 @@ func BenchmarkRawSegToNode(b *testing.B) {
 // BenchmarkRead_NoCompNoReleaseChar-8                   	    6943	    177692 ns/op	   29620 B/op	     766 allocs/op
 func BenchmarkRead_NoCompNoReleaseChar(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		reader := NewReader("test", strings.NewReader(benchInputNoCompNoReleaseChar), benchDeclNoCompNoReleaseChar)
+		reader, err := NewReader(
+			"test", strings.NewReader(benchInputNoCompNoReleaseChar), benchDeclNoCompNoReleaseChar, "")
+		if err != nil {
+			b.FailNow()
+		}
 		for {
 			_, err := reader.Read()
 			if err == io.EOF {
@@ -582,7 +594,11 @@ func BenchmarkRead_NoCompNoReleaseChar(b *testing.B) {
 // BenchmarkRead_WithCompAndRelease-8                    	    9795	    120079 ns/op	  107591 B/op	     464 allocs/op
 func BenchmarkRead_WithCompAndRelease(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		reader := NewReader("test", strings.NewReader(benchInputWithCompAndRelease), benchDeclWithCompAndRelease)
+		reader, err := NewReader(
+			"test", strings.NewReader(benchInputWithCompAndRelease), benchDeclWithCompAndRelease, "")
+		if err != nil {
+			b.FailNow()
+		}
 		for {
 			_, err := reader.Read()
 			if err == io.EOF {

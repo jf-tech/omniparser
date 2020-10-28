@@ -7,6 +7,8 @@ import (
 	"io"
 	"unicode/utf8"
 
+	"github.com/antchfx/xpath"
+	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/ios"
 	"github.com/jf-tech/go-corelib/strs"
 
@@ -96,6 +98,7 @@ type ediReader struct {
 	releaseChar        strPtrByte
 	stack              []stackEntry
 	target             *idr.Node
+	targetXPath        *xpath.Expr
 	runeBegin, runeEnd int
 	unprocessedRawSeg  rawSeg
 }
@@ -258,14 +261,14 @@ func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 			}
 		}
 		if rawElemIndex < len(rawElems) || elemDecl.EmptyIfMissing {
+			elemN := idr.CreateNode(idr.ElementNode, elemDecl.Name)
+			idr.AddChild(n, elemN)
 			data := ""
 			if rawElemIndex < len(rawElems) {
 				data = string(strs.ByteUnescape(rawElems[rawElemIndex].data, r.releaseChar.b, true))
 				rawElems[rawElemIndex].dateUnescaped = true
 				rawElemIndex++
 			}
-			elemN := idr.CreateNode(idr.ElementNode, elemDecl.Name)
-			idr.AddChild(n, elemN)
 			elemV := idr.CreateNode(idr.TextNode, data)
 			idr.AddChild(elemN, elemV)
 			continue
@@ -293,7 +296,12 @@ func (r *ediReader) segDone() {
 		if cur.segNode == nil {
 			panic("cur.segNode == nil")
 		}
-		r.target = cur.segNode
+		if r.targetXPath == nil || idr.MatchAny(cur.segNode, r.targetXPath) {
+			r.target = cur.segNode
+		} else {
+			idr.RemoveAndReleaseTree(cur.segNode)
+			cur.segNode = nil
+		}
 	}
 	if cur.occurred < cur.segDecl.maxOccurs() {
 		return
@@ -415,19 +423,30 @@ var (
 )
 
 // NewReader creates an FormatReader for EDI file format.
-func NewReader(inputName string, r io.Reader, decl *fileDecl) *ediReader {
+func NewReader(inputName string, r io.Reader, decl *fileDecl, targetXPath string) (*ediReader, error) {
 	segDelim := newStrPtrByte(&decl.SegDelim)
 	elemDelim := newStrPtrByte(&decl.ElemDelim)
 	compDelim := newStrPtrByte(decl.CompDelim)
 	releaseChar := newStrPtrByte(decl.ReleaseChar)
+	scanner := ios.NewScannerByDelim3(r, segDelim.b, releaseChar.b, scannerFlags, make([]byte, ReaderBufSize))
+	targetXPathExpr, err := func() (*xpath.Expr, error) {
+		if targetXPath == "" || targetXPath == "." {
+			return nil, nil
+		}
+		return caches.GetXPathExpr(targetXPath)
+	}()
+	if err != nil {
+		return nil, fmt.Errorf("invalid target xpath '%s', err: %s", targetXPath, err.Error())
+	}
 	reader := &ediReader{
 		inputName:         inputName,
-		scanner:           ios.NewScannerByDelim3(r, segDelim.b, releaseChar.b, scannerFlags, make([]byte, ReaderBufSize)),
+		scanner:           scanner,
 		segDelim:          segDelim,
 		elemDelim:         elemDelim,
 		compDelim:         compDelim,
 		releaseChar:       releaseChar,
 		stack:             newStack(),
+		targetXPath:       targetXPathExpr,
 		runeBegin:         1,
 		runeEnd:           1,
 		unprocessedRawSeg: newRawSeg(),
@@ -446,5 +465,5 @@ func NewReader(inputName string, r io.Reader, decl *fileDecl) *ediReader {
 			segDecl: decl.SegDecls[0],
 		})
 	}
-	return reader
+	return reader, nil
 }
