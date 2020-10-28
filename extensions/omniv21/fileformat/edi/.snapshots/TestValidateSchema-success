@@ -1,0 +1,23 @@
+{
+	"file_declaration": {
+		"segment_delimiter": "\n",
+		"element_delimiter": "*",
+		"segment_declarations": [
+			{
+				"name": "ISA",
+				"is_target": true,
+				"elements": [
+					{
+						"name": "e1",
+						"index": 1
+					},
+					{
+						"name": "e2",
+						"index": 2
+					}
+				]
+			}
+		]
+	},
+	"XPath": "."
+}

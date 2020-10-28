@@ -630,9 +630,9 @@ func TestRead(t *testing.T) {
 							"is_target": true,
 							"max": -1,
 							"elements": [
-								{ "name": "e1", "index":  1 },
-								{ "name": "e2", "index":  2, "empty_if_missing": true },
-								{ "name": "e3", "index":  3, "empty_if_missing": true }
+								{ "name": "e1", "index": 1 },
+								{ "name": "e2", "index": 2, "empty_if_missing": true },
+								{ "name": "e3", "index": 3, "empty_if_missing": true }
 							]
 						}
 					]
@@ -653,15 +653,15 @@ func TestRead(t *testing.T) {
 							"is_target": true,
 							"max": -1,
 							"elements": [
-								{ "name": "e1", "index":  1 },
-								{ "name": "e2", "index":  2, "empty_if_missing": true },
-								{ "name": "e3", "index":  3, "empty_if_missing": true }
+								{ "name": "e1", "index": 1 },
+								{ "name": "e2", "index": 2, "empty_if_missing": true },
+								{ "name": "e3", "index": 3, "empty_if_missing": true }
 							]
 						},
 						{
 							"name": "IEA",
 							"elements": [
-								{ "name": "e1", "index":  1 }
+								{ "name": "e1", "index": 1 }
 							]
 						}
 					]
@@ -686,9 +686,9 @@ func TestRead(t *testing.T) {
 									"name": "ISA",
 									"is_target": true,
 									"elements": [
-										{ "name": "e1", "index":  1 },
-										{ "name": "e2", "index":  2, "empty_if_missing": true },
-										{ "name": "e3", "index":  3, "empty_if_missing": true }
+										{ "name": "e1", "index": 1 },
+										{ "name": "e2", "index": 2, "empty_if_missing": true },
+										{ "name": "e3", "index": 3, "empty_if_missing": true }
 									]
 								}
 							]
@@ -700,7 +700,7 @@ func TestRead(t *testing.T) {
 								{
 									"name": "IEA",
 									"elements": [
-										{ "name": "e1", "index":  1 }
+										{ "name": "e1", "index": 1 }
 									]
 								}
 							]
@@ -723,15 +723,15 @@ func TestRead(t *testing.T) {
 							"is_target": true,
 							"max": -1,
 							"elements": [
-								{ "name": "e1", "index":  1 },
-								{ "name": "e2", "index":  2, "empty_if_missing": true },
-								{ "name": "e3", "index":  3, "empty_if_missing": true }
+								{ "name": "e1", "index": 1 },
+								{ "name": "e2", "index": 2, "empty_if_missing": true },
+								{ "name": "e3", "index": 3, "empty_if_missing": true }
 							]
 						},
 						{
 							"name": "IEA",
 							"elements": [
-								{ "name": "e1", "index":  1 }
+								{ "name": "e1", "index": 1 }
 							]
 						}
 					]
@@ -752,8 +752,8 @@ func TestRead(t *testing.T) {
 							"is_target": true,
 							"max": -1,
 							"elements": [
-								{ "name": "e1", "index":  1 },
-								{ "name": "e2", "index":  2 }
+								{ "name": "e1", "index": 1 },
+								{ "name": "e2", "index": 2 }
 							]
 						}
 					]
@@ -774,8 +774,8 @@ func TestRead(t *testing.T) {
 							"is_target": true,
 							"max": -1,
 							"elements": [
-								{ "name": "e1", "index":  1 },
-								{ "name": "e2", "index":  2 }
+								{ "name": "e1", "index": 1 },
+								{ "name": "e2", "index": 2 }
 							]
 						}
 					]
@@ -795,13 +795,13 @@ func TestRead(t *testing.T) {
 							"name": "ISA",
 							"is_target": true,
 							"elements": [
-								{ "name": "e1", "index":  1 }
+								{ "name": "e1", "index": 1 }
 							]
 						},
 						{
 							"name": "IEA",
 							"elements": [
-								{ "name": "e1", "index":  1 }
+								{ "name": "e1", "index": 1 }
 							]
 						}
 					]
@@ -847,4 +847,38 @@ func TestRead(t *testing.T) {
 				}))
 		})
 	}
+}
+
+func TestRelease(t *testing.T) {
+	var decl fileDecl
+	err := json.Unmarshal([]byte(`
+		{
+			"segment_delimiter": "\n",
+			"element_delimiter": "*",
+			"segment_declarations": [
+				{
+					"name": "ISA",
+					"is_target": true,
+					"max": -1,
+					"elements": [
+						{ "name": "e1", "index": 1 }
+					]
+				}
+			]
+		}`), &decl)
+	assert.NoError(t, err)
+	reader, err := NewReader("test", strings.NewReader("ISA*0*1*2\n"), &decl, "")
+	assert.NoError(t, err)
+	n, err := reader.Read()
+	assert.NoError(t, err)
+	assert.True(t, n == reader.target)
+	reader.Release(n)
+	assert.Nil(t, reader.target)
+}
+
+func TestIsContinuableError(t *testing.T) {
+	r := &ediReader{}
+	assert.True(t, r.IsContinuableError(r.FmtErr("some error")))
+	assert.False(t, r.IsContinuableError(ErrInvalidEDI("invalid EDI")))
+	assert.False(t, r.IsContinuableError(io.EOF))
 }
