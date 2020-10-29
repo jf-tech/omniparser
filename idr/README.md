@@ -189,3 +189,66 @@ Node(Type: DocumentNode)
 ```
 Note some of the `ElementNode.Data` values are from its [schema](../extensions/omniv21/samples/csv/1_weather_data_csv.schema.json)
 to avoid column name containing space, which isn't xpath query friendly.
+
+## EDI
+
+Here is snippet from a [sample EDI](../extensions/omniv21/samples/edi/1_canadapost_edi_214.input.txt):
+
+```
+ISA*00*          *00*          *02*CPC            *ZZ*00602679321    *191103*1800*U*00401*000001644*0*P*>
+GS*QM*CPC*00602679321*20191103*1800*000001644*X*004010
+<omitted>
+N4*HAMMER*AB*T0C1Z0*CA
+<omitted>
+```
+
+Note EDI content, while itself is "flat", is inherently hierarchical (like XML) and its hierarchical structure
+needs to be described in an accompanying schema. For this example, here is a snippet of the 
+[related schema](../extensions/omniv21/samples/edi/1_canadapost_edi_214.schema.json):
+
+```
+"segment_declarations": [
+    {
+        "name": "ISA",
+        "child_segments": [
+            {
+                "name": "GS",
+                "child_segments": [
+                    {
+                        "name": "scanInfo", "type": "segment_group", "min": 0, "max": -1, "is_target": true,
+                        "child_segments": [
+                            <omitted>
+                            {
+                                "name": "N4",
+                                "elements": [
+                                    { "name": "cityName", "index": 1 },
+                                    { "name": "provinceCode", "index": 2 },
+                                    { "name": "postalCode", "index": 3 },
+                                    { "name": "countryCode", "index": 4 }
+                                ]
+                            },
+                            <omitted>
+```
+
+The omniparser builtin EDI reader constructs the following IDR node(s) for each segment of data:
+
+```
+Node(Type: ElementNode, Data: "ISA")
+```
+
+This `"ISA"` IDR element node contains no children.
+
+```
+Node(Type: ElementNode, Data: "N4")
+    Node(Type: ElementNode, Data: "cityName")
+        Node(Type: TextNode, Data: "HAMMER")
+    Node(Type: ElementNode, Data: "provinceCode")
+        Node(Type: TextNode, Data: "AB")
+    Node(Type: ElementNode, Data: "postalCode")
+        Node(Type: TextNode, Data: "T0C1Z0")
+    Node(Type: ElementNode, Data: "countryCode")
+        Node(Type: TextNode, Data: "CA")
+```
+
+This `"N4"` IDR element node contains multiple child element nodes for each of the element appearances
+in the EDI content.

@@ -17,6 +17,7 @@ Take a detailed look at samples here:
 - [csv examples](extensions/omniv21/samples/csv)
 - [json examples](extensions/omniv21/samples/json)
 - [xml examples](extensions/omniv21/samples/xml).
+- [edi examples](extensions/omniv21/samples/edi).
 
 ## Simple Example (JSON -> JSON Transform)
 - Input:
@@ -114,11 +115,8 @@ Take a detailed look at samples here:
 ## Requirements
 - Golang 1.14
 
-    This is only needed for `javascript` engine integration. Please raise an issue if you think 1.14 is too high, and
-    you don't need `javascript` custom_func. Then we may consider moving `javascript` custom_func into a separate
-    extension repo/package; the rest of the library is just golang 1.12.
-
 ## Recent Feature Additions
+- Added EDI file format support in omniv2 handler.
 - Major restructure/refactoring
     - Upgrade omni schema version to `omni.2.1` due a number of incompatible schema changes:
         - `'result_type'` -> `'type'`

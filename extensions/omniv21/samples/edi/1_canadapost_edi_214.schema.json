@@ -1,0 +1,115 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "edi"
+    },
+    "file_declaration": {
+        "element_delimiter": "*",
+        "segment_delimiter": "\n",
+        "segment_declarations": [
+            {
+                "name": "ISA",
+                "child_segments": [
+                    {
+                        "name": "GS",
+                        "child_segments": [
+                            {
+                                "name": "scanInfo", "type": "segment_group", "min": 0, "max": -1, "is_target": true,
+                                "child_segments": [
+                                    { "name": "ST" },
+                                    { "name": "B10", "elements": [ { "name": "shipmentIdentificationNumber", "index": 2 } ] },
+                                    { "name": "L11" },
+                                    { "name": "L11" },
+                                    { "name": "N1" },
+                                    { "name": "N1" },
+                                    { "name": "N3" },
+                                    {
+                                        "name": "N4",
+                                        "elements": [
+                                            { "name": "cityName", "index": 1 },
+                                            { "name": "provinceCode", "index": 2 },
+                                            { "name": "postalCode", "index": 3 },
+                                            { "name": "countryCode", "index": 4 }
+                                        ]
+                                    },
+                                    { "name": "LX" },
+                                    {
+                                        "name": "AT7",
+                                        "elements": [
+                                            { "name": "shipmentStatusCode", "index": 1 },
+                                            { "name": "shipmentStatusReasonCode", "index": 2 },
+                                            { "name": "date", "index": 5 },
+                                            { "name": "time", "index": 6 },
+                                            { "name": "timeCode", "index": 7 }
+                                        ]
+                                    },
+                                    {
+                                        "name": "MS1",
+                                        "elements": [
+                                            { "name": "cityName", "index": 1 },
+                                            { "name": "provinceCode", "index": 2 },
+                                            { "name": "countryCode", "index": 3 }
+                                        ]
+                                    },
+                                    { "name": "L11", "min": 0 },
+                                    { "name": "AT8" },
+                                    { "name": "SE" }
+                                ]
+                            }
+                        ]
+                    },
+                    { "name": "GE" }
+                ]
+            },
+            { "name": "IEA" }
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "object": {
+            "tracking_entity": { "object": {
+                "tracking_number": { "xpath": "B10/shipmentIdentificationNumber" },
+                "tracking_document": { "object": {
+                    "tracking_number": { "xpath": "B10/shipmentIdentificationNumber" },
+                    "weight_uom": { "const": "K" },
+                    "dest": { "object": {
+                        "city": { "xpath": "N4/cityName" },
+                        "state": { "xpath": "N4/provinceCode" },
+                        "country": { "xpath": "N4/countryCode" },
+                        "zip": { "xpath": "N4/postalCode" }
+                    }},
+                    "events": { "array": [ { "object": {
+                        "date": { "template": "event_date_template" },
+                        "date_raw": { "template": "event_date_template" },
+                        "event_country_code": { "xpath": "MS1/countryCode" },
+                        "location": { "object": {
+                            "city": { "xpath": "MS1/cityName" },
+                            "state": { "xpath": "MS1/provinceCode" },
+                            "country": { "xpath": "MS1/countryCode" }
+                        }}
+                    }}]}
+                }}
+            }}
+        }},
+        "event_date_template": { "custom_func": {
+            "name": "dateTimeToRFC3339",
+            "args": [
+                { "custom_func": {
+                    "name": "concat",
+                    "args": [
+                        { "xpath": "AT7/date" },
+                        { "xpath": "AT7/time" }
+                    ]
+                }},
+                { "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const": "caTZ=='PT'?'America/Vancouver':caTZ=='MT'?'America/Edmonton':caTZ=='CT'?'America/Winnipeg':caTZ=='ET'?'America/Toronto':caTZ=='AT'?'America/Halifax':caTZ=='NT'?'America/St_Johns':caTZ=='PS'?'Etc/GMT+8':caTZ=='PST'?'Etc/GMT+8':caTZ=='MS'?'Etc/GMT+7':caTZ=='MST'?'Etc/GMT+7':caTZ=='CS'?'Etc/GMT+6':caTZ=='CST'?'Etc/GMT+6':caTZ=='ES'?'Etc/GMT+5':caTZ=='EST'?'Etc/GMT+5':caTZ=='AS'?'Etc/GMT+4':caTZ=='AST'?'Etc/GMT+4':''" },
+                        { "const": "caTZ" }, { "xpath": "AT7/timeCode" }
+                    ]},
+                  "_comment": "from tz"
+                },
+                { "const": "", "_comment": "to tz" }
+            ]
+        }}
+    }
+}
