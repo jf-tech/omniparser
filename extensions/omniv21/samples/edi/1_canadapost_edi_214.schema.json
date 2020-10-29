@@ -106,7 +106,7 @@
                         { "const": "caTZ=='PT'?'America/Vancouver':caTZ=='MT'?'America/Edmonton':caTZ=='CT'?'America/Winnipeg':caTZ=='ET'?'America/Toronto':caTZ=='AT'?'America/Halifax':caTZ=='NT'?'America/St_Johns':caTZ=='PS'?'Etc/GMT+8':caTZ=='PST'?'Etc/GMT+8':caTZ=='MS'?'Etc/GMT+7':caTZ=='MST'?'Etc/GMT+7':caTZ=='CS'?'Etc/GMT+6':caTZ=='CST'?'Etc/GMT+6':caTZ=='ES'?'Etc/GMT+5':caTZ=='EST'?'Etc/GMT+5':caTZ=='AS'?'Etc/GMT+4':caTZ=='AST'?'Etc/GMT+4':''" },
                         { "const": "caTZ" }, { "xpath": "AT7/timeCode" }
                     ]},
-                  "_comment": "from tz"
+                  "_comment": "from tz; some of canadapost tz codes are non-IANA-standard shortcuts, we need to translate them into standard IANA tz"
                 },
                 { "const": "", "_comment": "to tz" }
             ]
