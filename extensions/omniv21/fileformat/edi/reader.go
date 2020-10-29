@@ -3,6 +3,7 @@ package edi
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"unicode/utf8"
@@ -250,7 +251,6 @@ func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 	}
 	n := idr.CreateNode(idr.ElementNode, segDecl.Name)
 	// Note: we assume segDecl.Elems are sorted by elemIndex/compIndex.
-	// TODO: do the sorting validation.
 	rawElemIndex := 0
 	rawElems := r.unprocessedRawSeg.elems
 	for _, elemDecl := range segDecl.Elems {
@@ -403,6 +403,21 @@ func (r *ediReader) Read() (*idr.Node, error) {
 		}
 		r.segDone()
 	}
+}
+
+func (r *ediReader) Release(n *idr.Node) {
+	if r.target == n {
+		r.target = nil
+	}
+	idr.RemoveAndReleaseTree(n)
+}
+
+func (r *ediReader) IsContinuableError(err error) bool {
+	return !IsErrInvalidEDI(err) && err != io.EOF
+}
+
+func (r *ediReader) FmtErr(format string, args ...interface{}) error {
+	return errors.New(r.fmtErrStr(format, args...))
 }
 
 func (r *ediReader) fmtErrStr(format string, args ...interface{}) string {
