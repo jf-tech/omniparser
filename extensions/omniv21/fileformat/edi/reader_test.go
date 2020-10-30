@@ -460,7 +460,7 @@ func TestSegDoneSegNext(t *testing.T) {
 		err         string
 	}{
 		{
-			name: "root->A->B; B segDone; moves to C; no target",
+			name: "root-A-B, B segDone, moves to C, no target",
 			stack: []stackEntry{
 				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
 				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 0, 0},
@@ -472,7 +472,7 @@ func TestSegDoneSegNext(t *testing.T) {
 			err:         "",
 		},
 		{
-			name: "root->A->C; C segDone; stay; no target",
+			name: "root-A-C, C segDone, stay, no target",
 			stack: []stackEntry{
 				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
 				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 1, 0},
@@ -484,7 +484,7 @@ func TestSegDoneSegNext(t *testing.T) {
 			err:         "",
 		},
 		{
-			name: "root->A->C; C segDone; C over max; A becomes target",
+			name: "root-A-C, C segDone, C over max, A becomes target",
 			stack: []stackEntry{
 				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
 				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 1, 0},
@@ -496,7 +496,7 @@ func TestSegDoneSegNext(t *testing.T) {
 			err:         "",
 		},
 		{
-			name: "root->D; D segDone",
+			name: "root-D, D segDone",
 			stack: []stackEntry{
 				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 1, 0},
 				{segDeclD, idr.CreateNode(idr.ElementNode, "D"), 0, 0},
@@ -507,7 +507,7 @@ func TestSegDoneSegNext(t *testing.T) {
 			err:         "",
 		},
 		{
-			name: "root->A->C; C.occurred = 1; C segNext",
+			name: "root-A-C, C.occurred = 1, C segNext",
 			stack: []stackEntry{
 				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
 				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 1, 0},
@@ -519,7 +519,7 @@ func TestSegDoneSegNext(t *testing.T) {
 			err:         `input 'test' between character [20,20]: segment 'C' needs min occur 1, but only got 0`,
 		},
 		{
-			name: "root->A->C; C segDone; C over max; A becomes target; but r.target not nil",
+			name: "root-A-C, C segDone, C over max, A becomes target, but r.target not nil",
 			stack: []stackEntry{
 				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
 				{segDeclA, idr.CreateNode(idr.ElementNode, "A"), 1, 0},
@@ -531,7 +531,7 @@ func TestSegDoneSegNext(t *testing.T) {
 			err:         "",
 		},
 		{
-			name: "root->A->C; C segDone; C over max; A becomes target; but A.segNode is nil",
+			name: "root-A-C, C segDone, C over max, A becomes target, but A.segNode is nil",
 			stack: []stackEntry{
 				{segDeclRoot, idr.CreateNode(idr.DocumentNode, rootSegName), 0, 0},
 				{segDeclA, nil, 1, 0},
@@ -590,7 +590,7 @@ func TestRead(t *testing.T) {
 		err      string
 	}{
 		{
-			name:  "invalid target xpath; failure",
+			name:  "invalid target xpath, failure",
 			input: "",
 			declJSON: `
 				{
@@ -604,7 +604,7 @@ func TestRead(t *testing.T) {
 			err:   `invalid target xpath '[', err: expression must evaluate to a node-set`,
 		},
 		{
-			name:  "empty input; success",
+			name:  "empty input, success",
 			input: "",
 			declJSON: `
 				{
@@ -618,7 +618,7 @@ func TestRead(t *testing.T) {
 			err:   "",
 		},
 		{
-			name:  "single seg decl; multiple seg instances; success",
+			name:  "single seg decl, multiple seg instances, success",
 			input: "ISA*0*1*2\nISA*3\n",
 			declJSON: `
 				{
@@ -641,7 +641,7 @@ func TestRead(t *testing.T) {
 			err:   "",
 		},
 		{
-			name:  "2 seg decls; success",
+			name:  "2 seg decls, success",
 			input: "ISA*0*1*2\nISA*3*4*5\nIEA*6\n",
 			declJSON: `
 				{
@@ -670,7 +670,7 @@ func TestRead(t *testing.T) {
 			err:   "",
 		},
 		{
-			name:  "2 seg groups; filtered target; success",
+			name:  "2 seg groups, filtered target, success",
 			input: "ISA*0*1*2\nISA*3*4*5\nISA*6*7*8\nIEA*6\n",
 			declJSON: `
 				{
@@ -711,7 +711,7 @@ func TestRead(t *testing.T) {
 			err:   "",
 		},
 		{
-			name:  "seg min not satisfied before EOF; failure",
+			name:  "seg min not satisfied before EOF, failure",
 			input: "ISA*0*1*2\n",
 			declJSON: `
 				{
@@ -740,7 +740,7 @@ func TestRead(t *testing.T) {
 			err:   "",
 		},
 		{
-			name:  "missing raw seg name; failure",
+			name:  "missing raw seg name, failure",
 			input: "*0*1\n",
 			declJSON: `
 				{
@@ -762,7 +762,7 @@ func TestRead(t *testing.T) {
 			err:   "",
 		},
 		{
-			name:  "raw seg processing wrong; failure",
+			name:  "raw seg processing wrong, failure",
 			input: "ISA*0\n",
 			declJSON: `
 				{
@@ -784,7 +784,7 @@ func TestRead(t *testing.T) {
 			err:   "",
 		},
 		{
-			name:  "seg min not satisfied before next seg appearance; failure",
+			name:  "seg min not satisfied before next seg appearance, failure",
 			input: "IEA*0\n",
 			declJSON: `
 				{
