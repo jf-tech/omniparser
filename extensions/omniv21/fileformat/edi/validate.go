@@ -3,7 +3,6 @@ package edi
 import (
 	"errors"
 	"fmt"
-	"sort"
 
 	"github.com/jf-tech/go-corelib/strs"
 )
@@ -36,7 +35,6 @@ func (ctx *ediValidateCtx) validateSegDecl(segFQDN string, segDecl *segDecl) err
 		}
 		ctx.seenTarget = true
 	}
-	ctx.sortElems(segFQDN, segDecl.Elems)
 	if segDecl.isGroup() && len(segDecl.Children) <= 0 {
 		return fmt.Errorf("segment_group '%s' must have at least one child segment/segment_group", segFQDN)
 	}
@@ -47,13 +45,4 @@ func (ctx *ediValidateCtx) validateSegDecl(segFQDN string, segDecl *segDecl) err
 		}
 	}
 	return nil
-}
-
-func (ctx *ediValidateCtx) sortElems(segFQDN string, elems []elem) {
-	// For now there is no validation for []elem. The only validation time processing we need to
-	// do is to ensure Index/CompIndex are sorted.
-	sort.SliceStable(elems, func(i, j int) bool {
-		return elems[i].Index < elems[j].Index ||
-			(elems[i].Index == elems[j].Index && elems[i].compIndex() < elems[j].compIndex())
-	})
 }

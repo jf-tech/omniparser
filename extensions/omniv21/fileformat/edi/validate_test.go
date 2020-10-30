@@ -8,23 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func collectSegDeclsFQDNs(segDecls []*segDecl) map[string]interface{} {
-	if len(segDecls) == 0 {
-		return nil
-	}
-	m := map[string]interface{}{}
-	for _, seg := range segDecls {
-		m[seg.Name] = struct {
-			FQDN     string
-			Children map[string]interface{}
-		}{
-			FQDN:     seg.fqdn,
-			Children: collectSegDeclsFQDNs(seg.Children),
-		}
-	}
-	return m
-}
-
 func TestValidateFileDecl_Empty(t *testing.T) {
 	err := (&ediValidateCtx{}).validateFileDecl(&fileDecl{})
 	assert.Error(t, err)
@@ -78,5 +61,5 @@ func TestValidateFileDecl_Success(t *testing.T) {
 	assert.Equal(t, "A", fd.SegDecls[0].fqdn)
 	assert.Nil(t, fd.SegDecls[0].Elems)
 	assert.Equal(t, "A/B", fd.SegDecls[0].Children[0].fqdn)
-	assert.Equal(t, []elem{elem1, elem2, elem3}, fd.SegDecls[0].Children[0].Elems)
+	assert.Equal(t, []elem{elem3, elem1, elem2}, fd.SegDecls[0].Children[0].Elems)
 }

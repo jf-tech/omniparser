@@ -250,10 +250,9 @@ func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 		panic("unprocessedRawSeg is not valid")
 	}
 	n := idr.CreateNode(idr.ElementNode, segDecl.Name)
-	// Note: we assume segDecl.Elems are sorted by elemIndex/compIndex.
-	rawElemIndex := 0
 	rawElems := r.unprocessedRawSeg.elems
 	for _, elemDecl := range segDecl.Elems {
+		rawElemIndex := 0
 		for ; rawElemIndex < len(rawElems); rawElemIndex++ {
 			if rawElems[rawElemIndex].elemIndex == elemDecl.Index &&
 				rawElems[rawElemIndex].compIndex == elemDecl.compIndex() {
