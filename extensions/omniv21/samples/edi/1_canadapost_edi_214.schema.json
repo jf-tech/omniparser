@@ -52,7 +52,13 @@
                                         ]
                                     },
                                     { "name": "L11", "min": 0 },
-                                    { "name": "AT8" },
+                                    {
+                                        "name": "AT8",
+                                        "elements": [
+                                            { "name": "weightUOM", "index": 2 },
+                                            { "name": "weight", "index": 3 }
+                                        ]
+                                    },
                                     { "name": "SE" }
                                 ]
                             }
@@ -66,29 +72,30 @@
     },
     "transform_declarations": {
         "FINAL_OUTPUT": { "object": {
-            "tracking_entity": { "object": {
-                "tracking_number": { "xpath": "B10/shipmentIdentificationNumber" },
-                "tracking_document": { "object": {
-                    "tracking_number": { "xpath": "B10/shipmentIdentificationNumber" },
-                    "weight_uom": { "const": "K" },
-                    "dest": { "object": {
-                        "city": { "xpath": "N4/cityName" },
-                        "state": { "xpath": "N4/provinceCode" },
-                        "country": { "xpath": "N4/countryCode" },
-                        "zip": { "xpath": "N4/postalCode" }
-                    }},
-                    "events": { "array": [ { "object": {
-                        "date": { "template": "event_date_template" },
-                        "date_raw": { "template": "event_date_template" },
-                        "event_country_code": { "xpath": "MS1/countryCode" },
-                        "location": { "object": {
-                            "city": { "xpath": "MS1/cityName" },
-                            "state": { "xpath": "MS1/provinceCode" },
-                            "country": { "xpath": "MS1/countryCode" }
-                        }}
-                    }}]}
+            "tracking_number": { "xpath": "B10/shipmentIdentificationNumber" },
+            "weight": { "xpath": "AT8/weight", "type": "float" },
+            "weight_uom": { "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const": "uom=='K'?'KG':'LBS'" },
+                    { "const": "uom" }, { "xpath": "AT8/weightUOM" }
+                ]
+            }},
+            "dest": { "object": {
+                "city": { "xpath": "N4/cityName" },
+                "state": { "xpath": "N4/provinceCode" },
+                "country": { "xpath": "N4/countryCode" },
+                "zip": { "xpath": "N4/postalCode" }
+            }},
+            "events": { "array": [ { "object": {
+                "date": { "template": "event_date_template" },
+                "date_raw": { "template": "event_date_template" },
+                "location": { "object": {
+                    "city": { "xpath": "MS1/cityName" },
+                    "state": { "xpath": "MS1/provinceCode" },
+                    "country": { "xpath": "MS1/countryCode" }
                 }}
-            }}
+            }}]}
         }},
         "event_date_template": { "custom_func": {
             "name": "dateTimeToRFC3339",
