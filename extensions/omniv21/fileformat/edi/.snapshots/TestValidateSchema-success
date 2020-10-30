@@ -8,12 +8,12 @@
 				"is_target": true,
 				"elements": [
 					{
-						"name": "e1",
-						"index": 1
-					},
-					{
 						"name": "e2",
 						"index": 2
+					},
+					{
+						"name": "e1",
+						"index": 1
 					}
 				]
 			}
