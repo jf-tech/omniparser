@@ -1,4 +1,4 @@
-package csv
+package edi
 
 import (
 	"bytes"
@@ -13,13 +13,13 @@ import (
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
-func Test1_Weather_Data_CSV(t *testing.T) {
+func Test1_CanadaPost_EDI_214(t *testing.T) {
 	cupaloy.SnapshotT(t, jsons.BPJ(samples.SampleTestCommon(
-		t, "./1_weather_data_csv.schema.json", "./1_weather_data_csv.input.csv")))
+		t, "./1_canadapost_edi_214.schema.json", "./1_canadapost_edi_214.input.txt")))
 }
 
-var benchSchemaFile = "./1_weather_data_csv.schema.json"
-var benchInputFile = "./1_weather_data_csv.input.csv"
+var benchSchemaFile = "./1_canadapost_edi_214.schema.json"
+var benchInputFile = "./1_canadapost_edi_214.input.txt"
 var benchSchema omniparser.Schema
 var benchInput []byte
 
@@ -38,10 +38,7 @@ func init() {
 	}
 }
 
-// go test -bench=. -benchmem -benchtime=30s
-// Benchmark1_Weather_Data_CSV-8   	  167850	    216683 ns/op	   75836 B/op	    1267 allocs/op
-
-func Benchmark1_Weather_Data_CSV(b *testing.B) {
+func Benchmark1_CanadaPost_EDI_214(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		transform, err := benchSchema.NewTransform(
 			"bench", bytes.NewReader(benchInput), &transformctx.Ctx{})

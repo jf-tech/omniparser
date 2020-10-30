@@ -7,6 +7,7 @@ import (
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat"
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat/csv"
+	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat/edi"
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat/json"
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat/xml"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
@@ -85,6 +86,7 @@ func fileFormats(ctx *schemahandler.CreateCtx) []fileformat.FileFormat {
 		csv.NewCSVFileFormat(ctx.Name),
 		json.NewJSONFileFormat(ctx.Name),
 		xml.NewXMLFileFormat(ctx.Name),
+		edi.NewEDIFileFormat(ctx.Name),
 		// TODO more built-in file formats to come.
 	}
 	if ctx.CreateParams == nil {
