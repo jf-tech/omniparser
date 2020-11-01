@@ -1,6 +1,7 @@
 package samples
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -30,11 +31,13 @@ func SampleTestCommon(t *testing.T, schemaFile, inputFile string) string {
 	assert.NoError(t, err)
 
 	var records []string
-	for transform.Next() {
+	for {
 		recordBytes, err := transform.Read()
+		if err == io.EOF {
+			break
+		}
 		assert.NoError(t, err)
 		records = append(records, string(recordBytes))
 	}
-
 	return "[" + strings.Join(records, ",") + "]"
 }

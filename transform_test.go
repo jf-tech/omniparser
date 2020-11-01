@@ -53,31 +53,26 @@ func TestTransform_EndWithEOF(t *testing.T) {
 			continuableErrs: map[error]bool{continuableErr1: true},
 		},
 	}
-	assert.True(t, tfm.Next())
 	record, err := tfm.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, "1st good read", string(record))
 
-	assert.True(t, tfm.Next())
 	record, err = tfm.Read()
 	assert.Error(t, err)
 	assert.True(t, errs.IsErrTransformFailed(err))
 	assert.Equal(t, continuableErr1.Error(), err.Error())
 	assert.Nil(t, record)
 
-	assert.True(t, tfm.Next())
 	record, err = tfm.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, "2nd good read", string(record))
 
-	assert.False(t, tfm.Next())
 	record, err = tfm.Read()
 	assert.Error(t, err)
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, record)
 
 	// Verifying when EOF is reached, repeatedly calling Next will still get you EOF.
-	assert.False(t, tfm.Next())
 	record, err = tfm.Read()
 	assert.Error(t, err)
 	assert.Equal(t, io.EOF, err)
@@ -93,12 +88,10 @@ func TestTransform_EndWithNonContinuableError(t *testing.T) {
 			},
 		},
 	}
-	assert.True(t, tfm.Next())
 	record, err := tfm.Read()
 	assert.NoError(t, err)
 	assert.Equal(t, "1st good read", string(record))
 
-	assert.True(t, tfm.Next())
 	record, err = tfm.Read()
 	assert.Error(t, err)
 	assert.False(t, errs.IsErrTransformFailed(err))
@@ -106,7 +99,6 @@ func TestTransform_EndWithNonContinuableError(t *testing.T) {
 	assert.Nil(t, record)
 
 	// Verifying when fatal error occurred, repeatedly calling Next/Read will still get you the same err
-	assert.False(t, tfm.Next())
 	record, err = tfm.Read()
 	assert.Error(t, err)
 	assert.Equal(t, "fatal error", err.Error())

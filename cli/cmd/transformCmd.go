@@ -77,30 +77,36 @@ func doTransform() error {
 		return err
 	}
 
-	fmt.Println("[")
-	doOne := func() error {
+	doOne := func() (string, error) {
 		b, err := transform.Read()
+		if err != nil {
+			return "", err
+		}
+		return strings.Join(
+			strs.NoErrMapSlice(
+				strings.Split(jsons.BPJ(string(b)), "\n"),
+				func(s string) string { return "\t" + s }),
+			"\n"), nil
+	}
+
+	record, err := doOne()
+	if err == io.EOF {
+		fmt.Println("[]")
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	fmt.Printf("[\n%s", record)
+	for {
+		record, err = doOne()
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			return err
 		}
-		fmt.Print(
-			strings.Join(
-				strs.NoErrMapSlice(
-					strings.Split(jsons.BPJ(string(b)), "\n"),
-					func(s string) string { return "\t" + s }),
-				"\n"))
-		return nil
-	}
-	if transform.Next() {
-		if err := doOne(); err != nil {
-			return err
-		}
-		for transform.Next() {
-			fmt.Print(",\n")
-			if err := doOne(); err != nil {
-				return err
-			}
-		}
+		fmt.Printf(",\n%s", record)
 	}
 	fmt.Println("\n]")
 	return nil

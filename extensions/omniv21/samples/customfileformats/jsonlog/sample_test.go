@@ -1,6 +1,7 @@
 package jsonlog
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -76,8 +77,11 @@ func TestSample(t *testing.T) {
 	assert.NoError(t, err)
 
 	var records []string
-	for transform.Next() {
+	for {
 		recordBytes, err := transform.Read()
+		if err == io.EOF {
+			break
+		}
 		assert.NoError(t, err)
 		records = append(records, string(recordBytes))
 	}

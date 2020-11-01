@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -136,8 +137,11 @@ func httpPostTransform(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var records []string
-	for t.Next() {
+	for {
 		b, err := t.Read()
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			writeBadRequest(w, fmt.Sprintf("bad request: transform failed. err: %s", err))
 			return
