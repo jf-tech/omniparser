@@ -1,8 +1,6 @@
 package omniparser
 
 import (
-	"io"
-
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/schemahandler"
 )
@@ -11,56 +9,50 @@ import (
 // operation. An instance of a Transform must not be shared and reused among different
 // input streams. An instance of a Transform must not be used across multiple goroutines.
 type Transform interface {
-	// Next indicates whether the ingestion/transform is completed or not.
-	Next() bool
 	// Read returns a JSON byte slice representing one ingested and transformed record.
+	// io.EOF should be returned when input stream is completely consumed and future calls
+	// to Read should always return io.EOF.
+	// errs.ErrTransformFailed should be returned when a record ingestion and transformation
+	// failed and such failure isn't considered fatal. Future calls to Read will attempt
+	// new record ingestion and transformations.
+	// Any other error returned is considered fatal and future calls to Read will always
+	// return the same error.
+	// Note if returned error isn't nil, then returned []byte will be nil.
 	Read() ([]byte, error)
 }
 
 type transform struct {
-	ingester  schemahandler.Ingester
-	curErr    error
-	curRecord []byte
+	ingester schemahandler.Ingester
+	lastErr  error
 }
 
-// Next calls the underlying schema handler's ingester to do the ingestion and transformation, saves
-// the resulting record and/or error, and returns whether the entire operation is completed or not.
-func (o *transform) Next() bool {
-	// ErrTransformFailed is a generic wrapping error around all handlers' ingesters'
+// Read returns a JSON byte slice representing one ingested and transformed record.
+// io.EOF should be returned when input stream is completely consumed and future calls
+// to Read should always return io.EOF.
+// errs.ErrTransformFailed should be returned when a record ingestion and transformation
+// failed and such failure isn't considered fatal. Future calls to Read will attempt
+// new record ingestion and transformations.
+// Any other error returned is considered fatal and future calls to Read will always
+// return the same error.
+// Note if returned error isn't nil, then returned []byte will be nil.
+func (o *transform) Read() ([]byte, error) {
+	// errs.ErrTransformFailed is a generic wrapping error around all handlers' ingesters'
 	// **continuable** errors (so client side doesn't have to deal with myriad of different
-	// types of benign continuable errors. All other errors: non-continuable errors or ErrEOF
+	// types of benign continuable errors. All other errors: non-continuable errors or io.EOF
 	// should cause the operation to cease.
-	if o.curErr != nil && !errs.IsErrTransformFailed(o.curErr) {
-		return false
+	if o.lastErr != nil && !errs.IsErrTransformFailed(o.lastErr) {
+		return nil, o.lastErr
 	}
-
-	for {
-		record, err := o.ingester.Read()
-		switch {
-		case err == nil:
-			o.curRecord = record
-			o.curErr = nil
-			return true
-		case err == io.EOF:
-			o.curErr = err
-			o.curRecord = nil
-			// No more processing needed.
-			return false
-		default:
-			o.curErr = err
+	record, err := o.ingester.Read()
+	if err != nil {
+		if o.ingester.IsContinuableError(err) {
 			// If ingester error is continuable, wrap it into a standard generic ErrTransformFailed
 			// so caller has an easier time to deal with it. If fatal error, then leave it raw to the
 			// caller so they can decide what it is and how to proceed.
-			if o.ingester.IsContinuableError(err) {
-				o.curErr = errs.ErrTransformFailed(err.Error())
-			}
-			o.curRecord = nil
-			return true
+			err = errs.ErrTransformFailed(err.Error())
 		}
+		record = nil
 	}
-}
-
-// Read returns the current ingested and transformed record and/or the current error.
-func (o *transform) Read() ([]byte, error) {
-	return o.curRecord, o.curErr
+	o.lastErr = err
+	return record, err
 }

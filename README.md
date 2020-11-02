@@ -80,10 +80,12 @@ Take a detailed look at samples here:
     if err != nil { ... }
     transform, err := schema.NewTransform("input-name", strings.NewReader("..."), &transformctx.Ctx{})
     if err != nil { ... }
-    if !transform.Next() { ... }  
-    b, err := transform.Read()
-    if err != nil { ... }
-    fmt.Println(string(b))
+    for {
+        b, err := transform.Read()
+        if err == io.EOF { break }
+        if err != nil { ... }
+        fmt.Println(string(b))
+    }
     ```
 - Output:
     ```
@@ -115,7 +117,7 @@ Take a detailed look at samples here:
 ## Requirements
 - Golang 1.14
 
-## Recent Feature Additions
+## Recent Major Feature Additions/Changes
 - Added EDI file format support in omniv2 handler.
 - Major restructure/refactoring
     - Upgrade omni schema version to `omni.2.1` due a number of incompatible schema changes:

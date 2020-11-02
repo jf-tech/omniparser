@@ -2,6 +2,7 @@ package csv
 
 import (
 	"bytes"
+	"io"
 	"io/ioutil"
 	"testing"
 
@@ -48,8 +49,11 @@ func Benchmark1_Weather_Data_CSV(b *testing.B) {
 		if err != nil {
 			b.FailNow()
 		}
-		for transform.Next() {
+		for {
 			_, err := transform.Read()
+			if err == io.EOF {
+				break
+			}
 			if err != nil {
 				b.FailNow()
 			}

@@ -1,6 +1,7 @@
 package customparse
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -45,12 +46,15 @@ func TestSample(t *testing.T) {
 			},
 		})
 	assert.NoError(t, err)
-	tfm, err := schema.NewTransform(inputFileBaseName, inputFileReader, &transformctx.Ctx{})
+	transform, err := schema.NewTransform(inputFileBaseName, inputFileReader, &transformctx.Ctx{})
 	assert.NoError(t, err)
 
 	var records []string
-	for tfm.Next() {
-		recordBytes, err := tfm.Read()
+	for {
+		recordBytes, err := transform.Read()
+		if err == io.EOF {
+			break
+		}
 		assert.NoError(t, err)
 		records = append(records, string(recordBytes))
 	}
