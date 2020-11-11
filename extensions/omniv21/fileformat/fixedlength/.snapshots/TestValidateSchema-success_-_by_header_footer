@@ -1,0 +1,44 @@
+{
+	"file_declaration": {
+		"envelopes": [
+			{
+				"name": "1",
+				"by_header_footer": {
+					"header": "^FILE-BEGIN$",
+					"footer": "^FILE-BEGIN$"
+				},
+				"by_rows": null,
+				"not_target": true,
+				"columns": null
+			},
+			{
+				"name": "2",
+				"by_header_footer": {
+					"header": "^DATA-BLOCK-BEGIN$",
+					"footer": "^DATA-BLOCK-END$"
+				},
+				"by_rows": null,
+				"not_target": false,
+				"columns": [
+					{
+						"name": "abc",
+						"start_pos": 1,
+						"length": 3,
+						"line_pattern": "^DATA:.*$"
+					}
+				]
+			},
+			{
+				"name": "3",
+				"by_header_footer": {
+					"header": "^FILE-END$",
+					"footer": "^FILE-END$"
+				},
+				"by_rows": null,
+				"not_target": true,
+				"columns": null
+			}
+		]
+	},
+	"XPath": ""
+}

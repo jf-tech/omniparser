@@ -156,7 +156,7 @@ func TestValidateSchema(t *testing.T) {
 }
 
 func TestCreateFormatReader(t *testing.T) {
-	r, err := NewCSVFileFormat("test-schema").CreateFormatReader(
+	r, err := NewCSVFileFormat("test").CreateFormatReader(
 		"test-input",
 		strings.NewReader(
 			lf("A|B|C")+

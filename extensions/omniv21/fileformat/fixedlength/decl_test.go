@@ -10,8 +10,8 @@ import (
 
 func TestColumnDecl_LineMatch(t *testing.T) {
 	assert.True(t, (&columnDecl{}).lineMatch([]byte("test")))
-	assert.False(t, (&columnDecl{Line: strs.StrPtr("^ABC.*$")}).lineMatch([]byte("test")))
-	assert.True(t, (&columnDecl{Line: strs.StrPtr("^ABC.*$")}).lineMatch([]byte("ABCDEFG")))
+	assert.False(t, (&columnDecl{LinePattern: strs.StrPtr("^ABC.*$")}).lineMatch([]byte("test")))
+	assert.True(t, (&columnDecl{LinePattern: strs.StrPtr("^ABC.*$")}).lineMatch([]byte("ABCDEFG")))
 }
 
 func TestColumnDecl_LineToColumn(t *testing.T) {
@@ -29,4 +29,25 @@ func TestEnvelopeDecl_ByRows(t *testing.T) {
 	})
 	assert.Equal(t, 1, (&envelopeDecl{}).byRows())
 	assert.Equal(t, 12, (&envelopeDecl{ByRows: testlib.IntPtr(12)}).byRows())
+}
+
+func TestFileDecl_EnvelopeType(t *testing.T) {
+	assert.Equal(t, envelopeTypeByHeaderFooter,
+		(&fileDecl{
+			Envelopes: []*envelopeDecl{
+				{ByHeaderFooter: &byHeaderFooterDecl{}},
+			},
+		}).envelopeType())
+	assert.Equal(t, envelopeTypeByRows,
+		(&fileDecl{
+			Envelopes: []*envelopeDecl{
+				{ByRows: testlib.IntPtr(12)},
+			},
+		}).envelopeType())
+	assert.Equal(t, envelopeTypeByRows,
+		(&fileDecl{
+			Envelopes: []*envelopeDecl{
+				{},
+			},
+		}).envelopeType())
 }

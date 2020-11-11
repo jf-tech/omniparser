@@ -1,0 +1,21 @@
+{
+	"file_declaration": {
+		"envelopes": [
+			{
+				"name": "1",
+				"by_header_footer": null,
+				"by_rows": null,
+				"not_target": false,
+				"columns": [
+					{
+						"name": "abc",
+						"start_pos": 1,
+						"length": 10,
+						"line_pattern": null
+					}
+				]
+			}
+		]
+	},
+	"XPath": ".[abc != 'skip']"
+}

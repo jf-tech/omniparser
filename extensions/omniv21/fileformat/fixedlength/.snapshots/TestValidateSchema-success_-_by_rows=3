@@ -1,0 +1,27 @@
+{
+	"file_declaration": {
+		"envelopes": [
+			{
+				"name": "1",
+				"by_header_footer": null,
+				"by_rows": 3,
+				"not_target": false,
+				"columns": [
+					{
+						"name": "abc",
+						"start_pos": 1,
+						"length": 10,
+						"line_pattern": "^L01.*"
+					},
+					{
+						"name": "efg",
+						"start_pos": 3,
+						"length": 5,
+						"line_pattern": "^L03.*"
+					}
+				]
+			}
+		]
+	},
+	"XPath": ""
+}
