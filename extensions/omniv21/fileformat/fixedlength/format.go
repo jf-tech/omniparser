@@ -22,8 +22,8 @@ const (
 )
 
 type fixedLengthFileFormat struct {
-	schemaName        string
-	envelopeNameIndex int
+	schemaName               string
+	autoGenEnvelopeNameIndex int
 }
 
 // NewFixedLengthFileFormat creates a FileFormat for fixed-length files.
@@ -76,8 +76,8 @@ func (f *fixedLengthFileFormat) validateFileDecl(decl *fileDecl) error {
 		}
 		targetSeen = targetSeen || !envelope.NotTarget
 		if envelope.Name == nil {
-			f.envelopeNameIndex++
-			envelope.Name = strs.StrPtr(strconv.Itoa(f.envelopeNameIndex))
+			f.autoGenEnvelopeNameIndex++
+			envelope.Name = strs.StrPtr(strconv.Itoa(f.autoGenEnvelopeNameIndex))
 		}
 		if _, found := namesSeen[*envelope.Name]; found {
 			return f.FmtErr("more than one envelope has the name '%s'", *envelope.Name)
