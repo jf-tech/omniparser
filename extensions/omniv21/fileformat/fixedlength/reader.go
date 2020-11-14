@@ -69,6 +69,7 @@ func (r *reader) readByRowsEnvelope() ([][]byte, error) {
 		switch {
 		case err == nil:
 			if copyNeeded {
+				// TODO: use sync.Pool to amortize the []byte allocation
 				cp := make([]byte, len(line))
 				copy(cp, line)
 				r.envelopeLines = append(r.envelopeLines, cp)
