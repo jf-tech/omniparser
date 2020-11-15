@@ -14,13 +14,13 @@ func TestColumnDecl_LineMatch(t *testing.T) {
 	assert.True(t, (&columnDecl{LinePattern: strs.StrPtr("^ABC.*$")}).lineMatch([]byte("ABCDEFG")))
 }
 
-func TestColumnDecl_LineToColumn(t *testing.T) {
+func TestColumnDecl_LineToColumnValue(t *testing.T) {
 	decl := func(start, length int) *columnDecl {
 		return &columnDecl{StartPos: start, Length: length}
 	}
-	assert.Nil(t, decl(10, 4).lineToColumn([]rune("test")))                 // fully out of range
-	assert.Equal(t, []rune("st"), decl(3, 4).lineToColumn([]rune("test")))  // partially out of range
-	assert.Equal(t, []rune("tes"), decl(1, 3).lineToColumn([]rune("test"))) // fully in range
+	assert.Equal(t, "", decl(10, 4).lineToColumnValue([]byte("test")))   // fully out of range
+	assert.Equal(t, "st", decl(3, 4).lineToColumnValue([]byte("test")))  // partially out of range
+	assert.Equal(t, "tes", decl(1, 3).lineToColumnValue([]byte("test"))) // fully in range
 }
 
 func TestEnvelopeDecl_ByRows(t *testing.T) {
