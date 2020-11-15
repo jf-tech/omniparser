@@ -6,15 +6,18 @@ import (
 	"io"
 
 	"github.com/antchfx/xpath"
+	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/ios"
 
 	"github.com/jf-tech/omniparser/idr"
 )
 
+// ErrInvalidEnvelope indicates a fixed-length input envelope is invalid. This is a fatal, non-continuable error.
 type ErrInvalidEnvelope string
 
 func (e ErrInvalidEnvelope) Error() string { return string(e) }
 
+// IsErrInvalidEnvelope checks if an error is of ErrInvalidEnvelope type.
 func IsErrInvalidEnvelope(err error) bool {
 	switch err.(type) {
 	case ErrInvalidEnvelope:
@@ -42,10 +45,7 @@ func (r *reader) readLine() ([]byte, error) {
 		switch err {
 		case nil:
 			r.line++
-		case io.EOF:
-			return nil, err
 		default:
-			r.line++
 			return nil, err
 		}
 		// skip only truly empty lines.
@@ -85,6 +85,54 @@ func (r *reader) readByRowsEnvelope() (*idr.Node, error) {
 		}
 	}
 	return node, nil
+}
+
+func (r *reader) readByHeaderFooterEnvelope() (*idr.Node, error) {
+	line, err := r.readLine()
+	if err != nil {
+		if err == io.EOF {
+			return nil, err
+		}
+		return nil, ErrInvalidEnvelope(r.fmtErrStr("incomplete envelope: %s", err.Error()))
+	}
+	for ; r.envelopeIndex < len(r.decl.Envelopes); r.envelopeIndex++ {
+		// regex's are already validated
+		headerRegex, _ := caches.GetRegex(r.decl.Envelopes[r.envelopeIndex].ByHeaderFooter.Header)
+		if headerRegex.Match(line) {
+			break
+		}
+	}
+	if r.envelopeIndex >= len(r.decl.Envelopes) {
+		return nil, io.EOF
+	}
+	envelopeDecl := r.decl.Envelopes[r.envelopeIndex]
+	footerRegex, _ := caches.GetRegex(envelopeDecl.ByHeaderFooter.Footer)
+	node := idr.CreateNode(idr.ElementNode, *envelopeDecl.Name)
+	columnsDone := make([]bool, len(envelopeDecl.Columns))
+	for {
+		for col := range envelopeDecl.Columns {
+			if columnsDone[col] {
+				continue
+			}
+			colDecl := envelopeDecl.Columns[col]
+			if !colDecl.lineMatch(line) {
+				continue
+			}
+			colNode := idr.CreateNode(idr.ElementNode, colDecl.Name)
+			idr.AddChild(node, colNode)
+			colVal := idr.CreateNode(idr.TextNode, colDecl.lineToColumnValue(line))
+			idr.AddChild(colNode, colVal)
+			columnsDone[col] = true
+		}
+		if footerRegex.Match(line) {
+			return node, nil
+		}
+		line, err = r.readLine()
+		// Since the envelope has started, any reading error, including EOF, indicates incomplete envelope error.
+		if err != nil {
+			return nil, ErrInvalidEnvelope(r.fmtErrStr("incomplete envelope: %s", err.Error()))
+		}
+	}
 }
 
 func (r *reader) fmtErrStr(format string, args ...interface{}) string {
