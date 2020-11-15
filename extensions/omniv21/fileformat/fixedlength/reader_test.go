@@ -7,8 +7,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/jf-tech/go-corelib/strs"
 	"github.com/jf-tech/go-corelib/testlib"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/jf-tech/omniparser/idr"
 )
 
 func TestIsErrInvalidEnvelope(t *testing.T) {
@@ -17,18 +20,17 @@ func TestIsErrInvalidEnvelope(t *testing.T) {
 	assert.False(t, IsErrInvalidEnvelope(errors.New("test")))
 }
 
-func testReader(t *testing.T, r io.Reader, decl *fileDecl) *reader {
+func testReader(r io.Reader, decl *fileDecl) *reader {
 	return &reader{
-		inputName:     "test",
-		r:             bufio.NewReader(r),
-		decl:          decl,
-		line:          1,
-		envelopeLines: make([][]byte, 0, EnvelopeLinesCap),
+		inputName: "test",
+		r:         bufio.NewReader(r),
+		decl:      decl,
+		line:      1,
 	}
 }
 
 func TestReadLine(t *testing.T) {
-	r := testReader(t, strings.NewReader("abc\n\nefg\n   \nxyz\n"), nil)
+	r := testReader(strings.NewReader("abc\n\nefg\n   \nxyz\n"), nil)
 	assert.Equal(t, 1, r.line)
 
 	line, err := r.readLine()
@@ -64,7 +66,7 @@ func TestReadLine(t *testing.T) {
 	assert.Equal(t, 6, r.line)
 
 	// Another scenario that io.Reader fails
-	r = testReader(t, testlib.NewMockReadCloser("read error", nil), nil)
+	r = testReader(testlib.NewMockReadCloser("read error", nil), nil)
 	assert.Equal(t, 1, r.line)
 	line, err = r.readLine()
 	assert.Error(t, err)
@@ -76,39 +78,96 @@ func TestReadLine(t *testing.T) {
 
 func TestReadByRowsEnvelope_ByRowsDefault(t *testing.T) {
 	// default by_rows = 1
-	r := testReader(t, strings.NewReader("abc\n\nefg\n   \nxyz\n"), &fileDecl{Envelopes: []*envelopeDecl{{}}})
+	r := testReader(strings.NewReader("abc\n\nefghijklmn\n   \nxyz\n"),
+		&fileDecl{Envelopes: []*envelopeDecl{{
+			Name: strs.StrPtr("env1"),
+			Columns: []*columnDecl{
+				{
+					Name:     "col1",
+					StartPos: 2,
+					Length:   4,
+				},
+			},
+		}}})
 
-	lines, err := r.readByRowsEnvelope()
+	n, err := r.readByRowsEnvelope()
 	assert.NoError(t, err)
-	assert.Equal(t, [][]byte{[]byte("abc")}, lines)
+	assert.Equal(t, `{"col1":"bc"}`, idr.JSONify2(n))
+	assert.Equal(t, 2, r.line)
 
-	lines, err = r.readByRowsEnvelope()
+	n, err = r.readByRowsEnvelope()
 	assert.NoError(t, err)
-	assert.Equal(t, [][]byte{[]byte("efg")}, lines)
+	assert.Equal(t, `{"col1":"fghi"}`, idr.JSONify2(n))
+	assert.Equal(t, 4, r.line)
 
-	lines, err = r.readByRowsEnvelope()
+	n, err = r.readByRowsEnvelope()
 	assert.NoError(t, err)
-	assert.Equal(t, [][]byte{[]byte("   ")}, lines)
+	assert.Equal(t, `{"col1":"  "}`, idr.JSONify2(n))
+	assert.Equal(t, 5, r.line)
 
-	lines, err = r.readByRowsEnvelope()
+	n, err = r.readByRowsEnvelope()
 	assert.NoError(t, err)
-	assert.Equal(t, [][]byte{[]byte("xyz")}, lines)
+	assert.Equal(t, `{"col1":"yz"}`, idr.JSONify2(n))
+	assert.Equal(t, 6, r.line)
 
-	lines, err = r.readByRowsEnvelope()
+	n, err = r.readByRowsEnvelope()
 	assert.Equal(t, io.EOF, err)
-	assert.Nil(t, lines)
+	assert.Nil(t, n)
 }
 
 func TestReadByRowsEnvelope_ByRowsNonDefault(t *testing.T) {
-	r := testReader(t, strings.NewReader("abc\n\nefg\n   \nxyz\n"),
-		&fileDecl{Envelopes: []*envelopeDecl{{ByRows: testlib.IntPtr(3)}}})
+	r := testReader(strings.NewReader("abcdefg\n\nhijklmn\n   \nabc012345\n"),
+		&fileDecl{Envelopes: []*envelopeDecl{{
+			Name:   strs.StrPtr("env1"),
+			ByRows: testlib.IntPtr(3),
+			Columns: []*columnDecl{
+				{Name: "col1", StartPos: 2, Length: 4, LinePattern: strs.StrPtr("^abc")},
+				{Name: "col2", StartPos: 2, Length: 4, LinePattern: strs.StrPtr("^hij")},
+				{Name: "col3", StartPos: 3, Length: 5, LinePattern: strs.StrPtr("^abc")},
+			},
+		}}})
 
-	lines, err := r.readByRowsEnvelope()
+	n, err := r.readByRowsEnvelope()
 	assert.NoError(t, err)
-	assert.Equal(t, [][]byte{[]byte("abc"), []byte("efg"), []byte("   ")}, lines)
+	assert.Equal(t, `{"col1":"bcde","col2":"ijkl","col3":"cdefg"}`, idr.JSONify2(n))
 
-	lines, err = r.readByRowsEnvelope()
+	n, err = r.readByRowsEnvelope()
 	assert.Error(t, err)
-	assert.Equal(t, "input 'test' line 6: envelope incomplete: EOF", err.Error())
-	assert.Nil(t, lines)
+	assert.Equal(t, "input 'test' line 6: incomplete envelope, missing 2 row(s)", err.Error())
+	assert.Nil(t, n)
+}
+
+var (
+	benchReadByRowsEnvelopeInput = strings.Repeat(
+		"abcdefghijklmnopqrstuvwxyz\n  \n012345678901234567890123456789\n", 1000)
+	benchReadByRowsEnvelopeDecl = &fileDecl{
+		Envelopes: []*envelopeDecl{
+			{
+				Name:   strs.StrPtr("env1"),
+				ByRows: testlib.IntPtr(3),
+				Columns: []*columnDecl{
+					{Name: "col1", StartPos: 2, Length: 10, LinePattern: strs.StrPtr("^abc")},
+					{Name: "col2", StartPos: 2, Length: 10, LinePattern: strs.StrPtr("^0123")},
+					{Name: "col3", StartPos: 12, Length: 19, LinePattern: strs.StrPtr("^abc")},
+				},
+			},
+		},
+	}
+)
+
+// BenchmarkReadByRowsEnvelope-8   	     624	   1891740 ns/op	  133140 B/op	    9005 allocs/op
+func BenchmarkReadByRowsEnvelope(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		r := testReader(strings.NewReader(benchReadByRowsEnvelopeInput), benchReadByRowsEnvelopeDecl)
+		for {
+			n, err := r.readByRowsEnvelope()
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+				b.FailNow()
+			}
+			idr.RemoveAndReleaseTree(n)
+		}
+	}
 }

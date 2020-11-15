@@ -33,12 +33,7 @@ type reader struct {
 	target        *idr.Node
 	envelopeIndex int
 	line          int // 1-based
-	envelopeLines [][]byte
 }
-
-const (
-	EnvelopeLinesCap = 20
-)
 
 // Note the returned []byte is only valid before the next readLine() call.
 func (r *reader) readLine() ([]byte, error) {
@@ -61,29 +56,35 @@ func (r *reader) readLine() ([]byte, error) {
 	}
 }
 
-func (r *reader) readByRowsEnvelope() ([][]byte, error) {
-	r.envelopeLines = r.envelopeLines[:0]
-	copyNeeded := r.decl.Envelopes[r.envelopeIndex].byRows() > 1
-	for i := 0; i < r.decl.Envelopes[r.envelopeIndex].byRows(); i++ {
+func (r *reader) readByRowsEnvelope() (*idr.Node, error) {
+	envelopeDecl := r.decl.Envelopes[r.envelopeIndex]
+	node := idr.CreateNode(idr.ElementNode, *envelopeDecl.Name)
+	columnsDone := make([]bool, len(envelopeDecl.Columns))
+	for i := 0; i < envelopeDecl.byRows(); i++ {
 		line, err := r.readLine()
-		switch {
-		case err == nil:
-			if copyNeeded {
-				// TODO: use sync.Pool to amortize the []byte allocation
-				cp := make([]byte, len(line))
-				copy(cp, line)
-				r.envelopeLines = append(r.envelopeLines, cp)
-			} else {
-				r.envelopeLines = append(r.envelopeLines, line)
+		if err != nil {
+			if err == io.EOF && i == 0 {
+				return nil, err
 			}
-			continue
-		case err == io.EOF && i == 0:
-			return nil, err
-		default:
-			return nil, ErrInvalidEnvelope(r.fmtErrStr("envelope incomplete: %s", err.Error()))
+			return nil, ErrInvalidEnvelope(
+				r.fmtErrStr("incomplete envelope, missing %d row(s)", envelopeDecl.byRows()-i))
+		}
+		for col := range envelopeDecl.Columns {
+			if columnsDone[col] {
+				continue
+			}
+			colDecl := envelopeDecl.Columns[col]
+			if !colDecl.lineMatch(line) {
+				continue
+			}
+			colNode := idr.CreateNode(idr.ElementNode, colDecl.Name)
+			idr.AddChild(node, colNode)
+			colVal := idr.CreateNode(idr.TextNode, colDecl.lineToColumnValue(line))
+			idr.AddChild(colNode, colVal)
+			columnsDone[col] = true
 		}
 	}
-	return r.envelopeLines, nil
+	return node, nil
 }
 
 func (r *reader) fmtErrStr(format string, args ...interface{}) string {

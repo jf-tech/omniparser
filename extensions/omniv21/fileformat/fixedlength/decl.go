@@ -2,6 +2,7 @@ package fixedlength
 
 import (
 	"fmt"
+	"unicode/utf8"
 
 	"github.com/jf-tech/go-corelib/caches"
 )
@@ -27,18 +28,24 @@ func (c *columnDecl) lineMatch(line []byte) bool {
 	return r.Match(line)
 }
 
-func (c *columnDecl) lineToColumn(line []rune) []rune {
+func (c *columnDecl) lineToColumnValue(line []byte) string {
 	// StartPos is 1-based and its value >= 1 guaranteed by json schema validation done earlier.
-	startPosZeroBased := c.StartPos - 1
-	// If [startPosZeroBased, c.Length] is partially out of range, we'll return whatever is
-	// in range; if [startPosZeroBased, c.Length] is fully out of range, we'll return "".
-	switch {
-	case startPosZeroBased+c.Length <= len(line):
-		return line[startPosZeroBased : startPosZeroBased+c.Length]
-	case startPosZeroBased < len(line):
-		return line[startPosZeroBased:]
+	start := c.StartPos - 1
+	// First chop off the prefix prior to c.StartPos
+	for start > 0 && len(line) > 0 {
+		_, adv := utf8.DecodeRune(line)
+		line = line[adv:]
+		start--
 	}
-	return nil
+	// Then from that position, count c.Length runes and that's the string value we need.
+	lenCount := c.Length
+	i := 0
+	for lenCount > 0 && i < len(line) {
+		_, adv := utf8.DecodeRune(line[i:])
+		i += adv
+		lenCount--
+	}
+	return string(line[:i])
 }
 
 type envelopeDecl struct {
