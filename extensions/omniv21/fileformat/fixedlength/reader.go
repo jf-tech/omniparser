@@ -135,6 +135,41 @@ func (r *reader) readByHeaderFooterEnvelope() (*idr.Node, error) {
 	}
 }
 
+func (r *reader) Read() (node *idr.Node, err error) {
+	if r.target != nil {
+		// This is just in case Release() isn't called by ingester.
+		idr.RemoveAndReleaseTree(r.target)
+		r.target = nil
+	}
+readEnvelope:
+	if r.decl.envelopeType() == envelopeTypeByRows {
+		node, err = r.readByRowsEnvelope()
+		if err != nil {
+			return nil, err
+		}
+		idr.AddChild(r.root, node)
+	} else {
+		node, err = r.readByHeaderFooterEnvelope()
+		if err != nil {
+			return nil, err
+		}
+		idr.AddChild(r.root, node)
+		if r.decl.Envelopes[r.envelopeIndex].NotTarget {
+			// If this by_header_footer envelope isn't target envelope then we consider it
+			// a global envelope and keep it in the idr tree.
+			goto readEnvelope
+		}
+	}
+	// now the envelope is the target envelope, let's do a target xpath filtering.
+	// if it filters out, then we need to remove it from the idr tree.
+	if r.xpath != nil && !idr.MatchAny(node, r.xpath) {
+		idr.RemoveAndReleaseTree(node)
+		goto readEnvelope
+	}
+	r.target = node
+	return node, err
+}
+
 func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 	return fmt.Sprintf("input '%s' line %d: %s", r.inputName, r.line, fmt.Sprintf(format, args...))
 }
