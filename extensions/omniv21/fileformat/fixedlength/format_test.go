@@ -1,16 +1,19 @@
 package fixedlength
 
 import (
+	"io"
 	"strings"
 	"testing"
 
 	"github.com/bradleyjkemp/cupaloy"
 	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/jf-tech/go-corelib/strs"
+	"github.com/jf-tech/go-corelib/testlib"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/idr"
 )
 
 func TestValidateSchema(t *testing.T) {
@@ -304,10 +307,29 @@ func TestValidateSchema(t *testing.T) {
 }
 
 func TestCreateFormatReader(t *testing.T) {
-	_, err := NewFixedLengthFileFormat("test").CreateFormatReader(
-		"test-input",
-		strings.NewReader("TODO"),
-		&fixedLengthFormatRuntime{})
+	r, err := NewFixedLengthFileFormat("test").CreateFormatReader(
+		"test",
+		strings.NewReader("abcd\n1234\n"),
+		&fixedLengthFormatRuntime{
+			Decl: &fileDecl{
+				Envelopes: []*envelopeDecl{
+					{
+						Name:   strs.StrPtr("env1"),
+						ByRows: testlib.IntPtr(2),
+						Columns: []*columnDecl{
+							{Name: "letters", StartPos: 1, Length: 3, LinePattern: strs.StrPtr("^[a-z]")},
+							{Name: "numerics", StartPos: 1, Length: 3, LinePattern: strs.StrPtr("^[0-9]")},
+						},
+					},
+				},
+			},
+		})
 	assert.NoError(t, err)
-	// TODO
+	n, err := r.Read()
+	assert.NoError(t, err)
+	assert.Equal(t, `{"letters":"abc","numerics":"123"}`, idr.JSONify2(n))
+	r.Release(n)
+	n, err = r.Read()
+	assert.Equal(t, io.EOF, err)
+	assert.Nil(t, n)
 }

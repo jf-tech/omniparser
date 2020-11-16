@@ -129,9 +129,8 @@ func (f *fixedLengthFileFormat) validateColumns(cols []*columnDecl) error {
 
 func (f *fixedLengthFileFormat) CreateFormatReader(
 	name string, r io.Reader, runtime interface{}) (fileformat.FormatReader, error) {
-	// TODO
-	_ = runtime.(*fixedLengthFormatRuntime)
-	return nil, nil
+	rt := runtime.(*fixedLengthFormatRuntime)
+	return NewReader(name, r, rt.Decl, rt.XPath)
 }
 
 func (f *fixedLengthFileFormat) FmtErr(format string, args ...interface{}) error {
