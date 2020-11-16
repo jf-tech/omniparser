@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/antchfx/xpath"
+	"github.com/jf-tech/go-corelib/caches"
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/jf-tech/go-corelib/testlib"
 	"github.com/stretchr/testify/assert"
@@ -20,17 +22,30 @@ func TestIsErrInvalidEnvelope(t *testing.T) {
 	assert.False(t, IsErrInvalidEnvelope(errors.New("test")))
 }
 
-func testReader(r io.Reader, decl *fileDecl) *reader {
+func testReader(tb testing.TB, r io.Reader, decl *fileDecl) *reader {
+	return testReader2(tb, r, decl, "")
+}
+
+func testReader2(tb testing.TB, r io.Reader, decl *fileDecl, xpathStr string) *reader {
 	return &reader{
 		inputName: "test",
 		r:         bufio.NewReader(r),
 		decl:      decl,
-		line:      1,
+		xpath: func() *xpath.Expr {
+			if xpathStr == "" {
+				return nil
+			}
+			xpathExpr, err := caches.GetXPathExpr(xpathStr)
+			assert.NoError(tb, err)
+			return xpathExpr
+		}(),
+		root: idr.CreateNode(idr.DocumentNode, "#root"),
+		line: 1,
 	}
 }
 
 func TestReadLine(t *testing.T) {
-	r := testReader(strings.NewReader("abc\n\nefg\n   \nxyz\n"), nil)
+	r := testReader(t, strings.NewReader("abc\n\nefg\n   \nxyz\n"), nil)
 	assert.Equal(t, 1, r.line)
 
 	line, err := r.readLine()
@@ -58,15 +73,17 @@ func TestReadLine(t *testing.T) {
 	// io.EOF shouldn't bump up current line number.
 	line, err = r.readLine()
 	assert.Equal(t, io.EOF, err)
+	assert.Nil(t, line)
 	assert.Equal(t, 6, r.line)
 
 	// reading again should still return io.EOF and line number stays.
 	line, err = r.readLine()
 	assert.Equal(t, io.EOF, err)
+	assert.Nil(t, line)
 	assert.Equal(t, 6, r.line)
 
 	// Another scenario that io.Reader fails
-	r = testReader(testlib.NewMockReadCloser("read error", nil), nil)
+	r = testReader(t, testlib.NewMockReadCloser("read error", nil), nil)
 	assert.Equal(t, 1, r.line)
 	line, err = r.readLine()
 	assert.Error(t, err)
@@ -77,7 +94,7 @@ func TestReadLine(t *testing.T) {
 
 func TestReadByRowsEnvelope_ByRowsDefault(t *testing.T) {
 	// default by_rows = 1
-	r := testReader(strings.NewReader("abc\n\nefghijklmn\n   \nxyz\n"),
+	r := testReader(t, strings.NewReader("abc\n\nefghijklmn\n   \nxyz\n"),
 		&fileDecl{Envelopes: []*envelopeDecl{{
 			Name: strs.StrPtr("env1"),
 			Columns: []*columnDecl{
@@ -115,7 +132,7 @@ func TestReadByRowsEnvelope_ByRowsDefault(t *testing.T) {
 }
 
 func TestReadByRowsEnvelope_ByRowsNonDefault(t *testing.T) {
-	r := testReader(strings.NewReader("abcdefg\n\nhijklmn\n   \nabc012345\n"),
+	r := testReader(t, strings.NewReader("abcdefg\n\nhijklmn\n   \nabc012345\n"),
 		&fileDecl{Envelopes: []*envelopeDecl{{
 			Name:   strs.StrPtr("env1"),
 			ByRows: testlib.IntPtr(3),
@@ -158,7 +175,7 @@ var (
 // BenchmarkReadByRowsEnvelope-8   	     624	   1891740 ns/op	  133140 B/op	    9005 allocs/op
 func BenchmarkReadByRowsEnvelope(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		r := testReader(strings.NewReader(benchReadByRowsEnvelopeInput), benchReadByRowsEnvelopeDecl)
+		r := testReader(b, strings.NewReader(benchReadByRowsEnvelopeInput), benchReadByRowsEnvelopeDecl)
 		for {
 			n, err := r.readByRowsEnvelope()
 			if err != nil {
@@ -173,14 +190,14 @@ func BenchmarkReadByRowsEnvelope(b *testing.B) {
 }
 
 func TestReadByHeaderFooterEnvelope_EOFBeforeStart(t *testing.T) {
-	r := testReader(strings.NewReader(""), &fileDecl{Envelopes: []*envelopeDecl{{Name: strs.StrPtr("env1")}}})
+	r := testReader(t, strings.NewReader(""), &fileDecl{Envelopes: []*envelopeDecl{{Name: strs.StrPtr("env1")}}})
 	n, err := r.readByHeaderFooterEnvelope()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
 }
 
 func TestReadByHeaderFooterEnvelope_ReadErrorBeforeStart(t *testing.T) {
-	r := testReader(
+	r := testReader(t,
 		testlib.NewMockReadCloser("read error", nil),
 		&fileDecl{Envelopes: []*envelopeDecl{{Name: strs.StrPtr("env1")}}})
 	n, err := r.readByHeaderFooterEnvelope()
@@ -191,7 +208,7 @@ func TestReadByHeaderFooterEnvelope_ReadErrorBeforeStart(t *testing.T) {
 }
 
 func TestReadByHeaderFooterEnvelope_NoEnvelopeMatch(t *testing.T) {
-	r := testReader(
+	r := testReader(t,
 		strings.NewReader("efg"),
 		&fileDecl{Envelopes: []*envelopeDecl{{
 			Name:           strs.StrPtr("env1"),
@@ -203,7 +220,7 @@ func TestReadByHeaderFooterEnvelope_NoEnvelopeMatch(t *testing.T) {
 }
 
 func TestReadByHeaderFooterEnvelope_IncompleteEnvelope(t *testing.T) {
-	r := testReader(
+	r := testReader(t,
 		strings.NewReader("abc"),
 		&fileDecl{Envelopes: []*envelopeDecl{{
 			Name:           strs.StrPtr("env1"),
@@ -218,8 +235,8 @@ func TestReadByHeaderFooterEnvelope_IncompleteEnvelope(t *testing.T) {
 
 func lf(s string) string { return s + "\n" }
 
-func TestReadByHeaderFooterEnvelope_Success1(t *testing.T) {
-	r := testReader(
+func TestReadByHeaderFooterEnvelope_Success(t *testing.T) {
+	r := testReader(t,
 		strings.NewReader(
 			lf("begin")+
 				lf("header-01")+
@@ -311,7 +328,7 @@ var (
 // BenchmarkReadByHeaderFooterEnvelope-8   	     310	   3819649 ns/op	  213840 B/op	   14009 allocs/op
 func BenchmarkReadByHeaderFooterEnvelope(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		r := testReader(strings.NewReader(benchReadByHeaderFooterEnvelopeInput), benchReadByHeaderFooterEnvelopeDecl)
+		r := testReader(b, strings.NewReader(benchReadByHeaderFooterEnvelopeInput), benchReadByHeaderFooterEnvelopeDecl)
 		for {
 			n, err := r.readByHeaderFooterEnvelope()
 			if err != nil {
@@ -323,4 +340,118 @@ func BenchmarkReadByHeaderFooterEnvelope(b *testing.B) {
 			idr.RemoveAndReleaseTree(n)
 		}
 	}
+}
+
+func TestRead_ByRows(t *testing.T) {
+	r := testReader2(t,
+		strings.NewReader(
+			// data block 1
+			lf("a001-abc")+
+				lf("a002-def")+
+				lf("a003-ghi")+
+				// data block 2
+				lf("a001-!@#")+
+				lf("a002-$%^")+
+				lf("a003-&*(")+
+				// data block 3
+				lf("a001-012")+
+				lf("a002-345")+
+				lf("a003-678")),
+		&fileDecl{Envelopes: []*envelopeDecl{
+			{
+				Name:   strs.StrPtr("data"),
+				ByRows: testlib.IntPtr(3),
+				Columns: []*columnDecl{
+					{Name: "a001_first2chars", StartPos: 6, Length: 2, LinePattern: strs.StrPtr("^a001")},
+					{Name: "a003_last2chars", StartPos: 7, Length: 2, LinePattern: strs.StrPtr("^a003")},
+					{Name: "a001_last1char", StartPos: 8, Length: 1, LinePattern: strs.StrPtr("^a001")},
+				},
+			},
+		}},
+		".[not(contains(a001_first2chars, '!'))]")
+	n, err := r.Read()
+	assert.NoError(t, err)
+	assert.Equal(t,
+		`{"a001_first2chars":"ab","a001_last1char":"c","a003_last2chars":"hi"}`, idr.JSONify2(n))
+	assert.Equal(t,
+		`{"data":{"a001_first2chars":"ab","a001_last1char":"c","a003_last2chars":"hi"}}`, idr.JSONify2(r.root))
+
+	n, err = r.Read()
+	assert.NoError(t, err)
+	assert.Equal(t,
+		`{"a001_first2chars":"01","a001_last1char":"2","a003_last2chars":"78"}`, idr.JSONify2(n))
+	assert.Equal(t,
+		`{"data":{"a001_first2chars":"01","a001_last1char":"2","a003_last2chars":"78"}}`, idr.JSONify2(r.root))
+
+	n, err = r.Read()
+	assert.Equal(t, io.EOF, err)
+	assert.Nil(t, n)
+}
+
+func TestRead_ByHeaderFooter(t *testing.T) {
+	r := testReader2(t,
+		strings.NewReader(
+			// global header
+			lf("begin")+
+				// data block 1
+				lf("header-01")+
+				lf("a001-abc")+
+				lf("a002-def")+
+				lf("a003-ghi")+
+				lf("footer")+
+				// data block 2
+				lf("header-02")+
+				lf("a001-!@#")+
+				lf("a002-$%^")+
+				lf("a003-&*(")+
+				lf("footer")+
+				// data block 3
+				lf("header-03")+
+				lf("a001-012")+
+				lf("a002-345")+
+				lf("a003-678")+
+				lf("footer")+
+				// global footer
+				lf("end")),
+		&fileDecl{Envelopes: []*envelopeDecl{
+			{
+				Name:           strs.StrPtr("begin"),
+				ByHeaderFooter: &byHeaderFooterDecl{Header: "^begin", Footer: "^begin"},
+				NotTarget:      true,
+			},
+			{
+				Name:           strs.StrPtr("data"),
+				ByHeaderFooter: &byHeaderFooterDecl{Header: "^header", Footer: "^footer"},
+				Columns: []*columnDecl{
+					{Name: "a001_first2chars", StartPos: 6, Length: 2, LinePattern: strs.StrPtr("^a001")},
+					{Name: "a003_last2chars", StartPos: 7, Length: 2, LinePattern: strs.StrPtr("^a003")},
+					{Name: "a001_last1char", StartPos: 8, Length: 1, LinePattern: strs.StrPtr("^a001")},
+				},
+			},
+			{
+				Name:           strs.StrPtr("end"),
+				ByHeaderFooter: &byHeaderFooterDecl{Header: "^end", Footer: "^end"},
+				NotTarget:      true,
+			},
+		}},
+		".[not(contains(a001_first2chars, '!'))]")
+	n, err := r.Read()
+	assert.NoError(t, err)
+	assert.Equal(t,
+		`{"a001_first2chars":"ab","a001_last1char":"c","a003_last2chars":"hi"}`, idr.JSONify2(n))
+	assert.Equal(t,
+		`{"begin":{},"data":{"a001_first2chars":"ab","a001_last1char":"c","a003_last2chars":"hi"}}`,
+		idr.JSONify2(r.root))
+
+	n, err = r.Read()
+	assert.NoError(t, err)
+	assert.Equal(t,
+		`{"a001_first2chars":"01","a001_last1char":"2","a003_last2chars":"78"}`, idr.JSONify2(n))
+	assert.Equal(t,
+		`{"begin":{},"data":{"a001_first2chars":"01","a001_last1char":"2","a003_last2chars":"78"}}`,
+		idr.JSONify2(r.root))
+
+	n, err = r.Read()
+	assert.Equal(t, io.EOF, err)
+	assert.Nil(t, n)
 }
