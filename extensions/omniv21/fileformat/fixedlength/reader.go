@@ -2,8 +2,10 @@ package fixedlength
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/antchfx/xpath"
 	"github.com/jf-tech/go-corelib/caches"
@@ -170,6 +172,42 @@ readEnvelope:
 	return node, err
 }
 
+func (r *reader) Release(n *idr.Node) {
+	if r.target == n {
+		r.target = nil
+	}
+	idr.RemoveAndReleaseTree(n)
+}
+
+func (r *reader) IsContinuableError(err error) bool {
+	return !IsErrInvalidEnvelope(err) && err != io.EOF
+}
+
+func (r *reader) FmtErr(format string, args ...interface{}) error {
+	return errors.New(r.fmtErrStr(format, args...))
+}
+
 func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 	return fmt.Sprintf("input '%s' line %d: %s", r.inputName, r.line, fmt.Sprintf(format, args...))
+}
+
+// NewReader creates an FormatReader for fixed-length file format.
+func NewReader(inputName string, r io.Reader, decl *fileDecl, xpathStr string) (*reader, error) {
+	var expr *xpath.Expr
+	var err error
+	xpathStr = strings.TrimSpace(xpathStr)
+	if xpathStr != "" && xpathStr != "." {
+		expr, err = caches.GetXPathExpr(xpathStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid xpath '%s', err: %s", xpathStr, err.Error())
+		}
+	}
+	return &reader{
+		inputName: inputName,
+		r:         bufio.NewReader(r),
+		decl:      decl,
+		xpath:     expr,
+		root:      idr.CreateNode(idr.DocumentNode, "#root"),
+		line:      1,
+	}, nil
 }

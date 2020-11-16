@@ -2,6 +2,7 @@ package fixedlength
 
 import (
 	"bufio"
+	"encoding/json"
 	"errors"
 	"io"
 	"strings"
@@ -454,4 +455,39 @@ func TestRead_ByHeaderFooter(t *testing.T) {
 	n, err = r.Read()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
+}
+
+func TestRelease(t *testing.T) {
+	var decl fileDecl
+	err := json.Unmarshal([]byte(`
+		{
+			"envelopes": [
+				{ "name": "env1", "columns": [ { "name": "col1", "start_pos": 1, "length": 3 } ] }
+			]
+		}`), &decl)
+	assert.NoError(t, err)
+	r, err := NewReader("test", strings.NewReader("abcd\n12\n#$%^\n"), &decl, ".[starts-with(., '1')]")
+	assert.NoError(t, err)
+	n, err := r.Read()
+	assert.NoError(t, err)
+	assert.Equal(t, `{"col1":"12"}`, idr.JSONify2(n))
+	assert.Equal(t, `{"env1":{"col1":"12"}}`, idr.JSONify2(r.root))
+	assert.True(t, n == r.target)
+	r.Release(n)
+	assert.Nil(t, r.target)
+	assert.Equal(t, `{}`, idr.JSONify2(r.root))
+}
+
+func TestIsContinuableError(t *testing.T) {
+	r := &reader{}
+	assert.True(t, r.IsContinuableError(r.FmtErr("some error")))
+	assert.False(t, r.IsContinuableError(ErrInvalidEnvelope("invalid envelope")))
+	assert.False(t, r.IsContinuableError(io.EOF))
+}
+
+func TestNewReader(t *testing.T) {
+	r, err := NewReader("test", nil, nil, "[invalid")
+	assert.Error(t, err)
+	assert.Equal(t, `invalid xpath '[invalid', err: expression must evaluate to a node-set`, err.Error())
+	assert.Nil(t, r)
 }
