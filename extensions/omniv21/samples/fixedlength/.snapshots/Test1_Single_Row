@@ -1,0 +1,18 @@
+[
+	{
+		"date": "2019-01-31T12:34:56-08:00",
+		"high_temperature_fahrenheit": 50.9,
+		"latitude": 37.7749,
+		"longitude": 122.4194,
+		"low_temperature_fahrenheit": 30.2,
+		"wind": "North 19.26 mph"
+	},
+	{
+		"date": "2020-07-31T01:23:45-05:00",
+		"high_temperature_fahrenheit": 102.2,
+		"latitude": 32.7767,
+		"longitude": 96.797,
+		"low_temperature_fahrenheit": 95,
+		"wind": "South East 19.26 mph"
+	}
+]

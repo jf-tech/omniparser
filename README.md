@@ -15,6 +15,7 @@ for trying out schemas and inputs, yours and from sample library, to see how tra
 
 Take a detailed look at samples here:
 - [csv examples](extensions/omniv21/samples/csv)
+- [fixed-length examples](extensions/omniv21/samples/fixedlength)
 - [json examples](extensions/omniv21/samples/json)
 - [xml examples](extensions/omniv21/samples/xml).
 - [edi examples](extensions/omniv21/samples/edi).
@@ -118,7 +119,8 @@ Take a detailed look at samples here:
 - Golang 1.14
 
 ## Recent Major Feature Additions/Changes
-- Added EDI file format support in omniv2 handler.
+- Added fixed-length file format support in omniv21 handler.
+- Added EDI file format support in omniv21 handler.
 - Major restructure/refactoring
     - Upgrade omni schema version to `omni.2.1` due a number of incompatible schema changes:
         - `'result_type'` -> `'type'`

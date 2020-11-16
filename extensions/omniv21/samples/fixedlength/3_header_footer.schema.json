@@ -1,0 +1,97 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "fixed-length"
+    },
+    "file_declaration": {
+        "envelopes" : [
+            {
+                "name": "GLOBAL",
+                "by_header_footer": { "header": "^A010", "footer": "^A999" },
+                "not_target": true,
+                "columns": [ { "name": "carrier", "start_pos": 6, "length": 6, "line_pattern": "^A060" } ]
+            },
+            {
+                "by_header_footer": { "header": "^V010", "footer": "^V999" },
+                "columns": [
+                    { "name": "tracking_number", "start_pos": 6, "length": 15, "line_pattern": "^V020" },
+                    { "name": "delivery_date", "start_pos": 6, "length": 8, "line_pattern": "^V045" },
+                    { "name": "observation_type", "start_pos": 6, "length": 1, "line_pattern": "^V060" },
+                    { "name": "reason_for_observation", "start_pos": 6, "length": 2, "line_pattern": "^V070" },
+                    { "name": "date_observation", "start_pos": 6, "length": 8, "line_pattern": "^V080" },
+                    { "name": "time_observation", "start_pos": 6, "length": 6, "line_pattern": "^V081" },
+                    { "name": "weight_in_grams", "start_pos": 6, "length": 6, "line_pattern": "^V110" },
+                    { "name": "postal_code_addressee", "start_pos": 6, "length": 6, "line_pattern": "^V160" },
+                    { "name": "city_name_addressee", "start_pos": 6, "length": 24, "line_pattern": "^V180" },
+                    { "name": "country_code_addressee", "start_pos": 6, "length": 2, "line_pattern": "^V200" }
+                ]
+            },
+            {
+                "by_header_footer": { "header": "^Z001", "footer": "^Z999" },
+                "not_target": true
+            }
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "object": {
+            "tracking_number": { "xpath": "tracking_number" },
+            "carrier": { "custom_func": { "name": "lower", "args": [ { "xpath": "../GLOBAL/carrier" } ] } },
+            "estimated_delivery_date": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "delivery_date" },
+                    { "const": "", "_comment": "input timezone" },
+                    { "const": "", "_comment": "output timezone" }
+                ]
+            }},
+            "weight_in_kg": {
+                "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const": "((/^[0-9]+$/.test(grams) ? parseFloat(grams) : 0.0) / 1000).toFixed(2)" },
+                        { "const": "grams" }, { "xpath": "weight_in_grams" }
+                    ]
+                },
+                "type": "float"
+            },
+            "events": { "array": [
+                { "object": {
+                    "event_date": { "template": "event_date_template" },
+                    "location": { "object": {
+                        "city": { "custom_func": {
+                            "name": "javascript",
+                            "args": [
+                                { "const": "event_country == 'NL' ? event_city : ''" },
+                                { "const": "event_country"}, { "xpath": "country_code_addressee" },
+                                { "const": "event_city"}, { "xpath": "city_name_addressee" }
+                            ]
+                        }},
+                        "zip": { "custom_func": {
+                            "name": "javascript",
+                            "args": [
+                                { "const": "event_country == 'NL' ? event_zip : '0000FF'" },
+                                { "const": "event_country"}, { "xpath": "country_code_addressee" },
+                                { "const": "event_zip"}, { "xpath": "postal_code_addressee" }
+                            ]
+                        }},
+                        "country": { "xpath": "country_code_addressee" }
+                    }}
+                }}
+            ]}
+        }},
+        "event_date_template": { "custom_func": {
+            "name": "dateTimeToRFC3339",
+            "args": [
+                { "custom_func": {
+                    "name": "concat",
+                    "args": [
+                        { "xpath": "date_observation" },
+                        { "xpath": "time_observation" }
+                    ]
+                }},
+                { "const": "", "_comment": "input timezone" },
+                { "const": "", "_comment": "output timezone" }
+            ]
+        }}
+    }
+}

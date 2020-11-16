@@ -16,9 +16,7 @@ two parts (see actual code [here](./node.go)):
 ```
 type Node struct {
 	ID int64
-
 	Parent, FirstChild, LastChild, PrevSibling, NextSibling *Node
-
 	Type NodeType
 	Data string
 
@@ -252,3 +250,34 @@ Node(Type: ElementNode, Data: "N4")
 
 This `"N4"` IDR element node contains multiple child element nodes for each of the element appearances
 in the EDI content.
+
+## Fixed-Length (mostly TXT)
+
+In fixed-length files, we have the concept of an 'envelope'. An envelope can contain a single line of text, or a fixed
+number of consecutive lines, or multiple lines grouped together by a header and a footer. An envelope is the basic unit
+of record which the fixed-length reader returns to the parser.
+ 
+Here is a sample single-line-envelope TXT (adapted from [this sample](../extensions/omniv21/samples/fixedlength/1_single_row.input.txt)):
+```
+...
+2019/01/31T12:34:56-0800 10.5 30.2  N 33  37.7749 122.4194
+...
+```
+The omniparser builtin fixed-length reader returns a fixed-length envelope as a IDR tree:
+```
+Node(Type: ElementNode)
+    Node(Type: ElementNode, Data: "DATE")
+        Node(Type: TextNode, Data: "2019/01/31T12:34:56-0800")
+    Node(Type: ElementNode, Data: "HIGH_TEMP_C")
+        Node(Type: TextNode, Data: "10.5")
+    Node(Type: ElementNode, Data: "LOW_TEMP_F")
+        Node(Type: TextNode, Data: "30.2")
+    Node(Type: ElementNode, Data: "WIND_DIR")
+        Node(Type: TextNode, Data: "N")
+    Node(Type: ElementNode, Data: "WIND_SPEED_KMH")
+        Node(Type: TextNode, Data: "33")
+    Node(Type: ElementNode, Data: "LAT")
+        Node(Type: TextNode, Data: "37.7749")
+    Node(Type: ElementNode, Data: "LONG")
+        Node(Type: TextNode, Data: "122.4194")
+```

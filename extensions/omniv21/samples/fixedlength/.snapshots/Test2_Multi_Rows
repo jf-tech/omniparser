@@ -1,0 +1,32 @@
+[
+	{
+		"destination_country": "US",
+		"events": [
+			{
+				"event_date": "2019-08-26T12:47:04-05:00",
+				"location": {
+					"city": "HAPPYVALLEY",
+					"state": "FL",
+					"zip": "54321"
+				}
+			}
+		],
+		"guaranteed_delivery_date": "2019-08-27T00:00:00",
+		"tracking_number": "100000103732"
+	},
+	{
+		"destination_country": "US",
+		"events": [
+			{
+				"event_date": "2019-08-26T12:47:04-05:00",
+				"location": {
+					"city": "MAGIC BEACH",
+					"state": "FL",
+					"zip": "12345"
+				}
+			}
+		],
+		"guaranteed_delivery_date": "2019-08-27T00:00:00",
+		"tracking_number": "W938003272"
+	}
+]

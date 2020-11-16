@@ -1,0 +1,77 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "fixed-length"
+    },
+    "file_declaration": {
+        "envelopes" : [
+            {
+                "by_rows": 11,
+                "columns": [
+                    { "name": "tracking_number_h001", "start_pos": 464,  "length": 30, "line_pattern": "^H001" },
+                    { "name": "destination_country", "start_pos": 607,  "length": 2, "line_pattern": "^H001" },
+                    { "name": "guaranteed_delivery_date", "start_pos": 376,  "length": 8, "line_pattern": "^H001" },
+                    { "name": "event_date", "start_pos": 142,  "length": 8, "line_pattern": "^H001" },
+                    { "name": "event_time", "start_pos": 150, "length": 8, "line_pattern": "^H001" },
+                    { "name": "event_timezone", "start_pos": 158, "length": 4, "line_pattern": "^H001" },
+                    { "name": "event_city", "start_pos": 564,  "length": 30, "line_pattern": "^H001" },
+                    { "name": "event_state", "start_pos": 594, "length": 2, "line_pattern": "^H001" },
+                    { "name": "scan_facility_zip", "start_pos": 596, "length": 11, "line_pattern": "^H001" },
+                    { "name": "tracking_number_h002_cn", "start_pos": 28,  "length": 50, "line_pattern": "^H002.{19}CN" }
+                ]
+            }
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "object": {
+            "tracking_number": { "template": "tracking_number_template" },
+            "destination_country": { "xpath": "destination_country" },
+            "guaranteed_delivery_date": { "template": "guaranteed_delivery_date_template" },
+            "events": { "array": [
+                { "object": {
+                    "event_date": { "template": "event_date_template" },
+                    "location": { "object": {
+                        "city": { "xpath": "event_city" },
+                        "state": { "xpath": "event_state" },
+                        "zip": { "xpath": "scan_facility_zip" }
+                    }}
+                }}
+            ]}
+        }},
+        "tracking_number_template": { "custom_func": {
+            "name": "upper",
+            "args": [
+                { "custom_func": {
+                    "name": "coalesce",
+                    "args": [
+                        { "xpath": "tracking_number_h002_cn" },
+                        { "xpath": "tracking_number_h001" }
+                    ]
+                }}
+            ]
+        }},
+        "guaranteed_delivery_date_template": { "custom_func": {
+            "name": "dateTimeToRFC3339",
+            "args": [
+                { "xpath": "guaranteed_delivery_date", "_comment": "datetime" },
+                { "const": "", "_comment": "input timezone" },
+                { "const": "", "_comment": "output timezone" }
+            ]
+        }},
+        "event_date_template": { "custom_func": {
+            "name": "dateTimeToRFC3339",
+            "args": [
+                { "custom_func": {
+                    "name": "concat",
+                    "args": [
+                        { "xpath": "event_date" },
+                        { "const": "T" },
+                        { "xpath": "event_time" }
+                    ]
+                }},
+                { "xpath": "event_timezone", "_comment": "input timezone" },
+                { "const": "", "_comment": "output timezone" }
+            ]
+        }}
+    }
+}
