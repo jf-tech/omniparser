@@ -1,0 +1,72 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "fixed-length"
+    },
+    "file_declaration": {
+        "envelopes" : [
+            {
+                "columns": [
+                    { "name": "DATE", "start_pos": 1, "length": 24 },
+                    { "name": "HIGH_TEMP_C", "start_pos": 26, "length": 4 },
+                    { "name": "LOW_TEMP_F", "start_pos": 31, "length": 4 },
+                    { "name": "WIND_DIR", "start_pos": 36, "length": 2 },
+                    { "name": "WIND_SPEED_KMH", "start_pos": 9, "length": 2 },
+                    { "name": "LAT", "start_pos": 42, "length": 8 },
+                    { "name": "LONG", "start_pos": 51, "length": 8 }
+                ]
+            }
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": ".[DATE != 'DO NOT PROCESS']", "object": {
+            "date": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DATE" },
+                    { "const": "", "_comment": "input timezone" },
+                    { "const": "", "_comment": "output timezone" }
+                ]
+            }},
+            "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
+            "low_temperature_fahrenheit": {
+                "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const": "Math.floor(low_temp_f * 10) / 10" },
+                        { "const": "low_temp_f" }, { "xpath": "LOW_TEMP_F", "type": "float" }
+                    ]
+                }
+            },
+            "wind": { "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const": "win_dir + ' ' + Math.floor(kmh * 0.621371 * 100) / 100 + ' mph'" },
+                    { "const": "win_dir" }, { "xpath": "WIND_DIR", "template": "wind_acronym_mapping" },
+                    { "const": "kmh" }, { "xpath": "WIND_SPEED_KMH", "type": "float" }
+                ]
+            }},
+            "latitude": { "xpath": "LAT", "type": "float" },
+            "longitude": { "xpath": "LONG", "type": "float" }
+        }},
+        "template_c_to_f": {
+            "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
+                    { "const": "temp_c" }, { "xpath": ".", "type": "float" }
+                ]
+            },
+            "type": "float"
+        },
+        "wind_acronym_mapping": {
+            "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const": "dir=='N'?'North':dir=='NE'?'North East':dir=='E'?'East':dir=='SE'?'South East':dir=='S'?'South':dir=='SW'?'South West':dir=='W'?'West':dir=='NW'?'North West':'Tornado'"},
+                    { "const": "dir" }, { "xpath": "." }
+                ]
+            }
+        }
+    }
+}
