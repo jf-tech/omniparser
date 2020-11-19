@@ -9,9 +9,35 @@ custom formats) in streaming fashion and transforms data into desired JSON outpu
 
 Golang Version: 1.14
 
-## Getting Started
+## Documentation
 
-Follow the tutorial [Getting Started](./doc/gettingstarted.md) to write your first omniparser schema.
+Docs:
+- [Getting Started](./doc/gettingstarted.md): a tutorial for writing your first omniparser schema.
+- [IDR](./doc/idr.md): in-memory data representation of ingested data for omniparser.
+- [XPath Based Data Extraction and Filtering](./doc/xpath.md): xpath queries are essential to omniparser schema writing.
+Learn the concept and tricks in depth.
+- [Use of `custom_func`, Specially `javascript`](./doc/use_of_custom_funcs.md): An in depth look of how `custom_func`
+is used, specially the all mighty `javascript` (and `javascript_with_context`).
+- [CSV Schema in Depth](./doc/csv_in_depth.md): everything about schemas for CSV input.
+- [Fixed-Length Schema in Depth](./doc/fixedlength_in_depth.md): everything about schemas for fixed-length (e.g. TXT)
+input
+- [JSON Schema in Depth](./doc/json_in_depth.md): everything about schemas for JSON input.
+- [XML Schema in Depth](./doc/xml_in_depth.md): everything about schemas for XML input.
+- [EDI Schema in Depth](./doc/edi_in_depth.md): everything about schemas for EDI input.
+- [Programmability](./doc/programmability.md): Advanced techniques for using omniparser (or some of its components) in
+your code.
+
+References:
+- [Custom Functions](./doc/customfuncs.md): a complete reference of all built-in custom functions. 
+
+Examples:
+- [CSV Examples](extensions/omniv21/samples/csv)
+- [Fixed-Length Examples](extensions/omniv21/samples/fixedlength)
+- [JSON Examples](extensions/omniv21/samples/json)
+- [XML Examples](extensions/omniv21/samples/xml).
+- [EDI Examples](extensions/omniv21/samples/edi).
+- [Custom File Format](extensions/omniv21/samples/customfileformats/jsonlog)
+- [Custom Transform](extensions/omniv21/samples/customparse)
 
 ## Online Playground
 
@@ -19,13 +45,6 @@ Use https://omniparser.herokuapp.com/ (may need to wait for a few seconds for he
 for trying out schemas and inputs, yours or existing samples, to see how ingestion and transform work.
 
 ![](./cli/cmd/web/playground-demo.gif)
-
-## More Examples
-- [csv examples](extensions/omniv21/samples/csv)
-- [fixed-length examples](extensions/omniv21/samples/fixedlength)
-- [json examples](extensions/omniv21/samples/json)
-- [xml examples](extensions/omniv21/samples/xml).
-- [edi examples](extensions/omniv21/samples/edi).
 
 ## Why
 - No good ETL transform/parser library exists in Golang.
@@ -57,7 +76,7 @@ situations.
     - A number of package renaming.
 - Added CSV file format support in omniv2 handler.
 - Introduced IDR node cache for allocation recycling. 
-- Introduced [IDR](./idr/README.md) for in-memory data representation.
+- Introduced [IDR](./doc/idr.md) for in-memory data representation.
 - Added trie based high performance `times.SmartParse`.
 - Command line interface (one-off `transform` cmd or long-running http `server` mode).
 - `javascript` engine integration as a custom_func.

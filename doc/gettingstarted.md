@@ -212,7 +212,7 @@ of the parser, we need to deviate from the schema writing for a moment...
 
 ### How Each Ingested Data Record Is Represented in Memory
 
-Short answer: [IDR](../idr/README.md).
+Short answer: [IDR](./idr.md).
 
 IDR is an in-memory data representation format used by omniparser for the ingested data from
 all input formats. If you're interested in more technical details, check the IDR doc mentioned above.
