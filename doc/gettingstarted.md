@@ -90,7 +90,7 @@ Now we're ready to go!
 
 ### `parser_settings`
 
-This is the comment part of all omniparser schemas, the header `parser_settings`:
+This is the common part of all omniparser schemas, the header `parser_settings`:
 ```
 {
     "parser_settings": {
@@ -141,7 +141,7 @@ Let's add an empty `FINAL_OUTPUT` in:
 `FINAL_OUTPUT` is the special name reserved for the transform template that will be used for
 the output. Given the section is called `transform_declarations` you might have guessed we can have
 multiple templates defined in it. Each template can reference other templates. There must be one
-and only one templated called `FINAL_OUTPUT`.
+and only one template called `FINAL_OUTPUT`.
 
 Run the cli we get a new error:
 ```
@@ -158,11 +158,11 @@ data into the desired output format, we still owe the parser the instructions ho
 stream, there comes `file_declaration`. (Note not all input formats require a `file_declaration`
 section, e.g. JSON and XML inputs need no `file_declaration` in their schemas.)
 
-For CSV, we need to define the following common settings:
+For CSV, we need to define the following settings:
 - What's the delimiter character, comma or something else?
 - Is there a header in the CSV input that defines the names of each column? If no, what each column
 should be called during ingestion and transformation?
-- Where does the actual data lines begin?
+- Where do the actual data lines begin?
 
 For this guide example, the settings are:
 - delimiter is `|`
@@ -220,7 +220,7 @@ all input formats. If you're interested in more technical details, check the IDR
 
 CSV has a very simple IDR representation: each data line is mapped to an IDR tree, where each column
 is mapped to the tree's leaf nodes. So for our sample input csv here, the first data line would be
-represented like the following IDR:
+represented by the following IDR:
 ```
 |
 +--"DATE"
@@ -240,7 +240,7 @@ represented like the following IDR:
 ```
 
 You can imaginarily convert the IDR into XML which helps you understand the extensive use of XPath
-later in transformation:
+queries later in transformation:
 ```
 <>
    <DATE>01/31/2019 12:34:56-0800</DATE>
@@ -250,9 +250,9 @@ later in transformation:
    <WIND SPEED KMH>            33</WIND SPEED KMH>
 </>
 ```
-Note XML/XPath don't like element name containing spaces. While IDR doesn't care of names containing
-spaces, XPath queries used in transforms will later break. So we'd like to **assign some
-XPath-friendly column name aliases in our schema, if the raw column names containing special chars**:
+Note XML/XPath don't like element name containing spaces. While IDR doesn't care about names with
+spaces, XPath queries used in transforms do care and will break. So we'd like to **assign some
+XPath friendly column name aliases in our schema, if the raw column names containing special chars**:
 
 Let's make small modifications to our schema:
 ```
@@ -280,7 +280,7 @@ Let's make small modifications to our schema:
 ```
 
 Rerun the cli to ensure everything is still working. Now the IDR and its imaginary converted XML
-equivalent looks like this:
+equivalent look like this:
 ```
 <>
    <DATE>01/31/2019 12:34:56-0800</DATE>
@@ -427,11 +427,11 @@ of the function, in this case `dateTimeToRFC3339`, and a list of arguments the f
 
 The first argument here is `{ "xpath": "DATE" },` basically providing the function the input datetime
 string. The second argument `dateTimeToRFC3339` requires specifies what time zone the input datetime
-string is in. Since the datetime strings in the guide sample CSV contain time zone offsets (`-0800`,
-`-0500`), an empty string is supplied to the input time zone argument. The third argument is the
-desired output time zone. If, say, we want to standardize all the `date` fields in the output to be
-in time zone of `America/Los_Angeles`, we can specify it in the third argument, and the `custom_func`
-will perform the correct time zone shifts for us.
+string is in. Since the datetime strings in the guide sample CSV already contain time zone offsets
+(`-0800`, `-0500`), an empty string is supplied to the input time zone argument. The third argument is
+the desired output time zone. If, say, we want to standardize all the `date` fields in the output to
+be in time zone of `America/Los_Angeles`, we can specify it in the third argument, and the
+`custom_func` will perform the correct time zone shifts for us.
 
 ### Fix `FINAL_OUTPUT.high_temperature_fahrenheit`
 
@@ -495,11 +495,11 @@ Here we introduce two new things: 1) template and 2) custom_func `javascript`.
            }
     ```
     custom_func `javascript` takes a number of arguments: the first one is the actual script string,
-    and all remaining arguments to are to provide values for all the variables declared in the script
+    and all remaining arguments are to provide values for all the variables declared in the script
     string, in this particular case, only one variable `temp_c`. All remaining arguments come in
     pairs. The first in each pair always declares what variable the second in pair is about. And the
     second in each pair provides the actual value for the variable. In this example, we see variable
-    `temp_c` should have the value based on the XPath query `"."` and converted into `float` type.
+    `temp_c` should have a value based on the XPath query `"."` and converted into `float` type.
     Remember this template's invocation is anchored on the IDR node `<HIGH_TEMP_C>`, thus XPath query
     `"."` returns its text value `"10.5"`, after which it was converted into numeric value `10.5`
     before the math computation starts.
@@ -581,7 +581,7 @@ $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 ]
 ```
 
-Almost there, but not quite! The `wind` field is a bit tricky to fix.
+Almost there! The `wind` field is a bit tricky to fix...
 
 ### Fix `wind`
 
@@ -602,13 +602,13 @@ Recall the first data line's IDR (XML equivalent) looks like:
    <WIND_SPEED_KMH>            33</WIND_SPEED_KMH>
 </>
 ```
-So `wind` value needs to be derived from two columns in the input CSV data line. Let's look at them
-one by one.
+So `wind` value needs to derive from two columns in the input CSV data line. Let's look at them one
+by one.
 
 1) Wind Direction
 
     In the input, the wind direction is abbreviated (such as `"N"`, `"E"`, `"SW"`, etc). In the
-    desired output we want it read English. So we need some mapping, for which again we resort to the
+    desired output we want it to be English. So we need some mapping, for which again we resort to the
     all mighty custom function `javascript`:
     ```
         "wind_acronym_mapping": {
@@ -621,7 +621,8 @@ one by one.
             }
         }
     ```
-    A giant/long `? :` ternary operator maps wind direction abbreviations into English phrases.
+    A giant/long `? :` ternary operator infested javascript line maps wind direction abbreviations
+    into English phrases.
 
 2) Wind Speed
 
@@ -630,6 +631,8 @@ one by one.
     ```
     Math.floor(kmh * 0.621371 * 100) / 100
     ```
+    (Several uses of `Math.floor(...*100/100)` throughout this page is to limit the number of decimal
+    places to be more human readable.) 
 
 Put 1) and 2) together, we can have the new transform schema look like this:
 ```
@@ -712,7 +715,7 @@ code snippet of showing how to achieve this:
         if err == io.EOF {
             break
         }
-        // output contains the []byte of the ingested and transformed record. 
+        // output contains a []byte of the ingested and transformed record. 
     }
 ```
 
@@ -798,6 +801,6 @@ code snippet of showing how to achieve this:
         if err == io.EOF {
             break
         }
-        // output contains the []byte of the ingested and transformed record. 
+        // output contains a []byte of the ingested and transformed record. 
     }
 ```
