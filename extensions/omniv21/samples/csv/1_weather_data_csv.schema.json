@@ -68,8 +68,7 @@
                     { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
                     { "const": "temp_c" }, { "xpath": ".", "type": "float" }
                 ]
-            },
-            "type": "float"
+            }
         },
         "wind_acronym_mapping": {
             "custom_func": {
