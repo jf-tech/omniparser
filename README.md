@@ -4,110 +4,28 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/jf-tech/omniparser)](https://goreportcard.com/report/github.com/jf-tech/omniparser)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/jf-tech/omniparser)](https://pkg.go.dev/github.com/jf-tech/omniparser)
 
-Omniparser is written in naive Golang that ingests input data of various formats (**CSV, txt, XML, EDI, JSON**, and custom formats) in streaming fashion 
-and transforms data into desired JSON output based on a schema written in JSON.
+Omniparser is written in naive Golang that ingests input data of various formats (**CSV, txt, XML, EDI, JSON**, and
+custom formats) in streaming fashion and transforms data into desired JSON output based on a schema written in JSON.
 
-Golang Version: 1.14.2
+Golang Version: 1.14
 
-## Demo in Playground
+## Getting Started
+
+Follow the tutorial [Getting Started](./doc/gettingstarted.md) to write your first omniparser schema.
+
+## Online Playground
 
 Use https://omniparser.herokuapp.com/ (may need to wait for a few seconds for heroku instance to wake up)
-for trying out schemas and inputs, yours and from sample library, to see how transform works.
+for trying out schemas and inputs, yours or existing samples, to see how ingestion and transform work.
 
 ![](./cli/cmd/web/playground-demo.gif)
 
-Take a detailed look at samples here:
+## More Examples
 - [csv examples](extensions/omniv21/samples/csv)
 - [fixed-length examples](extensions/omniv21/samples/fixedlength)
 - [json examples](extensions/omniv21/samples/json)
 - [xml examples](extensions/omniv21/samples/xml).
 - [edi examples](extensions/omniv21/samples/edi).
-
-## Simple Example (JSON -> JSON Transform)
-- Input:
-    ```
-    {
-        "order_id": "1234567",
-        "tracking_number": "1z9999999999999999",
-        "items": [
-            {
-                "item_sku": "ab123",
-                "item_price": 12.34,
-                "number_purchased": 5
-            },
-            {
-                "item_sku": "ck763-23",
-                "item_price": 3.12,
-                "number_purchased": 2
-            }
-        ]
-    }
-    ```
-- Schema:
-    ```
-    {
-        "parser_settings": {
-            "version": "omni.2.1",
-            "file_format_type": "json"
-        },
-        "transform_declarations": {
-            "FINAL_OUTPUT": { "object": {
-                "order_id": { "xpath": "order_id" },
-                "tracking_number": { "custom_func": {
-                    "name": "upper",
-                    "args": [ { "xpath": "tracking_number" } ]
-                }},
-                "items": { "array": [{ "xpath": "items/*", "object": {
-                    "sku":  { "custom_func": {
-                        "name": "javascript",
-                        "args": [
-                            { "const": "sku.toUpperCase().substring(0, 5)" },
-                            { "const": "sku" }, { "xpath": "item_sku" }
-                        ]
-                    }},
-                    "total_price": { "custom_func": {
-                        "name": "javascript",
-                        "args": [
-                            { "const": "num * price" },
-                            { "const": "num" }, { "xpath": "number_purchased", "type": "int" },
-                            { "const": "price" }, { "xpath": "item_price", "type": "float" }
-                        ]
-                    }}
-                }}]}
-            }}
-        }
-    }
-    ```
-- Code:
-    ```
-    schema, err := omniparser.NewSchema("schema-name", strings.NewReader("..."))
-    if err != nil { ... }
-    transform, err := schema.NewTransform("input-name", strings.NewReader("..."), &transformctx.Ctx{})
-    if err != nil { ... }
-    for {
-        b, err := transform.Read()
-        if err == io.EOF { break }
-        if err != nil { ... }
-        fmt.Println(string(b))
-    }
-    ```
-- Output:
-    ```
-    {
-        "order_id": "1234567",
-        "tracking_number": "1Z9999999999999999",
-        "items": [
-            {
-                "sku": "AB123",
-                "total_price": 61.7
-            },
-            {
-                "sku": "CK763",
-                "total_price": 6.24
-            }
-        ]
-    }
-    ```
 
 ## Why
 - No good ETL transform/parser library exists in Golang.
@@ -116,7 +34,8 @@ Take a detailed look at samples here:
     - [BeanIO](http://beanio.org/) can't deal with EDI input.
     - [Jolt](https://github.com/bazaarvoice/jolt) can't deal with anything other than JSON input.
     - [JSONata](https://jsonata.org/) still only JSON -> JSON transform.
-- Many of the parsers/transforms don't support streaming read, loading entire input into memory - not acceptable in some situations.
+- Many of the parsers/transforms don't support streaming read, loading entire input into memory - not acceptable in some
+situations.
 
 ## Requirements
 - Golang 1.14
@@ -150,4 +69,5 @@ Take a detailed look at samples here:
     - Ability to provide a new file format support to built-in omniv2 schema handler.
 
 ## Footnotes
-- omniparser is a collaboration effort of [jf-tech](https://github.com/jf-tech/), [Simon](https://github.com/liangxibing) and [Steven](http://github.com/wangjia007bond).
+- omniparser is a collaboration effort of [jf-tech](https://github.com/jf-tech/),[Simon](https://github.com/liangxibing)
+and [Steven](http://github.com/wangjia007bond).
