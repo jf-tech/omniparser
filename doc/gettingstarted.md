@@ -1,7 +1,7 @@
 # Getting Started
 
-This page is a step-by-step introduction of how to write an omniparser schema (specifically tailor
-for the latest `"omni.2.1"` schema version) and how to ingest and transform inputs programmatically
+This page is a step-by-step introduction of how to write an omniparser schema (specifically tailored
+to the latest `"omni.2.1"` schema version) and how to ingest and transform inputs programmatically
 and by the CLI tool.
 
 ## Prerequisites and Notes
