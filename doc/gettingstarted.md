@@ -2,7 +2,7 @@
 
 This page is a step-by-step introduction of how to write an omniparser schema (specifically tailor
 for the latest `"omni.2.1"` schema version) and how to ingest and transform inputs programmatically
-and by the cli tool.
+and by the CLI tool.
 
 ## Prerequisites and Notes
 
@@ -47,7 +47,6 @@ transform each of the data line into the following JSON output:
 		"wind": "South East 4.97 mph"
 	}
 ]
-
 ```
 As you can see, in the desired output, we'd like to standardize all the input temperatures into the
 same fahrenheit unit; we'd also like to do some translation such that the wind direction and wind
@@ -56,7 +55,7 @@ into [RFC-3339](https://tools.ietf.org/html/rfc3339) standard format.
 
 ## CLI (command line interface)
 
-Before we get into schema writing, let's first get familiar with omniparser cli so that we can easily
+Before we get into schema writing, let's first get familiar with omniparser CLI so that we can easily
 and incrementally test our schema writing.
 
 Assuming you have the git repo cloned at `~/dev/jf-tech/omniparser/`, simply run this bash script:
@@ -77,7 +76,7 @@ $ touch input.csv
 $ touch schema.json
 ```
 Use any editor to cut & paste the CSV content from [The Input](#the-input) into `input.csv`, and
-now run omniparser cli from `~/Downloads/omniparser/guide/`:
+now run omniparser CLI from `~/Downloads/omniparser/guide/`:
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json 
 Error: unable to perform schema validation: EOF
@@ -99,7 +98,7 @@ This is the common part of all omniparser schemas, the header `parser_settings`:
     }
 }
 ```
-It's self-explanatory. Now let's run the cli again:
+It's self-explanatory. Now let's run the CLI again:
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json 
 Error: schema 'schema.json' validation failed: (root): transform_declarations is required
@@ -121,7 +120,7 @@ transformation. Let's add an empty `transform_declarations` for now:
     "transform_declarations": {}
 }
 ```
-Run the cli we get another error:
+Run the CLI we get another error:
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 Error: schema 'schema.json' validation failed: transform_declarations: FINAL_OUTPUT is required
@@ -143,7 +142,7 @@ the output. Given the section is called `transform_declarations` you might have 
 multiple templates defined in it. Each template can reference other templates. There must be one
 and only one template called `FINAL_OUTPUT`.
 
-Run the cli we get a new error:
+Run the CLI we get a new error:
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 Error: schema 'schema.json' validation failed: (root): file_declaration is required
@@ -193,7 +192,7 @@ Let's add these:
     }
 ```
 
-Run the cli again:
+Run the CLI again:
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 [
@@ -279,7 +278,7 @@ Let's make small modifications to our schema:
 }
 ```
 
-Rerun the cli to ensure everything is still working. Now the IDR and its imaginary converted XML
+Rerun the CLI to ensure everything is still working. Now the IDR and its imaginary converted XML
 equivalent look like this:
 ```
 <>
@@ -339,7 +338,7 @@ Remember for the first data line, its corresponding IDR (or the IDR's equivalent
 Thus, an XPath query `"xpath": "DATE"` on the root of the IDR would return `01/31/2019 12:34:56-0800`, which is
 used as the value for the field `date`. So on and so forth for all other fields.
 
-Run the cli, we have:
+Run the CLI, we have:
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 [
@@ -388,7 +387,7 @@ built-in function to achieve this:
     }
 ```
 
-Run cli we have:
+Run CLI we have:
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 [
@@ -508,7 +507,7 @@ Here we introduce two new things: 1) template and 2) custom_func `javascript`.
     value `10.5`, `"type": "float"` is used. However when the script is done, the result is already
     in float, there is no need to specify `"type": "float"` for the `custom_func` directive.
 
-Now let's run cli:
+Now let's run CLI:
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 [
@@ -562,7 +561,7 @@ numeric value. That should be an easy fix:
 Basically changing `"low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F" }` to
 `"low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F", "type": "float" }`.
 
-Run cli again, we have:
+Run CLI again, we have:
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 [
@@ -803,4 +802,22 @@ code snippet of showing how to achieve this:
         }
         // output contains a []byte of the ingested and transformed record. 
     }
+```
+
+### The Output
+```
+[
+	{
+		"date": "2019-01-31T12:34:56-08:00",
+		"high_temperature_fahrenheit": 50.9,
+		"low_temperature_fahrenheit": 30.2,
+		"wind": "North 20.5 mph"
+	},
+	{
+		"date": "2020-07-31T01:23:45-05:00",
+		"high_temperature_fahrenheit": 102.2,
+		"low_temperature_fahrenheit": 95,
+		"wind": "South East 4.97 mph"
+	}
+]
 ```
