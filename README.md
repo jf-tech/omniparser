@@ -38,6 +38,7 @@ Examples:
 - [EDI Examples](extensions/omniv21/samples/edi).
 - [Custom File Format](extensions/omniv21/samples/customfileformats/jsonlog)
 - [Custom Transform](extensions/omniv21/samples/customparse)
+
 In the example folders above you will find pairs of input files and their schema files. Then in the
 `.snapshots` sub directory, you'll find their corresponding output files.
 
