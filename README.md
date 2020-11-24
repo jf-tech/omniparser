@@ -14,8 +14,8 @@ Golang Version: 1.14
 Docs:
 - [Getting Started](./doc/gettingstarted.md): a tutorial for writing your first omniparser schema.
 - [IDR](./doc/idr.md): in-memory data representation of ingested data for omniparser.
-- [XPath Based Data Extraction and Filtering](./doc/xpath.md): xpath queries are essential to omniparser schema writing.
-Learn the concept and tricks in depth.
+- [XPath Based Record Filtering and Data Extraction](./doc/xpath.md): xpath queries are essential to omniparser schema
+writing. Learn the concept and tricks in depth.
 - [Use of `custom_func`, Specially `javascript`](./doc/use_of_custom_funcs.md): An in depth look of how `custom_func`
 is used, specially the all mighty `javascript` (and `javascript_with_context`).
 - [CSV Schema in Depth](./doc/csv_in_depth.md): everything about schemas for CSV input.
