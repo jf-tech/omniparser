@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/jf-tech/omniparser)](https://goreportcard.com/report/github.com/jf-tech/omniparser)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/jf-tech/omniparser)](https://pkg.go.dev/github.com/jf-tech/omniparser)
 
-Omniparser is a naive Golang ETL parser that ingests input data of various formats (**CSV, txt, fixed length/width, XML, EDI/X12/EDIFACT, JSON**, and
+Omniparser is a native Golang ETL parser that ingests input data of various formats (**CSV, txt, fixed length/width, XML, EDI/X12/EDIFACT, JSON**, and
 custom formats) in streaming fashion and transforms data into desired JSON output based on a schema written in JSON.
 
 Golang Version: 1.14
@@ -38,6 +38,8 @@ Examples:
 - [EDI Examples](extensions/omniv21/samples/edi).
 - [Custom File Format](extensions/omniv21/samples/customfileformats/jsonlog)
 - [Custom Transform](extensions/omniv21/samples/customparse)
+In the example folders above you will find pairs of input files and their schema files. Then in the
+`.snapshots` sub directory, you'll find their corresponding output files.
 
 ## Online Playground
 
