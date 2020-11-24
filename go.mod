@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/antchfx/xmlquery v1.3.1
-	github.com/antchfx/xpath v1.1.10
+	github.com/antchfx/xpath v1.1.11
 	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible
 	github.com/dlclark/regexp2 v1.2.1 // indirect
 	github.com/dop251/goja v0.0.0-20201002140143-8ce18d86df5f
