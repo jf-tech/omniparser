@@ -30,51 +30,51 @@ var convToStr convFunc = func(v interface{}) (interface{}, error) { return fmt.S
 
 var errTypeConversionNotSupported = errors.New("type conversion not supported")
 
-func resultTypeConversion(v interface{}, resultType ResultType) (interface{}, error) {
+func resultTypeConversion(v interface{}, resultType resultType) (interface{}, error) {
 	switch reflect.ValueOf(v).Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		switch resultType {
-		case ResultTypeInt:
+		case resultTypeInt:
 			return v, nil
-		case ResultTypeFloat:
+		case resultTypeFloat:
 			return convIntToFloat(v)
-		case ResultTypeString:
+		case resultTypeString:
 			return convToStr(v)
 		}
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		switch resultType {
-		case ResultTypeInt:
+		case resultTypeInt:
 			return v, nil
-		case ResultTypeFloat:
+		case resultTypeFloat:
 			return convUintToFloat(v)
-		case ResultTypeString:
+		case resultTypeString:
 			return convToStr(v)
 		}
 	case reflect.Float32, reflect.Float64:
 		switch resultType {
-		case ResultTypeInt:
+		case resultTypeInt:
 			return convFloatToInt(v)
-		case ResultTypeFloat:
+		case resultTypeFloat:
 			return v, nil
-		case ResultTypeString:
+		case resultTypeString:
 			return convToStr(v)
 		}
 	case reflect.Bool:
 		switch resultType {
-		case ResultTypeBoolean:
+		case resultTypeBoolean:
 			return v, nil
-		case ResultTypeString:
+		case resultTypeString:
 			return convToStr(v)
 		}
 	case reflect.String:
 		switch resultType {
-		case ResultTypeInt:
+		case resultTypeInt:
 			return convStrToInt(v)
-		case ResultTypeFloat:
+		case resultTypeFloat:
 			return convStrToFloat(v)
-		case ResultTypeBoolean:
+		case resultTypeBoolean:
 			return convStrToBool(v)
-		case ResultTypeString:
+		case resultTypeString:
 			return v, nil
 		}
 	}

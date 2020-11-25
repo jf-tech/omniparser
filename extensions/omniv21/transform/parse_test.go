@@ -60,7 +60,7 @@ func testParseCtx() *parseCtx {
 	return ctx
 }
 
-func testResultType(typ ResultType) *ResultType {
+func testResultType(typ resultType) *resultType {
 	return &typ
 }
 
@@ -79,13 +79,13 @@ func TestComputeXPath(t *testing.T) {
 		},
 		{
 			name:     "xpath_dynamic - const",
-			decl:     &Decl{XPathDynamic: &Decl{Const: strs.StrPtr("A/C"), kind: KindConst}},
+			decl:     &Decl{XPathDynamic: &Decl{Const: strs.StrPtr("A/C"), kind: kindConst}},
 			err:      "",
 			expected: "A/C",
 		},
 		{
 			name:     "xpath_dynamic - ParseNode failure",
-			decl:     &Decl{XPathDynamic: &Decl{XPath: strs.StrPtr("<"), kind: KindField, fqdn: "fqdn"}},
+			decl:     &Decl{XPathDynamic: &Decl{XPath: strs.StrPtr("<"), kind: kindField, fqdn: "fqdn"}},
 			err:      "xpath query '<' on 'fqdn' failed: xpath '<' compilation failed: expression must evaluate to a node-set",
 			expected: "",
 		},
@@ -94,7 +94,7 @@ func TestComputeXPath(t *testing.T) {
 			decl: &Decl{
 				XPathDynamic: &Decl{
 					XPath: strs.StrPtr("A/non-existing"),
-					kind:  KindField,
+					kind:  kindField,
 					fqdn:  "test_fqdn",
 				}},
 			err:      "xpath_dynamic on 'test_fqdn' yields empty value",
@@ -104,8 +104,8 @@ func TestComputeXPath(t *testing.T) {
 			name: "xpath_dynamic - ParseNode returns non-string",
 			decl: &Decl{XPathDynamic: &Decl{
 				Const:      strs.StrPtr("1"),
-				ResultType: testResultType(ResultTypeInt),
-				kind:       KindConst,
+				ResultType: testResultType(resultTypeInt),
+				kind:       kindConst,
 				fqdn:       "fqdn"}},
 			err:      "xpath_dynamic on 'fqdn' yields a non-string value '1'",
 			expected: "",
@@ -115,14 +115,14 @@ func TestComputeXPath(t *testing.T) {
 			decl: &Decl{XPathDynamic: &Decl{
 				Const:  strs.StrPtr("    "),
 				NoTrim: true,
-				kind:   KindConst,
+				kind:   kindConst,
 				fqdn:   "fqdn"}},
 			err:      "xpath_dynamic on 'fqdn' yields empty value",
 			expected: "",
 		},
 		{
 			name:     "xpath_dynamic - xpath - success",
-			decl:     &Decl{XPathDynamic: &Decl{XPath: strs.StrPtr("C"), kind: KindField}},
+			decl:     &Decl{XPathDynamic: &Decl{XPath: strs.StrPtr("C"), kind: kindField}},
 			err:      "",
 			expected: "c",
 		},
@@ -132,13 +132,13 @@ func TestComputeXPath(t *testing.T) {
 				CustomFunc: &CustomFuncDecl{
 					Name: "dateTimeToRFC3339",
 					Args: []*Decl{
-						{Const: strs.StrPtr("not a valid datetime string"), kind: KindConst},
-						{Const: strs.StrPtr(""), kind: KindConst},
-						{Const: strs.StrPtr(""), kind: KindConst},
+						{Const: strs.StrPtr("not a valid datetime string"), kind: kindConst},
+						{Const: strs.StrPtr(""), kind: kindConst},
+						{Const: strs.StrPtr(""), kind: kindConst},
 					},
 					fqdn: "test_fqdn",
 				},
-				kind: KindCustomFunc,
+				kind: kindCustomFunc,
 			}},
 			err:      `'test_fqdn' failed: unable to parse 'not a valid datetime string' in any supported date/time format`,
 			expected: "",
@@ -149,12 +149,12 @@ func TestComputeXPath(t *testing.T) {
 				CustomFunc: &CustomFuncDecl{
 					Name: "concat",
 					Args: []*Decl{
-						{Const: strs.StrPtr("."), kind: KindConst},
-						{Const: strs.StrPtr("/"), kind: KindConst},
-						{Const: strs.StrPtr("B"), kind: KindConst},
+						{Const: strs.StrPtr("."), kind: kindConst},
+						{Const: strs.StrPtr("/"), kind: kindConst},
+						{Const: strs.StrPtr("B"), kind: kindConst},
 					},
 				},
-				kind: KindCustomFunc,
+				kind: kindCustomFunc,
 			}},
 			err:      "",
 			expected: "./B",
@@ -204,33 +204,33 @@ func TestParseCtx_ParseNode(t *testing.T) {
 		},
 		{
 			name:          "const kind",
-			decl:          &Decl{Const: strs.StrPtr("test_const"), kind: KindConst},
+			decl:          &Decl{Const: strs.StrPtr("test_const"), kind: kindConst},
 			expectedValue: "test_const",
 			expectedErr:   "",
 		},
 		{
 			name:          "External kind",
-			decl:          &Decl{External: strs.StrPtr("abc"), kind: KindExternal},
+			decl:          &Decl{External: strs.StrPtr("abc"), kind: kindExternal},
 			expectedValue: "efg",
 			expectedErr:   "",
 		},
 		{
 			name:          "field kind",
-			decl:          &Decl{XPath: strs.StrPtr("B"), kind: KindField},
+			decl:          &Decl{XPath: strs.StrPtr("B"), kind: kindField},
 			expectedValue: "b",
 			expectedErr:   "",
 		},
 		{
 			name:          "field xpath query failure",
-			decl:          &Decl{XPath: strs.StrPtr("<"), kind: KindField, fqdn: "test_fqdn"},
+			decl:          &Decl{XPath: strs.StrPtr("<"), kind: kindField, fqdn: "test_fqdn"},
 			expectedValue: nil,
 			expectedErr:   "xpath query '<' on 'test_fqdn' failed: xpath '<' compilation failed: expression must evaluate to a node-set",
 		},
 		{
 			name: "object kind",
 			decl: &Decl{
-				children: []*Decl{{XPath: strs.StrPtr("C"), kind: KindField, fqdn: "test_key"}},
-				kind:     KindObject,
+				children: []*Decl{{XPath: strs.StrPtr("C"), kind: kindField, fqdn: "test_key"}},
+				kind:     kindObject,
 			},
 			expectedValue: map[string]interface{}{
 				"test_key": "c",
@@ -240,8 +240,8 @@ func TestParseCtx_ParseNode(t *testing.T) {
 		{
 			name: "array kind",
 			decl: &Decl{
-				children: []*Decl{{XPath: strs.StrPtr("B"), kind: KindField}},
-				kind:     KindArray,
+				children: []*Decl{{XPath: strs.StrPtr("B"), kind: kindField}},
+				kind:     kindArray,
 			},
 			expectedValue: []interface{}{"b"},
 			expectedErr:   "",
@@ -252,21 +252,21 @@ func TestParseCtx_ParseNode(t *testing.T) {
 				CustomFunc: &CustomFuncDecl{
 					Name: "concat",
 					Args: []*Decl{
-						{Const: strs.StrPtr("abc"), kind: KindConst, hash: "hash-const"},
-						{XPath: strs.StrPtr("B"), kind: KindField, hash: "hash-field"},
+						{Const: strs.StrPtr("abc"), kind: kindConst, hash: "hash-const"},
+						{XPath: strs.StrPtr("B"), kind: kindField, hash: "hash-field"},
 						{
 							CustomFunc: &CustomFuncDecl{
 								Name: "lower",
 								Args: []*Decl{
-									{Const: strs.StrPtr("A"), kind: KindConst, hash: "hash-const2"},
+									{Const: strs.StrPtr("A"), kind: kindConst, hash: "hash-const2"},
 								},
 							},
-							kind: KindCustomFunc,
+							kind: kindCustomFunc,
 						},
-						{Const: strs.StrPtr("A"), kind: KindConst, hash: "hash-const2"},
+						{Const: strs.StrPtr("A"), kind: kindConst, hash: "hash-const2"},
 					},
 				},
-				kind: KindCustomFunc,
+				kind: kindCustomFunc,
 			},
 			expectedValue: "abcbaA",
 			expectedErr:   "",
@@ -275,7 +275,7 @@ func TestParseCtx_ParseNode(t *testing.T) {
 			name: "custom_parse kind",
 			decl: &Decl{
 				CustomParse: strs.StrPtr("test_custom_parse_str"),
-				kind:        KindCustomParse,
+				kind:        kindCustomParse,
 			},
 			expectedValue: "abc",
 			expectedErr:   "",
@@ -354,31 +354,31 @@ func TestParseCtx_ParseField(t *testing.T) {
 		},
 		{
 			name:          "computeXPath failed so we default value to nil",
-			decl:          &Decl{XPathDynamic: &Decl{External: strs.StrPtr("non-existing"), kind: KindExternal}},
+			decl:          &Decl{XPathDynamic: &Decl{External: strs.StrPtr("non-existing"), kind: kindExternal}},
 			expectedValue: nil,
 			expectedErr:   "",
 		},
 		{
 			name:          "matched",
-			decl:          &Decl{XPath: strs.StrPtr("B"), kind: KindField},
+			decl:          &Decl{XPath: strs.StrPtr("B"), kind: kindField},
 			expectedValue: "b",
 			expectedErr:   "",
 		},
 		{
 			name:          "no nodes matched",
-			decl:          &Decl{XPath: strs.StrPtr("abc"), kind: KindField},
+			decl:          &Decl{XPath: strs.StrPtr("abc"), kind: kindField},
 			expectedValue: nil,
 			expectedErr:   "",
 		},
 		{
 			name:          "more than one node matched",
-			decl:          &Decl{XPath: strs.StrPtr("*"), kind: KindField, fqdn: "test_fqdn"},
+			decl:          &Decl{XPath: strs.StrPtr("*"), kind: kindField, fqdn: "test_fqdn"},
 			expectedValue: nil,
 			expectedErr:   "xpath query '*' on 'test_fqdn' yielded more than one result",
 		},
 		{
 			name:          "invalid xpath",
-			decl:          &Decl{XPath: strs.StrPtr("<"), kind: KindField, fqdn: "test_fqdn"},
+			decl:          &Decl{XPath: strs.StrPtr("<"), kind: kindField, fqdn: "test_fqdn"},
 			expectedValue: nil,
 			expectedErr:   "xpath query '<' on 'test_fqdn' failed: xpath '<' compilation failed: expression must evaluate to a node-set",
 		},
@@ -411,20 +411,20 @@ func TestParseCtx_ParseCustomFunc(t *testing.T) {
 				CustomFunc: &CustomFuncDecl{
 					Name: "concat",
 					Args: []*Decl{
-						{Const: strs.StrPtr("abc"), kind: KindConst},
-						{XPath: strs.StrPtr("B"), kind: KindField},
+						{Const: strs.StrPtr("abc"), kind: kindConst},
+						{XPath: strs.StrPtr("B"), kind: kindField},
 						{
 							CustomFunc: &CustomFuncDecl{
 								Name: "lower",
 								Args: []*Decl{
-									{Const: strs.StrPtr("A"), kind: KindConst},
+									{Const: strs.StrPtr("A"), kind: kindConst},
 								},
 							},
-							kind: KindCustomFunc,
+							kind: kindCustomFunc,
 						},
 					},
 				},
-				kind: KindCustomFunc,
+				kind: kindCustomFunc,
 			},
 			expectedValue: "abcba",
 			expectedErr:   "",
@@ -435,11 +435,11 @@ func TestParseCtx_ParseCustomFunc(t *testing.T) {
 				CustomFunc: &CustomFuncDecl{
 					Name: "lower",
 					Args: []*Decl{
-						{External: strs.StrPtr("non-existing"), kind: KindExternal, fqdn: "test_fqdn"},
+						{External: strs.StrPtr("non-existing"), kind: kindExternal, fqdn: "test_fqdn"},
 					},
 					IgnoreError: false,
 				},
-				kind: KindCustomFunc,
+				kind: kindCustomFunc,
 			},
 			expectedValue: nil,
 			expectedErr:   "cannot find external property 'non-existing' on 'test_fqdn'",
@@ -451,11 +451,11 @@ func TestParseCtx_ParseCustomFunc(t *testing.T) {
 				CustomFunc: &CustomFuncDecl{
 					Name: "lower",
 					Args: []*Decl{
-						{External: strs.StrPtr("non-existing"), kind: KindExternal},
+						{External: strs.StrPtr("non-existing"), kind: kindExternal},
 					},
 					IgnoreError: false,
 				},
-				kind: KindCustomFunc,
+				kind: kindCustomFunc,
 			},
 			expectedValue: nil,
 			expectedErr:   "",
@@ -467,11 +467,11 @@ func TestParseCtx_ParseCustomFunc(t *testing.T) {
 				CustomFunc: &CustomFuncDecl{
 					Name: "lower",
 					Args: []*Decl{
-						{External: strs.StrPtr("non-existing"), kind: KindExternal},
+						{External: strs.StrPtr("non-existing"), kind: kindExternal},
 					},
 					IgnoreError: false,
 				},
-				kind: KindCustomFunc,
+				kind: kindCustomFunc,
 				fqdn: "test_fqdn",
 			},
 			expectedValue: nil,
@@ -493,7 +493,7 @@ func TestParseCtx_ParseCustomFunc(t *testing.T) {
 	}
 }
 
-func resultTypePtr(typ ResultType) *ResultType {
+func resultTypePtr(typ resultType) *resultType {
 	return &typ
 }
 
@@ -508,7 +508,7 @@ func TestParseCtx_ParseCustomParse(t *testing.T) {
 			name: "successful invoking custom_parse that returns a string",
 			decl: &Decl{
 				CustomParse: strs.StrPtr("test_custom_parse_str"),
-				kind:        KindCustomParse,
+				kind:        kindCustomParse,
 			},
 			expectedValue: "abc",
 			expectedErr:   "",
@@ -517,8 +517,8 @@ func TestParseCtx_ParseCustomParse(t *testing.T) {
 			name: "successful invoking custom_parse that returns an int",
 			decl: &Decl{
 				CustomParse: strs.StrPtr("test_custom_parse_int"),
-				ResultType:  resultTypePtr(ResultTypeInt),
-				kind:        KindCustomParse,
+				ResultType:  resultTypePtr(resultTypeInt),
+				kind:        kindCustomParse,
 			},
 			expectedValue: 123,
 			expectedErr:   "",
@@ -527,7 +527,7 @@ func TestParseCtx_ParseCustomParse(t *testing.T) {
 			name: "failed invoking custom_parse",
 			decl: &Decl{
 				CustomParse: strs.StrPtr("test_custom_parse_err"),
-				kind:        KindCustomParse,
+				kind:        kindCustomParse,
 			},
 			expectedValue: nil,
 			expectedErr:   "test_custom_parse_err",
@@ -537,7 +537,7 @@ func TestParseCtx_ParseCustomParse(t *testing.T) {
 			decl: &Decl{
 				XPath:       strs.StrPtr("NO MATCH"),
 				CustomParse: strs.StrPtr("test_custom_parse_str"),
-				kind:        KindCustomParse,
+				kind:        kindCustomParse,
 			},
 			expectedValue: nil,
 			expectedErr:   "",
@@ -547,7 +547,7 @@ func TestParseCtx_ParseCustomParse(t *testing.T) {
 			decl: &Decl{
 				XPath:       strs.StrPtr("*"),
 				CustomParse: strs.StrPtr("test_custom_parse_str"),
-				kind:        KindCustomParse,
+				kind:        kindCustomParse,
 				fqdn:        "test_fqdn",
 			},
 			expectedValue: nil,
@@ -579,11 +579,11 @@ func TestParseCtx_ParseObject(t *testing.T) {
 			name: "final output",
 			decl: &Decl{
 				fqdn: "FINAL_OUTPUT",
-				kind: KindObject,
+				kind: kindObject,
 				children: []*Decl{
 					{
 						fqdn:  "FINAL_OUTPUT.test_key",
-						kind:  KindField,
+						kind:  kindField,
 						XPath: strs.StrPtr("C"),
 					},
 				},
@@ -597,9 +597,9 @@ func TestParseCtx_ParseObject(t *testing.T) {
 			name: "computeXPath failed",
 			decl: &Decl{
 				fqdn: "test_fqdn",
-				kind: KindObject,
+				kind: kindObject,
 				// this would cause computeXPath fail
-				XPathDynamic: &Decl{External: strs.StrPtr("non-existing"), kind: KindExternal},
+				XPathDynamic: &Decl{External: strs.StrPtr("non-existing"), kind: kindExternal},
 			},
 			expectedValue: nil,
 			expectedErr:   "", // no error when nothing matched
@@ -608,7 +608,7 @@ func TestParseCtx_ParseObject(t *testing.T) {
 			name: "no nodes matched for xpath",
 			decl: &Decl{
 				fqdn:  "test_fqdn",
-				kind:  KindObject,
+				kind:  kindObject,
 				XPath: strs.StrPtr("abc"), // unmatched xpath
 			},
 			expectedValue: nil,
@@ -618,7 +618,7 @@ func TestParseCtx_ParseObject(t *testing.T) {
 			name: "invalid xpath",
 			decl: &Decl{
 				fqdn:  "test_fqdn",
-				kind:  KindObject,
+				kind:  kindObject,
 				XPath: strs.StrPtr("<"), // invalid xpath
 			},
 			expectedValue: nil,
@@ -628,11 +628,11 @@ func TestParseCtx_ParseObject(t *testing.T) {
 			name: "failed parsing on child node",
 			decl: &Decl{
 				fqdn: "test_fqdn",
-				kind: KindObject,
+				kind: kindObject,
 				children: []*Decl{
 					{
 						fqdn:  "test_fqdn.test_key",
-						kind:  KindField,
+						kind:  kindField,
 						XPath: strs.StrPtr("<"), // invalid xpath syntax.
 					},
 				},
@@ -644,13 +644,13 @@ func TestParseCtx_ParseObject(t *testing.T) {
 			name: "failed normalization",
 			decl: &Decl{
 				fqdn: "test_fqdn",
-				kind: KindObject,
+				kind: kindObject,
 				children: []*Decl{
 					{
 						fqdn:       "test_fqdn.test_key",
-						kind:       KindConst,
+						kind:       kindConst,
 						Const:      strs.StrPtr("abc"),
-						ResultType: testResultType(ResultTypeInt),
+						ResultType: testResultType(resultTypeInt),
 					},
 				},
 			},
@@ -688,7 +688,7 @@ func TestParseCtx_ParseArray(t *testing.T) {
 			name: "empty array",
 			decl: &Decl{
 				fqdn:     "test_fqdn",
-				kind:     KindArray,
+				kind:     kindArray,
 				children: []*Decl{},
 			},
 			expectedValue: nil,
@@ -698,13 +698,13 @@ func TestParseCtx_ParseArray(t *testing.T) {
 			name: "computeXPath failed",
 			decl: &Decl{
 				fqdn: "test_fqdn",
-				kind: KindArray,
+				kind: kindArray,
 				children: []*Decl{
 					{
 						fqdn: "test_fqdn.test_key",
-						kind: KindField,
+						kind: kindField,
 						// this would cause computeXPath fail
-						XPathDynamic: &Decl{External: strs.StrPtr("non-existing"), kind: KindExternal},
+						XPathDynamic: &Decl{External: strs.StrPtr("non-existing"), kind: kindExternal},
 					},
 				},
 			},
@@ -715,11 +715,11 @@ func TestParseCtx_ParseArray(t *testing.T) {
 			name: "invalid xpath in child",
 			decl: &Decl{
 				fqdn: "test_fqdn",
-				kind: KindArray,
+				kind: kindArray,
 				children: []*Decl{
 					{
 						fqdn:  "test_fqdn.test_key",
-						kind:  KindField,
+						kind:  kindField,
 						XPath: strs.StrPtr("<"), // invalid xpath syntax.
 					},
 				},
@@ -731,11 +731,11 @@ func TestParseCtx_ParseArray(t *testing.T) {
 			name: "no nodes matched for child xpath",
 			decl: &Decl{
 				fqdn: "test_fqdn",
-				kind: KindArray,
+				kind: kindArray,
 				children: []*Decl{
 					{
 						fqdn:  "test_fqdn.test_key",
-						kind:  KindField,
+						kind:  kindField,
 						XPath: strs.StrPtr("abc"),
 					},
 				},
@@ -747,18 +747,18 @@ func TestParseCtx_ParseArray(t *testing.T) {
 			name: "failed parsing child",
 			decl: &Decl{
 				fqdn: "test_fqdn",
-				kind: KindArray,
+				kind: kindArray,
 				children: []*Decl{
 					{
 						fqdn:  "test_fqdn.test_key",
-						kind:  KindObject,
+						kind:  kindObject,
 						XPath: strs.StrPtr("."),
 						children: []*Decl{
 							{
 								fqdn:       "test_fqdn.test_key.test_key2",
-								kind:       KindConst,
+								kind:       kindConst,
 								Const:      strs.StrPtr("abc"),
-								ResultType: testResultType(ResultTypeInt),
+								ResultType: testResultType(resultTypeInt),
 							},
 						},
 					},
@@ -771,13 +771,13 @@ func TestParseCtx_ParseArray(t *testing.T) {
 			name: "failed normalization",
 			decl: &Decl{
 				fqdn: "test_fqdn",
-				kind: KindArray,
+				kind: kindArray,
 				children: []*Decl{
 					{
 						fqdn:       "test_fqdn.test_key",
-						kind:       KindConst,
+						kind:       kindConst,
 						Const:      strs.StrPtr("abc"),
-						ResultType: testResultType(ResultTypeInt),
+						ResultType: testResultType(resultTypeInt),
 					},
 				},
 			},

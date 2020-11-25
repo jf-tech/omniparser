@@ -114,8 +114,8 @@ func DateTimeLayoutToRFC3339(_ *transformctx.Ctx, datetime, layout, layoutTZ, fr
 }
 
 const (
-	EpochUnitMilliseconds = "MILLISECOND"
-	EpochUnitSeconds      = "SECOND"
+	epochUnitMilliseconds = "MILLISECOND"
+	epochUnitSeconds      = "SECOND"
 )
 
 // DateTimeToEpoch parses a 'datetime' string intelligently, and returns its epoch number. 'fromTZ'
@@ -131,9 +131,9 @@ func DateTimeToEpoch(_ *transformctx.Ctx, datetime, fromTZ, unit string) (string
 		return "", err
 	}
 	switch unit {
-	case EpochUnitMilliseconds:
+	case epochUnitMilliseconds:
 		return strconv.FormatInt(t.UnixNano()/int64(time.Millisecond), 10), nil
-	case EpochUnitSeconds:
+	case epochUnitSeconds:
 		return strconv.FormatInt(t.Unix(), 10), nil
 	default:
 		return "", fmt.Errorf("unknown epoch unit '%s'", unit)
@@ -163,9 +163,9 @@ func EpochToDateTimeRFC3339(_ *transformctx.Ctx, epoch, unit string, tz ...strin
 	}
 	var t time.Time
 	switch unit {
-	case EpochUnitSeconds:
+	case epochUnitSeconds:
 		t = time.Unix(n, 0)
-	case EpochUnitMilliseconds:
+	case epochUnitMilliseconds:
 		t = time.Unix(0, n*(int64(time.Millisecond)))
 	default:
 		return "", fmt.Errorf("unknown epoch unit '%s'", unit)

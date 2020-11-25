@@ -52,19 +52,19 @@ func (p *parseCtx) ParseNode(n *idr.Node, decl *Decl) (interface{}, error) {
 		return value, err
 	}
 	switch decl.kind {
-	case KindConst:
+	case kindConst:
 		return saveIntoCache(p.parseConst(decl))
-	case KindExternal:
+	case kindExternal:
 		return saveIntoCache(p.parseExternal(decl))
-	case KindField:
+	case kindField:
 		return saveIntoCache(p.parseField(n, decl))
-	case KindObject:
+	case kindObject:
 		return saveIntoCache(p.parseObject(n, decl))
-	case KindArray:
+	case kindArray:
 		return saveIntoCache(p.parseArray(n, decl))
-	case KindCustomFunc:
+	case kindCustomFunc:
 		return saveIntoCache(p.parseCustomFunc(n, decl))
-	case KindCustomParse:
+	case kindCustomParse:
 		return saveIntoCache(p.parseCustomParse(n, decl))
 	default:
 		return nil, fmt.Errorf("unexpected decl kind '%s' on '%s'", decl.kind, decl.fqdn)
@@ -90,9 +90,9 @@ func xpathQueryNeeded(decl *Decl) bool {
 	// See details in parseArray().
 	// Now, if the transform is FINAL_OUTPUT, we never do xpath query on that, FINAL_OUTPUT's content node
 	// is always supplied by reader.
-	return decl.fqdn != FinalOutput &&
+	return decl.fqdn != finalOutput &&
 		decl.isXPathSet() &&
-		(decl.parent == nil || decl.parent.kind != KindArray)
+		(decl.parent == nil || decl.parent.kind != kindArray)
 }
 
 func (p *parseCtx) computeXPath(n *idr.Node, decl *Decl) (xpath string, dynamic bool, err error) {
