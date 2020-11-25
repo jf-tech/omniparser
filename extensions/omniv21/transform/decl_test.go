@@ -69,11 +69,11 @@ func TestMarshalDeclWithParentAndChildren(t *testing.T) {
         }`), &decl)
 	assert.NoError(t, err)
 	decl.fqdn = "root"
-	decl.kind = KindObject
+	decl.kind = kindObject
 	decl.children = []*Decl{decl.Object["field1"]}
 	childDecl := decl.Object["field1"]
 	childDecl.fqdn = "root.field1"
-	childDecl.kind = KindExternal
+	childDecl.kind = kindExternal
 	childDecl.parent = &decl
 	cupaloy.SnapshotT(t, jsons.BPM(decl))
 }
@@ -82,27 +82,27 @@ func TestResolveKind(t *testing.T) {
 	for _, test := range []struct {
 		name         string
 		decl         *Decl
-		expectedKind Kind
+		expectedKind kind
 	}{
 		{
 			name:         "const",
 			decl:         &Decl{Const: strs.StrPtr("test")},
-			expectedKind: KindConst,
+			expectedKind: kindConst,
 		},
 		{
 			name:         "external",
 			decl:         &Decl{External: strs.StrPtr("test")},
-			expectedKind: KindExternal,
+			expectedKind: kindExternal,
 		},
 		{
 			name:         "custom func",
 			decl:         &Decl{CustomFunc: &CustomFuncDecl{Name: "test"}},
-			expectedKind: KindCustomFunc,
+			expectedKind: kindCustomFunc,
 		},
 		{
 			name:         "object with empty map",
 			decl:         &Decl{XPath: strs.StrPtr("test"), Object: map[string]*Decl{}},
-			expectedKind: KindObject,
+			expectedKind: kindObject,
 		},
 		{
 			name: "object with non-empty map",
@@ -110,29 +110,29 @@ func TestResolveKind(t *testing.T) {
 				XPathDynamic: &Decl{},
 				Object:       map[string]*Decl{"a": {Const: strs.StrPtr("test")}},
 			},
-			expectedKind: KindObject,
+			expectedKind: kindObject,
 		},
 		{
 			name: "array",
 			decl: &Decl{
 				Array: []*Decl{{Const: strs.StrPtr("test")}},
 			},
-			expectedKind: KindArray,
+			expectedKind: kindArray,
 		},
 		{
 			name:         "template",
 			decl:         &Decl{XPath: strs.StrPtr("test"), Template: strs.StrPtr("test")},
-			expectedKind: KindTemplate,
+			expectedKind: kindTemplate,
 		},
 		{
 			name:         "field with xpath",
 			decl:         &Decl{XPath: strs.StrPtr("test")},
-			expectedKind: KindField,
+			expectedKind: kindField,
 		},
 		{
 			name:         "field with xpath_dynamic",
 			decl:         &Decl{XPathDynamic: &Decl{}},
-			expectedKind: KindField,
+			expectedKind: kindField,
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {

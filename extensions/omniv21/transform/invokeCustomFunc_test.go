@@ -25,7 +25,7 @@ func TestInvokeCustomFunc(t *testing.T) {
 				Args: []*Decl{
 					{
 						External: strs.StrPtr("non-existing"),
-						kind:     KindExternal,
+						kind:     kindExternal,
 						fqdn:     "test-arg-fqdn",
 					},
 				},
@@ -42,7 +42,7 @@ func TestInvokeCustomFunc(t *testing.T) {
 				Args: []*Decl{
 					{
 						Const: strs.StrPtr("var;"),
-						kind:  KindConst,
+						kind:  kindConst,
 						fqdn:  "test-arg-fqdn",
 					},
 				},
@@ -59,7 +59,7 @@ func TestInvokeCustomFunc(t *testing.T) {
 				Args: []*Decl{
 					{
 						Const: strs.StrPtr("a/"),
-						kind:  KindConst,
+						kind:  kindConst,
 						fqdn:  "test-arg1-fqdn",
 					},
 					{
@@ -68,28 +68,28 @@ func TestInvokeCustomFunc(t *testing.T) {
 							Args: []*Decl{
 								{
 									Const: strs.StrPtr("var;"),
-									kind:  KindConst,
+									kind:  kindConst,
 									fqdn:  "test-arg2-js-arg-fqdn",
 								},
 								{
 									Const: strs.StrPtr("not used arg 1"),
-									kind:  KindConst,
+									kind:  kindConst,
 								},
 								{
 									Const: strs.StrPtr("not used arg 1"),
-									kind:  KindConst,
+									kind:  kindConst,
 								},
 							},
 							IgnoreError: true,
 							fqdn:        "test-arg2-js-fqdn",
 						},
-						ResultType: testResultType(ResultTypeString),
-						kind:       KindCustomFunc,
+						ResultType: testResultType(resultTypeString),
+						kind:       kindCustomFunc,
 						fqdn:       "test-arg2-fqdn",
 					},
 					{
 						Const: strs.StrPtr("/b"),
-						kind:  KindConst,
+						kind:  kindConst,
 						fqdn:  "test-arg3-fqdn",
 					},
 				},

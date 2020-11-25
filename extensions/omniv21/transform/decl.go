@@ -6,39 +6,37 @@ import (
 	"github.com/jf-tech/go-corelib/strs"
 )
 
-// Kind specifies the types of omni schema's input elements.
-// Note in an actual schema, there is no such a field 'kind'. Kind
+// kind specifies the types of omni schema's input elements.
+// Note in an actual schema, there is no such a field 'kind'. kind
 // is inferred.
-type Kind string
+type kind string
 
 const (
-	// KindConst and rest are kinds for all transform decls.
-	KindConst       Kind = "const"
-	KindExternal    Kind = "external"
-	KindField       Kind = "field"
-	KindObject      Kind = "object"
-	KindArray       Kind = "array"
-	KindCustomFunc  Kind = "custom_func"
-	KindCustomParse Kind = "custom_parse"
-	KindTemplate    Kind = "template"
+	kindConst       kind = "const"
+	kindExternal    kind = "external"
+	kindField       kind = "field"
+	kindObject      kind = "object"
+	kindArray       kind = "array"
+	kindCustomFunc  kind = "custom_func"
+	kindCustomParse kind = "custom_parse"
+	kindTemplate    kind = "template"
 )
 
-// ResultType specifies the types of omni schema's output elements.
+// resultType specifies the types of omni schema's output elements.
 // It corresponds to schema's 'type' field.
-type ResultType string
+type resultType string
 
 const (
-	// ResultTypeInt and rest are the possible ResultType values.
-	ResultTypeInt     ResultType = "int"
-	ResultTypeFloat   ResultType = "float"
-	ResultTypeBoolean ResultType = "boolean"
-	ResultTypeString  ResultType = "string"
+	resultTypeInt     resultType = "int"
+	resultTypeFloat   resultType = "float"
+	resultTypeBoolean resultType = "boolean"
+	resultTypeString  resultType = "string"
 )
 
 const (
-	// FinalOutput is the special name of a Decl that is designated for the output
+	// finalOutput is the special name of a Decl that is designated for the output
 	// for an omni schema.
-	FinalOutput = "FINAL_OUTPUT"
+	finalOutput = "FINAL_OUTPUT"
 )
 
 // CustomFuncDecl is the decl for a "custom_func".
@@ -94,7 +92,7 @@ type Decl struct {
 	// Array specifies the input element is an array.
 	Array []*Decl `json:"array,omitempty"`
 	// ResultType specifies the desired output type of an element.
-	ResultType *ResultType `json:"type,omitempty"`
+	ResultType *resultType `json:"type,omitempty"`
 	// NoTrim specifies space trimming in string value of the output element.
 	NoTrim bool `json:"no_trim,omitempty"`
 	// KeepEmptyOrNull specifies whether or not keep an empty/null output or not.
@@ -102,7 +100,7 @@ type Decl struct {
 
 	// Internal fields are computed at schema loading time.
 	fqdn     string
-	kind     Kind
+	kind     kind
 	hash     string
 	children []*Decl
 	parent   *Decl
@@ -144,21 +142,21 @@ func (d Decl) MarshalJSON() ([]byte, error) {
 func (d *Decl) resolveKind() {
 	switch {
 	case d.Const != nil:
-		d.kind = KindConst
+		d.kind = kindConst
 	case d.External != nil:
-		d.kind = KindExternal
+		d.kind = kindExternal
 	case d.CustomFunc != nil:
-		d.kind = KindCustomFunc
+		d.kind = kindCustomFunc
 	case d.CustomParse != nil:
-		d.kind = KindCustomParse
+		d.kind = kindCustomParse
 	case d.Object != nil:
-		d.kind = KindObject
+		d.kind = kindObject
 	case d.Array != nil:
-		d.kind = KindArray
+		d.kind = kindArray
 	case d.Template != nil:
-		d.kind = KindTemplate
+		d.kind = kindTemplate
 	default:
-		d.kind = KindField
+		d.kind = kindField
 	}
 }
 

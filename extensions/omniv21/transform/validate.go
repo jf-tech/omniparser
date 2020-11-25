@@ -33,7 +33,7 @@ func ValidateTransformDeclarations(
 	ctx.declHashes = map[string]string{}
 
 	// We did json schema validation earlier, so "FINAL_OUTPUT" must exist.
-	finalOutputDecl, err := ctx.validateDecl(FinalOutput, ctx.Decls[FinalOutput], []string{FinalOutput})
+	finalOutputDecl, err := ctx.validateDecl(finalOutput, ctx.Decls[finalOutput], []string{finalOutput})
 	if err != nil {
 		return nil, err
 	}
@@ -53,27 +53,27 @@ func (ctx *validateCtx) validateDecl(fqdn string, decl *Decl, templateRefStack [
 	decl.fqdn = fqdn
 	decl.resolveKind()
 	switch decl.kind {
-	case KindObject:
+	case kindObject:
 		err := ctx.validateObject(fqdn, decl, templateRefStack)
 		if err != nil {
 			return nil, err
 		}
-	case KindArray:
+	case kindArray:
 		err := ctx.validateArray(fqdn, decl, templateRefStack)
 		if err != nil {
 			return nil, err
 		}
-	case KindCustomFunc:
+	case kindCustomFunc:
 		err := ctx.validateCustomFunc(fqdn, decl, templateRefStack)
 		if err != nil {
 			return nil, err
 		}
-	case KindCustomParse:
+	case kindCustomParse:
 		err := ctx.validateCustomParse(fqdn, decl)
 		if err != nil {
 			return nil, err
 		}
-	case KindTemplate:
+	case kindTemplate:
 		decl, err = ctx.validateTemplate(fqdn, decl, templateRefStack)
 		if err != nil {
 			return nil, err

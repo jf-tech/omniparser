@@ -254,11 +254,11 @@ func TestValidateTransformDeclarations(t *testing.T) {
 func TestComputeDeclHash(t *testing.T) {
 	decl1 := &Decl{
 		Object: map[string]*Decl{
-			"field3": {Const: strs.StrPtr("const"), kind: KindConst, fqdn: "root.field3", hash: "h3"},
-			"field1": {External: strs.StrPtr("external"), kind: KindExternal, fqdn: "root.field1", hash: "h1"},
-			"field2": {Template: strs.StrPtr("template"), kind: KindTemplate, fqdn: "root.field2", hash: "h2"},
+			"field3": {Const: strs.StrPtr("const"), kind: kindConst, fqdn: "root.field3", hash: "h3"},
+			"field1": {External: strs.StrPtr("external"), kind: kindExternal, fqdn: "root.field1", hash: "h1"},
+			"field2": {Template: strs.StrPtr("template"), kind: kindTemplate, fqdn: "root.field2", hash: "h2"},
 		},
-		kind: KindObject,
+		kind: kindObject,
 		fqdn: "root",
 		hash: "h0",
 	}
