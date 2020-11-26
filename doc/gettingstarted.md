@@ -299,24 +299,24 @@ Recall that we want to convert a data line such as
 ```
 into a JSON object output such as
 ```
-	{
-		"date": "2019-01-31T12:34:56-08:00",
-		"high_temperature_fahrenheit": 50.9,
-		"low_temperature_fahrenheit": 30.2,
-		"wind": "North 20.5 mph"
-	}
+{
+    "date": "2019-01-31T12:34:56-08:00",
+    "high_temperature_fahrenheit": 50.9,
+    "low_temperature_fahrenheit": 30.2,
+    "wind": "North 20.5 mph"
+}
 ```
 
 So let's define the object skeleton in the `FINAL_OUTPUT` in `schema.json`:
 ```
-    "transform_declarations": {
-        "FINAL_OUTPUT": { "object": {
-            "date": { "xpath": "DATE" },
-            "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C" },
-            "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F" },
-            "wind": { "xpath": "WIND_DIR" }
-        }}
-    }
+"transform_declarations": {
+    "FINAL_OUTPUT": { "object": {
+        "date": { "xpath": "DATE" },
+        "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C" },
+        "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F" },
+        "wind": { "xpath": "WIND_DIR" }
+    }}
+}
 ```
 (Note for brevity, `parser_settings` and `file_declaration` are omitted above.)
 
@@ -370,21 +370,21 @@ Yes the result looks better, but still far from the ideal. Let's fix the issues 
 Recall we want the `date` field in the desired output to be RFC-3339 compliant. We can use a parser
 built-in function to achieve this:
 ```
-    "transform_declarations": {
-        "FINAL_OUTPUT": { "object": {
-            "date": { "custom_func": {
-                "name": "dateTimeToRFC3339",
-                "args": [
-                    { "xpath": "DATE" },
-                    { "const": "", "_comment": "input timezone" },
-                    { "const": "", "_comment": "output timezone" }
-                ]
-            }},
-            "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C" },
-            "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F" },
-            "wind": { "xpath": "WIND_DIR" }
-        }}
-    }
+"transform_declarations": {
+    "FINAL_OUTPUT": { "object": {
+        "date": { "custom_func": {
+            "name": "dateTimeToRFC3339",
+            "args": [
+                { "xpath": "DATE" },
+                { "const": "", "_comment": "input timezone" },
+                { "const": "", "_comment": "output timezone" }
+            ]
+        }},
+        "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C" },
+        "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F" },
+        "wind": { "xpath": "WIND_DIR" }
+    }}
+}
 ```
 
 Run CLI we have:
@@ -409,14 +409,14 @@ Yes!!
 
 So basically we changed the simple `"date": { "xpath": "DATE" },` directive into a function call:
 ```
-            "date": { "custom_func": {
-                "name": "dateTimeToRFC3339",
-                "args": [
-                    { "xpath": "DATE" },
-                    { "const": "", "_comment": "input timezone" },
-                    { "const": "", "_comment": "output timezone" }
-                ]
-            }},
+"date": { "custom_func": {
+    "name": "dateTimeToRFC3339",
+    "args": [
+        { "xpath": "DATE" },
+        { "const": "", "_comment": "input timezone" },
+        { "const": "", "_comment": "output timezone" }
+    ]
+}},
 ```
 
 These built-in functions are called `custom_func` (and yes, programmatic users of omniparser have
@@ -437,30 +437,30 @@ be in time zone of `America/Los_Angeles`, we can specify it in the third argumen
 Note the `HIGH_TEMP_C` in input data is in celsius, and the desired output calls for fahrenheit. Let's
 fix that:
 ```
-    "transform_declarations": {
-        "FINAL_OUTPUT": { "object": {
-            "date": { "custom_func": {
-                "name": "dateTimeToRFC3339",
-                "args": [
-                    { "xpath": "DATE" },
-                    { "const": "", "_comment": "input timezone" },
-                    { "const": "", "_comment": "output timezone" }
-                ]
-            }},
-            "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
-            "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F" },
-            "wind": { "xpath": "WIND_DIR" }
+"transform_declarations": {
+    "FINAL_OUTPUT": { "object": {
+        "date": { "custom_func": {
+            "name": "dateTimeToRFC3339",
+            "args": [
+                { "xpath": "DATE" },
+                { "const": "", "_comment": "input timezone" },
+                { "const": "", "_comment": "output timezone" }
+            ]
         }},
-        "template_c_to_f": {
-            "custom_func": {
-                "name": "javascript",
-                "args": [
-                    { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
-                    { "const": "temp_c" }, { "xpath": ".", "type": "float" }
-                ]
-            }
+        "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
+        "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F" },
+        "wind": { "xpath": "WIND_DIR" }
+    }},
+    "template_c_to_f": {
+        "custom_func": {
+            "name": "javascript",
+            "args": [
+                { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
+                { "const": "temp_c" }, { "xpath": ".", "type": "float" }
+            ]
         }
     }
+}
 ```
 
 Here we introduce two new things: 1) template and 2) custom_func `javascript`.
@@ -483,15 +483,15 @@ Here we introduce two new things: 1) template and 2) custom_func `javascript`.
 
     Now let's take a closer look at the template `template_c_to_f`:
     ```
-           "template_c_to_f": {
-               "custom_func": {
-                   "name": "javascript",
-                   "args": [
-                       { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
-                       { "const": "temp_c" }, { "xpath": ".", "type": "float" }
-                   ]
-               }
-           }
+    "template_c_to_f": {
+        "custom_func": {
+            "name": "javascript",
+            "args": [
+                { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
+                { "const": "temp_c" }, { "xpath": ".", "type": "float" }
+            ]
+        }
+    }
     ```
     custom_func `javascript` takes a number of arguments: the first one is the actual script string,
     and all remaining arguments are to provide values for all the variables declared in the script
@@ -533,30 +533,30 @@ minor fix.
 Observe the output above you can see `low_temperature_fahrenheit` output value is a string, not a
 numeric value. That should be an easy fix:
 ```
-    "transform_declarations": {
-        "FINAL_OUTPUT": { "object": {
-            "date": { "custom_func": {
-                "name": "dateTimeToRFC3339",
-                "args": [
-                    { "xpath": "DATE" },
-                    { "const": "", "_comment": "input timezone" },
-                    { "const": "", "_comment": "output timezone" }
-                ]
-            }},
-            "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
-            "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F", "type": "float" },
-            "wind": { "xpath": "WIND_DIR" }
+"transform_declarations": {
+    "FINAL_OUTPUT": { "object": {
+        "date": { "custom_func": {
+            "name": "dateTimeToRFC3339",
+            "args": [
+                { "xpath": "DATE" },
+                { "const": "", "_comment": "input timezone" },
+                { "const": "", "_comment": "output timezone" }
+            ]
         }},
-        "template_c_to_f": {
-            "custom_func": {
-                "name": "javascript",
-                "args": [
-                    { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
-                    { "const": "temp_c" }, { "xpath": ".", "type": "float" }
-                ]
-            }
+        "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
+        "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F", "type": "float" },
+        "wind": { "xpath": "WIND_DIR" }
+    }},
+    "template_c_to_f": {
+        "custom_func": {
+            "name": "javascript",
+            "args": [
+                { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
+                { "const": "temp_c" }, { "xpath": ".", "type": "float" }
+            ]
         }
     }
+}
 ```
 Basically changing `"low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F" }` to
 `"low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F", "type": "float" }`.
@@ -587,10 +587,10 @@ Almost there! The `wind` field is a bit tricky to fix...
 Recall from [The Desired Output](#the-desired-output) we want to have the field `wind` some human
 readable wind stat:
 ```
-	{
-        ...
-		"wind": "North 20.5 mph"
-	},
+{
+    ...
+    "wind": "North 20.5 mph"
+},
 ```
 
 Recall the first data line's IDR (XML equivalent) looks like:
@@ -610,15 +610,15 @@ by one.
     desired output we want it to be English. So we need some mapping, for which again we resort to the
     all mighty custom function `javascript`:
     ```
-        "wind_acronym_mapping": {
-            "custom_func": {
-                "name": "javascript",
-                "args": [
-                    { "const": "dir=='N'?'North':dir=='NE'?'North East':dir=='E'?'East':dir=='SE'?'South East':dir=='S'?'South':dir=='SW'?'South West':dir=='W'?'West':dir=='NW'?'North West':'Tornado'"},
-                    { "const": "dir" }, { "xpath": "." }
-                ]
-            }
+    "wind_acronym_mapping": {
+        "custom_func": {
+            "name": "javascript",
+            "args": [
+                { "const": "dir=='N'?'North':dir=='NE'?'North East':dir=='E'?'East':dir=='SE'?'South East':dir=='S'?'South':dir=='SW'?'South West':dir=='W'?'West':dir=='NW'?'North West':'Tornado'"},
+                { "const": "dir" }, { "xpath": "." }
+            ]
         }
+    }
     ```
     A giant/long `? :` ternary operator infested javascript line maps wind direction abbreviations
     into English phrases.
@@ -635,46 +635,46 @@ by one.
 
 Put 1) and 2) together, we can have the new transform schema look like this:
 ```
-    "transform_declarations": {
-        "FINAL_OUTPUT": { "object": {
-            "date": { "custom_func": {
-                "name": "dateTimeToRFC3339",
-                "args": [
-                    { "xpath": "DATE" },
-                    { "const": "", "_comment": "input timezone" },
-                    { "const": "", "_comment": "output timezone" }
-                ]
-            }},
-            "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
-            "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F", "type": "float" },
-            "wind": { "custom_func": {
-                "name": "javascript",
-                "args": [
-                    { "const": "win_dir + ' ' + Math.floor(kmh * 0.621371 * 100) / 100 + ' mph'" },
-                    { "const": "win_dir" }, { "xpath": "WIND_DIR", "template": "wind_acronym_mapping" },
-                    { "const": "kmh" }, { "xpath": "WIND_SPEED_KMH", "type": "float" }
-                ]
-            }}
+"transform_declarations": {
+    "FINAL_OUTPUT": { "object": {
+        "date": { "custom_func": {
+            "name": "dateTimeToRFC3339",
+            "args": [
+                { "xpath": "DATE" },
+                { "const": "", "_comment": "input timezone" },
+                { "const": "", "_comment": "output timezone" }
+            ]
         }},
-        "template_c_to_f": {
-            "custom_func": {
-                "name": "javascript",
-                "args": [
-                    { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
-                    { "const": "temp_c" }, { "xpath": ".", "type": "float" }
-                ]
-            }
-        },
-        "wind_acronym_mapping": {
-            "custom_func": {
-                "name": "javascript",
-                "args": [
-                    { "const": "dir=='N'?'North':dir=='NE'?'North East':dir=='E'?'East':dir=='SE'?'South East':dir=='S'?'South':dir=='SW'?'South West':dir=='W'?'West':dir=='NW'?'North West':'Tornado'"},
-                    { "const": "dir" }, { "xpath": "." }
-                ]
-            }
+        "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
+        "low_temperature_fahrenheit": { "xpath": "LOW_TEMP_F", "type": "float" },
+        "wind": { "custom_func": {
+            "name": "javascript",
+            "args": [
+                { "const": "win_dir + ' ' + Math.floor(kmh * 0.621371 * 100) / 100 + ' mph'" },
+                { "const": "win_dir" }, { "xpath": "WIND_DIR", "template": "wind_acronym_mapping" },
+                { "const": "kmh" }, { "xpath": "WIND_SPEED_KMH", "type": "float" }
+            ]
+        }}
+    }},
+    "template_c_to_f": {
+        "custom_func": {
+            "name": "javascript",
+            "args": [
+                { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
+                { "const": "temp_c" }, { "xpath": ".", "type": "float" }
+            ]
+        }
+    },
+    "wind_acronym_mapping": {
+        "custom_func": {
+            "name": "javascript",
+            "args": [
+                { "const": "dir=='N'?'North':dir=='NE'?'North East':dir=='E'?'East':dir=='SE'?'South East':dir=='S'?'South':dir=='SW'?'South West':dir=='W'?'West':dir=='NW'?'North West':'Tornado'"},
+                { "const": "dir" }, { "xpath": "." }
+            ]
         }
     }
+}
 ```
 
 Run CLI one last time, we have:
@@ -705,17 +705,17 @@ omniparser and schemas programmatically to enable high speed / high volume proce
 code snippet of showing how to achieve this:
 
 ```
-    schema, err := omniparser.NewSchema("your schema name", strings.NewReader("your schema content"))
-    if err != nil { ... }
-    transform, err := schema.NewTransform("your input name", strings.NewReader("your input content"), &transformctx.Ctx{})
-    if err != nil { ... }
-    for {
-        output, err := transform.Read()
-        if err == io.EOF {
-            break
-        }
-        // output contains a []byte of the ingested and transformed record. 
+schema, err := omniparser.NewSchema("your schema name", strings.NewReader("your schema content"))
+if err != nil { ... }
+transform, err := schema.NewTransform("your input name", strings.NewReader("your input content"), &transformctx.Ctx{})
+if err != nil { ... }
+for {
+    output, err := transform.Read()
+    if err == io.EOF {
+        break
     }
+    // output contains a []byte of the ingested and transformed record. 
+}
 ```
 
 ## Summary
@@ -791,17 +791,17 @@ code snippet of showing how to achieve this:
 
 ### The Code
 ```
-    schema, err := omniparser.NewSchema("your schema name", strings.NewReader("your schema content"))
-    if err != nil { ... }
-    transform, err := schema.NewTransform("your input name", strings.NewReader("your input content"), &transformctx.Ctx{})
-    if err != nil { ... }
-    for {
-        output, err := transform.Read()
-        if err == io.EOF {
-            break
-        }
-        // output contains a []byte of the ingested and transformed record. 
+schema, err := omniparser.NewSchema("your schema name", strings.NewReader("your schema content"))
+if err != nil { ... }
+transform, err := schema.NewTransform("your input name", strings.NewReader("your input content"), &transformctx.Ctx{})
+if err != nil { ... }
+for {
+    output, err := transform.Read()
+    if err == io.EOF {
+        break
     }
+    // output contains a []byte of the ingested and transformed record. 
+}
 ```
 
 ### The Output
