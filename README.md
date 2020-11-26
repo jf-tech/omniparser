@@ -16,6 +16,7 @@ Docs:
 - [IDR](./doc/idr.md): in-memory data representation of ingested data for omniparser.
 - [XPath Based Record Filtering and Data Extraction](./doc/xpath.md): xpath queries are essential to omniparser schema
 writing. Learn the concept and tricks in depth.
+- [All About Transforms](./doc/transforms.md): everything about `transform_declarations`.
 - [Use of `custom_func`, Specially `javascript`](./doc/use_of_custom_funcs.md): An in depth look of how `custom_func`
 is used, specially the all mighty `javascript` (and `javascript_with_context`).
 - [CSV Schema in Depth](./doc/csv_in_depth.md): everything about schemas for CSV input.

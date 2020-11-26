@@ -23,11 +23,11 @@ We want omniparser to ingest and transform records with `order_id=1234,1235` and
 `transform_declarations`:
 
 ```
-    "transform_declarations": {
-        "FINAL_OUTPUT": { "xpath": ".[matches(ORDER_ID, '^[0-9]+$')]", "object": {
-            ...
-        }}
-    }
+"transform_declarations": {
+    "FINAL_OUTPUT": { "xpath": ".[matches(ORDER_ID, '^[0-9]+$')]", "object": {
+        ...
+    }}
+}
 ```
 
 Let's take a look how the transform works for first data line `1234,CUST_1,US`:
@@ -71,13 +71,13 @@ all records ingested by omniparser file format specific readers will be processe
 The most common use of `xpath` is for data extraction. Consider again the sample CSV and schema in
 [Record Filtering](#record-filtering), let's amend the schema to:
 ```
-    "transform_declarations": {
-        "FINAL_OUTPUT": { "xpath": ".[matches(ORDER_ID, '^[0-9]+$')]", "object": {
-            "order_id": { "xpath": "ORDER_ID", "type": "int" },
-            "customer_id": { "xpath": "CUSTOMER_ID", "type": "int" },
-            "country": { "xpath": "COUNTRY" }
-        }}
-    }
+"transform_declarations": {
+    "FINAL_OUTPUT": { "xpath": ".[matches(ORDER_ID, '^[0-9]+$')]", "object": {
+        "order_id": { "xpath": "ORDER_ID", "type": "int" },
+        "customer_id": { "xpath": "CUSTOMER_ID", "type": "int" },
+        "country": { "xpath": "COUNTRY" }
+    }}
+}
 ```
 
 The `xpath` attributes on `"order_id"`, `"customer_id"`, and `"country"` tell omniparser where to get
@@ -240,36 +240,36 @@ of `product`, it specifies what actual options are included.
 
 The [sample schema](../extensions/omniv21/samples/json/3_xpathdynamic.schema.json):
 ```
-    "transform_declarations": {
-        "FINAL_OUTPUT": { "xpath": "/*", "object": {
-            "order_info": { "object": {
-                "order_items": { "array": [
-                    { "xpath": "line_items/*", "object": {
-                        ....
-                        "color": { "xpath_dynamic": {
-                            "custom_func": {
-                                "name": "concat",
-                                "args": [
-                                    { "const": "product/variant/option" },
-                                    { "xpath": "product/options/*[name='color/pattern']/index" }
-                                ]
-                            }
-                        }},
-                        "size": { "xpath_dynamic": {
-                            "custom_func": {
-                                "name": "concat",
-                                "args": [
-                                    { "const": "product/variant/option" },
-                                    { "xpath": "product/options/*[name='Size']/index" }
-                                ]
-                            }
-                        }},
-                        ...
-                    }}
-                ]}
-            }}
+"transform_declarations": {
+    "FINAL_OUTPUT": { "xpath": "/*", "object": {
+        "order_info": { "object": {
+            "order_items": { "array": [
+                { "xpath": "line_items/*", "object": {
+                    ...
+                    "color": { "xpath_dynamic": {
+                        "custom_func": {
+                            "name": "concat",
+                            "args": [
+                                { "const": "product/variant/option" },
+                                { "xpath": "product/options/*[name='color/pattern']/index" }
+                            ]
+                        }
+                    }},
+                    "size": { "xpath_dynamic": {
+                        "custom_func": {
+                            "name": "concat",
+                            "args": [
+                                { "const": "product/variant/option" },
+                                { "xpath": "product/options/*[name='Size']/index" }
+                            ]
+                        }
+                    }},
+                    ...
+                }}
+            ]}
         }}
-    }
+    }}
+}
 ```
 
 The schema wants to transform `optoin1` and `option2` in the input into `color` and `size` in output. The
