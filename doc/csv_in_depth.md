@@ -79,3 +79,7 @@ quotes `'`.
     If a column's name contains space, while it's completely legitimate in CSV, it would make the XPath
     based transform hard/impossible later. In situations like this, we strongly advise schema writer to
     use `alias` to assign an alias to the column that is XPath friendly, such as containing no spaces.
+
+## CSV Specific IDR Structure
+
+See [here](./idr.md#csv-aka-delimited) for more details.
