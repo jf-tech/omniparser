@@ -240,7 +240,7 @@ So the skeleton of the schema (assume we name the schema file `test.schema.json`
 
 Run the cli (may need to adjust the path to the [cli.sh](../cli.sh)):
 ```
-$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json 
+$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json
 
 Error: schema 'test.schema.json': missing segment/segment_group with 'is_target' = true
 ```
@@ -361,7 +361,7 @@ We can sketch out the `segment_declarations` with the hierarchy outlined above:
 
 Run the cli:
 ```
-$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json 
+$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json
 
 Error: schema 'test.schema.json': missing segment/segment_group with 'is_target' = true
 ```
@@ -375,7 +375,7 @@ the segment group `invoiceInfo` as the target: let's add `is_target` to it:
 
 Rerun cli:
 ```
-$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json 
+$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json
 
 Error: input '2_ups_edi_210.input.txt' at segment no.11 (char[334,334]): segment 'ISA/GS/invoiceInfo/partyInfo/N4' needs min occur 1, but only got 0
 ```
@@ -407,7 +407,7 @@ Now let's modify the segment decl to:
 ```
 and rerun cli:
 ```
-$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json 
+$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json
 
 Error: input '2_ups_edi_210.input.txt' at segment no.11 (char[334,334]): segment 'ISA/GS/invoiceInfo/partyInfo/N9' needs min occur 1, but only got 0
 ```
@@ -482,7 +482,7 @@ segments in our test schema and fix their min/max according to the spec. We have
 
 and rerun cli:
 ```
-$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json 
+$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json
 [
 	null,
 	null,
@@ -685,7 +685,7 @@ called `ABC`, and in an EDI spec, we have:
 ```
 Pos.No.   Seg.ID    Req.Des.    Max.Use     Desc
 ...
-0100      ABC       O           1           contains spouse 1 name           
+0100      ABC       O           1           contains spouse 1 name
 0200      ABC       O           1           contains spouse 2 name
 ...
 ```
