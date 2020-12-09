@@ -1,0 +1,290 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "edi"
+    },
+    "file_declaration": {
+        "segment_delimiter": "|",
+        "element_delimiter": "*",
+        "component_delimiter": ">",
+        "ignore_crlf": true,
+        "segment_declarations": [
+            {
+                "name": "ISA",
+                "child_segments": [
+                    {
+                        "name": "GS",
+                        "child_segments": [
+                            {
+                                "name": "invoiceInfo", "type": "segment_group", "min": 0, "max": -1, "is_target": true,
+                                "child_segments": [
+                                    { "name": "ST" },
+                                    { "name": "B3", "elements": [
+                                        { "name": "invoiceNumber", "index": 2 },
+                                        { "name": "paymentMethod", "index": 4 },
+                                        { "name": "invoiceDate", "index": 6 },
+                                        { "name": "amountDue", "index": 7 },
+                                        { "name": "invoiceDueDate", "index": 12 }
+                                    ]},
+                                    { "name": "C3", "elements": [ { "name": "currency", "index": 1 } ] },
+                                    { "name": "ITD", "min": 0 },
+                                    { "name": "N9", "min": 0, "max": 300,
+                                        "elements": [
+                                            { "name": "refIdQualifier", "index": 1 },
+                                            { "name": "refId", "index": 2 }
+                                        ]
+                                    },
+                                    {
+                                        "name": "partyInfo", "type": "segment_group", "min": 0, "max": 10,
+                                        "child_segments": [
+                                            { "name": "N1", "min": 0,
+                                                "elements": [
+                                                    { "name": "entityIdentifierCode", "index": 1 },
+                                                    { "name": "name", "index": 2, "default": "" },
+                                                    { "name": "identificationCode", "index": 4, "default": "" }
+                                                ]
+                                            },
+                                            { "name": "N2", "min": 0 },
+                                            { "name": "N3", "min": 0, "max": 2,
+                                                "elements": [
+                                                    { "name": "address1", "index": 1 },
+                                                    { "name": "address2", "index": 2, "default": "" }
+                                                ]
+                                            },
+                                            { "name": "N4", "min": 0,
+                                                "elements": [
+                                                    { "name": "city", "index": 1, "default": "" },
+                                                    { "name": "state_province", "index": 2, "default": "" },
+                                                    { "name": "postal_code", "index": 3, "default": "" },
+                                                    { "name": "country", "index": 4, "default": "" }
+                                                ]
+                                            },
+                                            { "name": "N9", "min": 0, "max": 5 }
+                                        ]
+                                    },
+                                    {
+                                        "name": "lineItemInfo", "type": "segment_group", "min": 0, "max": -1,
+                                        "child_segments": [
+                                            { "name": "LX", "min": 0,
+                                                "elements": [
+                                                    { "name": "assignedNumber", "index": 1 }
+                                                ]
+                                            },
+                                            { "name": "N9", "min": 0, "max": 5,
+                                                "elements": [
+                                                    { "name": "refIdQualifier_N901", "index": 1 },
+                                                    { "name": "refId_N902", "index": 2, "default": "" },
+                                                    { "name": "date", "index": 4, "default": "" },
+                                                    { "name": "product_code_C04004", "index": 7, "component_index": 4, "default": "" }
+                                                ]
+                                            },
+                                            { "name": "L5", "min": 0, "max": 30 },
+                                            { "name": "L0", "min": 0, "max": 10,
+                                                "elements": [
+                                                    { "name": "ladingQuantity", "index": 8 },
+                                                    { "name": "packagingFormCode", "index": 9 }
+                                                ]
+                                            },
+                                            { "name": "L1", "min": 0, "max": -1,
+                                                "elements": [
+                                                    { "name": "charge", "index": 4 },
+                                                    { "name": "chargeType", "index": 8 },
+                                                    { "name": "chargeDesc", "index": 12, "default": "" }
+                                                ]
+                                            },
+                                            { "name": "L4", "min": 0, "max": 10,
+                                                "elements": [
+                                                    { "name": "length", "index": 1 },
+                                                    { "name": "width", "index": 2 },
+                                                    { "name": "height", "index": 3 },
+                                                    { "name": "unit", "index": 4 },
+                                                    { "name": "quantity", "index": 5, "default": "1" }
+                                                ]
+                                            },
+                                            {
+                                                "name": "consigneeInfo", "type": "segment_group", "min": 0, "max": -1,
+                                                "child_segments": [
+                                                    { "name": "N1", "min": 0,
+                                                        "elements": [ { "name": "entityIdentifierCode", "index": 1 } ]
+                                                    },
+                                                    { "name": "N2", "min": 0,
+                                                        "elements": [ { "name": "consigneeName", "index": 1 } ]
+                                                    },
+                                                    { "name": "N3", "min": 0, "max": 2,
+                                                        "elements": [
+                                                            { "name": "address1", "index": 1 },
+                                                            { "name": "address2", "index": 2, "default": "" }
+                                                        ]
+                                                    },
+                                                    { "name": "N4", "min": 0,
+                                                        "elements": [
+                                                            { "name": "city", "index": 1, "default": "" },
+                                                            { "name": "state_province", "index": 2, "default": "" },
+                                                            { "name": "postal_code", "index": 3, "default": "" },
+                                                            { "name": "country", "index": 4, "default": "" }
+                                                        ]
+                                                    },
+                                                    { "name": "N9", "min": 0, "max": 7,
+                                                        "elements": [
+                                                            { "name": "refIdQualifier_N901", "index": 1 },
+                                                            { "name": "refId_N902", "index": 2, "default": "" }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "name": "cartonInfo", "type": "segment_group", "min": 0, "max": -1,
+                                                        "child_segments": [
+                                                            { "name": "CD3", "min": 0,
+                                                                "elements": [
+                                                                    { "name": "weightQualifier", "index": 1, "default": "" },
+                                                                    { "name": "weight", "index": 2, "default": "" },
+                                                                    { "name": "serviceStandard", "index": 4, "default": "" },
+                                                                    { "name": "serviceLevel", "index": 5, "default": "" }
+                                                                ]
+                                                            },
+                                                            { "name": "N9", "min": 0, "max": 20,
+                                                                "elements": [
+                                                                    { "name": "refIdQualifier_N901", "index": 1 },
+                                                                    { "name": "refId_N902", "index": 2, "default": "" }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    { "name": "L3", "min": 0 },
+                                    { "name": "SE" }
+                                ]
+                            }
+                        ]
+                    },
+                    { "name": "GE" }
+                ]
+            },
+            { "name": "IEA" }
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "object": {
+            "invoice_number": { "xpath": "B3/invoiceNumber" },
+            "invoice_date": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "B3/invoiceDate" },
+                    { "const": "", "_comment": "input timezone" },
+                    { "const": "", "_comment": "output timezone" }
+                ]
+            }},
+            "invoice_due_date": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "B3/invoiceDueDate" },
+                    { "const": "", "_comment": "input timezone" },
+                    { "const": "", "_comment": "output timezone" }
+                ]
+            }},
+            "invoice_total_amount": { "xpath": "B3/amountDue", "type":  "float" },
+            "invoice_total_amount_currency": { "xpath": "C3/currency" },
+            "consolidated_bill_plan_number": { "xpath": "N9[refIdQualifier='18']/refId" },
+            "tax_id": { "xpath": "N9[refIdQualifier='GT']/refId" },
+            "manifest_routing_number": { "xpath": "N9[refIdQualifier='MA']/refId" },
+            "payment_method": { "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const":  "pm=='CC'?'Consignee Billing':pm=='DF'?'Bank Transfer':pm=='PA'?'Credit Card':pm=='PP'?'Prepaid':'Unknown'" },
+                    { "const": "pm" }, { "xpath": "B3/paymentMethod" }
+                ]
+            }},
+            "parties": { "array": [
+                { "xpath": "partyInfo", "object": {
+                    "entity_identifier_code": { "xpath": "N1/entityIdentifierCode" },
+                    "entity_identifier": { "custom_func": {
+                        "name": "javascript",
+                        "args": [
+                            { "const":  "eic=='BT'?'Bill to Party':eic=='SH'?'Shipper':'Unknown'" },
+                            { "const": "eic" }, { "xpath": "N1/entityIdentifierCode" }
+                        ]
+                    }},
+                    "name": { "xpath": "N1/name" },
+                    "identification_code": { "xpath": "N1/identificationCode" },
+                    "address": { "template": "n3_n4_address_template" }
+                }}
+            ]},
+            "line_items": { "array": [
+                { "xpath": "lineItemInfo", "object": {
+                    "item_no": { "xpath": "LX/assignedNumber", "type": "int" },
+                    "tracking_number": { "xpath": "N9[refIdQualifier_N901='CN']/refId_N902" },
+                    "date": { "custom_func": {
+                        "name": "dateTimeToRFC3339",
+                        "args": [
+                            { "xpath": "N9[position()=1]/date" },
+                            { "const": "", "_comment": "input timezone" },
+                            { "const": "", "_comment": "output timezone" }
+                        ]
+                    }},
+                    "ups_product_code": { "xpath": "N9[position()=1]/product_code_C04004" },
+                    "number_of_pieces": { "xpath": "L0[packagingFormCode='PCS']/ladingQuantity", "type": "int" },
+                    "fees_and_charges": { "array": [
+                        { "xpath": "L1", "object": {
+                            "charge": { "xpath": "charge", "type": "int" },
+                            "charge_type": { "xpath": "chargeType" },
+                            "charge_desc": { "xpath": "chargeDesc" }
+                        }}
+                    ]},
+                    "measurement": { "xpath": "L4[position()=1]", "object": {
+                        "length": { "xpath": "length", "type": "int" },
+                        "width": { "xpath": "width", "type": "int" },
+                        "height": { "xpath": "height", "type": "int" },
+                        "unit": { "custom_func": {
+                            "name": "javascript",
+                            "args": [
+                                { "const":  "unit=='C'?'Centimeters':unit=='N'?'Inches':'Unknown'" },
+                                { "const": "unit" }, { "xpath": "unit" }
+                            ]
+                        }},
+                        "quantity": { "xpath": "quantity", "type": "int" }
+                    }},
+                    "consignees": { "array": [
+                        { "xpath": "consigneeInfo[N1/entityIdentifierCode='CN']", "object": {
+                            "name": { "xpath": "N2/consigneeName" },
+                            "address": { "template": "n3_n4_address_template" },
+                            "customer_reference_number": { "xpath": "N9[refIdQualifier_N901='CR']/refId_N902" },
+                            "packages": { "array": [
+                                { "xpath": "cartonInfo", "object": {
+                                    "weight_qualifier": { "xpath": "CD3/weightQualifier" },
+                                    "weight": { "custom_func": {
+                                        "name": "javascript",
+                                        "args": [
+                                            { "const":  "w ? parseFloat(w) : ''" },
+                                            { "const": "w" }, { "xpath": "CD3/weight" }
+                                        ]
+                                    }},
+                                    "service_standard": { "xpath": "CD3/serviceStandard" },
+                                    "service_level": { "custom_func": {
+                                        "name": "javascript",
+                                        "args": [
+                                            { "const":  "sl=='ZZ'?'':sl" },
+                                            { "const": "sl" }, { "xpath": "CD3/serviceLevel" }
+                                        ]
+                                    }},
+                                    "reason_code": { "xpath": "N9[refIdQualifier_N901='RC' and refId_N902!='']/refId_N902"}
+                                }}
+                            ]}
+                        }}
+                    ]}
+                }}
+            ]}
+        }},
+        "n3_n4_address_template": { "object": {
+            "line1": { "xpath": "N3[position()=1]/address1" },
+            "line2": { "xpath": "N3[position()=1]/address2" },
+            "line3": { "xpath": "N3[position()=2]/address1" },
+            "line4": { "xpath": "N3[position()=2]/address2" },
+            "city": { "xpath": "N4/city" },
+            "state_province": { "xpath": "N4/state_province" },
+            "postal_code": { "xpath": "N4/postal_code" },
+            "country": { "xpath": "N4/country" }
+        }}
+    }
+}

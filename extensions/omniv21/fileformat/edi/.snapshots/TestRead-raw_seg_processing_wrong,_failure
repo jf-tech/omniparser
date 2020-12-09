@@ -1,4 +1,4 @@
 {
 	"Records": null,
-	"FinalErr": "input 'test' between character [1,7]: unable to find element 'e2' on segment ''"
+	"FinalErr": "input 'test' at segment no.1 (char[1,7]): unable to find element 'e2' on segment ''"
 }

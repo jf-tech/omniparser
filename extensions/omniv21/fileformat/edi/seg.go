@@ -30,10 +30,11 @@ const (
 )
 
 type elem struct {
-	Name           string `json:"name,omitempty"`
-	Index          int    `json:"index,omitempty"`
-	CompIndex      *int   `json:"component_index,omitempty"`
-	EmptyIfMissing bool   `json:"empty_if_missing,omitempty"`
+	Name           string  `json:"name,omitempty"`
+	Index          int     `json:"index,omitempty"`
+	CompIndex      *int    `json:"component_index,omitempty"`
+	EmptyIfMissing bool    `json:"empty_if_missing,omitempty"` // Deprecated, use Default
+	Default        *string `json:"default,omitempty"`
 }
 
 func (e elem) compIndex() int {
