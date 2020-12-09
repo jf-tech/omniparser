@@ -19,6 +19,11 @@ func Test1_CanadaPost_EDI_214(t *testing.T) {
 		t, "./1_canadapost_edi_214.schema.json", "./1_canadapost_edi_214.input.txt")))
 }
 
+func Test2_UPS_EDI_210(t *testing.T) {
+	cupaloy.SnapshotT(t, jsons.BPJ(samples.SampleTestCommon(
+		t, "./2_ups_edi_210.schema.json", "./2_ups_edi_210.input.txt")))
+}
+
 var benchSchemaFile = "./1_canadapost_edi_214.schema.json"
 var benchInputFile = "./1_canadapost_edi_214.input.txt"
 var benchSchema omniparser.Schema

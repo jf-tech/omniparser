@@ -18,6 +18,7 @@ const (
                 "element_delimiter": { "type": "string", "minLength": 1 },
                 "component_delimiter": { "type": "string", "minLength": 1 },
                 "release_character": { "type": "string", "minLength": 1 },
+                "ignore_crlf": { "type": "boolean" },
                 "segment_declarations": {
                     "type": "array",
                     "items": {
@@ -47,7 +48,8 @@ const (
                             "name": { "type": "string", "minLength": 1 },
                             "index": { "type": "integer", "minimum": 1 },
                             "component_index": { "type": "integer", "minimum": 1 },
-                            "empty_if_missing": { "type": "boolean" }
+                            "empty_if_missing": { "type": "boolean","$comment": "deprecated, use 'default'" },
+                            "default": { "type": "string" }
                         },
                         "required": [ "name", "index" ],
                         "additionalProperties": false

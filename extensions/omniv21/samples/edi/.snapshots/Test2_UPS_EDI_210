@@ -1,0 +1,2633 @@
+[
+	{
+		"consolidated_bill_plan_number": "0000980205",
+		"invoice_date": "2008-07-26T00:00:00",
+		"invoice_due_date": "2008-08-06T00:00:00",
+		"invoice_number": "0000001808WW308",
+		"invoice_total_amount": 1700,
+		"invoice_total_amount_currency": "USD",
+		"line_items": [
+			{
+				"date": "2008-07-26T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 1700,
+						"charge_type": "SAC"
+					}
+				],
+				"item_no": 1,
+				"number_of_pieces": 1,
+				"ups_product_code": "031"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "BELFEST",
+							"country": "GB",
+							"line1": "90 POLLUS BLVD",
+							"postal_code": "BT170"
+						},
+						"customer_reference_number": "7803A-0005-0001-1",
+						"name": "SMITH",
+						"packages": [
+							{
+								"service_standard": "90",
+								"weight": 10,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 12740,
+						"charge_type": "400"
+					},
+					{
+						"charge": 1500,
+						"charge_type": "395"
+					},
+					{
+						"charge": 2548,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -1274,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 2,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z1808WW0473048017",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": -16788,
+						"charge_desc": "050",
+						"charge_type": "CDF"
+					},
+					{
+						"charge": 1274,
+						"charge_type": "275"
+					}
+				],
+				"item_no": 3,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z1808WW0473048017",
+				"ups_product_code": "040"
+			}
+		],
+		"parties": [
+			{
+				"address": {
+					"city": "MORRISTOWN",
+					"country": "US",
+					"line1": "435 SOUTH ST",
+					"line2": "SUITE 301",
+					"line3": "INDUSTRIAL DISTRICT",
+					"postal_code": "07960",
+					"state_province": "NJ"
+				},
+				"entity_identifier": "Bill to Party",
+				"entity_identifier_code": "BT",
+				"name": "JOHN 117"
+			},
+			{
+				"address": {
+					"city": "MORRISTOWN",
+					"country": "US",
+					"line1": "435 SOUTH ST",
+					"line2": "SUITE 301",
+					"line3": "INDUSTRIAL DISTRICT",
+					"postal_code": "07960",
+					"state_province": "NJ"
+				},
+				"entity_identifier": "Shipper",
+				"entity_identifier_code": "SH",
+				"identification_code": "00001808WW",
+				"name": "JOHN 117"
+			}
+		],
+		"payment_method": "Prepaid"
+	},
+	{
+		"consolidated_bill_plan_number": "0000980209",
+		"invoice_date": "2008-07-26T00:00:00",
+		"invoice_due_date": "2008-08-04T00:00:00",
+		"invoice_number": "0000001502WW308",
+		"invoice_total_amount": 9415,
+		"invoice_total_amount_currency": "USD",
+		"line_items": [
+			{
+				"date": "2008-07-26T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 800,
+						"charge_type": "SAC"
+					}
+				],
+				"item_no": 1,
+				"number_of_pieces": 1,
+				"ups_product_code": "031"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 15216,
+						"charge_type": "400"
+					},
+					{
+						"charge": -302,
+						"charge_type": "275"
+					}
+				],
+				"item_no": 2,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-19T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": -1100,
+						"charge_desc": "014",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 100,
+						"charge_type": "275"
+					}
+				],
+				"item_no": 3,
+				"number_of_pieces": 1,
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-26T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": -1000,
+						"charge_desc": "014",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 100,
+						"charge_type": "275"
+					}
+				],
+				"item_no": 4,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z1502WW1264639290",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-19T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": -1000,
+						"charge_desc": "014",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 100,
+						"charge_type": "275"
+					}
+				],
+				"item_no": 5,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z1502WW1265258413",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-19T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": -1000,
+						"charge_desc": "014",
+						"charge_type": "AAJ"
+					}
+				],
+				"item_no": 6,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z1502WW1266427827",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 756,
+						"charge_desc": "015C",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -680,
+						"charge_desc": "015O",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 195,
+						"charge_type": "REP"
+					},
+					{
+						"charge": 56,
+						"charge_type": "010"
+					},
+					{
+						"charge": 33,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 7,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z1502WW0364856518",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "DALLAS",
+							"country": "US",
+							"line1": "33 SOUTH ST",
+							"postal_code": "75228",
+							"state_province": "TX"
+						},
+						"customer_reference_number": "7803A-0005-0004-1",
+						"name": "Smith",
+						"packages": [
+							{
+								"service_standard": "3"
+							}
+						]
+					}
+				],
+				"date": "2008-07-14T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": -1876,
+						"charge_desc": "021",
+						"charge_type": "RFD"
+					},
+					{
+						"charge": -610,
+						"charge_type": "010"
+					},
+					{
+						"charge": -539,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": 166,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 8,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z1502WW1265812206",
+				"ups_product_code": "029"
+			}
+		],
+		"parties": [
+			{
+				"address": {
+					"city": "DENVILLE",
+					"country": "US",
+					"line1": "MAIN",
+					"postal_code": "07834",
+					"state_province": "NJ"
+				},
+				"entity_identifier": "Bill to Party",
+				"entity_identifier_code": "BT",
+				"name": "CRM TT"
+			},
+			{
+				"address": {
+					"city": "DENVILLE",
+					"country": "US",
+					"line1": "MAIN",
+					"postal_code": "07834",
+					"state_province": "NJ"
+				},
+				"entity_identifier": "Shipper",
+				"entity_identifier_code": "SH",
+				"identification_code": "00001502WW",
+				"name": "CRM TT"
+			}
+		],
+		"payment_method": "Prepaid"
+	},
+	{
+		"consolidated_bill_plan_number": "0000980223",
+		"invoice_date": "2008-07-26T00:00:00",
+		"invoice_due_date": "2008-08-06T00:00:00",
+		"invoice_number": "0000004045WW308",
+		"invoice_total_amount": 28555,
+		"invoice_total_amount_currency": "USD",
+		"line_items": [
+			{
+				"date": "2008-07-26T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 800,
+						"charge_type": "SAC"
+					}
+				],
+				"item_no": 1,
+				"number_of_pieces": 1,
+				"ups_product_code": "031"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 32970,
+						"charge_type": "400"
+					},
+					{
+						"charge": -4615,
+						"charge_type": "275"
+					}
+				],
+				"item_no": 2,
+				"number_of_pieces": 5,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 4396,
+						"charge_desc": "015C",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -4726,
+						"charge_desc": "015O",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 230,
+						"charge_type": "REP"
+					},
+					{
+						"charge": -20,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 3,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4045WW0147641818",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 4396,
+						"charge_desc": "015C",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -4726,
+						"charge_desc": "015O",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 230,
+						"charge_type": "REP"
+					},
+					{
+						"charge": -20,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 4,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4045WW0147988025",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 4396,
+						"charge_desc": "015C",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -4726,
+						"charge_desc": "015O",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 230,
+						"charge_type": "REP"
+					},
+					{
+						"charge": -20,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 5,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4045WW0148640835",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 4396,
+						"charge_desc": "015C",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -4726,
+						"charge_desc": "015O",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 230,
+						"charge_type": "REP"
+					},
+					{
+						"charge": -20,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 6,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4045WW0146636246",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 4396,
+						"charge_desc": "015C",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -4726,
+						"charge_desc": "015O",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 230,
+						"charge_type": "REP"
+					},
+					{
+						"charge": -20,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 7,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4045WW0146570254",
+				"ups_product_code": "028"
+			}
+		],
+		"parties": [
+			{
+				"address": {
+					"city": "MORRISTOWN",
+					"country": "US",
+					"line1": "90 MAIN ST",
+					"postal_code": "07960",
+					"state_province": "NJ"
+				},
+				"entity_identifier": "Bill to Party",
+				"entity_identifier_code": "BT",
+				"name": "RODEO"
+			},
+			{
+				"address": {
+					"city": "MORRISTOWN",
+					"country": "US",
+					"line1": "90 MAIN ST",
+					"postal_code": "07960",
+					"state_province": "NJ"
+				},
+				"entity_identifier": "Shipper",
+				"entity_identifier_code": "SH",
+				"identification_code": "00004045WW",
+				"name": "RODEO"
+			}
+		],
+		"payment_method": "Prepaid"
+	},
+	{
+		"consolidated_bill_plan_number": "0000980228",
+		"invoice_date": "2008-07-26T00:00:00",
+		"invoice_due_date": "2008-08-06T00:00:00",
+		"invoice_number": "0000002063WW308",
+		"invoice_total_amount": 105647,
+		"invoice_total_amount_currency": "USD",
+		"line_items": [
+			{
+				"date": "2008-07-26T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 800,
+						"charge_type": "SAC"
+					}
+				],
+				"item_no": 1,
+				"number_of_pieces": 1,
+				"ups_product_code": "031"
+			},
+			{
+				"date": "2008-07-14T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 8694,
+						"charge_type": "400"
+					},
+					{
+						"charge": -7434,
+						"charge_type": "275"
+					},
+					{
+						"charge": 1300,
+						"charge_type": "690"
+					},
+					{
+						"charge": 543,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -465,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 2,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-14T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 10210,
+						"charge_type": "400"
+					},
+					{
+						"charge": -8110,
+						"charge_type": "275"
+					},
+					{
+						"charge": 640,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -510,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 3,
+				"number_of_pieces": 5,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 12828,
+						"charge_type": "400"
+					},
+					{
+						"charge": -11544,
+						"charge_type": "275"
+					},
+					{
+						"charge": 1950,
+						"charge_type": "690"
+					},
+					{
+						"charge": 801,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -720,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 4,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 8694,
+						"charge_type": "400"
+					},
+					{
+						"charge": -7434,
+						"charge_type": "275"
+					},
+					{
+						"charge": 1300,
+						"charge_type": "690"
+					},
+					{
+						"charge": 543,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -465,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 5,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 6,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 7,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 8,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 9,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 10,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 11,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 12,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 13,
+				"number_of_pieces": 3,
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 10210,
+						"charge_type": "400"
+					},
+					{
+						"charge": -8110,
+						"charge_type": "275"
+					},
+					{
+						"charge": 640,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -510,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 14,
+				"number_of_pieces": 5,
+				"ups_product_code": "011"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "CHICAGO",
+							"country": "US",
+							"line1": "145 NORTHSIDE WAY DRIVE",
+							"postal_code": "60625",
+							"state_province": "IL"
+						},
+						"customer_reference_number": "7804--0011-0009-1",
+						"name": "HFK9VKW",
+						"packages": [
+							{
+								"service_level": "SG",
+								"weight": 340,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 74579,
+						"charge_type": "400"
+					},
+					{
+						"charge": -51460,
+						"charge_type": "275"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 1000,
+						"charge_type": "TTT"
+					},
+					{
+						"charge": 4661,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -3216,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 15,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2063WW0300053961",
+				"ups_product_code": "021"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 45574,
+						"charge_type": "400"
+					},
+					{
+						"charge": -30535,
+						"charge_type": "275"
+					},
+					{
+						"charge": 1950,
+						"charge_type": "690"
+					},
+					{
+						"charge": 1000,
+						"charge_type": "TTT"
+					},
+					{
+						"charge": 2849,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -1908,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 16,
+				"number_of_pieces": 3,
+				"tracking_number": "1Z2063WW0300014315",
+				"ups_product_code": "021"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 17,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2063WW0300014315",
+				"ups_product_code": "021"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 18,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2063WW0300014324",
+				"ups_product_code": "021"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "MORRISTOWN",
+							"country": "US",
+							"line1": "125 UNITED WAY DRIVE",
+							"postal_code": "07960",
+							"state_province": "NJ"
+						},
+						"customer_reference_number": "7804--0011-0010-3",
+						"name": "HFK9VKW",
+						"packages": [
+							{
+								"reason_code": "10",
+								"service_level": "SG",
+								"weight": 100,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-21T00:00:00",
+				"item_no": 19,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2063WW0300014333",
+				"ups_product_code": "021"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "MORRISTOWN",
+							"country": "US",
+							"line1": "438 SOUTHERN STREET DRIVE",
+							"postal_code": "07960",
+							"state_province": "NJ"
+						},
+						"customer_reference_number": "7804--0011-0011-1",
+						"name": "HFK9VKW",
+						"packages": [
+							{
+								"service_level": "SG",
+								"weight": 500,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 45574,
+						"charge_type": "400"
+					},
+					{
+						"charge": -30535,
+						"charge_type": "275"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 1000,
+						"charge_type": "TTT"
+					},
+					{
+						"charge": 2848,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -1908,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 20,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2063WW0300014557",
+				"ups_product_code": "021"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 50994,
+						"charge_type": "400"
+					},
+					{
+						"charge": -35441,
+						"charge_type": "275"
+					},
+					{
+						"charge": 3185,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -2212,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 21,
+				"number_of_pieces": 7,
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 22,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2068WW0300011247",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 23,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2068WW0300011256",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 24,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2068WW0300011390",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 25,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2068WW0300011407",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 26,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2068WW0300011416",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 27,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2068WW0300011425",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 28,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2068WW0300011434",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 10500,
+						"charge_type": "400"
+					},
+					{
+						"charge": 656,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 29,
+				"number_of_pieces": 2,
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 30,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2068WW0300036506",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-21T00:00:00",
+				"item_no": 31,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2068WW0300036515",
+				"ups_product_code": "024"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "CHICAGO",
+							"country": "US",
+							"line1": "145 NORTHSIDE WAY",
+							"postal_code": "60625",
+							"state_province": "IL"
+						}
+					}
+				],
+				"date": "2008-07-16T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 744,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -324,
+						"charge_type": "275"
+					},
+					{
+						"charge": 47,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -20,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 32,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2063WW0300072904",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "CHICAGO",
+							"country": "US",
+							"line1": "145 NORTHSIDE WAY",
+							"postal_code": "60625",
+							"state_province": "IL"
+						}
+					}
+				],
+				"date": "2008-07-16T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 744,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -324,
+						"charge_type": "275"
+					},
+					{
+						"charge": 47,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -20,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 33,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2063WW0300072913",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "CHICAGO",
+							"country": "US",
+							"line1": "145 NORTHSIDE WAY",
+							"postal_code": "60625",
+							"state_province": "IL"
+						}
+					}
+				],
+				"date": "2008-07-16T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 744,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -324,
+						"charge_type": "275"
+					},
+					{
+						"charge": 47,
+						"charge_type": "FUE"
+					},
+					{
+						"charge": -20,
+						"charge_type": "295"
+					}
+				],
+				"item_no": 34,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z2063WW0300072922",
+				"ups_product_code": "028"
+			}
+		],
+		"parties": [
+			{
+				"address": {
+					"city": "MORRISTOWN",
+					"country": "US",
+					"line1": "164 US WAY",
+					"postal_code": "07960",
+					"state_province": "NJ"
+				},
+				"entity_identifier": "Bill to Party",
+				"entity_identifier_code": "BT",
+				"name": "US FRS SHIPPER"
+			},
+			{
+				"address": {
+					"city": "MORRISTOWN",
+					"country": "US",
+					"line1": "164 US WAY",
+					"postal_code": "07960",
+					"state_province": "NJ"
+				},
+				"entity_identifier": "Shipper",
+				"entity_identifier_code": "SH",
+				"identification_code": "00002063WW",
+				"name": "US FRS SHIPPER"
+			}
+		],
+		"payment_method": "Prepaid"
+	},
+	{
+		"consolidated_bill_plan_number": "0000980232",
+		"invoice_date": "2008-08-02T00:00:00",
+		"invoice_due_date": "2008-08-18T00:00:00",
+		"invoice_number": "0000004469WW318",
+		"invoice_total_amount": 2164290,
+		"invoice_total_amount_currency": "CAD",
+		"line_items": [
+			{
+				"date": "2008-08-02T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 675,
+						"charge_type": "SAC"
+					}
+				],
+				"item_no": 1,
+				"number_of_pieces": 1,
+				"ups_product_code": "031"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 4795,
+						"charge_type": "400"
+					},
+					{
+						"charge": 372,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 2,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW2051670156",
+				"ups_product_code": "011"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 4215,
+						"charge_type": "400"
+					},
+					{
+						"charge": 327,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 3,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW2051913769",
+				"ups_product_code": "011"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "MEXICO CITY",
+							"country": "MX",
+							"line1": "741 ARROZ WAY",
+							"postal_code": "06600",
+							"state_province": "DI"
+						},
+						"customer_reference_number": "7802--0076-0004-1",
+						"name": "MYY1ASM",
+						"packages": [
+							{
+								"reason_code": "12",
+								"service_standard": "90",
+								"weight": 35,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 65340,
+						"charge_type": "400"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 13068,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 4,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z3467WW0400004541",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 5,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z3467WW0400004541",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451 NORTH STREET",
+							"postal_code": "50517"
+						},
+						"customer_reference_number": "7802--0095-0004-1",
+						"packages": [
+							{
+								"service_standard": "90",
+								"weight": 46,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 75915,
+						"charge_type": "400"
+					},
+					{
+						"charge": 15183,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 6,
+				"number_of_pieces": 2,
+				"tracking_number": "1Z4469WW0449548681",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "PARSIPPANY",
+							"country": "US",
+							"line1": "895 SOUTH BX AVE",
+							"postal_code": "07054",
+							"state_province": "NJ"
+						},
+						"customer_reference_number": "7802--0085-0005-1",
+						"name": "SMITH",
+						"packages": [
+							{
+								"service_standard": "90",
+								"weight": 39,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 37280,
+						"charge_type": "400"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 7456,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 7,
+				"number_of_pieces": 2,
+				"tracking_number": "1Z4469WW0449570209",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 8,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW0449570209",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 9,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW0450074814",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451 NORTH STREET",
+							"postal_code": "50517"
+						},
+						"customer_reference_number": "7802--0094-0001-1",
+						"packages": [
+							{
+								"service_standard": "90",
+								"weight": 23,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 42155,
+						"charge_type": "400"
+					},
+					{
+						"charge": 8431,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 10,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW0449975255",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "LONDON",
+							"country": "GB",
+							"line1": "452 NORTH STREET",
+							"postal_code": "SE120"
+						},
+						"customer_reference_number": "7802--0093-0004-1",
+						"name": "BIG AL",
+						"packages": [
+							{
+								"service_standard": "90",
+								"weight": 82,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 120786,
+						"charge_type": "400"
+					},
+					{
+						"charge": 24157,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 11,
+				"number_of_pieces": 3,
+				"tracking_number": "1Z4469WW0450643628",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "PARSIPPANY",
+							"country": "US",
+							"line1": "895 SOUTH BX AVE",
+							"postal_code": "07054",
+							"state_province": "NJ"
+						},
+						"customer_reference_number": "7802--0085-0004-1",
+						"name": "SMITH",
+						"packages": [
+							{
+								"service_standard": "90",
+								"weight": 46,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 41985,
+						"charge_type": "400"
+					},
+					{
+						"charge": 1300,
+						"charge_type": "690"
+					},
+					{
+						"charge": 8397,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 12,
+				"number_of_pieces": 2,
+				"tracking_number": "1Z4469WW0451057582",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 13,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW0451057582",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 14,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW0451685797",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "WARSAW",
+							"country": "PL",
+							"line1": "480 NORTH STREET",
+							"postal_code": "04999"
+						},
+						"customer_reference_number": "7802--0084-0003-1",
+						"name": "SMITH",
+						"packages": [
+							{
+								"reason_code": "08",
+								"service_standard": "1",
+								"weight": 69,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 230805,
+						"charge_type": "400"
+					},
+					{
+						"charge": 5000,
+						"charge_type": "OAB"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 46161,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 15,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6649840864",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 16,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6649840864",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "CHESTER",
+							"country": "US",
+							"line1": "466 NORTH STREET",
+							"postal_code": "10918",
+							"state_province": "NY"
+						},
+						"customer_reference_number": "7802--0078-0003-1",
+						"name": "SMITH",
+						"packages": [
+							{
+								"reason_code": "12",
+								"service_standard": "1",
+								"weight": 45,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 42760,
+						"charge_type": "400"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 8552,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 17,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6651801571",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 18,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6651801571",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451 NORTH STREET",
+							"postal_code": "50517"
+						},
+						"customer_reference_number": "7802--0122-0003-1",
+						"packages": [
+							{
+								"reason_code": "08",
+								"service_standard": "2",
+								"weight": 32,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 50085,
+						"charge_type": "400"
+					},
+					{
+						"charge": 5000,
+						"charge_type": "LGD"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 10017,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 19,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6750190679",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 20,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6750190679",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "PARSIPPANY",
+							"country": "US",
+							"line1": "895 SOUTH BX AVE",
+							"postal_code": "07054",
+							"state_province": "NJ"
+						},
+						"customer_reference_number": "7802--0083-0004-1",
+						"name": "MYY1ASM",
+						"packages": [
+							{
+								"service_level": "SG",
+								"weight": 69,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 12740,
+						"charge_type": "400"
+					},
+					{
+						"charge": 8000,
+						"charge_type": "LDG"
+					},
+					{
+						"charge": 1296,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 21,
+				"number_of_pieces": 3,
+				"tracking_number": "1Z4469WW6800006175",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 22,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6800006175",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 23,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6800006184",
+				"ups_product_code": "017"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 24,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6800006193",
+				"ups_product_code": "017"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451 NORTH STREET",
+							"postal_code": "50517"
+						},
+						"customer_reference_number": "7802--0091-0003",
+						"packages": [
+							{
+								"service_standard": "1",
+								"weight": 150,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 110725,
+						"charge_type": "400"
+					},
+					{
+						"charge": 900,
+						"charge_type": "EVC"
+					},
+					{
+						"charge": 22145,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 25,
+				"number_of_pieces": 3,
+				"tracking_number": "48000059076",
+				"ups_product_code": "024"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "MISSISSAUGA",
+							"country": "CA",
+							"line1": "475 CANADA STREET",
+							"postal_code": "L4V1X5",
+							"state_province": "ON"
+						},
+						"customer_reference_number": "7802--0093-0002-1",
+						"name": "Smith",
+						"packages": [
+							{
+								"service_standard": "3",
+								"weight": 46,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 7125,
+						"charge_type": "400"
+					},
+					{
+						"charge": 565,
+						"charge_type": "TTT"
+					},
+					{
+						"charge": 552,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 26,
+				"number_of_pieces": 2,
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 27,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4488WW2051490387",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 28,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4488WW2050124195",
+				"ups_product_code": "024"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "CHESTER",
+							"country": "US",
+							"line1": "466 NORTH STREET",
+							"postal_code": "10918",
+							"state_province": "NY"
+						},
+						"customer_reference_number": "7802--0076-0005-1",
+						"name": "SMITH",
+						"packages": [
+							{
+								"reason_code": "08",
+								"service_level": "SG",
+								"weight": 72,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 8105,
+						"charge_type": "400"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 507,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 29,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z5077WW6847651470",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 30,
+				"measurement": {
+					"height": 10,
+					"length": 62,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 14
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z5077WW6847651470",
+				"ups_product_code": "024"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "CHESTER",
+							"country": "US",
+							"line1": "466 NORTH STREET",
+							"postal_code": "10918",
+							"state_province": "NY"
+						},
+						"customer_reference_number": "7802--0083-0003-1",
+						"name": "MYY1ASM",
+						"packages": [
+							{
+								"service_level": "SG",
+								"weight": 151,
+								"weight_qualifier": "B"
+							}
+						]
+					}
+				],
+				"date": "2008-07-29T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 12740,
+						"charge_type": "400"
+					},
+					{
+						"charge": 4000,
+						"charge_type": "LDG"
+					},
+					{
+						"charge": 1300,
+						"charge_type": "690"
+					},
+					{
+						"charge": 1046,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 31,
+				"number_of_pieces": 3,
+				"tracking_number": "1Z4488WW6800006602",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-29T00:00:00",
+				"item_no": 32,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4488WW6800006602",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-29T00:00:00",
+				"item_no": 33,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4488WW6800006611",
+				"ups_product_code": "024"
+			},
+			{
+				"date": "2008-07-29T00:00:00",
+				"item_no": 34,
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4488WW6800006620",
+				"ups_product_code": "024"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451 NORTH",
+							"postal_code": "50517",
+							"state_province": "DE"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 49455,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 9891,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 35,
+				"measurement": {
+					"height": 24,
+					"length": 155,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 28
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW0400003261",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451 NORTH",
+							"postal_code": "50517",
+							"state_province": "DE"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 45465,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 9093,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 36,
+				"measurement": {
+					"height": 25,
+					"length": 85,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 80
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW0400003270",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "MONCTON",
+							"country": "CA",
+							"line1": "488 P23X5478-B",
+							"postal_code": "E1C9N5",
+							"state_province": "NB"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 26730,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 4000,
+						"charge_type": "LDG"
+					},
+					{
+						"charge": 5000,
+						"charge_type": "LGD"
+					},
+					{
+						"charge": 6146,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 37,
+				"measurement": {
+					"height": 25,
+					"length": 279,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 25
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW1400007364",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "MONCTON",
+							"country": "CA",
+							"line1": "488 P23X5478-B",
+							"postal_code": "E1C9N5",
+							"state_province": "NB"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 26730,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 4000,
+						"charge_type": "LDG"
+					},
+					{
+						"charge": 5000,
+						"charge_type": "LGD"
+					},
+					{
+						"charge": 6146,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 38,
+				"measurement": {
+					"height": 25,
+					"length": 275,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 25
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW1400007435",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451 NORTH",
+							"postal_code": "50517",
+							"state_province": "DE"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 110725,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 5000,
+						"charge_type": "OAB"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 22145,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 39,
+				"measurement": {
+					"height": 0,
+					"length": 0,
+					"quantity": 70,
+					"unit": "Inches",
+					"width": 0
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW5400003060",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451 NORTH",
+							"postal_code": "50517",
+							"state_province": "DE"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 98925,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 19785,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 40,
+				"measurement": {
+					"height": 24,
+					"length": 275,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 30
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW5400003079",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "BIRMINGHAM",
+							"country": "GB",
+							"line1": "452 NORTH",
+							"postal_code": "B47 5JR",
+							"state_province": "GB"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 95975,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 5000,
+						"charge_type": "BKA"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 19195,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 41,
+				"measurement": {
+					"height": 25,
+					"length": 272,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 51
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW5400003202",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "BIRMINGHAM",
+							"country": "GB",
+							"line1": "452 NORTH",
+							"postal_code": "B47 5JR",
+							"state_province": "GB"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 78275,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 15655,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 42,
+				"measurement": {
+					"height": 25,
+					"length": 279,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 25
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW5400003211",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451 NORTH",
+							"postal_code": "50517",
+							"state_province": "DE"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 64800,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 12960,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 43,
+				"measurement": {
+					"height": 28,
+					"length": 157,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 102
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6700004839",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"line1": "451    NORTH",
+							"postal_code": "50517",
+							"state_province": "DE"
+						}
+					}
+				],
+				"date": "2008-07-23T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 47500,
+						"charge_desc": "010",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 9500,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 44,
+				"measurement": {
+					"height": 25,
+					"length": 86,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 81
+				},
+				"number_of_pieces": 1,
+				"tracking_number": "1Z4469WW6700004848",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"postal_code": "50517"
+						},
+						"customer_reference_number": "7802--0094-0001-1",
+						"packages": [
+							{
+								"service_standard": "90",
+								"weight": 68,
+								"weight_qualifier": "N"
+							},
+							{
+								"reason_code": "09",
+								"service_standard": "90",
+								"weight": 23,
+								"weight_qualifier": "G"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 107705,
+						"charge_desc": "016C",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -42155,
+						"charge_desc": "016O",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 5000,
+						"charge_type": "OAB"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					},
+					{
+						"charge": 13110,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 45,
+				"measurement": {
+					"height": 20,
+					"length": 35,
+					"quantity": 71,
+					"unit": "Inches",
+					"width": 33
+				},
+				"number_of_pieces": 1,
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "LONDON",
+							"country": "GB",
+							"postal_code": "SE120"
+						},
+						"customer_reference_number": "7802--0093-0004-1",
+						"name": "BIG AL",
+						"packages": [
+							{
+								"service_standard": "90",
+								"weight": 95,
+								"weight_qualifier": "N"
+							},
+							{
+								"service_standard": "90",
+								"weight": 82,
+								"weight_qualifier": "G"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 139935,
+						"charge_desc": "016C",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -120786,
+						"charge_desc": "016O",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 3830,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 46,
+				"number_of_pieces": 3,
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 650,
+						"charge_type": "690"
+					}
+				],
+				"item_no": 47,
+				"measurement": {
+					"height": 10,
+					"length": 33,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 31
+				},
+				"tracking_number": "1Z4469WW0450643628",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"item_no": 48,
+				"tracking_number": "1Z4469WW0450749845",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 650,
+						"charge_type": "690"
+					}
+				],
+				"item_no": 49,
+				"tracking_number": "1Z4469WW0450400630",
+				"ups_product_code": "028"
+			},
+			{
+				"consignees": [
+					{
+						"address": {
+							"city": "COLOGNE",
+							"country": "DE",
+							"postal_code": "50517"
+						},
+						"customer_reference_number": "7802--0091-0003",
+						"packages": [
+							{
+								"service_standard": "1",
+								"weight": 352.2,
+								"weight_qualifier": "N"
+							},
+							{
+								"service_standard": "1",
+								"weight": 150,
+								"weight_qualifier": "G"
+							}
+						]
+					}
+				],
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 242158,
+						"charge_desc": "016C",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": -110725,
+						"charge_desc": "016O",
+						"charge_type": "AAJ"
+					},
+					{
+						"charge": 26287,
+						"charge_type": "FUE"
+					}
+				],
+				"item_no": 50,
+				"number_of_pieces": 3,
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 650,
+						"charge_type": "690"
+					}
+				],
+				"item_no": 51,
+				"measurement": {
+					"height": 10,
+					"length": 110,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 15
+				},
+				"tracking_number": "48000059076",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 5000,
+						"charge_type": "LGD"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					}
+				],
+				"item_no": 52,
+				"measurement": {
+					"height": 15,
+					"length": 120,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 20
+				},
+				"tracking_number": "48000059085",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-07-28T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 5000,
+						"charge_type": "LGD"
+					},
+					{
+						"charge": 650,
+						"charge_type": "690"
+					}
+				],
+				"item_no": 53,
+				"measurement": {
+					"height": 5,
+					"length": 120,
+					"quantity": 1,
+					"unit": "Inches",
+					"width": 10
+				},
+				"tracking_number": "48000059094",
+				"ups_product_code": "028"
+			},
+			{
+				"date": "2008-08-02T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 931,
+						"charge_desc": "033",
+						"charge_type": "TAX"
+					}
+				],
+				"item_no": 54,
+				"ups_product_code": "034"
+			},
+			{
+				"date": "2008-08-02T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 53,
+						"charge_desc": "036",
+						"charge_type": "TAX"
+					}
+				],
+				"item_no": 55,
+				"ups_product_code": "034"
+			},
+			{
+				"date": "2008-08-02T00:00:00",
+				"fees_and_charges": [
+					{
+						"charge": 10888,
+						"charge_desc": "035",
+						"charge_type": "TAX"
+					}
+				],
+				"item_no": 56,
+				"ups_product_code": "034"
+			}
+		],
+		"parties": [
+			{
+				"address": {
+					"city": "MONTREAL",
+					"country": "CA",
+					"line1": "469 MC GILL ST",
+					"postal_code": "H3B2Y4",
+					"state_province": "QC"
+				},
+				"entity_identifier": "Bill to Party",
+				"entity_identifier_code": "BT",
+				"name": "MYY1ASM"
+			},
+			{
+				"address": {
+					"city": "MONTREAL",
+					"country": "CA",
+					"line1": "469 MC GILL ST",
+					"postal_code": "H3B2Y4",
+					"state_province": "QC"
+				},
+				"entity_identifier": "Shipper",
+				"entity_identifier_code": "SH",
+				"identification_code": "00004469WW",
+				"name": "MYY1ASM"
+			}
+		],
+		"payment_method": "Prepaid"
+	}
+]

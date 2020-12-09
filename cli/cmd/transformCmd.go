@@ -22,7 +22,11 @@ var (
 		Short: "Transforms input to desired output based on a schema.",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return doTransform()
+			if err := doTransform(); err != nil {
+				fmt.Println() // to sure cobra cli always write out "Error: ..." on a new line.
+				return err
+			}
+			return nil
 		},
 	}
 	schema string

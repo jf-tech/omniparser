@@ -101,6 +101,7 @@ type ediReader struct {
 	target             *idr.Node
 	targetXPath        *xpath.Expr
 	runeBegin, runeEnd int
+	segCount           int
 	unprocessedRawSeg  rawSeg
 }
 
@@ -169,6 +170,7 @@ func runeCountAndHasOnlyCRLF(b []byte) (int, bool) {
 
 var (
 	crBytes = []byte("\r")
+	lfBytes = []byte("\n")
 )
 
 func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
@@ -189,6 +191,7 @@ func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 		token = b
 		break
 	}
+	r.segCount++
 	// We are here because:
 	// 1. we find next token (i.e. segment), great, let's process it, OR
 	// 2. r.scanner.Scan() returns false and it's EOF (note scanner never returns EOF, it just returns false
@@ -259,7 +262,7 @@ func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 				break
 			}
 		}
-		if rawElemIndex < len(rawElems) || elemDecl.EmptyIfMissing {
+		if rawElemIndex < len(rawElems) || elemDecl.EmptyIfMissing || elemDecl.Default != nil {
 			elemN := idr.CreateNode(idr.ElementNode, elemDecl.Name)
 			idr.AddChild(n, elemN)
 			data := ""
@@ -267,6 +270,8 @@ func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
 				data = string(strs.ByteUnescape(rawElems[rawElemIndex].data, r.releaseChar.b, true))
 				rawElems[rawElemIndex].dateUnescaped = true
 				rawElemIndex++
+			} else if elemDecl.Default != nil {
+				data = *elemDecl.Default
 			}
 			elemV := idr.CreateNode(idr.TextNode, data)
 			idr.AddChild(elemN, elemV)
@@ -325,7 +330,7 @@ func (r *ediReader) segNext() error {
 		// 'end' to 'begin' to make the error msg less confusing.
 		r.runeBegin = r.runeEnd
 		return ErrInvalidEDI(r.fmtErrStr("segment '%s' needs min occur %d, but only got %d",
-			cur.segDecl.Name, cur.segDecl.minOccurs(), cur.occurred))
+			strs.FirstNonBlank(cur.segDecl.fqdn, cur.segDecl.Name), cur.segDecl.minOccurs(), cur.occurred))
 	}
 	if len(r.stack) <= 1 {
 		return nil
@@ -420,8 +425,8 @@ func (r *ediReader) FmtErr(format string, args ...interface{}) error {
 }
 
 func (r *ediReader) fmtErrStr(format string, args ...interface{}) string {
-	return fmt.Sprintf("input '%s' between character [%d,%d]: %s",
-		r.inputName, r.runeBegin, r.runeEnd, fmt.Sprintf(format, args...))
+	return fmt.Sprintf("input '%s' at segment no.%d (char[%d,%d]): %s",
+		r.inputName, r.segCount, r.runeBegin, r.runeEnd, fmt.Sprintf(format, args...))
 }
 
 const (
@@ -442,6 +447,10 @@ func NewReader(inputName string, r io.Reader, decl *fileDecl, targetXPath string
 	elemDelim := newStrPtrByte(&decl.ElemDelim)
 	compDelim := newStrPtrByte(decl.CompDelim)
 	releaseChar := newStrPtrByte(decl.ReleaseChar)
+	if decl.IgnoreCRLF {
+		r = ios.NewBytesReplacingReader(r, crBytes, nil)
+		r = ios.NewBytesReplacingReader(r, lfBytes, nil)
+	}
 	scanner := ios.NewScannerByDelim3(r, segDelim.b, releaseChar.b, scannerFlags, make([]byte, ReaderBufSize))
 	targetXPathExpr, err := func() (*xpath.Expr, error) {
 		if targetXPath == "" || targetXPath == "." {
@@ -463,6 +472,7 @@ func NewReader(inputName string, r io.Reader, decl *fileDecl, targetXPath string
 		targetXPath:       targetXPathExpr,
 		runeBegin:         1,
 		runeEnd:           1,
+		segCount:          0,
 		unprocessedRawSeg: newRawSeg(),
 	}
 	reader.growStack(stackEntry{

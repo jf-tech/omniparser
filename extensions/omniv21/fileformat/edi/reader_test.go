@@ -189,7 +189,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 				ElemDelim: ":",
 			},
 			expected: []result{
-				{rawSeg: rawSeg{}, err: `input 'test' between character [1,1]: cannot read segment, err: read failure`},
+				{rawSeg: rawSeg{}, err: `input 'test' at segment no.1 (char[1,1]): cannot read segment, err: read failure`},
 			},
 		},
 		{
@@ -244,7 +244,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 				ElemDelim: "*",
 			},
 			expected: []result{
-				{rawSeg: rawSeg{}, err: `input 'test' between character [1,2]: missing segment name`},
+				{rawSeg: rawSeg{}, err: `input 'test' at segment no.1 (char[1,2]): missing segment name`},
 			},
 		},
 		{
@@ -344,7 +344,7 @@ func TestRawSegToNode(t *testing.T) {
 				},
 				fqdn: "ISA",
 			},
-			err:      `input 'test' between character [10,20]: unable to find element 'e3' on segment 'ISA'`,
+			err:      `input 'test' at segment no.0 (char[10,20]): unable to find element 'e3' on segment 'ISA'`,
 			expected: "",
 		},
 		{
@@ -516,7 +516,7 @@ func TestSegDoneSegNext(t *testing.T) {
 			target:      nil,
 			callSegDone: false,
 			panicStr:    "",
-			err:         `input 'test' between character [20,20]: segment 'C' needs min occur 1, but only got 0`,
+			err:         `input 'test' at segment no.0 (char[20,20]): segment 'C' needs min occur 1, but only got 0`,
 		},
 		{
 			name: "root-A-C, C segDone, C over max, A becomes target, but r.target not nil",
@@ -632,7 +632,7 @@ func TestRead(t *testing.T) {
 							"elements": [
 								{ "name": "e1", "index": 1 },
 								{ "name": "e2", "index": 2, "empty_if_missing": true },
-								{ "name": "e3", "index": 3, "empty_if_missing": true }
+								{ "name": "e3", "index": 3, "default": "x" }
 							]
 						}
 					]
@@ -671,11 +671,12 @@ func TestRead(t *testing.T) {
 		},
 		{
 			name:  "2 seg groups, filtered target, success",
-			input: "ISA*0*1*2\nISA*3*4*5\nISA*6*7*8\nIEA*6\n",
+			input: "ISA*0*1*2|\nISA*3*4*5|\nISA*6*7*8|\r\nIEA*6|\n",
 			declJSON: `
 				{
-					"segment_delimiter": "\n",
+					"segment_delimiter": "|",
 					"element_delimiter": "*",
+					"ignore_crlf": true,
 					"segment_declarations": [
 						{
 							"name": "isa_group",
