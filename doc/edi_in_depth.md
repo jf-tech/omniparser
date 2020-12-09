@@ -390,13 +390,13 @@ Look back to the hierarchy chart in the spec, find the segment `N4`, we can see:
 ```
 Pos.No.   Seg.ID    ...     Req.Des.    Max.Use
 ...
-1400      N4                O           2
+1400      N4                O           1
 ...
 ```
 
-`Req.Des.` has these most frequently used values: `M`, `O`, and `X`, which means `Mandatory`, `Optional`,
-and `Conditional`, respectively. For all practical purposes of omniparser EDI schema writing, you can
-treat `X` the same as `O`.
+`Req.Des.` has these most frequently used values: `M`, `O` (Oh, not zero), and `X`, which means
+`Mandatory`, `Optional`, and `Conditional`, respectively. For all practical purposes of omniparser
+EDI schema writing, you can treat `X` the same as `O`.
 
 So this particular segment `N4` is actually optional, that's why when we write `{ "name": "N4" },` in
 our test schema, the default values for `min` and `max` become 1, thus the failure.
