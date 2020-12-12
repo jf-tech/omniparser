@@ -311,12 +311,12 @@ func TestCreateFormatReader(t *testing.T) {
 		"test",
 		strings.NewReader("abcd\n1234\n"),
 		&fixedLengthFormatRuntime{
-			Decl: &fileDecl{
-				Envelopes: []*envelopeDecl{
+			Decl: &FileDecl{
+				Envelopes: []*EnvelopeDecl{
 					{
 						Name:   strs.StrPtr("env1"),
 						ByRows: testlib.IntPtr(2),
-						Columns: []*columnDecl{
+						Columns: []*ColumnDecl{
 							{Name: "letters", StartPos: 1, Length: 3, LinePattern: strs.StrPtr("^[a-z]")},
 							{Name: "numerics", StartPos: 1, Length: 3, LinePattern: strs.StrPtr("^[0-9]")},
 						},

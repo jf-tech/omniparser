@@ -7,19 +7,21 @@ import (
 	"github.com/jf-tech/go-corelib/caches"
 )
 
-type byHeaderFooterDecl struct {
+// ByHeaderFooterDecl contains the header and footer regexp patterns for a `by_header_footer` envelope.
+type ByHeaderFooterDecl struct {
 	Header string `json:"header"`
 	Footer string `json:"footer"`
 }
 
-type columnDecl struct {
+// EnvelopeDecl describes fixed-length envelope column settings for omniparser reader.
+type ColumnDecl struct {
 	Name        string  `json:"name"`
 	StartPos    int     `json:"start_pos"` // 1-based. and rune-based.
 	Length      int     `json:"length"`    // rune-based length.
 	LinePattern *string `json:"line_pattern"`
 }
 
-func (c *columnDecl) lineMatch(line []byte) bool {
+func (c *ColumnDecl) lineMatch(line []byte) bool {
 	if c.LinePattern == nil {
 		return true
 	}
@@ -28,7 +30,7 @@ func (c *columnDecl) lineMatch(line []byte) bool {
 	return r.Match(line)
 }
 
-func (c *columnDecl) lineToColumnValue(line []byte) string {
+func (c *ColumnDecl) lineToColumnValue(line []byte) string {
 	// StartPos is 1-based and its value >= 1 guaranteed by json schema validation done earlier.
 	start := c.StartPos - 1
 	// First chop off the prefix prior to c.StartPos
@@ -48,15 +50,16 @@ func (c *columnDecl) lineToColumnValue(line []byte) string {
 	return string(line[:i])
 }
 
-type envelopeDecl struct {
+// EnvelopeDecl describes fixed-length envelope settings for omniparser reader.
+type EnvelopeDecl struct {
 	Name           *string             `json:"name"`
-	ByHeaderFooter *byHeaderFooterDecl `json:"by_header_footer"`
+	ByHeaderFooter *ByHeaderFooterDecl `json:"by_header_footer"`
 	ByRows         *int                `json:"by_rows"`
 	NotTarget      bool                `json:"not_target"`
-	Columns        []*columnDecl       `json:"columns"`
+	Columns        []*ColumnDecl       `json:"columns"`
 }
 
-func (e *envelopeDecl) byRows() int {
+func (e *EnvelopeDecl) byRows() int {
 	if e.ByHeaderFooter != nil {
 		panic(fmt.Sprintf("envelope '%s' type is not 'by_rows'", *e.Name))
 	}
@@ -66,8 +69,9 @@ func (e *envelopeDecl) byRows() int {
 	return *e.ByRows
 }
 
-type fileDecl struct {
-	Envelopes []*envelopeDecl `json:"envelopes"`
+// FileDecl describes fixed-length specific schema settings for omniparser reader.
+type FileDecl struct {
+	Envelopes []*EnvelopeDecl `json:"envelopes"`
 }
 
 type envelopeType int
@@ -77,7 +81,7 @@ const (
 	envelopeTypeByHeaderFooter
 )
 
-func (f *fileDecl) envelopeType() envelopeType {
+func (f *FileDecl) envelopeType() envelopeType {
 	if f.Envelopes[0].ByHeaderFooter != nil {
 		return envelopeTypeByHeaderFooter
 	}

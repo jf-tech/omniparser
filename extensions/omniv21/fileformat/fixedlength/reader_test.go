@@ -23,11 +23,11 @@ func TestIsErrInvalidEnvelope(t *testing.T) {
 	assert.False(t, IsErrInvalidEnvelope(errors.New("test")))
 }
 
-func testReader(tb testing.TB, r io.Reader, decl *fileDecl) *reader {
+func testReader(tb testing.TB, r io.Reader, decl *FileDecl) *reader {
 	return testReader2(tb, r, decl, "")
 }
 
-func testReader2(tb testing.TB, r io.Reader, decl *fileDecl, xpathStr string) *reader {
+func testReader2(tb testing.TB, r io.Reader, decl *FileDecl, xpathStr string) *reader {
 	return &reader{
 		inputName: "test",
 		r:         bufio.NewReader(r),
@@ -96,9 +96,9 @@ func TestReadLine(t *testing.T) {
 func TestReadByRowsEnvelope_ByRowsDefault(t *testing.T) {
 	// default by_rows = 1
 	r := testReader(t, strings.NewReader("abc\n\nefghijklmn\n   \nxyz\n"),
-		&fileDecl{Envelopes: []*envelopeDecl{{
+		&FileDecl{Envelopes: []*EnvelopeDecl{{
 			Name: strs.StrPtr("env1"),
-			Columns: []*columnDecl{
+			Columns: []*ColumnDecl{
 				{
 					Name:     "col1",
 					StartPos: 2,
@@ -134,10 +134,10 @@ func TestReadByRowsEnvelope_ByRowsDefault(t *testing.T) {
 
 func TestReadByRowsEnvelope_ByRowsNonDefault(t *testing.T) {
 	r := testReader(t, strings.NewReader("abcdefg\n\nhijklmn\n   \nabc012345\n"),
-		&fileDecl{Envelopes: []*envelopeDecl{{
+		&FileDecl{Envelopes: []*EnvelopeDecl{{
 			Name:   strs.StrPtr("env1"),
 			ByRows: testlib.IntPtr(3),
-			Columns: []*columnDecl{
+			Columns: []*ColumnDecl{
 				{Name: "col1", StartPos: 2, Length: 4, LinePattern: strs.StrPtr("^abc")},
 				{Name: "col2", StartPos: 2, Length: 4, LinePattern: strs.StrPtr("^hij")},
 				{Name: "col3", StartPos: 3, Length: 5, LinePattern: strs.StrPtr("^abc")},
@@ -158,12 +158,12 @@ func TestReadByRowsEnvelope_ByRowsNonDefault(t *testing.T) {
 var (
 	benchReadByRowsEnvelopeInput = strings.Repeat(
 		"abcdefghijklmnopqrstuvwxyz\n  \n012345678901234567890123456789\n", 1000)
-	benchReadByRowsEnvelopeDecl = &fileDecl{
-		Envelopes: []*envelopeDecl{
+	benchReadByRowsEnvelopeDecl = &FileDecl{
+		Envelopes: []*EnvelopeDecl{
 			{
 				Name:   strs.StrPtr("env1"),
 				ByRows: testlib.IntPtr(3),
-				Columns: []*columnDecl{
+				Columns: []*ColumnDecl{
 					{Name: "col1", StartPos: 2, Length: 10, LinePattern: strs.StrPtr("^abc")},
 					{Name: "col2", StartPos: 2, Length: 10, LinePattern: strs.StrPtr("^0123")},
 					{Name: "col3", StartPos: 12, Length: 19, LinePattern: strs.StrPtr("^abc")},
@@ -191,7 +191,7 @@ func BenchmarkReadByRowsEnvelope(b *testing.B) {
 }
 
 func TestReadByHeaderFooterEnvelope_EOFBeforeStart(t *testing.T) {
-	r := testReader(t, strings.NewReader(""), &fileDecl{Envelopes: []*envelopeDecl{{Name: strs.StrPtr("env1")}}})
+	r := testReader(t, strings.NewReader(""), &FileDecl{Envelopes: []*EnvelopeDecl{{Name: strs.StrPtr("env1")}}})
 	n, err := r.readByHeaderFooterEnvelope()
 	assert.Equal(t, io.EOF, err)
 	assert.Nil(t, n)
@@ -200,7 +200,7 @@ func TestReadByHeaderFooterEnvelope_EOFBeforeStart(t *testing.T) {
 func TestReadByHeaderFooterEnvelope_ReadErrorBeforeStart(t *testing.T) {
 	r := testReader(t,
 		testlib.NewMockReadCloser("read error", nil),
-		&fileDecl{Envelopes: []*envelopeDecl{{Name: strs.StrPtr("env1")}}})
+		&FileDecl{Envelopes: []*EnvelopeDecl{{Name: strs.StrPtr("env1")}}})
 	n, err := r.readByHeaderFooterEnvelope()
 	assert.Error(t, err)
 	assert.True(t, IsErrInvalidEnvelope(err))
@@ -211,9 +211,9 @@ func TestReadByHeaderFooterEnvelope_ReadErrorBeforeStart(t *testing.T) {
 func TestReadByHeaderFooterEnvelope_NoEnvelopeMatch(t *testing.T) {
 	r := testReader(t,
 		strings.NewReader("efg"),
-		&fileDecl{Envelopes: []*envelopeDecl{{
+		&FileDecl{Envelopes: []*EnvelopeDecl{{
 			Name:           strs.StrPtr("env1"),
-			ByHeaderFooter: &byHeaderFooterDecl{Header: "abc", Footer: "abc"},
+			ByHeaderFooter: &ByHeaderFooterDecl{Header: "abc", Footer: "abc"},
 		}}})
 	n, err := r.readByHeaderFooterEnvelope()
 	assert.Equal(t, io.EOF, err)
@@ -223,9 +223,9 @@ func TestReadByHeaderFooterEnvelope_NoEnvelopeMatch(t *testing.T) {
 func TestReadByHeaderFooterEnvelope_IncompleteEnvelope(t *testing.T) {
 	r := testReader(t,
 		strings.NewReader("abc"),
-		&fileDecl{Envelopes: []*envelopeDecl{{
+		&FileDecl{Envelopes: []*EnvelopeDecl{{
 			Name:           strs.StrPtr("env1"),
-			ByHeaderFooter: &byHeaderFooterDecl{Header: "abc", Footer: "efg"},
+			ByHeaderFooter: &ByHeaderFooterDecl{Header: "abc", Footer: "efg"},
 		}}})
 	n, err := r.readByHeaderFooterEnvelope()
 	assert.Error(t, err)
@@ -251,15 +251,15 @@ func TestReadByHeaderFooterEnvelope_Success(t *testing.T) {
 				lf("a003-678")+
 				lf("footer")+
 				lf("end")),
-		&fileDecl{Envelopes: []*envelopeDecl{
+		&FileDecl{Envelopes: []*EnvelopeDecl{
 			{
 				Name:           strs.StrPtr("begin"),
-				ByHeaderFooter: &byHeaderFooterDecl{Header: "^begin", Footer: "^begin"},
+				ByHeaderFooter: &ByHeaderFooterDecl{Header: "^begin", Footer: "^begin"},
 			},
 			{
 				Name:           strs.StrPtr("data"),
-				ByHeaderFooter: &byHeaderFooterDecl{Header: "^header", Footer: "^footer"},
-				Columns: []*columnDecl{
+				ByHeaderFooter: &ByHeaderFooterDecl{Header: "^header", Footer: "^footer"},
+				Columns: []*ColumnDecl{
 					{Name: "data_id", StartPos: 8, Length: 2, LinePattern: strs.StrPtr("^header")},
 					{Name: "a001_first2chars", StartPos: 6, Length: 2, LinePattern: strs.StrPtr("^a001")},
 					{Name: "a003_last2chars", StartPos: 7, Length: 2, LinePattern: strs.StrPtr("^a003")},
@@ -268,7 +268,7 @@ func TestReadByHeaderFooterEnvelope_Success(t *testing.T) {
 			},
 			{
 				Name:           strs.StrPtr("end"),
-				ByHeaderFooter: &byHeaderFooterDecl{Header: "^end", Footer: "^end"},
+				ByHeaderFooter: &ByHeaderFooterDecl{Header: "^end", Footer: "^end"},
 			},
 		}})
 	n, err := r.readByHeaderFooterEnvelope()
@@ -303,16 +303,16 @@ var (
 				lf("a003-abcdefghijklmnopqrstuvwxyz0123456789")+
 				lf("footer"), 1000) +
 		lf("end")
-	benchReadByHeaderFooterEnvelopeDecl = &fileDecl{
-		Envelopes: []*envelopeDecl{
+	benchReadByHeaderFooterEnvelopeDecl = &FileDecl{
+		Envelopes: []*EnvelopeDecl{
 			{
 				Name:           strs.StrPtr("begin"),
-				ByHeaderFooter: &byHeaderFooterDecl{Header: "^begin", Footer: "^begin"},
+				ByHeaderFooter: &ByHeaderFooterDecl{Header: "^begin", Footer: "^begin"},
 			},
 			{
 				Name:           strs.StrPtr("data"),
-				ByHeaderFooter: &byHeaderFooterDecl{Header: "^header", Footer: "^footer"},
-				Columns: []*columnDecl{
+				ByHeaderFooter: &ByHeaderFooterDecl{Header: "^header", Footer: "^footer"},
+				Columns: []*ColumnDecl{
 					{Name: "a001_1", StartPos: 6, Length: 12, LinePattern: strs.StrPtr("^a001")},
 					{Name: "a003_1", StartPos: 7, Length: 9, LinePattern: strs.StrPtr("^a003")},
 					{Name: "a001_2", StartPos: 30, Length: 20, LinePattern: strs.StrPtr("^a001")},
@@ -320,7 +320,7 @@ var (
 			},
 			{
 				Name:           strs.StrPtr("end"),
-				ByHeaderFooter: &byHeaderFooterDecl{Header: "^end", Footer: "^end"},
+				ByHeaderFooter: &ByHeaderFooterDecl{Header: "^end", Footer: "^end"},
 			},
 		},
 	}
@@ -358,11 +358,11 @@ func TestRead_ByRows(t *testing.T) {
 				lf("a001-012")+
 				lf("a002-345")+
 				lf("a003-678")),
-		&fileDecl{Envelopes: []*envelopeDecl{
+		&FileDecl{Envelopes: []*EnvelopeDecl{
 			{
 				Name:   strs.StrPtr("data"),
 				ByRows: testlib.IntPtr(3),
-				Columns: []*columnDecl{
+				Columns: []*ColumnDecl{
 					{Name: "a001_first2chars", StartPos: 6, Length: 2, LinePattern: strs.StrPtr("^a001")},
 					{Name: "a003_last2chars", StartPos: 7, Length: 2, LinePattern: strs.StrPtr("^a003")},
 					{Name: "a001_last1char", StartPos: 8, Length: 1, LinePattern: strs.StrPtr("^a001")},
@@ -414,16 +414,16 @@ func TestRead_ByHeaderFooter(t *testing.T) {
 				lf("footer")+
 				// global footer
 				lf("end")),
-		&fileDecl{Envelopes: []*envelopeDecl{
+		&FileDecl{Envelopes: []*EnvelopeDecl{
 			{
 				Name:           strs.StrPtr("begin"),
-				ByHeaderFooter: &byHeaderFooterDecl{Header: "^begin", Footer: "^begin"},
+				ByHeaderFooter: &ByHeaderFooterDecl{Header: "^begin", Footer: "^begin"},
 				NotTarget:      true,
 			},
 			{
 				Name:           strs.StrPtr("data"),
-				ByHeaderFooter: &byHeaderFooterDecl{Header: "^header", Footer: "^footer"},
-				Columns: []*columnDecl{
+				ByHeaderFooter: &ByHeaderFooterDecl{Header: "^header", Footer: "^footer"},
+				Columns: []*ColumnDecl{
 					{Name: "a001_first2chars", StartPos: 6, Length: 2, LinePattern: strs.StrPtr("^a001")},
 					{Name: "a003_last2chars", StartPos: 7, Length: 2, LinePattern: strs.StrPtr("^a003")},
 					{Name: "a001_last1char", StartPos: 8, Length: 1, LinePattern: strs.StrPtr("^a001")},
@@ -431,7 +431,7 @@ func TestRead_ByHeaderFooter(t *testing.T) {
 			},
 			{
 				Name:           strs.StrPtr("end"),
-				ByHeaderFooter: &byHeaderFooterDecl{Header: "^end", Footer: "^end"},
+				ByHeaderFooter: &ByHeaderFooterDecl{Header: "^end", Footer: "^end"},
 				NotTarget:      true,
 			},
 		}},
@@ -458,7 +458,7 @@ func TestRead_ByHeaderFooter(t *testing.T) {
 }
 
 func TestRelease(t *testing.T) {
-	var decl fileDecl
+	var decl FileDecl
 	err := json.Unmarshal([]byte(`
 		{
 			"envelopes": [

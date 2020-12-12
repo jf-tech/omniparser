@@ -9,15 +9,15 @@ import (
 )
 
 func TestValidateFileDecl_Empty(t *testing.T) {
-	err := (&ediValidateCtx{}).validateFileDecl(&fileDecl{})
+	err := (&ediValidateCtx{}).validateFileDecl(&FileDecl{})
 	assert.Error(t, err)
 	assert.Equal(t, `missing segment/segment_group with 'is_target' = true`, err.Error())
 }
 
 func TestValidateFileDecl_MinGreaterThanMax(t *testing.T) {
-	err := (&ediValidateCtx{}).validateFileDecl(&fileDecl{
-		SegDecls: []*segDecl{
-			{Name: "A", Children: []*segDecl{{Name: "B", Max: testlib.IntPtr(0)}}},
+	err := (&ediValidateCtx{}).validateFileDecl(&FileDecl{
+		SegDecls: []*SegDecl{
+			{Name: "A", Children: []*SegDecl{{Name: "B", Max: testlib.IntPtr(0)}}},
 		},
 	})
 	assert.Error(t, err)
@@ -25,8 +25,8 @@ func TestValidateFileDecl_MinGreaterThanMax(t *testing.T) {
 }
 
 func TestValidateFileDecl_TwoIsTarget(t *testing.T) {
-	err := (&ediValidateCtx{}).validateFileDecl(&fileDecl{
-		SegDecls: []*segDecl{
+	err := (&ediValidateCtx{}).validateFileDecl(&FileDecl{
+		SegDecls: []*SegDecl{
 			{Name: "A", IsTarget: true},
 			{Name: "B", Type: strs.StrPtr(segTypeGroup), IsTarget: true},
 		},
@@ -36,8 +36,8 @@ func TestValidateFileDecl_TwoIsTarget(t *testing.T) {
 }
 
 func TestValidateFileDecl_SegGroupHasNoChildren(t *testing.T) {
-	err := (&ediValidateCtx{}).validateFileDecl(&fileDecl{
-		SegDecls: []*segDecl{
+	err := (&ediValidateCtx{}).validateFileDecl(&FileDecl{
+		SegDecls: []*SegDecl{
 			{Name: "A", Type: strs.StrPtr(segTypeGroup), IsTarget: true},
 		},
 	})
@@ -46,13 +46,13 @@ func TestValidateFileDecl_SegGroupHasNoChildren(t *testing.T) {
 }
 
 func TestValidateFileDecl_Success(t *testing.T) {
-	elem1 := elem{Name: "be1", Index: 1}
-	elem2 := elem{Name: "be2c1", Index: 2, CompIndex: testlib.IntPtr(1)}
-	elem3 := elem{Name: "be2c2", Index: 2, CompIndex: testlib.IntPtr(2)}
-	fd := &fileDecl{
-		SegDecls: []*segDecl{
-			{Name: "A", Children: []*segDecl{
-				{Name: "B", IsTarget: true, Elems: []elem{elem3, elem1, elem2}},
+	elem1 := Elem{Name: "be1", Index: 1}
+	elem2 := Elem{Name: "be2c1", Index: 2, CompIndex: testlib.IntPtr(1)}
+	elem3 := Elem{Name: "be2c2", Index: 2, CompIndex: testlib.IntPtr(2)}
+	fd := &FileDecl{
+		SegDecls: []*SegDecl{
+			{Name: "A", Children: []*SegDecl{
+				{Name: "B", IsTarget: true, Elems: []Elem{elem3, elem1, elem2}},
 			}},
 		},
 	}
@@ -61,5 +61,5 @@ func TestValidateFileDecl_Success(t *testing.T) {
 	assert.Equal(t, "A", fd.SegDecls[0].fqdn)
 	assert.Nil(t, fd.SegDecls[0].Elems)
 	assert.Equal(t, "A/B", fd.SegDecls[0].Children[0].fqdn)
-	assert.Equal(t, []elem{elem3, elem1, elem2}, fd.SegDecls[0].Children[0].Elems)
+	assert.Equal(t, []Elem{elem3, elem1, elem2}, fd.SegDecls[0].Children[0].Elems)
 }

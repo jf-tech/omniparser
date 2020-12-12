@@ -8,6 +8,6 @@ import (
 )
 
 func TestColumnName(t *testing.T) {
-	assert.Equal(t, "name", column{Name: "name"}.name())
-	assert.Equal(t, "alias", column{Name: "name", Alias: strs.StrPtr("alias")}.name())
+	assert.Equal(t, "name", Column{Name: "name"}.name())
+	assert.Equal(t, "alias", Column{Name: "name", Alias: strs.StrPtr("alias")}.name())
 }

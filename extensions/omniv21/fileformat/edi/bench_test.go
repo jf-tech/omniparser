@@ -364,8 +364,8 @@ IEA*00001*000001644
 )
 
 var (
-	benchDeclNoCompNoReleaseChar = func() *fileDecl {
-		var fd fileDecl
+	benchDeclNoCompNoReleaseChar = func() *FileDecl {
+		var fd FileDecl
 		err := json.Unmarshal([]byte(benchDeclNoCompNoReleaseCharJSON), &fd)
 		if err != nil {
 			panic(err)
@@ -502,8 +502,8 @@ const (
 )
 
 var (
-	benchDeclWithCompAndRelease = func() *fileDecl {
-		var fd fileDecl
+	benchDeclWithCompAndRelease = func() *FileDecl {
+		var fd FileDecl
 		err := json.Unmarshal([]byte(benchDeclWithCompAndReleaseJSON), &fd)
 		if err != nil {
 			panic(err)
@@ -546,8 +546,8 @@ var (
 			{3, 1, []byte("3"), false},
 		},
 	}
-	benchRawSegToNodeDecl = &segDecl{
-		Elems: []elem{
+	benchRawSegToNodeDecl = &SegDecl{
+		Elems: []Elem{
 			{Name: "e1", Index: 1},
 			{Name: "e2c1", Index: 2, CompIndex: testlib.IntPtr(1)},
 			{Name: "e2c2", Index: 2, CompIndex: testlib.IntPtr(2)},

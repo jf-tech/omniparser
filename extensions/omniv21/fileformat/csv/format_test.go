@@ -164,11 +164,11 @@ func TestCreateFormatReader(t *testing.T) {
 				lf("x|y")+
 				lf("4|5|6")),
 		&csvFormatRuntime{
-			Decl: &fileDecl{
+			Decl: &FileDecl{
 				Delimiter:      "|",
 				HeaderRowIndex: testlib.IntPtr(1),
 				DataRowIndex:   2,
-				Columns:        []column{{Name: "A"}, {Name: "B"}, {Name: "C"}},
+				Columns:        []Column{{Name: "A"}, {Name: "B"}, {Name: "C"}},
 			},
 			XPath: ".[A != 'x']",
 		})

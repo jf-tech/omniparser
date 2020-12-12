@@ -30,7 +30,7 @@ func NewEDIFileFormat(schemaName string) fileformat.FileFormat {
 }
 
 type ediFormatRuntime struct {
-	Decl  *fileDecl `json:"file_declaration"`
+	Decl  *FileDecl `json:"file_declaration"`
 	XPath string
 }
 
@@ -65,7 +65,7 @@ func (f *ediFileFormat) ValidateSchema(
 	return &runtime, nil
 }
 
-func (f *ediFileFormat) validateFileDecl(decl *fileDecl) error {
+func (f *ediFileFormat) validateFileDecl(decl *FileDecl) error {
 	err := (&ediValidateCtx{}).validateFileDecl(decl)
 	if err != nil {
 		return f.FmtErr(err.Error())

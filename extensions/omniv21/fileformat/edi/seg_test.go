@@ -10,15 +10,15 @@ import (
 )
 
 func TestElemCompIndex(t *testing.T) {
-	assert.Equal(t, 1, elem{}.compIndex())
-	assert.Equal(t, 123, elem{CompIndex: testlib.IntPtr(123)}.compIndex())
+	assert.Equal(t, 1, Elem{}.compIndex())
+	assert.Equal(t, 123, Elem{CompIndex: testlib.IntPtr(123)}.compIndex())
 }
 
 func TestSegDeclIsGroup(t *testing.T) {
-	assert.False(t, (&segDecl{}).isGroup())
-	assert.False(t, (&segDecl{Type: strs.StrPtr(segTypeSeg)}).isGroup())
-	assert.False(t, (&segDecl{Type: strs.StrPtr("something")}).isGroup())
-	assert.True(t, (&segDecl{Type: strs.StrPtr(segTypeGroup)}).isGroup())
+	assert.False(t, (&SegDecl{}).isGroup())
+	assert.False(t, (&SegDecl{Type: strs.StrPtr(segTypeSeg)}).isGroup())
+	assert.False(t, (&SegDecl{Type: strs.StrPtr("something")}).isGroup())
+	assert.True(t, (&SegDecl{Type: strs.StrPtr(segTypeGroup)}).isGroup())
 }
 
 func TestSegDeclMinMaxOccurs(t *testing.T) {
@@ -59,7 +59,7 @@ func TestSegDeclMinMaxOccurs(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			s := &segDecl{Min: test.min, Max: test.max}
+			s := &SegDecl{Min: test.min, Max: test.max}
 			assert.Equal(t, test.expectedMin, s.minOccurs())
 			assert.Equal(t, test.expectedMax, s.maxOccurs())
 		})
@@ -74,11 +74,11 @@ func TestSegDeclMatchSegName(t *testing.T) {
 	               B10
 	       GE
 	*/
-	b10 := &segDecl{Name: "B10"}
-	st := &segDecl{Name: "ST", Type: strs.StrPtr(segTypeGroup), Children: []*segDecl{b10}}
-	gs := &segDecl{Name: "GS", Type: strs.StrPtr(segTypeGroup), Children: []*segDecl{st}}
-	ge := &segDecl{Name: "GE"}
-	isa := &segDecl{Name: "ISA", Children: []*segDecl{gs, ge}}
+	b10 := &SegDecl{Name: "B10"}
+	st := &SegDecl{Name: "ST", Type: strs.StrPtr(segTypeGroup), Children: []*SegDecl{b10}}
+	gs := &SegDecl{Name: "GS", Type: strs.StrPtr(segTypeGroup), Children: []*SegDecl{st}}
+	ge := &SegDecl{Name: "GE"}
+	isa := &SegDecl{Name: "ISA", Children: []*SegDecl{gs, ge}}
 
 	assert.True(t, isa.matchSegName("ISA"))
 	assert.False(t, isa.matchSegName("GS"))

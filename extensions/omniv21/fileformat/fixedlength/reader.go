@@ -32,7 +32,7 @@ func IsErrInvalidEnvelope(err error) bool {
 type reader struct {
 	inputName     string
 	r             *bufio.Reader
-	decl          *fileDecl
+	decl          *FileDecl
 	xpath         *xpath.Expr
 	root          *idr.Node
 	target        *idr.Node
@@ -192,7 +192,7 @@ func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 }
 
 // NewReader creates an FormatReader for fixed-length file format.
-func NewReader(inputName string, r io.Reader, decl *fileDecl, xpathStr string) (*reader, error) {
+func NewReader(inputName string, r io.Reader, decl *FileDecl, xpathStr string) (*reader, error) {
 	var expr *xpath.Expr
 	var err error
 	xpathStr = strings.TrimSpace(xpathStr)
