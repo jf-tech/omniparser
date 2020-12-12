@@ -13,7 +13,7 @@ type ByHeaderFooterDecl struct {
 	Footer string `json:"footer"`
 }
 
-// EnvelopeDecl describes fixed-length envelope column settings for omniparser reader.
+// ColumnDecl describes fixed-length envelope column settings for omniparser reader.
 type ColumnDecl struct {
 	Name        string  `json:"name"`
 	StartPos    int     `json:"start_pos"` // 1-based. and rune-based.
