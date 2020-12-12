@@ -32,7 +32,7 @@ func IsErrInvalidHeader(err error) bool {
 
 type reader struct {
 	inputName     string
-	decl          *fileDecl
+	decl          *FileDecl
 	xpath         *xpath.Expr
 	r             *ios.LineNumReportingCsvReader
 	headerChecked bool
@@ -144,7 +144,7 @@ func (r *reader) fmtErrStr(format string, args ...interface{}) string {
 }
 
 // NewReader creates an FormatReader for CSV file format.
-func NewReader(inputName string, r io.Reader, decl *fileDecl, xpathStr string) (*reader, error) {
+func NewReader(inputName string, r io.Reader, decl *FileDecl, xpathStr string) (*reader, error) {
 	var expr *xpath.Expr
 	var err error
 	xpathStr = strings.TrimSpace(xpathStr)

@@ -65,7 +65,7 @@ func TestStack(t *testing.T) {
 			r.shrinkStack()
 		})
 	newEntry1 := stackEntry{
-		segDecl:  &segDecl{},
+		segDecl:  &SegDecl{},
 		segNode:  idr.CreateNode(idr.TextNode, "test"),
 		curChild: 5,
 		occurred: 10,
@@ -74,7 +74,7 @@ func TestStack(t *testing.T) {
 	assert.Equal(t, 1, len(r.stack))
 	assert.Equal(t, newEntry1, *r.stackTop())
 	newEntry2 := stackEntry{
-		segDecl:  &segDecl{},
+		segDecl:  &SegDecl{},
 		segNode:  idr.CreateNode(idr.TextNode, "test 2"),
 		curChild: 10,
 		occurred: 20,
@@ -167,13 +167,13 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 	for _, test := range []struct {
 		name     string
 		input    io.Reader
-		decl     fileDecl
+		decl     FileDecl
 		expected []result
 	}{
 		{
 			name:  "empty input",
 			input: strings.NewReader(""),
-			decl: fileDecl{
+			decl: FileDecl{
 				SegDelim:  "|",
 				ElemDelim: ":",
 			},
@@ -184,7 +184,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 		{
 			name:  "reading error",
 			input: testlib.NewMockReadCloser("read failure", nil),
-			decl: fileDecl{
+			decl: FileDecl{
 				SegDelim:  "|",
 				ElemDelim: ":",
 			},
@@ -198,7 +198,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 				"seg1:c00:c01*e10*c20:c21" + "\r\n" +
 					"\n" +
 					"seg2*c10?*c10:c11*e20?*e20" + "\n"),
-			decl: fileDecl{
+			decl: FileDecl{
 				SegDelim:    "\n",
 				ElemDelim:   "*",
 				CompDelim:   strs.StrPtr(":"),
@@ -239,7 +239,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 		{
 			name:  "missing seg name",
 			input: strings.NewReader("|seg2*e3|"),
-			decl: fileDecl{
+			decl: FileDecl{
 				SegDelim:  "|",
 				ElemDelim: "*",
 			},
@@ -250,7 +250,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 		{
 			name:  "| seg-delim; multi-seg; no comp-delim; no release-char",
 			input: strings.NewReader("seg1*e1*e2|seg2*e3|"),
-			decl: fileDecl{
+			decl: FileDecl{
 				SegDelim:  "|",
 				ElemDelim: "*",
 			},
@@ -317,7 +317,7 @@ func TestRawSegToNode(t *testing.T) {
 	for _, test := range []struct {
 		name     string
 		rawSeg   rawSeg
-		decl     *segDecl
+		decl     *SegDecl
 		err      string
 		expected string
 	}{
@@ -335,8 +335,8 @@ func TestRawSegToNode(t *testing.T) {
 					{3, 1, []byte("3?*"), false},
 				},
 			},
-			decl: &segDecl{
-				Elems: []elem{
+			decl: &SegDecl{
+				Elems: []Elem{
 					{Name: "e1", Index: 1},
 					{Name: "e2c1", Index: 2, CompIndex: testlib.IntPtr(1)},
 					{Name: "e2c2", Index: 2, CompIndex: testlib.IntPtr(2)},
@@ -361,8 +361,8 @@ func TestRawSegToNode(t *testing.T) {
 					{3, 1, []byte("3?*"), false},
 				},
 			},
-			decl: &segDecl{
-				Elems: []elem{
+			decl: &SegDecl{
+				Elems: []Elem{
 					{Name: "e1", Index: 1},
 					{Name: "e2c1", Index: 2, CompIndex: testlib.IntPtr(1)},
 					{Name: "e2c2", Index: 2, CompIndex: testlib.IntPtr(2)},
@@ -418,38 +418,38 @@ func (s stackEntry) MarshalJSON() ([]byte, error) {
 }
 
 func TestSegDoneSegNext(t *testing.T) {
-	// the following is indicates the test segDecl tree structure. The numbers in () are min/max.
+	// the following is indicates the test SegDecl tree structure. The numbers in () are min/max.
 	//  root (1/1)
 	//    A (1/-1)   <-- target
 	//      B (0/1)
 	//      C (1/2)
 	//    D (0/1)
-	segDeclB := &segDecl{
+	segDeclB := &SegDecl{
 		Name: "B",
 		Type: strs.StrPtr(segTypeSeg),
 		Min:  testlib.IntPtr(0),
 	}
-	segDeclC := &segDecl{
+	segDeclC := &SegDecl{
 		Name: "C",
 		Type: strs.StrPtr(segTypeSeg),
 		Max:  testlib.IntPtr(2),
 	}
-	segDeclA := &segDecl{
+	segDeclA := &SegDecl{
 		Name:     "A",
 		Type:     strs.StrPtr(segTypeSeg),
 		IsTarget: true,
 		Max:      testlib.IntPtr(-1),
-		Children: []*segDecl{segDeclB, segDeclC},
+		Children: []*SegDecl{segDeclB, segDeclC},
 	}
-	segDeclD := &segDecl{
+	segDeclD := &SegDecl{
 		Name: "D",
 		Type: strs.StrPtr(segTypeSeg),
 		Min:  testlib.IntPtr(0),
 	}
-	segDeclRoot := &segDecl{
+	segDeclRoot := &SegDecl{
 		Name:     rootSegName,
 		Type:     strs.StrPtr(segTypeGroup),
-		Children: []*segDecl{segDeclA, segDeclD},
+		Children: []*SegDecl{segDeclA, segDeclD},
 	}
 	for _, test := range []struct {
 		name        string
@@ -812,7 +812,7 @@ func TestRead(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			var decl fileDecl
+			var decl FileDecl
 			err := json.Unmarshal([]byte(test.declJSON), &decl)
 			assert.NoError(t, err)
 			reader, err := NewReader("test", strings.NewReader(test.input), &decl, test.xpath)
@@ -851,7 +851,7 @@ func TestRead(t *testing.T) {
 }
 
 func TestRelease(t *testing.T) {
-	var decl fileDecl
+	var decl FileDecl
 	err := json.Unmarshal([]byte(`
 		{
 			"segment_delimiter": "\n",

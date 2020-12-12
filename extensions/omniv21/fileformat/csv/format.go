@@ -30,7 +30,7 @@ func NewCSVFileFormat(schemaName string) fileformat.FileFormat {
 }
 
 type csvFormatRuntime struct {
-	Decl  *fileDecl `json:"file_declaration"`
+	Decl  *FileDecl `json:"file_declaration"`
 	XPath string
 }
 
@@ -65,7 +65,7 @@ func (f *csvFileFormat) ValidateSchema(
 	return &runtime, nil
 }
 
-func (f *csvFileFormat) validateFileDecl(decl *fileDecl) error {
+func (f *csvFileFormat) validateFileDecl(decl *FileDecl) error {
 	// If header_row_index is specified, then it must be < data_row_index
 	if decl.HeaderRowIndex != nil && *decl.HeaderRowIndex >= decl.DataRowIndex {
 		return f.FmtErr(
@@ -78,7 +78,7 @@ func (f *csvFileFormat) validateFileDecl(decl *fileDecl) error {
 	return nil
 }
 
-func (f *csvFileFormat) validateColumns(columns []column) error {
+func (f *csvFileFormat) validateColumns(columns []Column) error {
 	namesSeen := map[string]bool{}
 	aliasesSeen := map[string]bool{}
 	for _, column := range columns {

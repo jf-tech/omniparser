@@ -11,7 +11,7 @@ type ediValidateCtx struct {
 	seenTarget bool
 }
 
-func (ctx *ediValidateCtx) validateFileDecl(fileDecl *fileDecl) error {
+func (ctx *ediValidateCtx) validateFileDecl(fileDecl *FileDecl) error {
 	for _, segDecl := range fileDecl.SegDecls {
 		if err := ctx.validateSegDecl(segDecl.Name, segDecl); err != nil {
 			return err
@@ -23,7 +23,7 @@ func (ctx *ediValidateCtx) validateFileDecl(fileDecl *fileDecl) error {
 	return nil
 }
 
-func (ctx *ediValidateCtx) validateSegDecl(segFQDN string, segDecl *segDecl) error {
+func (ctx *ediValidateCtx) validateSegDecl(segFQDN string, segDecl *SegDecl) error {
 	segDecl.fqdn = segFQDN
 	if segDecl.minOccurs() > segDecl.maxOccurs() {
 		return fmt.Errorf(

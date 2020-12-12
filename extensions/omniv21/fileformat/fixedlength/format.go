@@ -32,7 +32,7 @@ func NewFixedLengthFileFormat(schemaName string) fileformat.FileFormat {
 }
 
 type fixedLengthFormatRuntime struct {
-	Decl  *fileDecl `json:"file_declaration"`
+	Decl  *FileDecl `json:"file_declaration"`
 	XPath string
 }
 
@@ -67,7 +67,7 @@ func (f *fixedLengthFileFormat) ValidateSchema(
 	return &runtime, nil
 }
 
-func (f *fixedLengthFileFormat) validateFileDecl(decl *fileDecl) error {
+func (f *fixedLengthFileFormat) validateFileDecl(decl *FileDecl) error {
 	targetSeen := false
 	namesSeen := map[string]bool{}
 	for _, envelope := range decl.Envelopes {
@@ -96,7 +96,7 @@ func (f *fixedLengthFileFormat) validateFileDecl(decl *fileDecl) error {
 	return nil
 }
 
-func (f *fixedLengthFileFormat) validateByHeaderFooter(decl *byHeaderFooterDecl) error {
+func (f *fixedLengthFileFormat) validateByHeaderFooter(decl *ByHeaderFooterDecl) error {
 	if decl == nil {
 		return nil
 	}
@@ -111,7 +111,7 @@ func (f *fixedLengthFileFormat) validateByHeaderFooter(decl *byHeaderFooterDecl)
 	return nil
 }
 
-func (f *fixedLengthFileFormat) validateColumns(cols []*columnDecl) error {
+func (f *fixedLengthFileFormat) validateColumns(cols []*ColumnDecl) error {
 	columnNamesSeen := map[string]bool{}
 	for _, col := range cols {
 		if _, found := columnNamesSeen[col.Name]; found {

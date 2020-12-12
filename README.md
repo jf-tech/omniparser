@@ -22,8 +22,7 @@ is used, specially the all mighty `javascript` (and `javascript_with_context`).
 - [CSV Schema in Depth](./doc/csv_in_depth.md): everything about schemas for CSV input.
 - [Fixed-Length Schema in Depth](./doc/fixedlength_in_depth.md): everything about schemas for fixed-length (e.g. TXT)
 input
-- [JSON Schema in Depth](./doc/json_in_depth.md): everything about schemas for JSON input.
-- [XML Schema in Depth](./doc/xml_in_depth.md): everything about schemas for XML input.
+- [JSON/XML Schema in Depth](./doc/json_xml_in_depth.md): everything about schemas for JSON or XML input.
 - [EDI Schema in Depth](./doc/edi_in_depth.md): everything about schemas for EDI input.
 - [Programmability](./doc/programmability.md): Advanced techniques for using omniparser (or some of its components) in
 your code.

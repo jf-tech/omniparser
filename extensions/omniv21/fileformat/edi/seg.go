@@ -29,7 +29,8 @@ const (
 	rootSegName = "#root"
 )
 
-type elem struct {
+// Elem describes an element inside an EDI segment.
+type Elem struct {
 	Name           string  `json:"name,omitempty"`
 	Index          int     `json:"index,omitempty"`
 	CompIndex      *int    `json:"component_index,omitempty"`
@@ -37,29 +38,30 @@ type elem struct {
 	Default        *string `json:"default,omitempty"`
 }
 
-func (e elem) compIndex() int {
+func (e Elem) compIndex() int {
 	if e.CompIndex == nil {
 		return 1
 	}
 	return *e.CompIndex
 }
 
-type segDecl struct {
+// SegDecl describes an EDI segment declaration/settings.
+type SegDecl struct {
 	Name     string     `json:"name,omitempty"`
 	Type     *string    `json:"type,omitempty"`
 	IsTarget bool       `json:"is_target,omitempty"`
 	Min      *int       `json:"min,omitempty"`
 	Max      *int       `json:"max,omitempty"`
-	Elems    []elem     `json:"elements,omitempty"`
-	Children []*segDecl `json:"child_segments,omitempty"`
+	Elems    []Elem     `json:"elements,omitempty"`
+	Children []*SegDecl `json:"child_segments,omitempty"`
 	fqdn     string     // internal computed field
 }
 
-func (d *segDecl) isGroup() bool {
+func (d *SegDecl) isGroup() bool {
 	return d.Type != nil && *d.Type == segTypeGroup
 }
 
-func (d *segDecl) minOccurs() int {
+func (d *SegDecl) minOccurs() int {
 	switch d.Min {
 	case nil:
 		// for majority cases, segments have min=1, max=1, so default nil to 1
@@ -69,7 +71,7 @@ func (d *segDecl) minOccurs() int {
 	}
 }
 
-func (d *segDecl) maxOccurs() int {
+func (d *SegDecl) maxOccurs() int {
 	switch {
 	case d.Max == nil:
 		// for majority cases, segments have min=1, max=1, so default nil to 1
@@ -82,7 +84,7 @@ func (d *segDecl) maxOccurs() int {
 	}
 }
 
-func (d *segDecl) matchSegName(segName string) bool {
+func (d *SegDecl) matchSegName(segName string) bool {
 	switch d.isGroup() {
 	case true:
 		// Group (or so called loop) itself doesn't have a segment name in EDI file (we do assign a

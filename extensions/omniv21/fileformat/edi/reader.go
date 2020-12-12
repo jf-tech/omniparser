@@ -60,7 +60,7 @@ func newRawSeg() rawSeg {
 }
 
 type stackEntry struct {
-	segDecl  *segDecl  // the current stack entry's segment decl
+	segDecl  *SegDecl  // the current stack entry's segment decl
 	segNode  *idr.Node // the current stack entry segment's IDR node
 	curChild int       // which child segment is the current segment is processing.
 	occurred int       // how many times the current segment is fully processed.
@@ -248,7 +248,7 @@ func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
 	return r.unprocessedRawSeg, nil
 }
 
-func (r *ediReader) rawSegToNode(segDecl *segDecl) (*idr.Node, error) {
+func (r *ediReader) rawSegToNode(segDecl *SegDecl) (*idr.Node, error) {
 	if !r.unprocessedRawSeg.valid {
 		panic("unprocessedRawSeg is not valid")
 	}
@@ -442,7 +442,7 @@ var (
 )
 
 // NewReader creates an FormatReader for EDI file format.
-func NewReader(inputName string, r io.Reader, decl *fileDecl, targetXPath string) (*ediReader, error) {
+func NewReader(inputName string, r io.Reader, decl *FileDecl, targetXPath string) (*ediReader, error) {
 	segDelim := newStrPtrByte(&decl.SegDelim)
 	elemDelim := newStrPtrByte(&decl.ElemDelim)
 	compDelim := newStrPtrByte(decl.CompDelim)
@@ -476,7 +476,7 @@ func NewReader(inputName string, r io.Reader, decl *fileDecl, targetXPath string
 		unprocessedRawSeg: newRawSeg(),
 	}
 	reader.growStack(stackEntry{
-		segDecl: &segDecl{
+		segDecl: &SegDecl{
 			Name:     rootSegName,
 			Type:     strs.StrPtr(segTypeGroup),
 			Children: decl.SegDecls,

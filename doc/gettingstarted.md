@@ -714,6 +714,7 @@ for {
     if err == io.EOF {
         break
     }
+    if err != nil { ... }
     // output contains a []byte of the ingested and transformed record. 
 }
 ```
@@ -800,6 +801,7 @@ for {
     if err == io.EOF {
         break
     }
+    if err != nil { ... }
     // output contains a []byte of the ingested and transformed record. 
 }
 ```

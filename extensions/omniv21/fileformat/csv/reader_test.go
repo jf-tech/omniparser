@@ -34,19 +34,19 @@ func lf(s string) string {
 func TestReader(t *testing.T) {
 	for _, test := range []struct {
 		name     string
-		decl     *fileDecl
+		decl     *FileDecl
 		xpath    string
 		input    io.Reader
 		expected []interface{}
 	}{
 		{
 			name: "header row; alias used; with xpath; variable data row column size; replace double quote",
-			decl: &fileDecl{
+			decl: &FileDecl{
 				Delimiter:           "|",
 				ReplaceDoubleQuotes: true,
 				HeaderRowIndex:      testlib.IntPtr(2),
 				DataRowIndex:        4,
-				Columns: []column{
+				Columns: []Column{
 					{Name: "a"},
 					{Name: "b with space", Alias: strs.StrPtr("b_with_space")},
 					{Name: "c"},
@@ -67,7 +67,7 @@ func TestReader(t *testing.T) {
 		},
 		{
 			name: "cannot jump to header row",
-			decl: &fileDecl{
+			decl: &FileDecl{
 				Delimiter:      "|",
 				HeaderRowIndex: testlib.IntPtr(3),
 			},
@@ -78,7 +78,7 @@ func TestReader(t *testing.T) {
 		},
 		{
 			name: "cannot read to header row",
-			decl: &fileDecl{
+			decl: &FileDecl{
 				Delimiter:      "|",
 				HeaderRowIndex: testlib.IntPtr(2),
 			},
@@ -89,10 +89,10 @@ func TestReader(t *testing.T) {
 		},
 		{
 			name: "header columns less than the declared",
-			decl: &fileDecl{
+			decl: &FileDecl{
 				Delimiter:      "|",
 				HeaderRowIndex: testlib.IntPtr(2),
-				Columns: []column{
+				Columns: []Column{
 					{Name: "a"},
 					{Name: "b"},
 				},
@@ -104,10 +104,10 @@ func TestReader(t *testing.T) {
 		},
 		{
 			name: "header column not matching the declared",
-			decl: &fileDecl{
+			decl: &FileDecl{
 				Delimiter:      "|",
 				HeaderRowIndex: testlib.IntPtr(2),
-				Columns: []column{
+				Columns: []Column{
 					{Name: "a"},
 					{Name: "b"},
 				},
@@ -119,11 +119,11 @@ func TestReader(t *testing.T) {
 		},
 		{
 			name: "header row but no data row",
-			decl: &fileDecl{
+			decl: &FileDecl{
 				Delimiter:      ",",
 				HeaderRowIndex: testlib.IntPtr(2),
 				DataRowIndex:   5,
-				Columns: []column{
+				Columns: []Column{
 					{Name: "a"},
 					{Name: "b"},
 				},
@@ -133,10 +133,10 @@ func TestReader(t *testing.T) {
 		},
 		{
 			name: "unable to read data row",
-			decl: &fileDecl{
+			decl: &FileDecl{
 				Delimiter:    ",",
 				DataRowIndex: 1,
-				Columns:      []column{{Name: "a"}},
+				Columns:      []Column{{Name: "a"}},
 			},
 			input: testlib.NewMockReadCloser("read failure", nil),
 			expected: []interface{}{
