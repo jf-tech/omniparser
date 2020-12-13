@@ -1,3 +1,20 @@
+* [Custom Function Reference](#custom-function-reference)
+  * [Global custom\_func Available to All Extensions and Versions of Schema Handlers](#global-custom_func-available-to-all-extensions-and-versions-of-schema-handlers)
+    * [coalesce](#coalesce)
+    * [concat](#concat)
+    * [dateTimeLayoutToRFC3339](#datetimelayouttorfc3339)
+    * [dateTimeToEpoch](#datetimetoepoch)
+    * [dateTimeToRFC3339](#datetimetorfc3339)
+    * [epochToDateTimeRFC3339](#epochtodatetimerfc3339)
+    * [lower](#lower)
+    * [now](#now)
+    * [upper](#upper)
+    * [uuidv3](#uuidv3)
+  * [omni\.2\.1 Schema Handler Specific custom\_func](#omni21-schema-handler-specific-custom_func)
+    * [copy](#copy)
+    * [javascript](#javascript)
+    * [javascript\_with\_context](#javascript_with_context)
+
 # Custom Function Reference
 
 ## Global `custom_func` Available to All Extensions and Versions of Schema Handlers
@@ -22,6 +39,7 @@ string (with only whitespaces) is not considered as empty.
 ```
 If IDR node `tracking_number_h002_cn` value is `""` and `tracking_number_h001` value is `"ABC"`,
 then the result field `tracking_number` value is `"ABC"`.
+
 ---
 
 > ### concat
@@ -44,6 +62,7 @@ returned.
 ```
 If IDR node `event_date` value is `"12/31/2020"` and `event_time` value is `"12:34:56"`,
 then the result field `event_date_time` value is `"12/31/2020T12:34:56"`.
+
 ---
 
 > ### dateTimeLayoutToRFC3339
@@ -83,6 +102,7 @@ or the parsed input datetime will be converted into the `toTZ`.
 If you're not sure, please check
 [this sample](../extensions/omniv21/samples/xml/1_datetime_parse_and_format.schema.json) to find out
 more subtleties about date time parsing and conversion.
+
 ---
 
 > ### dateTimeToEpoch
@@ -136,6 +156,7 @@ instead tries to parse the input datetime string intelligently.
 If you're not sure, please check
 [this sample](../extensions/omniv21/samples/xml/1_datetime_parse_and_format.schema.json) to find out
 more subtleties about date time parsing and conversion.
+
 ---
 
 > ### epochToDateTimeRFC3339
@@ -165,6 +186,7 @@ Param `unit` has two valid values: `"SECOND"` or `"MILLISECOND"`.
 There is an optional param at the end, `tz`: if not specified, the output will be in UTC (`Z`)
 time zone; if specified, it must be of a standard IANA time zone string, such as
 `"America/Los_Angeles"`.
+
 ---
 
 > ### lower
@@ -276,6 +298,7 @@ book prices.
 
 For more information about `javascript`, check this
 [in-depth explanation](./use_of_custom_funcs.md#javascript-and-javascript_with_context).
+
 ---
 
 > ### javascript_with_context
@@ -298,4 +321,5 @@ the current IDR node.
 
 For more information about `javascript_with_context`, check this
 [in-depth explanation](./use_of_custom_funcs.md#javascript-and-javascript_with_context).
+
 ---
