@@ -39,9 +39,7 @@ func init() {
 	}
 }
 
-// go test -bench=. -benchmem -benchtime=30s
 // Benchmark1_Weather_Data_CSV-8   	  167850	    216683 ns/op	   75836 B/op	    1267 allocs/op
-
 func Benchmark1_Weather_Data_CSV(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		transform, err := benchSchema.NewTransform(
@@ -50,7 +48,7 @@ func Benchmark1_Weather_Data_CSV(b *testing.B) {
 			b.FailNow()
 		}
 		for {
-			_, err := transform.Read()
+			_, err = transform.Read()
 			if err == io.EOF {
 				break
 			}

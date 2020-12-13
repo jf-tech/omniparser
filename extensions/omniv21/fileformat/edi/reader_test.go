@@ -29,21 +29,21 @@ func TestRawSeg(t *testing.T) {
 		unprocessedRawSeg: newRawSeg(),
 	}
 	assert.False(t, r.unprocessedRawSeg.valid)
-	assert.Equal(t, "", r.unprocessedRawSeg.name)
-	assert.Nil(t, r.unprocessedRawSeg.raw)
-	assert.Equal(t, 0, len(r.unprocessedRawSeg.elems))
-	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedRawSeg.elems))
+	assert.Equal(t, "", r.unprocessedRawSeg.Name)
+	assert.Nil(t, r.unprocessedRawSeg.Raw)
+	assert.Equal(t, 0, len(r.unprocessedRawSeg.Elems))
+	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedRawSeg.Elems))
 	r.unprocessedRawSeg.valid = true
-	r.unprocessedRawSeg.name = rawSegName
-	r.unprocessedRawSeg.raw = rawSegData
-	r.unprocessedRawSeg.elems = append(
-		r.unprocessedRawSeg.elems, rawSegElem{1, 1, rawSegData[0:4], false}, rawSegElem{2, 1, rawSegData[5:], false})
+	r.unprocessedRawSeg.Name = rawSegName
+	r.unprocessedRawSeg.Raw = rawSegData
+	r.unprocessedRawSeg.Elems = append(
+		r.unprocessedRawSeg.Elems, RawSegElem{1, 1, rawSegData[0:4]}, RawSegElem{2, 1, rawSegData[5:]})
 	r.resetRawSeg()
 	assert.False(t, r.unprocessedRawSeg.valid)
-	assert.Equal(t, "", r.unprocessedRawSeg.name)
-	assert.Nil(t, r.unprocessedRawSeg.raw)
-	assert.Equal(t, 0, len(r.unprocessedRawSeg.elems))
-	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedRawSeg.elems))
+	assert.Equal(t, "", r.unprocessedRawSeg.Name)
+	assert.Nil(t, r.unprocessedRawSeg.Raw)
+	assert.Equal(t, 0, len(r.unprocessedRawSeg.Elems))
+	assert.Equal(t, defaultElemsPerSeg, cap(r.unprocessedRawSeg.Elems))
 }
 
 func TestStack(t *testing.T) {
@@ -161,7 +161,7 @@ func verifyErr(t *testing.T, expectedErr string, actual error) {
 
 func TestGetUnprocessedRawSeg(t *testing.T) {
 	type result struct {
-		rawSeg rawSeg
+		rawSeg RawSeg
 		err    string
 	}
 	for _, test := range []struct {
@@ -178,7 +178,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 				ElemDelim: ":",
 			},
 			expected: []result{
-				{rawSeg: rawSeg{}, err: io.EOF.Error()},
+				{rawSeg: RawSeg{}, err: io.EOF.Error()},
 			},
 		},
 		{
@@ -189,7 +189,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 				ElemDelim: ":",
 			},
 			expected: []result{
-				{rawSeg: rawSeg{}, err: `input 'test' at segment no.1 (char[1,1]): cannot read segment, err: read failure`},
+				{rawSeg: RawSeg{}, err: `input 'test' at segment no.1 (char[1,1]): cannot read segment, err: read failure`},
 			},
 		},
 		{
@@ -206,34 +206,34 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 			},
 			expected: []result{
 				{
-					rawSeg: rawSeg{
+					rawSeg: RawSeg{
 						valid: true,
-						name:  "seg1",
-						raw:   []byte("seg1:c00:c01*e10*c20:c21" + "\r\n"),
-						elems: []rawSegElem{
-							{elemIndex: 0, compIndex: 1, data: []byte("seg1")},
-							{elemIndex: 0, compIndex: 2, data: []byte("c00")},
-							{elemIndex: 0, compIndex: 3, data: []byte("c01")},
-							{elemIndex: 1, compIndex: 1, data: []byte("e10")},
-							{elemIndex: 2, compIndex: 1, data: []byte("c20")},
-							{elemIndex: 2, compIndex: 2, data: []byte("c21")},
+						Name:  "seg1",
+						Raw:   []byte("seg1:c00:c01*e10*c20:c21" + "\r\n"),
+						Elems: []RawSegElem{
+							{ElemIndex: 0, CompIndex: 1, Data: []byte("seg1")},
+							{ElemIndex: 0, CompIndex: 2, Data: []byte("c00")},
+							{ElemIndex: 0, CompIndex: 3, Data: []byte("c01")},
+							{ElemIndex: 1, CompIndex: 1, Data: []byte("e10")},
+							{ElemIndex: 2, CompIndex: 1, Data: []byte("c20")},
+							{ElemIndex: 2, CompIndex: 2, Data: []byte("c21")},
 						},
 					},
 				},
 				{
-					rawSeg: rawSeg{
+					rawSeg: RawSeg{
 						valid: true,
-						name:  "seg2",
-						raw:   []byte("seg2*c10?*c10:c11*e20?*e20" + "\n"),
-						elems: []rawSegElem{
-							{elemIndex: 0, compIndex: 1, data: []byte("seg2")},
-							{elemIndex: 1, compIndex: 1, data: []byte("c10?*c10")},
-							{elemIndex: 1, compIndex: 2, data: []byte("c11")},
-							{elemIndex: 2, compIndex: 1, data: []byte("e20?*e20")},
+						Name:  "seg2",
+						Raw:   []byte("seg2*c10?*c10:c11*e20?*e20" + "\n"),
+						Elems: []RawSegElem{
+							{ElemIndex: 0, CompIndex: 1, Data: []byte("seg2")},
+							{ElemIndex: 1, CompIndex: 1, Data: []byte("c10?*c10")},
+							{ElemIndex: 1, CompIndex: 2, Data: []byte("c11")},
+							{ElemIndex: 2, CompIndex: 1, Data: []byte("e20?*e20")},
 						},
 					},
 				},
-				{rawSeg: rawSeg{}, err: io.EOF.Error()},
+				{rawSeg: RawSeg{}, err: io.EOF.Error()},
 			},
 		},
 		{
@@ -244,7 +244,7 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 				ElemDelim: "*",
 			},
 			expected: []result{
-				{rawSeg: rawSeg{}, err: `input 'test' at segment no.1 (char[1,2]): missing segment name`},
+				{rawSeg: RawSeg{}, err: `input 'test' at segment no.1 (char[1,2]): missing segment name`},
 			},
 		},
 		{
@@ -256,29 +256,29 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 			},
 			expected: []result{
 				{
-					rawSeg: rawSeg{
+					rawSeg: RawSeg{
 						valid: true,
-						name:  "seg1",
-						raw:   []byte("seg1*e1*e2|"),
-						elems: []rawSegElem{
-							{elemIndex: 0, compIndex: 1, data: []byte("seg1")},
-							{elemIndex: 1, compIndex: 1, data: []byte("e1")},
-							{elemIndex: 2, compIndex: 1, data: []byte("e2")},
+						Name:  "seg1",
+						Raw:   []byte("seg1*e1*e2|"),
+						Elems: []RawSegElem{
+							{ElemIndex: 0, CompIndex: 1, Data: []byte("seg1")},
+							{ElemIndex: 1, CompIndex: 1, Data: []byte("e1")},
+							{ElemIndex: 2, CompIndex: 1, Data: []byte("e2")},
 						},
 					},
 				},
 				{
-					rawSeg: rawSeg{
+					rawSeg: RawSeg{
 						valid: true,
-						name:  "seg2",
-						raw:   []byte("seg2*e3|"),
-						elems: []rawSegElem{
-							{elemIndex: 0, compIndex: 1, data: []byte("seg2")},
-							{elemIndex: 1, compIndex: 1, data: []byte("e3")},
+						Name:  "seg2",
+						Raw:   []byte("seg2*e3|"),
+						Elems: []RawSegElem{
+							{ElemIndex: 0, CompIndex: 1, Data: []byte("seg2")},
+							{ElemIndex: 1, CompIndex: 1, Data: []byte("e3")},
 						},
 					},
 				},
-				{rawSeg: rawSeg{}, err: io.EOF.Error()},
+				{rawSeg: RawSeg{}, err: io.EOF.Error()},
 			},
 		},
 	} {
@@ -311,28 +311,28 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 
 func TestRawSegToNode(t *testing.T) {
 	assert.PanicsWithValue(t, "unprocessedRawSeg is not valid", func() {
-		_, _ = (&ediReader{unprocessedRawSeg: rawSeg{valid: false}}).rawSegToNode(nil)
+		_, _ = (&ediReader{unprocessedRawSeg: RawSeg{valid: false}}).rawSegToNode(nil)
 	})
 
 	for _, test := range []struct {
 		name     string
-		rawSeg   rawSeg
+		rawSeg   RawSeg
 		decl     *SegDecl
 		err      string
 		expected string
 	}{
 		{
 			name: "element not found",
-			rawSeg: rawSeg{
+			rawSeg: RawSeg{
 				valid: true,
-				name:  "ISA",
-				raw:   []byte("ISA*0*1:2*3?**"),
-				elems: []rawSegElem{
-					{0, 1, []byte("ISA"), false},
-					{1, 1, []byte("0"), false},
-					{2, 1, []byte("1"), false},
-					{2, 2, []byte("2"), false},
-					{3, 1, []byte("3?*"), false},
+				Name:  "ISA",
+				Raw:   []byte("ISA*0*1:2*3?**"),
+				Elems: []RawSegElem{
+					{0, 1, []byte("ISA")},
+					{1, 1, []byte("0")},
+					{2, 1, []byte("1")},
+					{2, 2, []byte("2")},
+					{3, 1, []byte("3?*")},
 				},
 			},
 			decl: &SegDecl{
@@ -344,21 +344,21 @@ func TestRawSegToNode(t *testing.T) {
 				},
 				fqdn: "ISA",
 			},
-			err:      `input 'test' at segment no.0 (char[10,20]): unable to find element 'e3' on segment 'ISA'`,
+			err:      `input 'test' at segment no.3 (char[10,20]): unable to find element 'e3' on segment 'ISA'`,
 			expected: "",
 		},
 		{
 			name: "success",
-			rawSeg: rawSeg{
+			rawSeg: RawSeg{
 				valid: true,
-				name:  "ISA",
-				raw:   []byte("ISA*0*1:2*3?**"),
-				elems: []rawSegElem{
-					{0, 1, []byte("ISA"), false},
-					{1, 1, []byte("0"), false},
-					{2, 1, []byte("1"), false},
-					{2, 2, []byte("2"), false},
-					{3, 1, []byte("3?*"), false},
+				Name:  "ISA",
+				Raw:   []byte("ISA*0*1:2*3?**"),
+				Elems: []RawSegElem{
+					{0, 1, []byte("ISA")},
+					{1, 1, []byte("0")},
+					{2, 1, []byte("1")},
+					{2, 2, []byte("2")},
+					{3, 1, []byte("3?*")},
 				},
 			},
 			decl: &SegDecl{
@@ -381,8 +381,7 @@ func TestRawSegToNode(t *testing.T) {
 				inputName:         "test",
 				releaseChar:       newStrPtrByte(strs.StrPtr("?")),
 				unprocessedRawSeg: test.rawSeg,
-				runeBegin:         10,
-				runeEnd:           20,
+				r:                 &NonValidatingReader{runeBegin: 10, runeEnd: 20, segCount: 3},
 			}
 			n, err := r.rawSegToNode(test.decl)
 			if test.err != "" {
@@ -398,7 +397,6 @@ func TestRawSegToNode(t *testing.T) {
 }
 
 func (s stackEntry) MarshalJSON() ([]byte, error) {
-	type Alias stackEntry
 	return json.Marshal(&struct {
 		SegDecl  string
 		SegNode  *string
@@ -516,7 +514,7 @@ func TestSegDoneSegNext(t *testing.T) {
 			target:      nil,
 			callSegDone: false,
 			panicStr:    "",
-			err:         `input 'test' at segment no.0 (char[20,20]): segment 'C' needs min occur 1, but only got 0`,
+			err:         `input 'test' at segment no.3 (char[20,20]): segment 'C' needs min occur 1, but only got 0`,
 		},
 		{
 			name: "root-A-C, C segDone, C over max, A becomes target, but r.target not nil",
@@ -544,7 +542,12 @@ func TestSegDoneSegNext(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			r := &ediReader{inputName: "test", stack: test.stack, target: test.target, runeBegin: 10, runeEnd: 20}
+			r := &ediReader{
+				inputName: "test",
+				stack:     test.stack,
+				target:    test.target,
+				r:         &NonValidatingReader{runeBegin: 10, runeEnd: 20, segCount: 3},
+			}
 			var err error
 			testCall := func() {
 				if test.callSegDone {
@@ -878,7 +881,7 @@ func TestRelease(t *testing.T) {
 }
 
 func TestIsContinuableError(t *testing.T) {
-	r := &ediReader{}
+	r := &ediReader{r: &NonValidatingReader{}}
 	assert.True(t, r.IsContinuableError(r.FmtErr("some error")))
 	assert.False(t, r.IsContinuableError(ErrInvalidEDI("invalid EDI")))
 	assert.False(t, r.IsContinuableError(io.EOF))

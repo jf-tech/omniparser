@@ -1,19 +1,20 @@
 * [Programmability of Omniparser](#programmability-of-omniparser)
-    * [Out\-of\-Box Basic Use Case](#out-of-box-basic-use-case)
-    * [Add A New custom\_func](#add-a-new-custom_func)
-    * [Add A New custom\_parse](#add-a-new-custom_parse)
-    * [Add A New File Format](#add-a-new-file-format)
-    * [Add A New Schema Handler](#add-a-new-schema-handler)
-    * [Put All Together](#put-all-together)
-    * [In Non\-Golang Environment](#in-non-golang-environment)
+  * [Out\-of\-Box Basic Use Case](#out-of-box-basic-use-case)
+  * [Add A New custom\_func](#add-a-new-custom_func)
+  * [Add A New custom\_parse](#add-a-new-custom_parse)
+  * [Add A New File Format](#add-a-new-file-format)
+  * [Add A New Schema Handler](#add-a-new-schema-handler)
+  * [Put All Together](#put-all-together)
+  * [In Non\-Golang Environment](#in-non-golang-environment)
 * [Programmability of Some Components without Omniparser](#programmability-of-some-components-without-omniparser)
-    * [Functions](#functions)
-    * [IDR](#idr)
-    * [CSV Reader](#csv-reader)
-    * [Fixed\-Length Reader](#fixed-length-reader)
-    * [EDI Reader](#edi-reader)
-    * [JSON Reader](#json-reader)
-    * [XML Reader](#xml-reader)
+  * [Functions](#functions)
+  * [IDR](#idr)
+  * [CSV Reader](#csv-reader)
+  * [Fixed\-Length Reader](#fixed-length-reader)
+  * [Full EDI Reader](#full-edi-reader)
+  * [Non\-Validating EDI Segment Reader](#non-validating-edi-segment-reader)
+  * [JSON Reader](#json-reader)
+  * [XML Reader](#xml-reader)
 
 # Programmability of Omniparser
 
@@ -237,15 +238,42 @@ reader that does
 For more reader specific settings/configurations, check
 [Fixed-Length in Depth](./fixedlength_in_depth.md) page.
 
-## EDI Reader
+## Full EDI Reader
 
 Use [`NewReader()`](../extensions/omniv21/fileformat/edi/reader.go) to create an EDI reader that does
 - segment min/max validation
 - XPath based data row filtering
 - Context-aware error message
 
-Future TO-DO: create a version of non-validating EDI reader for users who are only interested in
-getting the raw segment data, without any validation.
+For more reader specific settings/configurations, check
+[EDI in Depth](./edi_in_depth.md) page.
+
+## Non-Validating EDI Segment Reader
+
+Use [`NewNonValidatingReader()`](../extensions/omniv21/fileformat/edi/reader2.go) to create a
+non-validating EDI segment reader. Sometimes user might not want the full EDI reader that does
+many packing/unpacking and structural/hierarchical validations, they simply need an EDI segment
+reader that reads out all the raw segments and their elements/components.
+
+Usage example:
+```
+r := edi.NewNonValidatingReader(
+    strings.NewReader("....."),
+    &edi.FileDecl{
+        SegDelim: ...,
+        ElemDelim: ...,
+        ...,
+        // No need to set SegDecls. Just all the needed top level edi.FileDecl settings.
+    })
+for {
+    seg, err := r.Read()
+    if err == io.EOF {
+        break
+    }
+    if err != nil { ... }
+    // seg contains the raw segment data, and is of edi.RawSeg type.
+}
+```
 
 ## JSON Reader
 See [IDR](#idr) notes about the JSON/XML readers above.

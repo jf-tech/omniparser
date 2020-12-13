@@ -64,6 +64,7 @@ situations.
 - Golang 1.14
 
 ## Recent Major Feature Additions/Changes
+- Added `NonValidatingReader` EDI segment reader.
 - Added fixed-length file format support in omniv21 handler.
 - Added EDI file format support in omniv21 handler.
 - Major restructure/refactoring

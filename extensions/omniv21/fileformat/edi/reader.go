@@ -1,12 +1,9 @@
 package edi
 
 import (
-	"bufio"
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
-	"unicode/utf8"
 
 	"github.com/antchfx/xpath"
 	"github.com/jf-tech/go-corelib/caches"
@@ -15,49 +12,6 @@ import (
 
 	"github.com/jf-tech/omniparser/idr"
 )
-
-// ErrInvalidEDI indicates the EDI content is corrupted. This is a fatal, non-continuable error.
-type ErrInvalidEDI string
-
-func (e ErrInvalidEDI) Error() string { return string(e) }
-
-// IsErrInvalidEDI checks if an err is of ErrInvalidEDI type.
-func IsErrInvalidEDI(err error) bool {
-	switch err.(type) {
-	case ErrInvalidEDI:
-		return true
-	default:
-		return false
-	}
-}
-
-type rawSegElem struct {
-	elemIndex     int // for this piece of data, the index of which element it belongs to. 1-based.
-	compIndex     int // for this piece of data, the index of which component it belongs to. 1-based.
-	data          []byte
-	dateUnescaped bool
-}
-
-type rawSeg struct {
-	valid bool
-	name  string       // name of the segment, e.g. 'ISA', 'GS', etc.
-	raw   []byte       // the raw data of the entire segment, including segment delimiter.
-	elems []rawSegElem // all the broken down pieces of elements of the segment.
-}
-
-const (
-	defaultElemsPerSeg  = 32
-	defaultCompsPerElem = 8
-)
-
-func newRawSeg() rawSeg {
-	return rawSeg{
-		// don't want to over-allocate (defaultElemsPerSeg * defaultCompsPerElem), since
-		// most EDI segments don't have equal number of components for each element --
-		// using defaultElemsPerSeg is probably good enough.
-		elems: make([]rawSegElem, 0, defaultElemsPerSeg),
-	}
-}
 
 type stackEntry struct {
 	segDecl  *SegDecl  // the current stack entry's segment decl
@@ -74,35 +28,14 @@ func newStack() []stackEntry {
 	return make([]stackEntry, 0, defaultStackDepth)
 }
 
-type strPtrByte struct {
-	strptr *string
-	b      []byte
-}
-
-func newStrPtrByte(strptr *string) strPtrByte {
-	var b []byte
-	if strptr != nil {
-		b = []byte(*strptr)
-	}
-	return strPtrByte{
-		strptr: strptr,
-		b:      b,
-	}
-}
-
 type ediReader struct {
-	inputName          string
-	scanner            *bufio.Scanner
-	segDelim           strPtrByte
-	elemDelim          strPtrByte
-	compDelim          strPtrByte
-	releaseChar        strPtrByte
-	stack              []stackEntry
-	target             *idr.Node
-	targetXPath        *xpath.Expr
-	runeBegin, runeEnd int
-	segCount           int
-	unprocessedRawSeg  rawSeg
+	inputName         string
+	releaseChar       strPtrByte
+	r                 *NonValidatingReader
+	stack             []stackEntry
+	target            *idr.Node
+	targetXPath       *xpath.Expr
+	unprocessedRawSeg RawSeg
 }
 
 func inRange(i, lowerBoundInclusive, upperBoundInclusive int) bool {
@@ -146,104 +79,21 @@ func (r *ediReader) growStack(e stackEntry) {
 }
 
 func (r *ediReader) resetRawSeg() {
-	r.unprocessedRawSeg.valid = false
-	r.unprocessedRawSeg.name = ""
-	r.unprocessedRawSeg.raw = nil
-	r.unprocessedRawSeg.elems = r.unprocessedRawSeg.elems[:0]
+	resetRawSeg(&r.unprocessedRawSeg)
 }
 
-func runeCountAndHasOnlyCRLF(b []byte) (int, bool) {
-	runeCount := 0
-	onlyCRLF := true
-	for {
-		r, size := utf8.DecodeRune(b)
-		if r == utf8.RuneError {
-			return runeCount, onlyCRLF
-		}
-		if r != '\n' && r != '\r' {
-			onlyCRLF = false
-		}
-		runeCount++
-		b = b[size:]
-	}
-}
-
-var (
-	crBytes = []byte("\r")
-	lfBytes = []byte("\n")
-)
-
-func (r *ediReader) getUnprocessedRawSeg() (rawSeg, error) {
+func (r *ediReader) getUnprocessedRawSeg() (RawSeg, error) {
 	if r.unprocessedRawSeg.valid {
 		return r.unprocessedRawSeg, nil
 	}
-	var token []byte
-	for r.scanner.Scan() {
-		b := r.scanner.Bytes()
-		// In rare occasions inputs are not strict EDI per se - they sometimes have trailing empty lines
-		// with only CR and/or LF. Let's be not so strict and ignore those lines.
-		count, onlyCRLF := runeCountAndHasOnlyCRLF(b)
-		r.runeBegin = r.runeEnd
-		r.runeEnd += count
-		if onlyCRLF {
-			continue
-		}
-		token = b
-		break
+	rawSeg, err := r.r.Read()
+	switch {
+	case err == io.EOF:
+		return RawSeg{}, io.EOF
+	case err != nil:
+		return RawSeg{}, ErrInvalidEDI(r.fmtErrStr(err.Error()))
 	}
-	r.segCount++
-	// We are here because:
-	// 1. we find next token (i.e. segment), great, let's process it, OR
-	// 2. r.scanner.Scan() returns false and it's EOF (note scanner never returns EOF, it just returns false
-	//    on Scan() and Err() returns nil). We need to return EOF, OR
-	// 3. r.scanner.Scan() returns false Err() returns err, need to return the err wrapped.
-	err := r.scanner.Err()
-	if err != nil {
-		return rawSeg{}, ErrInvalidEDI(r.fmtErrStr("cannot read segment, err: %s", err.Error()))
-	}
-	if token == nil {
-		return rawSeg{}, io.EOF
-	}
-	// From now on, the important thing is to operate on token (of []byte)without modification and without
-	// allocation to keep performance.
-	r.unprocessedRawSeg.raw = token
-	// First we need to drop the trailing segment delimiter.
-	noSegDelim := token[:len(token)-len(r.segDelim.b)]
-	// In rare occasions, input uses '\n' as segment delimiter, but '\r' somehow
-	// gets included as well (more common in business platform running on Windows)
-	// Drop that '\r' as well.
-	if *r.segDelim.strptr == "\n" && bytes.HasSuffix(noSegDelim, crBytes) {
-		noSegDelim = noSegDelim[:len(noSegDelim)-utf8.RuneLen('\r')]
-	}
-	for i, elem := range strs.ByteSplitWithEsc(noSegDelim, r.elemDelim.b, r.releaseChar.b, defaultElemsPerSeg) {
-		if len(r.compDelim.b) == 0 {
-			// if we don't have comp delimiter, treat the entire element as one component.
-			r.unprocessedRawSeg.elems = append(
-				r.unprocessedRawSeg.elems,
-				rawSegElem{
-					// while (element) index in schema starts with 1, it actually refers to the first element
-					// AFTER the seg name element, thus we use can i as elemIndex directly.
-					elemIndex: i,
-					// comp_index always starts with 1
-					compIndex: 1,
-					data:      elem,
-				})
-			continue
-		}
-		for j, comp := range strs.ByteSplitWithEsc(elem, r.compDelim.b, r.releaseChar.b, defaultCompsPerElem) {
-			r.unprocessedRawSeg.elems = append(
-				r.unprocessedRawSeg.elems,
-				rawSegElem{
-					elemIndex: i,
-					compIndex: j + 1,
-					data:      comp,
-				})
-		}
-	}
-	if len(r.unprocessedRawSeg.elems) == 0 || len(r.unprocessedRawSeg.elems[0].data) == 0 {
-		return rawSeg{}, ErrInvalidEDI(r.fmtErrStr("missing segment name"))
-	}
-	r.unprocessedRawSeg.name = string(r.unprocessedRawSeg.elems[0].data)
+	r.unprocessedRawSeg = rawSeg
 	r.unprocessedRawSeg.valid = true
 	return r.unprocessedRawSeg, nil
 }
@@ -253,12 +103,12 @@ func (r *ediReader) rawSegToNode(segDecl *SegDecl) (*idr.Node, error) {
 		panic("unprocessedRawSeg is not valid")
 	}
 	n := idr.CreateNode(idr.ElementNode, segDecl.Name)
-	rawElems := r.unprocessedRawSeg.elems
+	rawElems := r.unprocessedRawSeg.Elems
 	for _, elemDecl := range segDecl.Elems {
 		rawElemIndex := 0
 		for ; rawElemIndex < len(rawElems); rawElemIndex++ {
-			if rawElems[rawElemIndex].elemIndex == elemDecl.Index &&
-				rawElems[rawElemIndex].compIndex == elemDecl.compIndex() {
+			if rawElems[rawElemIndex].ElemIndex == elemDecl.Index &&
+				rawElems[rawElemIndex].CompIndex == elemDecl.compIndex() {
 				break
 			}
 		}
@@ -267,8 +117,7 @@ func (r *ediReader) rawSegToNode(segDecl *SegDecl) (*idr.Node, error) {
 			idr.AddChild(n, elemN)
 			data := ""
 			if rawElemIndex < len(rawElems) {
-				data = string(strs.ByteUnescape(rawElems[rawElemIndex].data, r.releaseChar.b, true))
-				rawElems[rawElemIndex].dateUnescaped = true
+				data = string(strs.ByteUnescape(rawElems[rawElemIndex].Data, r.releaseChar.b, true))
 				rawElemIndex++
 			} else if elemDecl.Default != nil {
 				data = *elemDecl.Default
@@ -326,10 +175,11 @@ func (r *ediReader) segNext() error {
 	cur := r.stackTop()
 	if cur.occurred < cur.segDecl.minOccurs() {
 		// the current values of [begin, end] cover the current instance of the current seg. But the error
-		// we're about to create is about the missing of next instance of the current seg. So just assign
-		// 'end' to 'begin' to make the error msg less confusing.
-		r.runeBegin = r.runeEnd
-		return ErrInvalidEDI(r.fmtErrStr("segment '%s' needs min occur %d, but only got %d",
+		// we're about to create is about the missing of next instance of the current seg. So just use
+		// 'end' as 'begin' to make the error msg less confusing.
+		return ErrInvalidEDI(r.fmtErrStr2(
+			r.r.SegCount(), r.r.RuneEnd(), r.r.RuneEnd(),
+			"segment '%s' needs min occur %d, but only got %d",
 			strs.FirstNonBlank(cur.segDecl.fqdn, cur.segDecl.Name), cur.segDecl.minOccurs(), cur.occurred))
 	}
 	if len(r.stack) <= 1 {
@@ -382,8 +232,8 @@ func (r *ediReader) Read() (*idr.Node, error) {
 			return nil, err
 		}
 		cur := r.stackTop()
-		if !cur.segDecl.matchSegName(rawSeg.name) {
-			err := r.segNext()
+		if !cur.segDecl.matchSegName(rawSeg.Name) {
+			err = r.segNext()
 			if err != nil {
 				return nil, err
 			}
@@ -425,8 +275,12 @@ func (r *ediReader) FmtErr(format string, args ...interface{}) error {
 }
 
 func (r *ediReader) fmtErrStr(format string, args ...interface{}) string {
+	return r.fmtErrStr2(r.r.SegCount(), r.r.RuneBegin(), r.r.RuneEnd(), format, args...)
+}
+
+func (r *ediReader) fmtErrStr2(segCount, runeBegin, runeEnd int, format string, args ...interface{}) string {
 	return fmt.Sprintf("input '%s' at segment no.%d (char[%d,%d]): %s",
-		r.inputName, r.segCount, r.runeBegin, r.runeEnd, fmt.Sprintf(format, args...))
+		r.inputName, segCount, runeBegin, runeEnd, fmt.Sprintf(format, args...))
 }
 
 const (
@@ -443,15 +297,6 @@ var (
 
 // NewReader creates an FormatReader for EDI file format.
 func NewReader(inputName string, r io.Reader, decl *FileDecl, targetXPath string) (*ediReader, error) {
-	segDelim := newStrPtrByte(&decl.SegDelim)
-	elemDelim := newStrPtrByte(&decl.ElemDelim)
-	compDelim := newStrPtrByte(decl.CompDelim)
-	releaseChar := newStrPtrByte(decl.ReleaseChar)
-	if decl.IgnoreCRLF {
-		r = ios.NewBytesReplacingReader(r, crBytes, nil)
-		r = ios.NewBytesReplacingReader(r, lfBytes, nil)
-	}
-	scanner := ios.NewScannerByDelim3(r, segDelim.b, releaseChar.b, scannerFlags, make([]byte, ReaderBufSize))
 	targetXPathExpr, err := func() (*xpath.Expr, error) {
 		if targetXPath == "" || targetXPath == "." {
 			return nil, nil
@@ -463,16 +308,10 @@ func NewReader(inputName string, r io.Reader, decl *FileDecl, targetXPath string
 	}
 	reader := &ediReader{
 		inputName:         inputName,
-		scanner:           scanner,
-		segDelim:          segDelim,
-		elemDelim:         elemDelim,
-		compDelim:         compDelim,
-		releaseChar:       releaseChar,
+		r:                 NewNonValidatingReader(r, decl),
+		releaseChar:       newStrPtrByte(decl.ReleaseChar),
 		stack:             newStack(),
 		targetXPath:       targetXPathExpr,
-		runeBegin:         1,
-		runeEnd:           1,
-		segCount:          0,
 		unprocessedRawSeg: newRawSeg(),
 	}
 	reader.growStack(stackEntry{
