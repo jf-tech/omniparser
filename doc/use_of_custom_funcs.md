@@ -1,8 +1,8 @@
 # Use of `custom_func`, Specially `javascript`
 
 `custom_func` is a transform that allows schema writer to alter, compose, transform and aggregate existing
-data from the input. Among [all `custom_func`](./customfuncs.md), [`javascript`](TODO) is the most important
-one to understand and master.
+data from the input. Among [all `custom_func`](./customfuncs.md),
+[`javascript`](./customfuncs.md#javascript) is the most important one to understand and master.
 
 A `custom_func` has 4 basic parts: `xpath`/`xpath_dynamic`, `name`, `args`, and `type`.
 

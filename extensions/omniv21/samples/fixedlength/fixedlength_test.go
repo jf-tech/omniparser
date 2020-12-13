@@ -58,7 +58,7 @@ func Benchmark3_Header_Footer(b *testing.B) {
 			b.FailNow()
 		}
 		for {
-			_, err := transform.Read()
+			_, err = transform.Read()
 			if err == io.EOF {
 				break
 			}

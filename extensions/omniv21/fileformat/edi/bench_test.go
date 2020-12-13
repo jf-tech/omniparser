@@ -9,7 +9,7 @@ import (
 	"github.com/jf-tech/go-corelib/testlib"
 )
 
-// Adding a benchmark for rawSeg operation to ensure there is no alloc:
+// Adding a benchmark for RawSeg operation to ensure there is no alloc:
 // BenchmarkRawSeg-8   	81410766	        13.9 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkRawSeg(b *testing.B) {
 	rawSegName := "test"
@@ -20,11 +20,11 @@ func BenchmarkRawSeg(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		r.resetRawSeg()
 		r.unprocessedRawSeg.valid = true
-		r.unprocessedRawSeg.name = rawSegName
-		r.unprocessedRawSeg.raw = rawSegData
-		r.unprocessedRawSeg.elems = append(
-			r.unprocessedRawSeg.elems,
-			rawSegElem{1, 1, rawSegData[0:4], false}, rawSegElem{2, 1, rawSegData[5:], false})
+		r.unprocessedRawSeg.Name = rawSegName
+		r.unprocessedRawSeg.Raw = rawSegData
+		r.unprocessedRawSeg.Elems = append(
+			r.unprocessedRawSeg.Elems,
+			RawSegElem{1, 1, rawSegData[0:4]}, RawSegElem{2, 1, rawSegData[5:]})
 	}
 }
 
@@ -534,16 +534,16 @@ func BenchmarkGetUnprocessedRawSeg_WithCompAndRelease(b *testing.B) {
 }
 
 var (
-	benchRawSegToNodeRawSeg = rawSeg{
+	benchRawSegToNodeRawSeg = RawSeg{
 		valid: true,
-		name:  "ISA",
-		raw:   []byte("ISA*0*1:2*3*"),
-		elems: []rawSegElem{
-			{0, 1, []byte("ISA"), false},
-			{1, 1, []byte("0"), false},
-			{2, 1, []byte("1"), false},
-			{2, 2, []byte("2"), false},
-			{3, 1, []byte("3"), false},
+		Name:  "ISA",
+		Raw:   []byte("ISA*0*1:2*3*"),
+		Elems: []RawSegElem{
+			{0, 1, []byte("ISA")},
+			{1, 1, []byte("0")},
+			{2, 1, []byte("1")},
+			{2, 2, []byte("2")},
+			{3, 1, []byte("3")},
 		},
 	}
 	benchRawSegToNodeDecl = &SegDecl{
@@ -555,9 +555,9 @@ var (
 		},
 		fqdn: "ISA",
 	}
-	// we can do this (reusing reader and its rawSeg again & again in benchmark
+	// we can do this (reusing reader and its RawSeg again & again in benchmark
 	// because there is no release-char thus there is no data modification in
-	// rawSeg.elems
+	// RawSeg.Elems
 	benchRawSegToNodeReader = &ediReader{unprocessedRawSeg: benchRawSegToNodeRawSeg}
 )
 
