@@ -44,7 +44,7 @@ supported built-in `custom_func`s are listed [here](./customfuncs.md).
 
 ## Add A New `custom_func`
 
-If the built-in `custom_func`s are enough, you can add your own custom functions by
+If the built-in `custom_func`s aren't enough, you can add your own custom functions by
 [doing this](../extensions/omniv21/samples/customfileformats/jsonlog/sample_test.go) (note the linked
 sample does more than just adding a new `custom_func`):
 ```
@@ -72,9 +72,12 @@ for {
 }
 ```
 
-Each `custom_func` must be a Golang function with the first param being `*transformctx.Ctx`. The rest
-params can be of any type, as long as they will match the types of data that are fed into the function
-in `transform_declarations`.
+Each `custom_func` must be a Golang function with the first param being `*transformctx.Ctx`. There can be
+an optional second param of `*idr.Node` type (like in this
+[sample](../extensions/omniv21/samples/customfuncs/sample_test.go)). If omniparser detects a `custom_func`
+second param is of `*idr.Node` type, then the current contextual IDR node will be passed into the function
+automatically. The rest params can be of any type, as long as they will match the types of data that are
+fed into the function in `transform_declarations`.
 
 ## Add A New File Format
 
