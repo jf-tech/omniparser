@@ -1,6 +1,6 @@
 package validation
 
-//go:generate sh -c "go run gen/gen.go -json parser_settings.json -varname JSONSchemaParserSettings > ./parserSettings.go"
+//go:generate sh -c "go run gen/gen.go -json parserSettings.json -varname JSONSchemaParserSettings > ./parserSettings.go"
 
 import (
 	"fmt"

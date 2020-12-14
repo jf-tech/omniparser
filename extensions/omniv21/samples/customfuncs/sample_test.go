@@ -1,4 +1,4 @@
-package customparse
+package customfuncs
 
 import (
 	"io"
@@ -13,8 +13,9 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser"
+	"github.com/jf-tech/omniparser/customfuncs"
 	"github.com/jf-tech/omniparser/extensions/omniv21"
-	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	v21 "github.com/jf-tech/omniparser/extensions/omniv21/customfuncs"
 	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
@@ -37,13 +38,14 @@ func TestSample(t *testing.T) {
 		schemaFileReader,
 		omniparser.Extension{
 			CreateSchemaHandler: omniv21.CreateSchemaHandler,
-			CreateSchemaHandlerParams: &omniv21.CreateParams{
-				CustomParseFuncs: transform.CustomParseFuncs{
+			CustomFuncs: customfuncs.Merge(
+				customfuncs.CommonCustomFuncs,
+				v21.OmniV21CustomFuncs,
+				customfuncs.CustomFuncs{
 					"employee_personal_details_lookup": employeePersonalDetailsLookup,
 					"employee_business_details_lookup": employeeBusinessDetailsLookup,
 					"employee_team_lookup":             employeeTempLookup,
-				},
-			},
+				}),
 		})
 	assert.NoError(t, err)
 	transform, err := schema.NewTransform(inputFileBaseName, inputFileReader, &transformctx.Ctx{})
@@ -71,7 +73,7 @@ func TestSample(t *testing.T) {
 func employeePersonalDetailsLookup(_ *transformctx.Ctx, node *idr.Node) (interface{}, error) {
 	id := node.InnerText()
 	// Pretend some complex logic and/or RPC calls...
-	// This custom_parse demonstrates how to return a complex object with map[string]interface{}
+	// This custom_func demonstrates how to return a complex object with map[string]interface{}
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		return nil, err
@@ -91,7 +93,7 @@ func employeePersonalDetailsLookup(_ *transformctx.Ctx, node *idr.Node) (interfa
 func employeeBusinessDetailsLookup(_ *transformctx.Ctx, node *idr.Node) (interface{}, error) {
 	id := node.InnerText()
 	// Pretend some complex logic and/or RPC calls...
-	// This custom_parse demonstrates how to return a complex object with golang struct
+	// This custom_func demonstrates how to return a complex object with golang struct
 	type employeeReview struct {
 		Year   int    `json:"year"`
 		Rating string `json:"rating"`

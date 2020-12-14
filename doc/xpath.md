@@ -81,10 +81,10 @@ The most common use of `xpath` is for data extraction. Consider again the sample
 ```
 
 The `xpath` attributes on `"order_id"`, `"customer_id"`, and `"country"` tell omniparser where to get
-the field string data from. When `xpath` **not** appearing with `object`, `template`, `custom_func`, or
-`custom_parse`, then it is a data extraction directive telling omniparser to extract the text data at the
-location specified by the `xpath` query. Note in this situation, omniparser will require the result set of
-such `xpath` queries to be of a single node: if such `xpath` query results in more than one node, omniparser
+the field string data from. When `xpath` **not** appearing with `object`, `template`, or `custom_func`,
+then it is a data extraction directive telling omniparser to extract the text data at the location
+specified by the `xpath` query. Note in this situation, omniparser will require the result set of such
+`xpath` queries to be of a single node: if such `xpath` query results in more than one node, omniparser
 will fail the current record transform (but will continue onto the next one as this isn't considered fatal).
 
 ## Data Context and Anchoring
@@ -191,8 +191,7 @@ Now let's go through the schema and input together to see how `xpath` anchoring 
     for a `custom_func`, then everything inside the `custom_func`, namely those argument transforms, are all
     anchored on the cursor position prescribed by the `xpath`.
 
-When `xpath` is used for anchoring and cursoring, it can appear with `object`, `template`, `custom_func`, and
-`custom_parse`.
+When `xpath` is used for anchoring and cursoring, it can appear with `object`, `template`, and `custom_func`.
 
 ## Static and Dynamic XPath Queries
 
@@ -280,8 +279,8 @@ for `color` field in the output, we need to dynamically construct an XPath query
 needed for `size` field data extraction.
 
 `xpath_dynamic` is used in such a situation. It basically says, unlike `xpath` is always a constant and static
-string value, `xpath_dynamic` is computed, by either `custom_func`, or `custom_parse`, or `template`, or
-`external`, or `const`, or another `xpath` direct data extraction.
+string value, `xpath_dynamic` is computed, by either `custom_func`, or `template`, or `external`, or
+`const`, or another `xpath` direct data extraction.
 
 `xpath_dynamic` can be used everywhere `xpath` is used, except on `FINAL_OUTPUT`. `FINAL_OUTPUT` can only
 use `xpath`.
@@ -304,7 +303,7 @@ Depending on which transform is in play, different outcomes, including error, ca
     - Example: `"FINAL_OUTPUT": { "xpath": "/publishers/*", "object": {`
     - The result set can be either empty, or of one node, or of multiple nodes.
 
-- `xpath`/`xpath_dynamic` used in `object`, `custom_func`, `custom_parse`, `template` transform
+- `xpath`/`xpath_dynamic` used in `object`, `custom_func`, `template` transform
 (other than `FINAL_OUTPUT` or directly under an `array` transform):
 
     - Example: `"contact": { "xpath": "PATH/TO/CONTACT", "object": {`

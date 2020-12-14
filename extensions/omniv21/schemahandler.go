@@ -25,7 +25,8 @@ const (
 // CreateParams allows user of this 'omni.2.1' schema handler to provide creation customization.
 type CreateParams struct {
 	CustomFileFormats []fileformat.FileFormat
-	CustomParseFuncs  transform.CustomParseFuncs
+	// Deprecated.
+	CustomParseFuncs transform.CustomParseFuncs
 }
 
 // CreateSchemaHandler parses, validates and creates an omni-schema based handler.

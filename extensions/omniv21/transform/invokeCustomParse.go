@@ -7,10 +7,11 @@ import (
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
-// CustomParseFuncType represents a custom_parse function type.
+// CustomParseFuncType represents a custom_parse function type. Deprecated. Use customfuncs.CustomFuncType.
 type CustomParseFuncType func(*transformctx.Ctx, *idr.Node) (interface{}, error)
 
-// CustomParseFuncs is a map from custom_parse names to an actual custom parse functions.
+// CustomParseFuncs is a map from custom_parse names to an actual custom parse functions. Deprecated. Use
+// customfuncs.CustomFuncs.
 type CustomParseFuncs = map[string]CustomParseFuncType
 
 func (p *parseCtx) invokeCustomParse(customParseFn CustomParseFuncType, n *idr.Node) (interface{}, error) {

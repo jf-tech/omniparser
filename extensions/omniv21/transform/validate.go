@@ -16,7 +16,7 @@ import (
 type validateCtx struct {
 	Decls            map[string]*Decl `json:"transform_declarations"`
 	customFuncs      customfuncs.CustomFuncs
-	customParseFuncs CustomParseFuncs
+	customParseFuncs CustomParseFuncs // Deprecated.
 	declHashes       map[string]string
 }
 

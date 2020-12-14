@@ -18,7 +18,7 @@ const (
 	kindObject      kind = "object"
 	kindArray       kind = "array"
 	kindCustomFunc  kind = "custom_func"
-	kindCustomParse kind = "custom_parse"
+	kindCustomParse kind = "custom_parse" // Deprecated
 	kindTemplate    kind = "template"
 )
 
@@ -83,7 +83,7 @@ type Decl struct {
 	XPathDynamic *Decl `json:"xpath_dynamic,omitempty"`
 	// CustomFunc specifies the input element is a custom function.
 	CustomFunc *CustomFuncDecl `json:"custom_func,omitempty"`
-	// CustomParse specifies the input element is to be custom parsed.
+	// CustomParse specifies the input element is to be custom parsed. Deprecated.
 	CustomParse *string `json:"custom_parse,omitempty"`
 	// Template specifies the input element is a template.
 	Template *string `json:"template,omitempty"`

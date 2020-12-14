@@ -15,8 +15,8 @@ import (
 type parseCtx struct {
 	transformCtx          *transformctx.Ctx
 	customFuncs           customfuncs.CustomFuncs
-	customParseFuncs      CustomParseFuncs
-	disableTransformCache bool // by default we have caching on. only in some tests we turn caching off.
+	customParseFuncs      CustomParseFuncs // Deprecated.
+	disableTransformCache bool             // by default we have caching on. only in some tests we turn caching off.
 	transformCache        map[string]interface{}
 }
 

@@ -14,7 +14,7 @@ import (
 type ingester struct {
 	finalOutputDecl  *transform.Decl
 	customFuncs      customfuncs.CustomFuncs
-	customParseFuncs transform.CustomParseFuncs
+	customParseFuncs transform.CustomParseFuncs // Deprecated.
 	ctx              *transformctx.Ctx
 	reader           fileformat.FormatReader
 }
