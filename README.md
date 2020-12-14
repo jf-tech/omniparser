@@ -38,7 +38,7 @@ Examples:
 - [XML Examples](extensions/omniv21/samples/xml).
 - [EDI Examples](extensions/omniv21/samples/edi).
 - [Custom File Format](extensions/omniv21/samples/customfileformats/jsonlog)
-- [Custom Parse](extensions/omniv21/samples/customparse)
+- [Custom Funcs](extensions/omniv21/samples/customfuncs)
 
 In the example folders above you will find pairs of input files and their schema files. Then in the
 `.snapshots` sub directory, you'll find their corresponding output files.
@@ -64,6 +64,8 @@ situations.
 - Golang 1.14
 
 ## Recent Major Feature Additions/Changes
+- Deprecated `custom_parse` in favor of `custom_func` (`custom_parse` is still usable for
+back-compatibility, it is just removed from all public docs and samples).
 - Added `NonValidatingReader` EDI segment reader.
 - Added fixed-length file format support in omniv21 handler.
 - Added EDI file format support in omniv21 handler.

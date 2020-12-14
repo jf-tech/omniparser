@@ -21,7 +21,7 @@ const (
                         { "$ref": "#/definitions/field" },
                         { "$ref": "#/definitions/object" },
                         { "$ref": "#/definitions/custom_func" },
-                        { "$ref": "#/definitions/custom_parse" },
+                        { "$ref": "#/definitions/custom_parse", "$comment": "Deprecated. Use custom_func." },
                         { "$ref": "#/definitions/array" },
                         { "$ref": "#/definitions/template" }
                     ]
@@ -35,7 +35,7 @@ const (
                         { "$ref": "#/definitions/field" },
                         { "$ref": "#/definitions/object" },
                         { "$ref": "#/definitions/custom_func" },
-                        { "$ref": "#/definitions/custom_parse" },
+                        { "$ref": "#/definitions/custom_parse", "$comment": "Deprecated. Use custom_func." },
                         { "$ref": "#/definitions/array" },
                         { "$ref": "#/definitions/template" }
                     ]
@@ -78,7 +78,7 @@ const (
                     { "$ref": "#/definitions/external" },
                     { "$ref": "#/definitions/field" },
                     { "$ref": "#/definitions/custom_func" },
-                    { "$ref": "#/definitions/custom_parse" },
+                    { "$ref": "#/definitions/custom_parse", "$comment": "Deprecated. Use custom_func." },
                     { "$ref": "#/definitions/template" }
                 ]
             }
@@ -98,7 +98,7 @@ const (
                         { "$ref": "#/definitions/field" },
                         { "$ref": "#/definitions/object" },
                         { "$ref": "#/definitions/custom_func" },
-                        { "$ref": "#/definitions/custom_parse" },
+                        { "$ref": "#/definitions/custom_parse", "$comment": "Deprecated. Use custom_func." },
                         { "$ref": "#/definitions/array" },
                         { "$ref": "#/definitions/template" }
                     ],
@@ -119,7 +119,7 @@ const (
                             { "$ref": "#/definitions/external" },
                             { "$ref": "#/definitions/field" },
                             { "$ref": "#/definitions/custom_func" },
-                            { "$ref": "#/definitions/custom_parse" },
+                            { "$ref": "#/definitions/custom_parse", "$comment": "Deprecated. Use custom_func." },
                             { "$ref": "#/definitions/array" },
                             { "$ref": "#/definitions/template" }
                         ]
@@ -134,7 +134,7 @@ const (
         "value_custom_parse": {
             "type": "string",
             "minLength": 1,
-            "$comment": "custom_parse can not be empty string"
+            "$comment": "custom_parse can not be empty string. Deprecated."
         },
         "value_type": {
             "type": "string",
@@ -205,7 +205,7 @@ const (
                             { "$ref": "#/definitions/field" },
                             { "$ref": "#/definitions/object" },
                             { "$ref": "#/definitions/custom_func" },
-                            { "$ref": "#/definitions/custom_parse" },
+                            { "$ref": "#/definitions/custom_parse", "$comment": "Deprecated. Use custom_func." },
                             { "$ref": "#/definitions/template" }
                         ],
                         "$comment": "array's element can be any kind of transform, except array. might support in the future, but not now"
@@ -254,7 +254,8 @@ const (
                 "_comment": { "$ref": "#/definitions/value_comment" }
             },
             "required": [ "custom_parse" ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "$comment": "Deprecated. Use custom_func."
         }
     }
 }

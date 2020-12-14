@@ -1,7 +1,6 @@
 * [Programmability of Omniparser](#programmability-of-omniparser)
   * [Out\-of\-Box Basic Use Case](#out-of-box-basic-use-case)
   * [Add A New custom\_func](#add-a-new-custom_func)
-  * [Add A New custom\_parse](#add-a-new-custom_parse)
   * [Add A New File Format](#add-a-new-file-format)
   * [Add A New Schema Handler](#add-a-new-schema-handler)
   * [Put All Together](#put-all-together)
@@ -76,31 +75,6 @@ for {
 Each `custom_func` must be a Golang function with the first param being `*transformctx.Ctx`. The rest
 params can be of any type, as long as they will match the types of data that are fed into the function
 in `transform_declarations`.
-
-## Add A New `custom_parse`
-
-There are several ways to customize transform logic, one of which is using the all mighty `custom_func`
-`javascript` (or its silibing `javascript_with_context`), see details
-[here](./use_of_custom_funcs.md#javascript-and-javascript_with_context).
-
-However currently we don't support multi-line javascript (yet), which makes writing complex transform
-logic in a single line javascript difficult to read and debug. Also there are situations where schema
-writers want the following:
-- native Golang code transform logic
-- logging/stats
-- better/thorough test coverage
-- more complexed operations like RPCs calls, encryption, etc, which isn't really suited/possible for
-javascript to handle.
-
-`custom_parse` provides an in-code transform plugin mechanism. In addition to a number of built-in
-transforms, such as field, `const`, `external`, `object`, `template`, `array`, and `custom_func`,
-`custom_parse` allows schema writer to be able to provide a Golang function that takes in the
-`*idr.Node` at the current IDR cursor (see more about IDR cursoring
-[here](./xpath.md#data-context-and-anchoring)), does whatever processing and transforms as it sees
-fit, and returns whatever the desired result to be embedded in place of the `custom_parse`.
-
-[This sample](../extensions/omniv21/samples/customparse/sample_test.go) gives a very detailed demo
-of how `custom_parse` works.
 
 ## Add A New File Format
 

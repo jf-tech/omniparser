@@ -134,16 +134,13 @@ examples:
 - Custom Function Call (**custom_func**): e.g. `{ "custom_func": {...} }`. See more details about
 `custom_func` transform directive [here](./use_of_custom_funcs.md).
 
-- Custom Parse (**custom_parse**): e.g. `{ "custom_parse": "<custom parse id>" }`. See more details about
-`custom_parse` transform directive [here](./programmability.md).
-
 ## Miscellaneous
 
 Several attributes can be specified on some or all transform directives:
 
 1. `xpath` (or `xpath_dynamic`) can be used for data extraction or IDR cursor anchoring with the following
 transform types: field (in fact field has nothing else but an `xpath` or `xpath_dynamic`), `object`,
-`template`, `custom_func` and `custom_parse`. See more details about use of `xpath` (or `xpath_dynamic`)
+`template`, and `custom_func`. See more details about use of `xpath` (or `xpath_dynamic`)
 [here](./xpath.md).
 
 2. `type` tells omniparser the result from the transform needs a type cast. Supported type cast types are:
