@@ -1,420 +1,496 @@
 [
 	{
-		"dest": {
-			"city": "HAMMER",
-			"country": "CA",
-			"state": "AB",
-			"zip": "T0C1Z0"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T15:34:00",
-				"date_raw": "2019-11-03T15:34:00",
-				"location": {
-					"city": "WRENCH",
-					"country": "CA",
-					"state": "ON"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"XB\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1534\",\"timeCode\":\"\"},\"AT8\":{\"weight\":\"4\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638097845589              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"WRENCH\",\"countryCode\":\"CA\",\"provinceCode\":\"ON\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"HAMMER\",\"countryCode\":\"CA\",\"postalCode\":\"T0C1Z0\",\"provinceCode\":\"AB\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "036f404f-6eef-3236-9f8e-3bdffa088821",
+		"TransformedRecord": {
+			"dest": {
+				"city": "HAMMER",
+				"country": "CA",
+				"state": "AB",
+				"zip": "T0C1Z0"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T15:34:00",
+					"date_raw": "2019-11-03T15:34:00",
+					"location": {
+						"city": "WRENCH",
+						"country": "CA",
+						"state": "ON"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638097845589",
-		"weight": 4,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638097845589",
+			"weight": 4,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "DRILL",
-			"country": "CA",
-			"state": "BC",
-			"zip": "V5L0B3"
-		},
-		"events": [
-			{
-				"date": "2019-11-02T16:25:00-07:00",
-				"date_raw": "2019-11-02T16:25:00-07:00",
-				"location": {
-					"city": "DRILL",
-					"country": "CA",
-					"state": "BC"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191102\",\"shipmentStatusCode\":\"AH\",\"shipmentStatusReasonCode\":\"AG\",\"time\":\"1625\",\"timeCode\":\"PT\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098050296              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"DRILL\",\"countryCode\":\"CA\",\"provinceCode\":\"BC\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"DRILL\",\"countryCode\":\"CA\",\"postalCode\":\"V5L0B3\",\"provinceCode\":\"BC\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "1f11b977-8fbe-3fe3-8d1a-9667a4d38273",
+		"TransformedRecord": {
+			"dest": {
+				"city": "DRILL",
+				"country": "CA",
+				"state": "BC",
+				"zip": "V5L0B3"
+			},
+			"events": [
+				{
+					"date": "2019-11-02T16:25:00-07:00",
+					"date_raw": "2019-11-02T16:25:00-07:00",
+					"location": {
+						"city": "DRILL",
+						"country": "CA",
+						"state": "BC"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098050296",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098050296",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WRENCH",
-			"country": "CA",
-			"state": "ON",
-			"zip": "N5Y5W3"
-		},
-		"events": [
-			{
-				"date": "2019-11-02T17:52:00-07:00",
-				"date_raw": "2019-11-02T17:52:00-07:00",
-				"location": {
-					"city": "SAW",
-					"country": "CA",
-					"state": "BC"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191102\",\"shipmentStatusCode\":\"CA\",\"shipmentStatusReasonCode\":\"BT\",\"time\":\"1752\",\"timeCode\":\"PT\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638931638575              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"SAW\",\"countryCode\":\"CA\",\"provinceCode\":\"BC\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WRENCH\",\"countryCode\":\"CA\",\"postalCode\":\"N5Y5W3\",\"provinceCode\":\"ON\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "e01b006e-fe9b-3af7-8a47-21b1a0dc1536",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WRENCH",
+				"country": "CA",
+				"state": "ON",
+				"zip": "N5Y5W3"
+			},
+			"events": [
+				{
+					"date": "2019-11-02T17:52:00-07:00",
+					"date_raw": "2019-11-02T17:52:00-07:00",
+					"location": {
+						"city": "SAW",
+						"country": "CA",
+						"state": "BC"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638931638575",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638931638575",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "SWITCH",
-			"country": "CA",
-			"state": "AB",
-			"zip": "T0C0J0"
-		},
-		"events": [
-			{
-				"date": "2019-11-02T16:48:00-06:00",
-				"date_raw": "2019-11-02T16:48:00-06:00",
-				"location": {
-					"city": "SWITCH",
-					"country": "CA",
-					"state": "AB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191102\",\"shipmentStatusCode\":\"D1\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1648\",\"timeCode\":\"MT\"},\"AT8\":{\"weight\":\"15\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098146166              \"},\"L11\":[{},{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"SWITCH\",\"countryCode\":\"CA\",\"provinceCode\":\"AB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"SWITCH\",\"countryCode\":\"CA\",\"postalCode\":\"T0C0J0\",\"provinceCode\":\"AB\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "32165f22-a5fc-3531-a7db-48b52a9d55b6",
+		"TransformedRecord": {
+			"dest": {
+				"city": "SWITCH",
+				"country": "CA",
+				"state": "AB",
+				"zip": "T0C0J0"
+			},
+			"events": [
+				{
+					"date": "2019-11-02T16:48:00-06:00",
+					"date_raw": "2019-11-02T16:48:00-06:00",
+					"location": {
+						"city": "SWITCH",
+						"country": "CA",
+						"state": "AB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098146166",
-		"weight": 15,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098146166",
+			"weight": 15,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "SCREWDRIVER",
-			"country": "CA",
-			"state": "SK",
-			"zip": "S0M0E0"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T15:09:00-06:00",
-				"date_raw": "2019-11-03T15:09:00-06:00",
-				"location": {
-					"city": "PAINTBRUSH",
-					"country": "CA",
-					"state": "MB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"AF\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1509\",\"timeCode\":\"CS\"},\"AT8\":{\"weight\":\"1\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098181877              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"PAINTBRUSH\",\"countryCode\":\"CA\",\"provinceCode\":\"MB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"SCREWDRIVER\",\"countryCode\":\"CA\",\"postalCode\":\"S0M0E0\",\"provinceCode\":\"SK\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "1a645e5e-4fa3-3d7d-bbae-3b3930862a2c",
+		"TransformedRecord": {
+			"dest": {
+				"city": "SCREWDRIVER",
+				"country": "CA",
+				"state": "SK",
+				"zip": "S0M0E0"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T15:09:00-06:00",
+					"date_raw": "2019-11-03T15:09:00-06:00",
+					"location": {
+						"city": "PAINTBRUSH",
+						"country": "CA",
+						"state": "MB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098181877",
-		"weight": 1,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098181877",
+			"weight": 1,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "MITERSAW",
-			"country": "CA",
-			"state": "SK",
-			"zip": "S0M1C0"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T15:09:00-06:00",
-				"date_raw": "2019-11-03T15:09:00-06:00",
-				"location": {
-					"city": "PAINTBRUSH",
-					"country": "CA",
-					"state": "MB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"AF\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1509\",\"timeCode\":\"CS\"},\"AT8\":{\"weight\":\"19\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098181891              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"PAINTBRUSH\",\"countryCode\":\"CA\",\"provinceCode\":\"MB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"MITERSAW\",\"countryCode\":\"CA\",\"postalCode\":\"S0M1C0\",\"provinceCode\":\"SK\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "7dd51926-28f5-391d-aab7-a6d93c5f7c9a",
+		"TransformedRecord": {
+			"dest": {
+				"city": "MITERSAW",
+				"country": "CA",
+				"state": "SK",
+				"zip": "S0M1C0"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T15:09:00-06:00",
+					"date_raw": "2019-11-03T15:09:00-06:00",
+					"location": {
+						"city": "PAINTBRUSH",
+						"country": "CA",
+						"state": "MB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098181891",
-		"weight": 19,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098181891",
+			"weight": 19,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WETVAC",
-			"country": "CA",
-			"state": "MB",
-			"zip": "R0A1E0"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T11:31:00-06:00",
-				"date_raw": "2019-11-03T11:31:00-06:00",
-				"location": {
-					"city": "PAINTBRUSH",
-					"country": "CA",
-					"state": "MB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"XB\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1131\",\"timeCode\":\"CS\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098181921              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"PAINTBRUSH\",\"countryCode\":\"CA\",\"provinceCode\":\"MB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WETVAC\",\"countryCode\":\"CA\",\"postalCode\":\"R0A1E0\",\"provinceCode\":\"MB\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "a708ed5a-e245-3c3d-8092-a47a62a75840",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WETVAC",
+				"country": "CA",
+				"state": "MB",
+				"zip": "R0A1E0"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T11:31:00-06:00",
+					"date_raw": "2019-11-03T11:31:00-06:00",
+					"location": {
+						"city": "PAINTBRUSH",
+						"country": "CA",
+						"state": "MB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098181921",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098181921",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "PRESSUREWASHER",
-			"country": "CA",
-			"state": "SK",
-			"zip": "S0K2L0"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T15:09:00-06:00",
-				"date_raw": "2019-11-03T15:09:00-06:00",
-				"location": {
-					"city": "PAINTBRUSH",
-					"country": "CA",
-					"state": "MB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"AF\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1509\",\"timeCode\":\"CS\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098186995              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"PAINTBRUSH\",\"countryCode\":\"CA\",\"provinceCode\":\"MB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"PRESSUREWASHER\",\"countryCode\":\"CA\",\"postalCode\":\"S0K2L0\",\"provinceCode\":\"SK\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "bf57b598-302e-33f3-9e39-26a7bf3959cd",
+		"TransformedRecord": {
+			"dest": {
+				"city": "PRESSUREWASHER",
+				"country": "CA",
+				"state": "SK",
+				"zip": "S0K2L0"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T15:09:00-06:00",
+					"date_raw": "2019-11-03T15:09:00-06:00",
+					"location": {
+						"city": "PAINTBRUSH",
+						"country": "CA",
+						"state": "MB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098186995",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098186995",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WRENCH",
-			"country": "CA",
-			"state": "ON",
-			"zip": "N5Y5W3"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T11:25:00-07:00",
-				"date_raw": "2019-11-03T11:25:00-07:00",
-				"location": {
-					"city": "LASERLEVEL",
-					"country": "CA",
-					"state": "AB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"AF\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1125\",\"timeCode\":\"MT\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638151403540              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"LASERLEVEL\",\"countryCode\":\"CA\",\"provinceCode\":\"AB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WRENCH\",\"countryCode\":\"CA\",\"postalCode\":\"N5Y5W3\",\"provinceCode\":\"ON\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "4f8ec0af-69e5-391d-8e39-17a33b1f8b40",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WRENCH",
+				"country": "CA",
+				"state": "ON",
+				"zip": "N5Y5W3"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T11:25:00-07:00",
+					"date_raw": "2019-11-03T11:25:00-07:00",
+					"location": {
+						"city": "LASERLEVEL",
+						"country": "CA",
+						"state": "AB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638151403540",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638151403540",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WRENCH",
-			"country": "CA",
-			"state": "ON",
-			"zip": "N5Y5W3"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T08:53:00-07:00",
-				"date_raw": "2019-11-03T08:53:00-07:00",
-				"location": {
-					"city": "LASERLEVEL",
-					"country": "CA",
-					"state": "AB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"XB\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"0853\",\"timeCode\":\"MT\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638151403540              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"LASERLEVEL\",\"countryCode\":\"CA\",\"provinceCode\":\"AB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WRENCH\",\"countryCode\":\"CA\",\"postalCode\":\"N5Y5W3\",\"provinceCode\":\"ON\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "25d44231-6938-302b-8f79-a045f68d3180",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WRENCH",
+				"country": "CA",
+				"state": "ON",
+				"zip": "N5Y5W3"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T08:53:00-07:00",
+					"date_raw": "2019-11-03T08:53:00-07:00",
+					"location": {
+						"city": "LASERLEVEL",
+						"country": "CA",
+						"state": "AB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638151403540",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638151403540",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WRENCH",
-			"country": "CA",
-			"state": "ON",
-			"zip": "N5Y5W3"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T08:37:00-07:00",
-				"date_raw": "2019-11-03T08:37:00-07:00",
-				"location": {
-					"city": "LASERLEVEL",
-					"country": "CA",
-					"state": "AB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"AF\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"0837\",\"timeCode\":\"MT\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638316026577              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"LASERLEVEL\",\"countryCode\":\"CA\",\"provinceCode\":\"AB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WRENCH\",\"countryCode\":\"CA\",\"postalCode\":\"N5Y5W3\",\"provinceCode\":\"ON\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "138fba02-1864-3151-b47e-1d28c8918833",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WRENCH",
+				"country": "CA",
+				"state": "ON",
+				"zip": "N5Y5W3"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T08:37:00-07:00",
+					"date_raw": "2019-11-03T08:37:00-07:00",
+					"location": {
+						"city": "LASERLEVEL",
+						"country": "CA",
+						"state": "AB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638316026577",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638316026577",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WRENCH",
-			"country": "CA",
-			"state": "ON",
-			"zip": "N5Y5W3"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T08:15:00-07:00",
-				"date_raw": "2019-11-03T08:15:00-07:00",
-				"location": {
-					"city": "LASERLEVEL",
-					"country": "CA",
-					"state": "AB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"AP\",\"shipmentStatusReasonCode\":\"AG\",\"time\":\"0815\",\"timeCode\":\"MT\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638316026577              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"LASERLEVEL\",\"countryCode\":\"CA\",\"provinceCode\":\"AB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WRENCH\",\"countryCode\":\"CA\",\"postalCode\":\"N5Y5W3\",\"provinceCode\":\"ON\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "eb62cafb-3b9e-3e6d-bc53-051e876c7cbc",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WRENCH",
+				"country": "CA",
+				"state": "ON",
+				"zip": "N5Y5W3"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T08:15:00-07:00",
+					"date_raw": "2019-11-03T08:15:00-07:00",
+					"location": {
+						"city": "LASERLEVEL",
+						"country": "CA",
+						"state": "AB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638316026577",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638316026577",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WRENCH",
-			"country": "CA",
-			"state": "ON",
-			"zip": "N5Y5W3"
-		},
-		"events": [
-			{
-				"date": "2019-11-02T15:55:00-07:00",
-				"date_raw": "2019-11-02T15:55:00-07:00",
-				"location": {
-					"city": "NAILGUN",
-					"country": "CA",
-					"state": "BC"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191102\",\"shipmentStatusCode\":\"AF\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1555\",\"timeCode\":\"PT\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638316026577              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"NAILGUN\",\"countryCode\":\"CA\",\"provinceCode\":\"BC\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WRENCH\",\"countryCode\":\"CA\",\"postalCode\":\"N5Y5W3\",\"provinceCode\":\"ON\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "9741caef-a675-310e-8b7c-f3d20b4e0a22",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WRENCH",
+				"country": "CA",
+				"state": "ON",
+				"zip": "N5Y5W3"
+			},
+			"events": [
+				{
+					"date": "2019-11-02T15:55:00-07:00",
+					"date_raw": "2019-11-02T15:55:00-07:00",
+					"location": {
+						"city": "NAILGUN",
+						"country": "CA",
+						"state": "BC"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638316026577",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638316026577",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WRENCH",
-			"country": "CA",
-			"state": "ON",
-			"zip": "N5Y5W3"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T07:33:00-06:00",
-				"date_raw": "2019-11-03T07:33:00-06:00",
-				"location": {
-					"city": "PAINTBRUSH",
-					"country": "CA",
-					"state": "MB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"AP\",\"shipmentStatusReasonCode\":\"AG\",\"time\":\"0733\",\"timeCode\":\"CS\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638672340607              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"PAINTBRUSH\",\"countryCode\":\"CA\",\"provinceCode\":\"MB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WRENCH\",\"countryCode\":\"CA\",\"postalCode\":\"N5Y5W3\",\"provinceCode\":\"ON\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "40467775-2a46-31e4-aa49-170ed446ac1a",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WRENCH",
+				"country": "CA",
+				"state": "ON",
+				"zip": "N5Y5W3"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T07:33:00-06:00",
+					"date_raw": "2019-11-03T07:33:00-06:00",
+					"location": {
+						"city": "PAINTBRUSH",
+						"country": "CA",
+						"state": "MB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638672340607",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638672340607",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WOODGLUE",
-			"country": "CA",
-			"state": "AB",
-			"zip": "T0K2E0"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T09:04:00-07:00",
-				"date_raw": "2019-11-03T09:04:00-07:00",
-				"location": {
-					"city": "LASERLEVEL",
-					"country": "CA",
-					"state": "AB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"XB\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"0904\",\"timeCode\":\"MT\"},\"AT8\":{\"weight\":\"16\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098171441              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"LASERLEVEL\",\"countryCode\":\"CA\",\"provinceCode\":\"AB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WOODGLUE\",\"countryCode\":\"CA\",\"postalCode\":\"T0K2E0\",\"provinceCode\":\"AB\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "92968416-9426-3c64-8aa6-841aeb7a2220",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WOODGLUE",
+				"country": "CA",
+				"state": "AB",
+				"zip": "T0K2E0"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T09:04:00-07:00",
+					"date_raw": "2019-11-03T09:04:00-07:00",
+					"location": {
+						"city": "LASERLEVEL",
+						"country": "CA",
+						"state": "AB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098171441",
-		"weight": 16,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098171441",
+			"weight": 16,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "DRYWALL",
-			"country": "CA",
-			"state": "SK",
-			"zip": "S0L0P0"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T15:09:00-06:00",
-				"date_raw": "2019-11-03T15:09:00-06:00",
-				"location": {
-					"city": "PAINTBRUSH",
-					"country": "CA",
-					"state": "MB"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"AF\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1509\",\"timeCode\":\"CS\"},\"AT8\":{\"weight\":\"3\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098171472              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"PAINTBRUSH\",\"countryCode\":\"CA\",\"provinceCode\":\"MB\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"DRYWALL\",\"countryCode\":\"CA\",\"postalCode\":\"S0L0P0\",\"provinceCode\":\"SK\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "938bc223-7399-34a8-96da-c2a8a3f5481d",
+		"TransformedRecord": {
+			"dest": {
+				"city": "DRYWALL",
+				"country": "CA",
+				"state": "SK",
+				"zip": "S0L0P0"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T15:09:00-06:00",
+					"date_raw": "2019-11-03T15:09:00-06:00",
+					"location": {
+						"city": "PAINTBRUSH",
+						"country": "CA",
+						"state": "MB"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098171472",
-		"weight": 3,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098171472",
+			"weight": 3,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "FUSE",
-			"country": "CA",
-			"state": "SK",
-			"zip": "S0C1S0"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T06:31:00-06:00",
-				"date_raw": "2019-11-03T06:31:00-06:00",
-				"location": {
-					"city": "SHEETROCK",
-					"country": "CA",
-					"state": "SK"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"AP\",\"shipmentStatusReasonCode\":\"AG\",\"time\":\"0631\",\"timeCode\":\"CS\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098176088              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"SHEETROCK\",\"countryCode\":\"CA\",\"provinceCode\":\"SK\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"FUSE\",\"countryCode\":\"CA\",\"postalCode\":\"S0C1S0\",\"provinceCode\":\"SK\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "00c5d300-6e5e-3310-a138-cc8480d96da5",
+		"TransformedRecord": {
+			"dest": {
+				"city": "FUSE",
+				"country": "CA",
+				"state": "SK",
+				"zip": "S0C1S0"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T06:31:00-06:00",
+					"date_raw": "2019-11-03T06:31:00-06:00",
+					"location": {
+						"city": "SHEETROCK",
+						"country": "CA",
+						"state": "SK"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098176088",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098176088",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WRENCH",
-			"country": "CA",
-			"state": "ON",
-			"zip": "N5Y5W3"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T17:28:00-05:00",
-				"date_raw": "2019-11-03T17:28:00-05:00",
-				"location": {
-					"city": "PVCPIPE",
-					"country": "CA",
-					"state": "ON"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"XB\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1728\",\"timeCode\":\"ET\"},\"AT8\":{\"weight\":\"0\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638458862606              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"PVCPIPE\",\"countryCode\":\"CA\",\"provinceCode\":\"ON\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WRENCH\",\"countryCode\":\"CA\",\"postalCode\":\"N5Y5W3\",\"provinceCode\":\"ON\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "0e932a2f-c9f8-32b7-921d-73fafac678ec",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WRENCH",
+				"country": "CA",
+				"state": "ON",
+				"zip": "N5Y5W3"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T17:28:00-05:00",
+					"date_raw": "2019-11-03T17:28:00-05:00",
+					"location": {
+						"city": "PVCPIPE",
+						"country": "CA",
+						"state": "ON"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638458862606",
-		"weight": 0,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638458862606",
+			"weight": 0,
+			"weight_uom": "KG"
+		}
 	},
 	{
-		"dest": {
-			"city": "WIRECUTTER",
-			"country": "CA",
-			"state": "ON",
-			"zip": "P0P1S0"
-		},
-		"events": [
-			{
-				"date": "2019-11-03T16:18:00-05:00",
-				"date_raw": "2019-11-03T16:18:00-05:00",
-				"location": {
-					"city": "TORCH",
-					"country": "CA",
-					"state": "ON"
+		"RawRecord": "{\"AT7\":{\"date\":\"20191103\",\"shipmentStatusCode\":\"XB\",\"shipmentStatusReasonCode\":\"NS\",\"time\":\"1618\",\"timeCode\":\"ET\"},\"AT8\":{\"weight\":\"1\",\"weightUOM\":\"K\"},\"B10\":{\"shipmentIdentificationNumber\":\"4343638098196574              \"},\"L11\":[{},{}],\"LX\":{},\"MS1\":{\"cityName\":\"TORCH\",\"countryCode\":\"CA\",\"provinceCode\":\"ON\"},\"N1\":[{},{}],\"N3\":{},\"N4\":{\"cityName\":\"WIRECUTTER\",\"countryCode\":\"CA\",\"postalCode\":\"P0P1S0\",\"provinceCode\":\"ON\"},\"SE\":{},\"ST\":{}}",
+		"RawRecordHash": "9e16b917-d833-3a7f-acc6-4ac5539fd409",
+		"TransformedRecord": {
+			"dest": {
+				"city": "WIRECUTTER",
+				"country": "CA",
+				"state": "ON",
+				"zip": "P0P1S0"
+			},
+			"events": [
+				{
+					"date": "2019-11-03T16:18:00-05:00",
+					"date_raw": "2019-11-03T16:18:00-05:00",
+					"location": {
+						"city": "TORCH",
+						"country": "CA",
+						"state": "ON"
+					}
 				}
-			}
-		],
-		"tracking_number": "4343638098196574",
-		"weight": 1,
-		"weight_uom": "KG"
+			],
+			"tracking_number": "4343638098196574",
+			"weight": 1,
+			"weight_uom": "KG"
+		}
 	}
 ]

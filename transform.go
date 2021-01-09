@@ -1,6 +1,8 @@
 package omniparser
 
 import (
+	"errors"
+
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/schemahandler"
 )
@@ -19,11 +21,17 @@ type Transform interface {
 	// return the same error.
 	// Note if returned error isn't nil, then returned []byte will be nil.
 	Read() ([]byte, error)
+	// CurrentRawRecord returns the current raw record ingested from the input stream. If
+	// the last Read call failed, or Read hasn't been called yet, it will return an error.
+	// Each schema handler and extension has its own definition of what a raw record is
+	// so please check their corresponding doc.
+	CurrentRawRecord() (interface{}, error)
 }
 
 type transform struct {
-	ingester schemahandler.Ingester
-	lastErr  error
+	ingester      schemahandler.Ingester
+	lastRawRecord interface{}
+	lastErr       error
 }
 
 // Read returns a JSON byte slice representing one ingested and transformed record.
@@ -43,7 +51,7 @@ func (o *transform) Read() ([]byte, error) {
 	if o.lastErr != nil && !errs.IsErrTransformFailed(o.lastErr) {
 		return nil, o.lastErr
 	}
-	record, err := o.ingester.Read()
+	rawRecord, transformed, err := o.ingester.Read()
 	if err != nil {
 		if o.ingester.IsContinuableError(err) {
 			// If ingester error is continuable, wrap it into a standard generic ErrTransformFailed
@@ -51,8 +59,25 @@ func (o *transform) Read() ([]byte, error) {
 			// caller so they can decide what it is and how to proceed.
 			err = errs.ErrTransformFailed(err.Error())
 		}
-		record = nil
+		transformed = nil
+	}
+	if err == nil {
+		o.lastRawRecord = rawRecord
+	} else {
+		o.lastRawRecord = nil
 	}
 	o.lastErr = err
-	return record, err
+	return transformed, err
+}
+
+// CurrentRawRecord returns the current raw record ingested from the input stream. If
+// the last Read call failed, or Read hasn't been called yet, it will return an error.
+func (o *transform) CurrentRawRecord() (interface{}, error) {
+	if o.lastErr != nil {
+		return nil, o.lastErr
+	}
+	if o.lastRawRecord == nil {
+		return nil, errors.New("must call Read first")
+	}
+	return o.lastRawRecord, nil
 }

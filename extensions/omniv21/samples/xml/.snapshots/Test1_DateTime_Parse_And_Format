@@ -1,15 +1,19 @@
 [
 	{
-		"custom_layout_day_before_month": "2020-09-21T17:34:56-07:00",
-		"iana_tz_date_time": "2020-09-22T12:34:56-04:00",
-		"iana_tz_date_time_use_to_tz": "2020-09-22T09:34:56-07:00",
-		"no_tz_date": "2020-09-22T00:00:00",
-		"no_tz_date_time": "2020-09-22T12:34:56",
-		"no_tz_date_time_use_both_from_and_to_tz": "2020-09-22T09:34:56-07:00",
-		"no_tz_date_time_use_from_tz": "2020-09-22T12:34:56-04:00",
-		"no_tz_date_time_use_to_tz": "2020-09-22T12:34:56-07:00",
-		"utc_date_time": "2020-09-22T12:34:56Z",
-		"utc_date_time_from_tz_ignored": "2020-09-22T12:34:56Z",
-		"utc_date_time_use_to_tz": "2020-09-22T07:34:56-05:00"
+		"RawRecord": "{\"DateTimeUTC\":\"09-22-2020  12:34:56Z\",\"DateTimeWithIANA_TZ\":\"09/22/20T12:34:56-America/New_York\",\"DateTimeWithNoTZ\":\"09/22/2020 12:34:56\",\"DayBeforeMonth\":\"22/09/20T12:34:56\",\"JustDate\":\"2020/09/22\"}",
+		"RawRecordHash": "a6c0bf3c-5314-3293-ac00-14a9048a73ce",
+		"TransformedRecord": {
+			"custom_layout_day_before_month": "2020-09-21T17:34:56-07:00",
+			"iana_tz_date_time": "2020-09-22T12:34:56-04:00",
+			"iana_tz_date_time_use_to_tz": "2020-09-22T09:34:56-07:00",
+			"no_tz_date": "2020-09-22T00:00:00",
+			"no_tz_date_time": "2020-09-22T12:34:56",
+			"no_tz_date_time_use_both_from_and_to_tz": "2020-09-22T09:34:56-07:00",
+			"no_tz_date_time_use_from_tz": "2020-09-22T12:34:56-04:00",
+			"no_tz_date_time_use_to_tz": "2020-09-22T12:34:56-07:00",
+			"utc_date_time": "2020-09-22T12:34:56Z",
+			"utc_date_time_from_tz_ignored": "2020-09-22T12:34:56Z",
+			"utc_date_time_use_to_tz": "2020-09-22T07:34:56-05:00"
+		}
 	}
 ]

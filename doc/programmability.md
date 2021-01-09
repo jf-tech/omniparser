@@ -35,6 +35,11 @@ for {
     }
     if err != nil { ... }
     // output contains a []byte of the ingested and transformed record.
+    
+    raw, err := transform.CurrentRawRecord()
+    if err != nil { ... }
+    rawRecord := raw.(*omniv21.RawRecord) // assuming the schema is of `omni.2.1` version.
+    fmt.Println(rawRecord.UUIDv3()) // rawRecord.UUIDv3() returns a stable hash of the current raw record. 
 }
 ```
 Note this out-of-box omniparser setup contains only the `omni.2.1` schema handler, meaning only schemas

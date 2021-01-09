@@ -1,24 +1,32 @@
 [
 	{
-		"order_info": {
-			"order_items": [
-				{
-					"color": "Blue",
-					"id": 217789,
-					"size": "M"
-				}
-			]
+		"RawRecord": "{\"created_at\":\"2008-01-10T11:00:00-05:00\",\"id\":223432,\"line_items\":[{\"id\":217789,\"product\":{\"id\":789009,\"options\":[{\"index\":2,\"name\":\"color/pattern\",\"values\":[\"Blue\",\"Green\"]},{\"index\":1,\"name\":\"Size\",\"values\":[\"M\",\"L\"]}],\"variant\":{\"id\":554654,\"option1\":\"M\",\"option2\":\"Blue\"}}}]}",
+		"RawRecordHash": "967f4310-48df-3c62-98dd-7edad3ab6ed1",
+		"TransformedRecord": {
+			"order_info": {
+				"order_items": [
+					{
+						"color": "Blue",
+						"id": 217789,
+						"size": "M"
+					}
+				]
+			}
 		}
 	},
 	{
-		"order_info": {
-			"order_items": [
-				{
-					"color": "Green",
-					"id": 217790,
-					"size": "L"
-				}
-			]
+		"RawRecord": "{\"created_at\":\"2008-01-10T11:00:00-05:00\",\"id\":223457,\"line_items\":[{\"id\":217790,\"product\":{\"id\":789009,\"options\":[{\"index\":2,\"name\":\"color/pattern\",\"values\":[\"Blue\",\"Green\"]},{\"index\":1,\"name\":\"Size\",\"values\":[\"M\",\"L\"]}],\"variant\":{\"id\":554654,\"option1\":\"L\",\"option2\":\"Green\"}}}]}",
+		"RawRecordHash": "7a1adb04-3776-3f1d-8035-c5bfe095d750",
+		"TransformedRecord": {
+			"order_info": {
+				"order_items": [
+					{
+						"color": "Green",
+						"id": 217790,
+						"size": "L"
+					}
+				]
+			}
 		}
 	}
 ]
