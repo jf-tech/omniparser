@@ -37,16 +37,16 @@ type SchemaHandler interface {
 	NewIngester(ctx *transformctx.Ctx, input io.Reader) (Ingester, error)
 }
 
-// Ingester is an interface responsible for a given input stream ingestion, and transformation.
+// Ingester is an interface of ingestion and transformation for a given input stream.
 type Ingester interface {
 	// Read is called repeatedly during the processing of an input stream. Each call it should return
-	// one result object, called record. It's entirely up to the implementation of this interface/method
-	// to decide whether internally it does all the processing all at once (such as in the very first call
-	// of `Read()`) and only hands out one record object at a time, OR, processes and returns one record
-	// for each call. However, the overall design principle of omniparser is to have streaming processing
-	// capability so memory won't be a constraint when dealing with large input file. All built-in handler
-	// and ingesters are done this way.
-	Read() ([]byte, error)
+	// the raw record (type of `interface{}`) and its transformed record (type of `[]byte`). It's
+	// entirely up to the implementation of this interface/method to decide whether internally it does
+	// all the processing all at once (such as in the very first call of `Read()`) and only hands out
+	// one record at a time, OR, processes and returns one record for each call. However, the overall
+	// design principle of omniparser is to have streaming processing capability so memory won't be a
+	// constraint when dealing with large input file. All built-in ingesters are implemented this way.
+	Read() (interface{}, []byte, error)
 
 	// IsContinuableError is called to determine if the error returned by Read is fatal or not. After Read
 	// is called, the result record or error will be returned to caller. After caller consumes record or

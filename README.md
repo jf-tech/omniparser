@@ -5,8 +5,9 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/jf-tech/omniparser)](https://pkg.go.dev/github.com/jf-tech/omniparser)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
-Omniparser is a native Golang ETL parser that ingests input data of various formats (**CSV, txt, fixed length/width, XML, EDI/X12/EDIFACT, JSON**, and
-custom formats) in streaming fashion and transforms data into desired JSON output based on a schema written in JSON.
+Omniparser is a native Golang ETL parser that ingests input data of various formats (**CSV, txt, fixed length/width,
+XML, EDI/X12/EDIFACT, JSON**, and custom formats) in streaming fashion and transforms data into desired JSON output
+based on a schema written in JSON.
 
 Golang Version: 1.14
 
@@ -64,6 +65,7 @@ situations.
 - Golang 1.14
 
 ## Recent Major Feature Additions/Changes
+- Added `Transform.CurrentRawRecord()` for caller of omniparser to access the raw ingested record.  
 - Deprecated `custom_parse` in favor of `custom_func` (`custom_parse` is still usable for
 back-compatibility, it is just removed from all public docs and samples).
 - Added `NonValidatingReader` EDI segment reader.

@@ -1,15 +1,18 @@
 package samples
 
 import (
+	"encoding/json"
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
+	"github.com/jf-tech/go-corelib/jsons"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser"
+	"github.com/jf-tech/omniparser/extensions/omniv21"
+	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
@@ -30,14 +33,30 @@ func SampleTestCommon(t *testing.T, schemaFile, inputFile string) string {
 	transform, err := schema.NewTransform(inputFileBaseName, inputFileReader, &transformctx.Ctx{})
 	assert.NoError(t, err)
 
-	var records []string
+	type record struct {
+		RawRecord         string
+		RawRecordHash     string
+		TransformedRecord interface{}
+	}
+	var records []record
 	for {
 		recordBytes, err := transform.Read()
 		if err == io.EOF {
 			break
 		}
 		assert.NoError(t, err)
-		records = append(records, string(recordBytes))
+		var transformed interface{}
+		err = json.Unmarshal(recordBytes, &transformed)
+		assert.NoError(t, err)
+
+		raw, err := transform.CurrentRawRecord()
+		assert.NoError(t, err)
+		rawRecord := raw.(*omniv21.RawRecord)
+		records = append(records, record{
+			RawRecord:         idr.JSONify2(rawRecord.Node),
+			RawRecordHash:     rawRecord.UUIDv3(),
+			TransformedRecord: transformed,
+		})
 	}
-	return "[" + strings.Join(records, ",") + "]"
+	return jsons.BMM(records)
 }

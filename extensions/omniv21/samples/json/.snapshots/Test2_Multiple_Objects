@@ -1,93 +1,101 @@
 [
 	{
-		"authors": [
-			"J. K. Rowling",
-			"J. K. Rowling"
-		],
-		"avg_price": 10.49,
-		"book_titles": [
-			"Harry Potter and the Philosopher's Stone",
-			"Harry Potter and the Chamber of Secrets"
-		],
-		"books": [
-			{
+		"RawRecord": "{\"books\":[{\"author\":\"J. K. Rowling\",\"price\":9.99,\"title\":\"Harry Potter and the Philosopher's Stone\",\"year\":1997},{\"author\":\"J. K. Rowling\",\"price\":10.99,\"title\":\"Harry Potter and the Chamber of Secrets\",\"year\":1998}],\"name\":\"Scholastic Press\"}",
+		"RawRecordHash": "ea4b9b89-505c-3944-817c-70603b455f56",
+		"TransformedRecord": {
+			"authors": [
+				"J. K. Rowling",
+				"J. K. Rowling"
+			],
+			"avg_price": 10.49,
+			"book_titles": [
+				"Harry Potter and the Philosopher's Stone",
+				"Harry Potter and the Chamber of Secrets"
+			],
+			"books": [
+				{
+					"author": "J. K. Rowling",
+					"price": 9.99,
+					"title": "Harry Potter and the Philosopher's Stone",
+					"year": 1997
+				},
+				{
+					"author": "J. K. Rowling",
+					"price": 10.99,
+					"title": "Harry Potter and the Chamber of Secrets",
+					"year": 1998
+				}
+			],
+			"first_book": {
 				"author": "J. K. Rowling",
 				"price": 9.99,
 				"title": "Harry Potter and the Philosopher's Stone",
 				"year": 1997
 			},
-			{
-				"author": "J. K. Rowling",
-				"price": 10.99,
-				"title": "Harry Potter and the Chamber of Secrets",
-				"year": 1998
-			}
-		],
-		"first_book": {
-			"author": "J. K. Rowling",
-			"price": 9.99,
-			"title": "Harry Potter and the Philosopher's Stone",
-			"year": 1997
-		},
-		"original_book_array": [
-			{
-				"author": "J. K. Rowling",
-				"price": 9.99,
-				"title": "Harry Potter and the Philosopher's Stone",
-				"year": 1997
-			},
-			{
-				"author": "J. K. Rowling",
-				"price": 10.99,
-				"title": "Harry Potter and the Chamber of Secrets",
-				"year": 1998
-			}
-		],
-		"publisher": "Scholastic Press",
-		"sum_price_times_10": 209.8,
-		"title_author": "'Harry Potter and the Chamber of Secrets' by J. K. Rowling"
+			"original_book_array": [
+				{
+					"author": "J. K. Rowling",
+					"price": 9.99,
+					"title": "Harry Potter and the Philosopher's Stone",
+					"year": 1997
+				},
+				{
+					"author": "J. K. Rowling",
+					"price": 10.99,
+					"title": "Harry Potter and the Chamber of Secrets",
+					"year": 1998
+				}
+			],
+			"publisher": "Scholastic Press",
+			"sum_price_times_10": 209.8,
+			"title_author": "'Harry Potter and the Chamber of Secrets' by J. K. Rowling"
+		}
 	},
 	{
-		"authors": [
-			"Margaret Wise Brown"
-		],
-		"avg_price": 4.99,
-		"book_titles": [
-			"Goodnight Moon",
-			"Brown Bear, Brown Bear, What Do You See"
-		],
-		"books": [
-			{
+		"RawRecord": "{\"books\":[{\"author\":\"Margaret Wise Brown\",\"price\":5.99,\"title\":\"Goodnight Moon\",\"year\":1947},{\"price\":3.99,\"title\":\"Brown Bear, Brown Bear, What Do You See\"}],\"name\":\"Harper \\u0026 Brothers\"}",
+		"RawRecordHash": "bd3dd8d3-f5c1-3f2f-ab47-bd505a3ba12e",
+		"TransformedRecord": {
+			"authors": [
+				"Margaret Wise Brown"
+			],
+			"avg_price": 4.99,
+			"book_titles": [
+				"Goodnight Moon",
+				"Brown Bear, Brown Bear, What Do You See"
+			],
+			"books": [
+				{
+					"author": "Margaret Wise Brown",
+					"price": 5.99,
+					"title": "Goodnight Moon",
+					"year": 1947
+				},
+				{
+					"price": 3.99,
+					"title": "Brown Bear, Brown Bear, What Do You See"
+				}
+			],
+			"first_book": {
 				"author": "Margaret Wise Brown",
 				"price": 5.99,
 				"title": "Goodnight Moon",
 				"year": 1947
 			},
-			{
-				"price": 3.99,
-				"title": "Brown Bear, Brown Bear, What Do You See"
-			}
-		],
-		"first_book": {
-			"author": "Margaret Wise Brown",
-			"price": 5.99,
-			"title": "Goodnight Moon",
-			"year": 1947
-		},
-		"original_book_array": [
-			{
-				"author": "Margaret Wise Brown",
-				"price": 5.99,
-				"title": "Goodnight Moon",
-				"year": 1947
-			},
-			{
-				"price": 3.99,
-				"title": "Brown Bear, Brown Bear, What Do You See"
-			}
-		],
-		"publisher": "Harper & Brothers",
-		"sum_price_times_10": 99.8,
-		"title_author": "'Brown Bear, Brown Bear, What Do You See' by Unknown"
+			"original_book_array": [
+				{
+					"author": "Margaret Wise Brown",
+					"price": 5.99,
+					"title": "Goodnight Moon",
+					"year": 1947
+				},
+				{
+					"price": 3.99,
+					"title": "Brown Bear, Brown Bear, What Do You See"
+				}
+			],
+			"publisher": "Harper & Brothers",
+			"sum_price_times_10": 99.8,
+			"title_author": "'Brown Bear, Brown Bear, What Do You See' by Unknown"
+		}
 	}
 ]

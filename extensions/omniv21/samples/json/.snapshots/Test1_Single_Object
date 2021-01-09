@@ -1,16 +1,20 @@
 [
 	{
-		"items": [
-			{
-				"sku": "AB123",
-				"total_price": 61.7
-			},
-			{
-				"sku": "CK763",
-				"total_price": 6.24
-			}
-		],
-		"order_id": "1234567",
-		"tracking_number": "1Z9999999999999999"
+		"RawRecord": "{\"items\":[{\"item_price\":12.34,\"item_sku\":\"ab123\",\"number_purchased\":5},{\"item_price\":3.12,\"item_sku\":\"ck763-23\",\"number_purchased\":2}],\"order_id\":\"1234567\",\"tracking_number\":\"1z9999999999999999\"}",
+		"RawRecordHash": "6ef8f474-8b41-3366-9356-ef44a84c1439",
+		"TransformedRecord": {
+			"items": [
+				{
+					"sku": "AB123",
+					"total_price": 61.7
+				},
+				{
+					"sku": "CK763",
+					"total_price": 6.24
+				}
+			],
+			"order_id": "1234567",
+			"tracking_number": "1Z9999999999999999"
+		}
 	}
 ]

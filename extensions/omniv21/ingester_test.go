@@ -33,7 +33,7 @@ func (r *testReader) Read() (*idr.Node, error) {
 	return result, err
 }
 
-func (r *testReader) Release(n *idr.Node) { r.releaseCalled++ }
+func (r *testReader) Release(_ *idr.Node) { r.releaseCalled++ }
 
 func (r *testReader) IsContinuableError(err error) bool { return err == errContinuableInTest }
 
@@ -45,9 +45,10 @@ func TestIngester_Read_ReadFailure(t *testing.T) {
 	g := &ingester{
 		reader: &testReader{result: []*idr.Node{nil}, err: []error{errors.New("test failure")}},
 	}
-	b, err := g.Read()
+	raw, b, err := g.Read()
 	assert.Error(t, err)
 	assert.Equal(t, "test failure", err.Error())
+	assert.Nil(t, raw)
 	assert.Nil(t, b)
 	assert.Equal(t, 0, g.reader.(*testReader).releaseCalled)
 }
@@ -64,15 +65,16 @@ func TestIngester_Read_ParseNodeFailure(t *testing.T) {
 		finalOutputDecl: finalOutputDecl,
 		reader:          &testReader{result: []*idr.Node{ingesterTestNode}, err: []error{nil}},
 	}
-	b, err := g.Read()
+	raw, b, err := g.Read()
 	assert.Error(t, err)
 	assert.True(t, errs.IsErrTransformFailed(err))
 	assert.True(t, g.IsContinuableError(err))
 	assert.Equal(t,
 		`ctx: fail to transform. err: unable to convert value 'abc' to type 'int' on 'FINAL_OUTPUT', err: strconv.ParseInt: parsing "abc": invalid syntax`,
 		err.Error())
+	assert.Nil(t, raw)
 	assert.Nil(t, b)
-	assert.Equal(t, 1, g.reader.(*testReader).releaseCalled)
+	assert.Equal(t, 0, g.reader.(*testReader).releaseCalled)
 }
 
 func TestIngester_Read_Success(t *testing.T) {
@@ -87,9 +89,15 @@ func TestIngester_Read_Success(t *testing.T) {
 		finalOutputDecl: finalOutputDecl,
 		reader:          &testReader{result: []*idr.Node{ingesterTestNode}, err: []error{nil}},
 	}
-	b, err := g.Read()
+	raw, b, err := g.Read()
 	assert.NoError(t, err)
+	assert.Equal(t, "41665284-dab9-300d-b647-7ace9cb514b4", raw.(*RawRecord).UUIDv3())
 	assert.Equal(t, "123", string(b))
+	assert.Equal(t, 0, g.reader.(*testReader).releaseCalled)
+	raw, b, err = g.Read()
+	assert.Equal(t, io.EOF, err)
+	assert.Nil(t, raw)
+	assert.Nil(t, b)
 	assert.Equal(t, 1, g.reader.(*testReader).releaseCalled)
 }
 
