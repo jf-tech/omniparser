@@ -65,7 +65,7 @@ situations.
 - Golang 1.14
 
 ## Recent Major Feature Additions/Changes
-- Added `Transform.CurrentRawRecord()` for caller of omniparser to access the raw ingested record.  
+- Added `Transform.RawRecord()` for caller of omniparser to access the raw ingested record.
 - Deprecated `custom_parse` in favor of `custom_func` (`custom_parse` is still usable for
 back-compatibility, it is just removed from all public docs and samples).
 - Added `NonValidatingReader` EDI segment reader.

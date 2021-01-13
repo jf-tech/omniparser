@@ -91,7 +91,8 @@ func TestIngester_Read_Success(t *testing.T) {
 	}
 	raw, b, err := g.Read()
 	assert.NoError(t, err)
-	assert.Equal(t, "41665284-dab9-300d-b647-7ace9cb514b4", raw.(*RawRecord).UUIDv3())
+	assert.Equal(t, "41665284-dab9-300d-b647-7ace9cb514b4", raw.Checksum())
+	assert.Equal(t, "{}", idr.JSONify2(raw.Raw().(*idr.Node)))
 	assert.Equal(t, "123", string(b))
 	assert.Equal(t, 0, g.reader.(*testReader).releaseCalled)
 	raw, b, err = g.Read()

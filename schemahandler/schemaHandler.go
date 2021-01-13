@@ -37,6 +37,14 @@ type SchemaHandler interface {
 	NewIngester(ctx *transformctx.Ctx, input io.Reader) (Ingester, error)
 }
 
+// RawRecord represents a raw record ingested from the input.
+type RawRecord interface {
+	// Raw returns the actual raw record that is version specific to each of the schema handler.
+	Raw() interface{}
+	// Checksum returns a UUIDv3 (MD5) stable hash of the raw record.
+	Checksum() string
+}
+
 // Ingester is an interface of ingestion and transformation for a given input stream.
 type Ingester interface {
 	// Read is called repeatedly during the processing of an input stream. Each call it should return
@@ -46,7 +54,7 @@ type Ingester interface {
 	// one record at a time, OR, processes and returns one record for each call. However, the overall
 	// design principle of omniparser is to have streaming processing capability so memory won't be a
 	// constraint when dealing with large input file. All built-in ingesters are implemented this way.
-	Read() (interface{}, []byte, error)
+	Read() (RawRecord, []byte, error)
 
 	// IsContinuableError is called to determine if the error returned by Read is fatal or not. After Read
 	// is called, the result record or error will be returned to caller. After caller consumes record or

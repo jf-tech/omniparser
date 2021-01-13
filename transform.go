@@ -21,16 +21,14 @@ type Transform interface {
 	// return the same error.
 	// Note if returned error isn't nil, then returned []byte will be nil.
 	Read() ([]byte, error)
-	// CurrentRawRecord returns the current raw record ingested from the input stream. If
-	// the last Read call failed, or Read hasn't been called yet, it will return an error.
-	// Each schema handler and extension has its own definition of what a raw record is
-	// so please check their corresponding doc.
-	CurrentRawRecord() (interface{}, error)
+	// RawRecord returns the current raw record ingested from the input stream. If the last
+	// Read call failed, or Read hasn't been called yet, it will return an error.
+	RawRecord() (schemahandler.RawRecord, error)
 }
 
 type transform struct {
 	ingester      schemahandler.Ingester
-	lastRawRecord interface{}
+	lastRawRecord schemahandler.RawRecord
 	lastErr       error
 }
 
@@ -70,9 +68,9 @@ func (o *transform) Read() ([]byte, error) {
 	return transformed, err
 }
 
-// CurrentRawRecord returns the current raw record ingested from the input stream. If
-// the last Read call failed, or Read hasn't been called yet, it will return an error.
-func (o *transform) CurrentRawRecord() (interface{}, error) {
+// RawRecord returns the current raw record ingested from the input stream. If the last
+// Read call failed, or Read hasn't been called yet, it will return an error.
+func (o *transform) RawRecord() (schemahandler.RawRecord, error) {
 	if o.lastErr != nil {
 		return nil, o.lastErr
 	}

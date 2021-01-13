@@ -715,7 +715,10 @@ for {
         break
     }
     if err != nil { ... }
-    // output contains a []byte of the ingested and transformed record. 
+    // output contains a []byte of the ingested and transformed record.
+
+    // Also transform.RawRecord() gives you access to the raw record.
+    fmt.Println(transform.RawRecord().Checksum())
 }
 ```
 

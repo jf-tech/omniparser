@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser"
-	"github.com/jf-tech/omniparser/extensions/omniv21"
 	"github.com/jf-tech/omniparser/idr"
 	"github.com/jf-tech/omniparser/transformctx"
 )
@@ -49,12 +48,11 @@ func SampleTestCommon(t *testing.T, schemaFile, inputFile string) string {
 		err = json.Unmarshal(recordBytes, &transformed)
 		assert.NoError(t, err)
 
-		raw, err := transform.CurrentRawRecord()
+		raw, err := transform.RawRecord()
 		assert.NoError(t, err)
-		rawRecord := raw.(*omniv21.RawRecord)
 		records = append(records, record{
-			RawRecord:         idr.JSONify2(rawRecord.Node),
-			RawRecordHash:     rawRecord.UUIDv3(),
+			RawRecord:         idr.JSONify2(raw.Raw().(*idr.Node)),
+			RawRecordHash:     raw.Checksum(),
 			TransformedRecord: transformed,
 		})
 	}
