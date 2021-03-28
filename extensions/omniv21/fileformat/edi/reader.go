@@ -231,8 +231,20 @@ func (r *ediReader) Read() (*idr.Node, error) {
 		if err != nil {
 			return nil, err
 		}
+		if len(r.stack) <= 1 {
+			// we have a raw segment waiting for processing but currently
+			// the decl stack is effectively empty (with only the artificial
+			// #root decl on it. We can get into this situation two ways:
+			// 1.
+		}
 		cur := r.stackTop()
 		if !cur.segDecl.matchSegName(rawSeg.Name) {
+			if len(r.stack) <= 1 {
+				return nil, ErrInvalidEDI(r.fmtErrStr2(
+					r.r.SegCount(), r.r.RuneEnd(), r.r.RuneEnd(),
+					"segment '%s' is either not declared in schema or appears in an invalid order",
+					rawSeg.Name))
+			}
 			err = r.segNext()
 			if err != nil {
 				return nil, err

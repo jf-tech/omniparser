@@ -586,11 +586,11 @@ func TestSegDoneSegNext(t *testing.T) {
 
 func TestRead(t *testing.T) {
 	for _, test := range []struct {
-		name     string
-		input    string
-		declJSON string
-		xpath    string
-		err      string
+		name              string
+		input             string
+		declJSON          string
+		xpath             string
+		readerCreationErr string
 	}{
 		{
 			name:  "invalid target xpath, failure",
@@ -603,8 +603,8 @@ func TestRead(t *testing.T) {
 						{ "name": "ISA", "min": 0 }
 					]
 				}`,
-			xpath: "[",
-			err:   `invalid target xpath '[', err: expression must evaluate to a node-set`,
+			xpath:             "[",
+			readerCreationErr: `invalid target xpath '[', err: expression must evaluate to a node-set`,
 		},
 		{
 			name:  "empty input, success",
@@ -617,8 +617,8 @@ func TestRead(t *testing.T) {
 						{ "name": "ISA", "min": 0 }
 					]
 				}`,
-			xpath: "",
-			err:   "",
+			xpath:             "",
+			readerCreationErr: "",
 		},
 		{
 			name:  "single seg decl, multiple seg instances, success",
@@ -640,8 +640,8 @@ func TestRead(t *testing.T) {
 						}
 					]
 				}`,
-			xpath: "",
-			err:   "",
+			xpath:             "",
+			readerCreationErr: "",
 		},
 		{
 			name:  "2 seg decls, success",
@@ -669,8 +669,8 @@ func TestRead(t *testing.T) {
 						}
 					]
 				}`,
-			xpath: "",
-			err:   "",
+			xpath:             "",
+			readerCreationErr: "",
 		},
 		{
 			name:  "2 seg groups, filtered target, success",
@@ -711,8 +711,8 @@ func TestRead(t *testing.T) {
 						}
 					]
 				}`,
-			xpath: ".[e1 != '6']",
-			err:   "",
+			xpath:             ".[e1 != '6']",
+			readerCreationErr: "",
 		},
 		{
 			name:  "seg min not satisfied before EOF, failure",
@@ -740,8 +740,8 @@ func TestRead(t *testing.T) {
 						}
 					]
 				}`,
-			xpath: "",
-			err:   "",
+			xpath:             "",
+			readerCreationErr: "",
 		},
 		{
 			name:  "missing raw seg name, failure",
@@ -762,8 +762,8 @@ func TestRead(t *testing.T) {
 						}
 					]
 				}`,
-			xpath: "",
-			err:   "",
+			xpath:             "",
+			readerCreationErr: "",
 		},
 		{
 			name:  "raw seg processing wrong, failure",
@@ -784,8 +784,8 @@ func TestRead(t *testing.T) {
 						}
 					]
 				}`,
-			xpath: "",
-			err:   "",
+			xpath:             "",
+			readerCreationErr: "",
 		},
 		{
 			name:  "seg min not satisfied before next seg appearance, failure",
@@ -810,8 +810,52 @@ func TestRead(t *testing.T) {
 						}
 					]
 				}`,
-			xpath: "",
-			err:   "",
+			xpath:             "",
+			readerCreationErr: "",
+		},
+		{
+			name:  "unprocessed raw segment, failure",
+			input: "ISA\nUNKNOWN\n",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{
+							"name": "ISA",
+							"is_target": true,
+                            "min": 0
+						}
+					]
+				}`,
+			xpath:             "",
+			readerCreationErr: "",
+		},
+		{
+			name:  "multiple root level segments, success",
+			input: "ISA\nIEA\nISA\nIEA\n",
+			declJSON: `
+				{
+					"segment_delimiter": "\n",
+					"element_delimiter": "*",
+					"segment_declarations": [
+						{
+							"name": "group1",
+							"type": "segment_group",
+							"is_target": true,
+							"child_segments": [
+								{
+									"name": "ISA"
+								},
+								{
+									"name": "IEA"
+								}
+							]
+						}
+					]
+				}`,
+			xpath:             "",
+			readerCreationErr: "",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -819,9 +863,9 @@ func TestRead(t *testing.T) {
 			err := json.Unmarshal([]byte(test.declJSON), &decl)
 			assert.NoError(t, err)
 			reader, err := NewReader("test", strings.NewReader(test.input), &decl, test.xpath)
-			if test.err != "" {
+			if test.readerCreationErr != "" {
 				assert.Error(t, err)
-				assert.Equal(t, test.err, err.Error())
+				assert.Equal(t, test.readerCreationErr, err.Error())
 				assert.Nil(t, reader)
 				return
 			}
