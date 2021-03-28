@@ -9,7 +9,7 @@ Omniparser is a native Golang ETL parser that ingests input data of various form
 XML, EDI/X12/EDIFACT, JSON**, and custom formats) in streaming fashion and transforms data into desired JSON output
 based on a schema written in JSON.
 
-Golang Version: 1.14
+Min Golang Version: 1.14
 
 ## Documentation
 
@@ -62,9 +62,10 @@ for trying out schemas and inputs, yours or existing samples, to see how ingesti
 situations.
 
 ## Requirements
-- Golang 1.14
+- Golang 1.14 or later.
 
 ## Recent Major Feature Additions/Changes
+- 1.0.0 Released!
 - Added `Transform.RawRecord()` for caller of omniparser to access the raw ingested record.
 - Deprecated `custom_parse` in favor of `custom_func` (`custom_parse` is still usable for
 back-compatibility, it is just removed from all public docs and samples).
