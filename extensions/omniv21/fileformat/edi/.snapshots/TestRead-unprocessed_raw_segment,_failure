@@ -1,0 +1,6 @@
+{
+	"Records": [
+		"{}"
+	],
+	"FinalErr": "input 'test' at segment no.2 (char[13,13]): segment 'UNKNOWN' is either not declared in schema or appears in an invalid order"
+}
