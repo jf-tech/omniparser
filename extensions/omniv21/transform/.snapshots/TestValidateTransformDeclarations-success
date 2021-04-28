@@ -1,5 +1,11 @@
 {
 	"object": {
+		"$field_13 with space. and other non-alphanumeric chars": {
+			"custom_parse": "test_custom_parse",
+			"fqdn": "FINAL_OUTPUT.$field_13 with space%. and other non-alphanumeric chars",
+			"kind": "custom_parse",
+			"parent": "FINAL_OUTPUT"
+		},
 		"field1": {
 			"const": "value1",
 			"fqdn": "FINAL_OUTPUT.field1",
@@ -200,12 +206,6 @@
 			],
 			"parent": "FINAL_OUTPUT"
 		},
-		"field_13": {
-			"custom_parse": "test_custom_parse",
-			"fqdn": "FINAL_OUTPUT.field_13",
-			"kind": "custom_parse",
-			"parent": "FINAL_OUTPUT"
-		},
 		"field_9": {
 			"xpath": "1/2/3",
 			"object": {
@@ -227,6 +227,7 @@
 	"fqdn": "FINAL_OUTPUT",
 	"kind": "object",
 	"children": [
+		"FINAL_OUTPUT.$field_13 with space%. and other non-alphanumeric chars",
 		"FINAL_OUTPUT.field1",
 		"FINAL_OUTPUT.field2",
 		"FINAL_OUTPUT.field3",
@@ -234,7 +235,6 @@
 		"FINAL_OUTPUT.field_10",
 		"FINAL_OUTPUT.field_11",
 		"FINAL_OUTPUT.field_12",
-		"FINAL_OUTPUT.field_13",
 		"FINAL_OUTPUT.field_9"
 	],
 	"parent": "(nil)"

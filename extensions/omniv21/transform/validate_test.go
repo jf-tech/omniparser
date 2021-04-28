@@ -49,7 +49,7 @@ func TestValidateTransformDeclarations(t *testing.T) {
                         "field_10": { "xpath_dynamic": { "const": "X/Y/Z" }, "template": "template10" },
                         "field_11": { "template": "template11" },
                         "field_12": { "template": "template12" },
-						"field_13": { "custom_parse": "test_custom_parse" }
+						"$field_13 with space. and other non-alphanumeric chars": { "custom_parse": "test_custom_parse" }
                     }},
                     "template9": { "xpath": "1/2/3", "object": {
                         "field9": { "xpath": "4/5/6" }

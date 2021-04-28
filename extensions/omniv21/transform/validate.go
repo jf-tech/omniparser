@@ -104,7 +104,8 @@ func (ctx *validateCtx) validateXPath(fqdn string, decl *Decl, templateRefStack 
 func (ctx *validateCtx) validateObject(fqdn string, decl *Decl, templateRefStack []string) error {
 	for childName, childDecl := range decl.Object {
 		childDecl, err := ctx.validateDecl(
-			strs.BuildFQDN(fqdn, childName), childDecl, templateRefStack)
+			// childName can contain '.' or '%', it needs to be escaped.
+			strs.BuildFQDN(fqdn, strs.BuildFQDNWithEsc(childName)), childDecl, templateRefStack)
 		if err != nil {
 			return err
 		}
