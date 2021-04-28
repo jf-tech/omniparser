@@ -211,7 +211,7 @@ func (p *parseCtx) parseObject(n *idr.Node, decl *Decl) (interface{}, error) {
 		// value returned by p.ParseNode is already normalized, thus this
 		// normalizeAndSaveValue won't fail.
 		_ = normalizeAndSaveValue(childDecl, childValue, func(normalizedValue interface{}) {
-			obj[strs.LastNameletOfFQDN(childDecl.fqdn)] = normalizedValue
+			obj[strs.LastNameletOfFQDNWithEsc(childDecl.fqdn)] = normalizedValue
 		})
 	}
 	return normalizeAndReturnValue(decl, obj)

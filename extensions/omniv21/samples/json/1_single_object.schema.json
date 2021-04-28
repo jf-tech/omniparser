@@ -5,7 +5,7 @@
     },
     "transform_declarations": {
         "FINAL_OUTPUT": { "object": {
-            "order_id": { "xpath": "order_id" },
+            "$order.id": { "xpath": "order_id" },
             "tracking_number": { "custom_func": {
                 "name": "upper",
                 "args": [ { "xpath": "tracking_number" } ]

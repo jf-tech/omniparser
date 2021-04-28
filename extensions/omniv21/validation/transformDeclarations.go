@@ -91,7 +91,7 @@ const (
         "value_object": {
             "type": "object",
             "patternProperties": {
-                "^[_a-zA-Z0-9]+$": {
+                "^.+$": {
                     "oneOf": [
                         { "$ref": "#/definitions/const" },
                         { "$ref": "#/definitions/external" },
