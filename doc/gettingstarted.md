@@ -190,6 +190,7 @@ Let's add these:
     "transform_declarations": {
         "FINAL_OUTPUT": {}
     }
+}
 ```
 
 Run the CLI again:
