@@ -20,7 +20,7 @@ type ErrInvalidHeader string
 
 func (e ErrInvalidHeader) Error() string { return string(e) }
 
-// IsErrInvalidHeader checks if an err is of ErrInvalidHeader type.
+// IsErrInvalidHeader checks if the `err` is of ErrInvalidHeader type.
 func IsErrInvalidHeader(err error) bool {
 	switch err.(type) {
 	case ErrInvalidHeader:
@@ -114,7 +114,7 @@ func (r *reader) recordToNode(record []string) *idr.Node {
 	root := idr.CreateNode(idr.DocumentNode, "")
 	// - If actual record has more columns than declared in schema, we'll only use up to
 	//   what's declared in the schema;
-	// - conversely, if the actual record has less columns than declared in schema, we'll
+	// - conversely, if the actual record has fewer columns than declared in schema, we'll
 	//   use all that are in the record.
 	for i := 0; i < maths.MinInt(len(record), len(r.decl.Columns)); i++ {
 		col := idr.CreateNode(idr.ElementNode, r.decl.Columns[i].name())

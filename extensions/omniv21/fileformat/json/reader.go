@@ -14,7 +14,7 @@ type ErrNodeReadingFailed string
 
 func (e ErrNodeReadingFailed) Error() string { return string(e) }
 
-// IsErrNodeReadingFailed checks if an err is of ErrNodeReadingFailed type.
+// IsErrNodeReadingFailed checks if the `err` is of ErrNodeReadingFailed type.
 func IsErrNodeReadingFailed(err error) bool {
 	switch err.(type) {
 	case ErrNodeReadingFailed:

@@ -21,6 +21,24 @@ type JSONStreamReader struct {
 }
 
 // streamCandidateCheck checks if sp.cur is a potential stream candidate.
+// Note even if sp.cur is marked, it only means it could potentially be the
+// stream candidate, not guaranteed. E.g., say have a JSON doc looks like this:
+// {
+//    "x": {
+//       "a": 5
+//    },
+//    "y": {
+//       "a": 2
+//    }
+// }
+// And our stream xpath is "/*/a[. < 4]".
+// When the reader first encounters "x/a" node, it has the potential to be the
+// stream candidate since it matches "/*/a". But we haven't finished processing
+// the entire node, thus no way we know if the value of "a" would match the filter
+// or not. So we have to mark it as a potential stream candidate and will let
+// wrapUpCurAndTargetCheck to do the final check when the entire node of "/x/a"
+// is ingested and processed, in which case, "/x/a" will be not be considered
+// as stream target, but later "/x/b" will be.
 func (sp *JSONStreamReader) streamCandidateCheck() {
 	if sp.xpathExpr != nil && sp.stream == nil && MatchAny(sp.root, sp.xpathExpr) {
 		sp.stream = sp.cur
@@ -33,7 +51,7 @@ func (sp *JSONStreamReader) streamCandidateCheck() {
 // - Either we don't have a stream filter xpath or the stream filter xpath matches.
 func (sp *JSONStreamReader) wrapUpCurAndTargetCheck() *Node {
 	cur := sp.cur
-	// No matter what outcome the wrapUpCurAndTargetCheck() is, the current node is done and
+	// No matter what outcome the wrapUpCurAndTargetCheck() is, the current node is done, and
 	// we need to adjust sp.cur to its parent.
 	sp.cur = sp.cur.Parent
 	// Only do stream target check if the finished cur node is the stream candidate
@@ -78,7 +96,7 @@ func (sp *JSONStreamReader) addTextChild(tok interface{}) {
 	}
 	child := CreateJSONNode(TextNode, data, jtype)
 	AddChild(sp.cur, child)
-	// If the child being added is a value node, there won't be anything else
+	// Since the child being added is a value node, there won't be anything else
 	// added below it, so no need to advance sp.cur to child.
 }
 
@@ -100,7 +118,7 @@ func (sp *JSONStreamReader) parseDelim(tok json.Delim) *Node {
 			// already done the check when the property itself is processed.
 			sp.cur.FormatSpecific = JSONTypeOf(sp.cur) | JSONObj
 		case IsJSONRoot(sp.cur):
-			// if we see "{" directly on root, make the root node a obj type container
+			// if we see "{" directly on root, make the root node an obj type container
 			// and do stream candidate check.
 			sp.cur.FormatSpecific = JSONTypeOf(sp.cur) | JSONObj
 			sp.streamCandidateCheck()
@@ -138,7 +156,7 @@ func (sp *JSONStreamReader) parseVal(tok json.Token) *Node {
 	case IsJSONObj(sp.cur):
 		sp.addElementChild(tok.(string), JSONProp)
 		sp.streamCandidateCheck()
-	// similarly we want arr check before prop check.
+	// Similarly, we want arr check before prop check.
 	case IsJSONArr(sp.cur):
 		// if parent is an array or root, so we're adding a value directly to
 		// the array or root, by creating an anonymous element node, then the
@@ -158,7 +176,7 @@ func (sp *JSONStreamReader) parseVal(tok json.Token) *Node {
 		}
 	case IsJSONRoot(sp.cur):
 		// A value is directly setting on root. We need to do both stream candidate check
-		// as well as target check.
+		// and target check.
 		sp.streamCandidateCheck()
 		sp.addTextChild(tok)
 		ret := sp.wrapUpCurAndTargetCheck()

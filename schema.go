@@ -18,7 +18,7 @@ import (
 	"github.com/jf-tech/omniparser/validation"
 )
 
-// Schema is an interface that represents an schema used by omniparser.
+// Schema is an interface that represents a schema used by omniparser.
 // One instance of Schema is associated with one and only one schema.
 // The instance of Schema can be reused for ingesting and transforming
 // multiple input files/streams, as long as they are all intended for the
@@ -62,7 +62,7 @@ var (
 // NewSchema will scan through exts left to right to find the first extension with a schema handler (specified
 // by CreateSchemaHandler field) that supports the input schema. If no ext provided or no ext with a handler
 // that supports the schema, then NewSchema will fall back to builtin extension (currently for schema version
-// 'omni.2.1'. If the input schema is still not supported by builtin extension, NewSchema will fail with
+// 'omni.2.1'). If the input schema is still not supported by builtin extension, NewSchema will fail with
 // ErrSchemaNotSupported. Each extension much be fully self-contained meaning all the custom functions it
 // intends to use in the schemas supported by it must be included in the same extension.
 func NewSchema(name string, schemaReader io.Reader, exts ...Extension) (Schema, error) {

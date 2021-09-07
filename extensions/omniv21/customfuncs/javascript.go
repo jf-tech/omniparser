@@ -15,7 +15,7 @@ const (
 	argNameNode = "_node"
 )
 
-// JSProgramCache caches *goja.Program. A *goja.Program is compiled javascript and it can be used
+// JSProgramCache caches *goja.Program. A *goja.Program is compiled javascript, and it can be used
 // across multiple goroutines and across different *goja.Runtime. If default loading cache capacity
 // is not desirable, change JSProgramCache to a loading cache with a different capacity at package
 // init time. Be mindful this will be shared across all use cases inside your process.
@@ -29,7 +29,7 @@ var jsRuntimePool sync.Pool
 // NodeToJSONCache caches *idr.Node to JSON translations.
 var NodeToJSONCache *caches.LoadingCache
 
-// For debugging/testing purpose so we can easily disable all the caches. But not exported. We always
+// For debugging/testing purpose, so we can easily disable all the caches. But not exported. We always
 // want caching in production.
 var disableCaching = false
 

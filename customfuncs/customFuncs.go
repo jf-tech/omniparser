@@ -8,7 +8,7 @@ import (
 	"github.com/jf-tech/omniparser/transformctx"
 )
 
-// CustomFuncType is the type of a custom function. Has to use interface{} given we support
+// CustomFuncType is the type of custom function. Has to use interface{} given we support
 // non-variadic and variadic functions.
 type CustomFuncType = interface{}
 
@@ -43,7 +43,7 @@ var CommonCustomFuncs = map[string]CustomFuncType{
 }
 
 // Coalesce returns the first non-empty string of the input strings. If no input strings are given or
-// all of them are empty, then empty string is returned. Note: a blank string (with only whitespaces)
+// all of them are empty, then an empty string is returned. Note: a blank string (with only whitespaces)
 // is not considered as empty.
 func Coalesce(_ *transformctx.Ctx, strs ...string) (string, error) {
 	for _, str := range strs {
@@ -54,7 +54,7 @@ func Coalesce(_ *transformctx.Ctx, strs ...string) (string, error) {
 	return "", nil
 }
 
-// Concat custom_func concatenates a number of strings together. If no strings specified, "" is returned.
+// Concat concatenates a number of strings together. If no strings specified, "" is returned.
 func Concat(_ *transformctx.Ctx, strs ...string) (string, error) {
 	var w strings.Builder
 	for _, s := range strs {

@@ -44,7 +44,7 @@ type transform struct {
 func (o *transform) Read() ([]byte, error) {
 	// errs.ErrTransformFailed is a generic wrapping error around all handlers' ingesters'
 	// **continuable** errors (so client side doesn't have to deal with myriad of different
-	// types of benign continuable errors. All other errors: non-continuable errors or io.EOF
+	// types of benign continuable errors). All other errors: non-continuable errors or io.EOF
 	// should cause the operation to cease.
 	if o.lastErr != nil && !errs.IsErrTransformFailed(o.lastErr) {
 		return nil, o.lastErr
@@ -54,7 +54,7 @@ func (o *transform) Read() ([]byte, error) {
 		if o.ingester.IsContinuableError(err) {
 			// If ingester error is continuable, wrap it into a standard generic ErrTransformFailed
 			// so caller has an easier time to deal with it. If fatal error, then leave it raw to the
-			// caller so they can decide what it is and how to proceed.
+			// caller, so they can decide what it is and how to proceed.
 			err = errs.ErrTransformFailed(err.Error())
 		}
 		transformed = nil
