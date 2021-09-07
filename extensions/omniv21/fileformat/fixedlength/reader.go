@@ -98,7 +98,7 @@ func (r *reader) readByHeaderFooterEnvelope() (*idr.Node, error) {
 		return nil, ErrInvalidEnvelope(r.fmtErrStr("incomplete envelope: %s", err.Error()))
 	}
 	for ; r.envelopeIndex < len(r.decl.Envelopes); r.envelopeIndex++ {
-		// regex's are already validated
+		// regex is already validated
 		headerRegex, _ := caches.GetRegex(r.decl.Envelopes[r.envelopeIndex].ByHeaderFooter.Header)
 		if headerRegex.Match(line) {
 			break

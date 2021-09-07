@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// JSONType is the type of a JSON-specific Node.
+// JSONType is the type of JSON-specific Node.
 // Note multiple JSONType can be bit-wise OR'ed together.
 type JSONType uint
 

@@ -23,7 +23,7 @@ const (
 // If layout is specific, then parseDateTime will parse datetime string using the supplied layout;
 // otherwise, it will default to times.SmartParse.
 //
-// If datetime string contains tz info in it (such as 'Z', or '-America/New_York' etc, or '-0700', etc)
+// If datetime string contains tz info in it (such as 'Z', or '-America/New_York' etc., or '-0700', etc.)
 // then fromTZ is IGNORED. Otherwise, then datetime string will be parsed in with its face value y/m/d/h/m/s
 // and bonded with the fromTZ, if fromTZ isn't "".
 //

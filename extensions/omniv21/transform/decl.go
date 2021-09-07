@@ -91,11 +91,11 @@ type Decl struct {
 	Object map[string]*Decl `json:"object,omitempty"`
 	// Array specifies the input element is an array.
 	Array []*Decl `json:"array,omitempty"`
-	// ResultType specifies the desired output type of an element.
+	// ResultType specifies the desired output type of element.
 	ResultType *resultType `json:"type,omitempty"`
 	// NoTrim specifies space trimming in string value of the output element.
 	NoTrim bool `json:"no_trim,omitempty"`
-	// KeepEmptyOrNull specifies whether or not keep an empty/null output or not.
+	// KeepEmptyOrNull specifies whether to keep an empty/null output or not.
 	KeepEmptyOrNull bool `json:"keep_empty_or_null,omitempty"`
 
 	// Internal fields are computed at schema loading time.

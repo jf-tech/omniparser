@@ -16,7 +16,7 @@ type ErrInvalidEDI string
 
 func (e ErrInvalidEDI) Error() string { return string(e) }
 
-// IsErrInvalidEDI checks if an err is of ErrInvalidEDI type.
+// IsErrInvalidEDI checks if the `err` is of ErrInvalidEDI type.
 func IsErrInvalidEDI(err error) bool {
 	switch err.(type) {
 	case ErrInvalidEDI:
@@ -139,9 +139,9 @@ func (r *NonValidatingReader) Read() (RawSeg, error) {
 	r.segCount++
 	// We are here because:
 	// 1. we find next token (i.e. segment), great, let's process it, OR
-	// 2. r.scanner.Scan() returns false and it's EOF (note scanner never returns EOF, it just returns false
+	// 2. r.scanner.Scan() returns false, and it's EOF (note scanner never returns EOF, it just returns false
 	//    on Scan() and Err() returns nil). We need to return EOF, OR
-	// 3. r.scanner.Scan() returns false Err() returns err, need to return the err wrapped.
+	// 3. r.scanner.Scan() returns false Err() returns err, need to return the `err` wrapped.
 	err := r.scanner.Err()
 	if err != nil {
 		return RawSeg{}, ErrInvalidEDI(fmt.Sprintf("cannot read segment, err: %s", err.Error()))
@@ -167,7 +167,7 @@ func (r *NonValidatingReader) Read() (RawSeg, error) {
 				r.rawSeg.Elems,
 				RawSegElem{
 					// while (element) index in schema starts with 1, it actually refers to the first element
-					// AFTER the seg name element, thus we use can i as ElemIndex directly.
+					// AFTER the seg name element, thus we can use i as ElemIndex directly.
 					ElemIndex: i,
 					// comp_index always starts with 1
 					CompIndex: 1,
