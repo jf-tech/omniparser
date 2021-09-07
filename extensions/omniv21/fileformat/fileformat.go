@@ -35,7 +35,7 @@ type FormatReader interface {
 	// For certain errors (like EOF or corruption) there is no point to keep on trying; while others
 	// can be safely ignored.
 	IsContinuableError(err error) bool
-	// FormatReader must be able to format an error by providing context information (such as input
+	// CtxAwareErr allows FormatReader to format an error by providing context information (such as input
 	// file name and (approx.) error location, such as line number)
 	errs.CtxAwareErr
 }

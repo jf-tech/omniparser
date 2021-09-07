@@ -27,7 +27,7 @@ func (ctx *ctx) isChildText(n *Node) bool {
 	//    <efg/>
 	//  </abc>
 	// If isChildText is called upon node <abc>, it should ideally return false due to the sub
-	// element node <efg> presence. However due to the way XML nodes are constructed, there will
+	// element node <efg> presence. However, due to the way XML nodes are constructed, there will
 	// be "dummy" text nodes hanging around:
 	//  ElementNode ("abc")
 	//    TextNode ("\n")
@@ -56,7 +56,7 @@ func (ctx *ctx) isChildText(n *Node) bool {
 			// We've found text child node, but we need to continue probing.
 		} else if n.Type == ElementNode {
 			elemNodeFound = true
-			// We've found an unwanted element child node, don't probing.
+			// We've found an unwanted element child node, don't probe.
 			break
 		}
 		// attribute child node is ignored.
@@ -75,12 +75,12 @@ func (ctx *ctx) isChildArray(n *Node) bool {
 	// empty string.
 	//
 	// XML/EDI are a bit more complicated:
-	// There is not concept of array in XML, neither in EDI. XML, however, can simulate
+	// There is no concept of array in XML, neither in EDI. XML, however, can simulate
 	// array by having a number of child elements with the same element name. EDI has
 	// segment loop. So the primary idea is to check child element nodes' names and use
 	// their similarity to determine whether the children represent an array or not.
 	// Throwing a wrench here is that fact in XML, there are dummy text nodes sprinkled
-	// around, in between XML elements, so we need to ignore them. Also there could be
+	// around, in between XML elements, so we need to ignore them. There could also be
 	// attribute nodes in XML, need to ignore them too.
 	//
 	// One ambiguous case in XML (and similarly in EDI):

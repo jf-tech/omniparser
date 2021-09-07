@@ -18,7 +18,7 @@ var (
 const (
 	// DisableXPathCache disables caching xpath compilation when MatchAll/MatchSingle
 	// are called. Useful when caller knows the xpath string isn't cache-able (such as
-	// containing unique IDs, timestamps, etc) which would otherwise cause the xpath
+	// containing unique IDs, timestamps, etc.) which would otherwise cause the xpath
 	// compilation cache grow unbounded.
 	DisableXPathCache = uint(1) << iota
 )

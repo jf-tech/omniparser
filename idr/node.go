@@ -7,17 +7,17 @@ import (
 	"sync/atomic"
 )
 
-// NodeType is the type of a Node in an IDR.
+// NodeType is the type of Node in an IDR.
 type NodeType uint
 
 const (
 	// DocumentNode is the type of the root Node in an IDR tree.
 	DocumentNode NodeType = iota
-	// ElementNode is the type of an element Node in an IDR tree.
+	// ElementNode is the type of element Node in an IDR tree.
 	ElementNode
-	// TextNode is the type of an text/data Node in an IDR tree.
+	// TextNode is the type of text/data Node in an IDR tree.
 	TextNode
-	// AttributeNode is the type of an attribute Node in an IDR tree.
+	// AttributeNode is the type of attribute Node in an IDR tree.
 	AttributeNode
 )
 
@@ -41,14 +41,14 @@ func (nt NodeType) String() string {
 // by the omniparser.
 // Credit: this is by and large a copy and some adaptation from
 // https://github.com/antchfx/xmlquery/blob/master/node.go. The reasons we want to have our own struct:
-// - more stability
 // - one struct to represent XML/JSON/EDI/CSV/txt/etc. Vs antchfx's work have one struct (in each repo)
 //   for each format.
 // - Node allocation recycling.
+// - more stability
 type Node struct {
 	// ID uniquely identifies a Node, whether it's newly created or recycled and reused from
 	// the node allocation cache. Previously we sometimes used a *Node's pointer address as a
-	// unique ID which isn't sufficiently unique anymore given the introduction of using
+	// unique ID which isn't sufficiently unique any more given the introduction of using
 	// sync.Pool for node allocation caching.
 	ID int64
 

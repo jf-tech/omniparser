@@ -22,6 +22,7 @@ type XMLStreamReader struct {
 }
 
 // streamCandidateCheck checks if sp.cur is a potential stream candidate.
+// See more details/explanation in JSONStreamReader.streamCandidateCheck.
 func (sp *XMLStreamReader) streamCandidateCheck() {
 	if sp.xpathExpr != nil && sp.stream == nil && MatchAny(sp.root, sp.xpathExpr) {
 		sp.stream = sp.cur
@@ -34,7 +35,7 @@ func (sp *XMLStreamReader) streamCandidateCheck() {
 // - Either we don't have a stream filter xpath or the stream filter xpath matches.
 func (sp *XMLStreamReader) wrapUpCurAndTargetCheck() *Node {
 	cur := sp.cur
-	// No matter what outcome the wrapUpCurAndTargetCheck() is, the current node is done and
+	// No matter what outcome the wrapUpCurAndTargetCheck() is, the current node is done, and
 	// we need to adjust sp.cur to its parent.
 	sp.cur = sp.cur.Parent
 	// Only do stream target check if the finished cur node is the stream candidate

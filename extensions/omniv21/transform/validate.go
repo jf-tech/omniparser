@@ -88,7 +88,7 @@ func (ctx *validateCtx) validateXPath(fqdn string, decl *Decl, templateRefStack 
 		return fmt.Errorf("'%s' cannot set both 'xpath' and 'xpath_dynamic' at the same time", fqdn)
 	}
 	// unlike `xpath` which is a constant string, `xpath_dynamic` value comes from the computation of
-	// regular decl and it can be of a const/field/custom_func/template/external, so we need to parse
+	// regular decl, and it can be of a const/field/custom_func/template/external, so we need to parse
 	// and validate the decl as well.
 	if decl.XPathDynamic != nil {
 		var err error

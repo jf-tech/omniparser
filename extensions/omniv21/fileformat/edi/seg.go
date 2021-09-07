@@ -77,7 +77,7 @@ func (d *SegDecl) maxOccurs() int {
 		// for majority cases, segments have min=1, max=1, so default nil to 1
 		return 1
 	case *d.Max < 0:
-		// typically schema writer uses -1 to indicate infinite; practically max int is good enough :)
+		// typically, schema writer uses -1 to indicate infinite; practically max int is good enough :)
 		return maths.MaxIntValue
 	default:
 		return *d.Max
@@ -87,7 +87,7 @@ func (d *SegDecl) maxOccurs() int {
 func (d *SegDecl) matchSegName(segName string) bool {
 	switch d.isGroup() {
 	case true:
-		// Group (or so called loop) itself doesn't have a segment name in EDI file (we do assign a
+		// Group (or so-called loop) itself doesn't have a segment name in EDI file (we do assign a
 		// name to it for xpath query reference, but that name isn't a segment name per se). A
 		// group/loop's first non-group child, recursively if necessary, can be used as the group's
 		// identifying segment name, per EDI standard. Meaning if a group's first non-group child's
