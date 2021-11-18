@@ -3,8 +3,7 @@
 package validation
 
 const (
-    JSONSchemaEDIFileDeclaration =
-`
+	JSONSchemaEDIFileDeclaration = `
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "github.com/jf-tech/omniparser:edi_file_declaration",
@@ -18,6 +17,7 @@ const (
                 "element_delimiter": { "type": "string", "minLength": 1 },
                 "component_delimiter": { "type": "string", "minLength": 1 },
                 "release_character": { "type": "string", "minLength": 1 },
+                "segment_prefix": { "type": "string", "minLength": 1 },
                 "ignore_crlf": { "type": "boolean" },
                 "segment_declarations": {
                     "type": "array",

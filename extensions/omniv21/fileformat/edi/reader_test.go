@@ -930,3 +930,39 @@ func TestIsContinuableError(t *testing.T) {
 	assert.False(t, r.IsContinuableError(ErrInvalidEDI("invalid EDI")))
 	assert.False(t, r.IsContinuableError(io.EOF))
 }
+
+func TestSegmentPrefix(t *testing.T) {
+	var decl FileDecl
+	err := json.Unmarshal([]byte(`
+		{
+			"segment_delimiter": "\n",
+			"element_delimiter": "|",
+			"segment_prefix": "|",
+			"segment_declarations": [
+				{
+					"name": "container",
+					"type": "segment_group",
+					"is_target": true,
+					"child_segments": [
+						{ "name": "PRO" },
+						{ "name": "EOF" }
+					]
+				}
+			]
+		}`), &decl)
+	assert.NoError(t, err)
+	reader, err := NewReader("test", strings.NewReader("PRO|0|\nEOF|\n"), &decl, "")
+	assert.NoError(t, err)
+	n, err := reader.Read()
+	assert.Error(t, err)
+	assert.False(t, reader.IsContinuableError(err))
+	assert.True(t, IsErrInvalidEDI(err))
+	reader, err = NewReader("test", strings.NewReader("|PRO|0|\n|EOF|\n"), &decl, "")
+	assert.NoError(t, err)
+	n, err = reader.Read()
+	assert.NoError(t, err)
+	assert.Equal(t, n.FirstChild.Data, "PRO")
+	assert.Equal(t, n.LastChild.Data, "EOF")
+	_, err = reader.Read()
+	assert.Equal(t, err, io.EOF)
+}

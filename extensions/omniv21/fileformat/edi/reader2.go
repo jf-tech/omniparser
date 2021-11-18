@@ -113,6 +113,7 @@ type NonValidatingReader struct {
 	elemDelim          strPtrByte
 	compDelim          strPtrByte
 	releaseChar        strPtrByte
+	segPrefix          strPtrByte
 	runeBegin, runeEnd int
 	segCount           int
 	rawSeg             RawSeg
@@ -159,6 +160,13 @@ func (r *NonValidatingReader) Read() (RawSeg, error) {
 	// Drop that '\r' as well.
 	if *r.segDelim.strptr == "\n" && bytes.HasSuffix(noSegDelim, crBytes) {
 		noSegDelim = noSegDelim[:len(noSegDelim)-utf8.RuneLen('\r')]
+	}
+	if len(r.segPrefix.b) != 0 {
+		if !bytes.HasPrefix(noSegDelim, r.segPrefix.b) {
+			return RawSeg{}, ErrInvalidEDI(fmt.Sprintf(
+				"cannot read segment, expected prefix %q", *r.segPrefix.strptr))
+		}
+		noSegDelim = noSegDelim[len(r.segPrefix.b):]
 	}
 	for i, elem := range strs.ByteSplitWithEsc(noSegDelim, r.elemDelim.b, r.releaseChar.b, defaultElemsPerSeg) {
 		if len(r.compDelim.b) == 0 {
@@ -214,6 +222,7 @@ func NewNonValidatingReader(r io.Reader, decl *FileDecl) *NonValidatingReader {
 	elemDelim := newStrPtrByte(&decl.ElemDelim)
 	compDelim := newStrPtrByte(decl.CompDelim)
 	releaseChar := newStrPtrByte(decl.ReleaseChar)
+	segPrefix := newStrPtrByte(decl.SegPrefix)
 	if decl.IgnoreCRLF {
 		r = ios.NewBytesReplacingReader(r, crBytes, nil)
 		r = ios.NewBytesReplacingReader(r, lfBytes, nil)
@@ -225,6 +234,7 @@ func NewNonValidatingReader(r io.Reader, decl *FileDecl) *NonValidatingReader {
 		elemDelim:   elemDelim,
 		compDelim:   compDelim,
 		releaseChar: releaseChar,
+		segPrefix:   segPrefix,
 		runeBegin:   1,
 		runeEnd:     1,
 		segCount:    0,

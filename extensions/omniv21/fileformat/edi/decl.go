@@ -6,6 +6,7 @@ type FileDecl struct {
 	ElemDelim   string     `json:"element_delimiter,omitempty"`
 	CompDelim   *string    `json:"component_delimiter,omitempty"`
 	ReleaseChar *string    `json:"release_character,omitempty"`
+	SegPrefix   *string    `json:"segment_prefix,omitempty"`
 	IgnoreCRLF  bool       `json:"ignore_crlf,omitempty"`
 	SegDecls    []*SegDecl `json:"segment_declarations,omitempty"`
 }
