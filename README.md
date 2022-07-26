@@ -9,6 +9,8 @@ Omniparser is a native Golang ETL parser that ingests input data of various form
 XML, EDI/X12/EDIFACT, JSON**, and custom formats) in streaming fashion and transforms data into desired JSON output
 based on a schema written in JSON.
 
+**Please kindly consider sponsoring the project to fund future development and issue resolutions**: https://github.com/sponsors/jf-tech
+
 Min Golang Version: 1.14
 
 ## Documentation
