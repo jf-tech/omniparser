@@ -148,7 +148,7 @@ as an array, so the result for `"uv_index"` in the output JSON would look like t
 "uv_index": [
     "12",
     "4",
-	"6"
+    "6"
 ],
 ```
 
@@ -180,7 +180,7 @@ isn't needed so `javascript` is perfectly sufficient.)
 
 Consider the following example:
 ```
-"full_name": { "xpath": "./personal_info", "custom_func" {
+"full_name": { "xpath": "./personal_info", "custom_func": {
     "name": "javascript_with_context",
     "args": [
         { "const": "var n = JSON.parse(_node); n.['Last Name'] + ', ' + n.['First Name']" }
