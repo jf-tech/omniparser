@@ -1,0 +1,17 @@
+{
+	"Stack": [
+		{
+			"RecDecl": "#root",
+			"RecNode": "#root",
+			"CurChild": 0,
+			"Occurred": 0
+		},
+		{
+			"RecDecl": "A",
+			"RecNode": "A",
+			"CurChild": 0,
+			"Occurred": 1
+		}
+	],
+	"Target": "A"
+}
