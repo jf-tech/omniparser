@@ -55,7 +55,7 @@ const (
                     }
                 }
             },
-            "required": [],
+            "required": [], "$comment": "yes, 'name' is actually optional",
             "additionalProperties": false
         },
         "envelope_header_footer_based": {
@@ -84,7 +84,7 @@ const (
                     }
                 }
             },
-            "required": [ "header" ],
+            "required": [ "header" ], "$comment": "yes, 'name' is actually optional",
             "additionalProperties": false
         },
         "column_type": {
