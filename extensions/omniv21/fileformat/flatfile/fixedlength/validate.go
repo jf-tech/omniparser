@@ -77,6 +77,11 @@ func (ctx *validateCtx) validateEnvelopeDecl(fqdn string, envelopeDecl *Envelope
 }
 
 func (ctx *validateCtx) validateColumnDecl(fqdn string, colDecl *ColumnDecl) (err error) {
+	if colDecl.LineIndex != nil && colDecl.LinePattern != nil {
+		return fmt.Errorf(
+			"envelope '%s' column '%s' cannot have both `line_index` and `line_pattern` specified at the same time",
+			fqdn, colDecl.Name)
+	}
 	if colDecl.LinePattern != nil {
 		if colDecl.linePatternRegexp, err = caches.GetRegex(*colDecl.LinePattern); err != nil {
 			return fmt.Errorf(
