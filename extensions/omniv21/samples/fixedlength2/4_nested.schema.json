@@ -1,0 +1,57 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "fixedlength2"
+    },
+    "file_declaration": {
+        "envelopes": [
+            {
+                "name": "HDR", "header": "^HDR", "min": 1, "max": 1,
+                "child_envelopes": [
+                    {
+                        "name": "GRH", "header": "^GRH",
+                        "child_envelopes": [
+                            {
+                                "name": "NWR", "header": "^NWR", "is_target": true,
+                                "columns": [ { "name": "title", "start_pos": 20, "length": 60 } ],
+                                "child_envelopes": [
+                                    {
+                                        "name": "SPU", "header": "^SPU",
+                                        "columns": [ { "name": "publisher_name", "start_pos": 31, "length": 45 } ],
+                                        "child_envelopes": [
+                                            {
+                                                "name": "SPT", "header": "^SPT",
+                                                "columns": [ { "name": "terrory_id", "start_pos": 51, "length": 4 } ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "SWR", "header": "^SWR",
+                                        "columns": [
+                                            { "name": "writer_id", "start_pos": 20, "length": 9 },
+                                            { "name": "last_name", "start_pos": 29, "length": 45 }
+                                        ],
+                                        "child_envelopes": [
+                                            {
+                                                "name": "SWT", "header": "^SWT",
+                                                "columns": [ { "name": "terrory_id", "start_pos": 45, "length": 4 } ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            { "name": "GRT", "header": "^GRT" }
+                        ]
+                    },
+                    { "name": "TRL", "header": "^TRL" }
+                ]
+            }
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "custom_func": {
+                "name": "javascript_with_context",
+                "args": [ { "const": "JSON.parse(_node);" } ]
+        }}
+    }
+}

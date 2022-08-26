@@ -1,0 +1,40 @@
+[
+	{
+		"RawRecord": "{\"destination_country\":\"US\",\"event_city\":\"HAPPYVALLEY                   \",\"event_date\":\"20190826\",\"event_state\":\"FL\",\"event_time\":\"124704  \",\"event_timezone\":\"EST \",\"guaranteed_delivery_date\":\"20190827\",\"scan_facility_zip\":\"54321      \",\"tracking_number_h001\":\"W841206858                    \",\"tracking_number_h002_cn\":\"100000103732\"}",
+		"RawRecordHash": "0c5ddcef-aa71-30dd-bf70-829ce9b92d2b",
+		"TransformedRecord": {
+			"destination_country": "US",
+			"events": [
+				{
+					"event_date": "2019-08-26T12:47:04-05:00",
+					"location": {
+						"city": "HAPPYVALLEY",
+						"state": "FL",
+						"zip": "54321"
+					}
+				}
+			],
+			"guaranteed_delivery_date": "2019-08-27T00:00:00",
+			"tracking_number": "100000103732"
+		}
+	},
+	{
+		"RawRecord": "{\"destination_country\":\"US\",\"event_city\":\"MAGIC BEACH                   \",\"event_date\":\"20190826\",\"event_state\":\"FL\",\"event_time\":\"124704  \",\"event_timezone\":\"EST \",\"guaranteed_delivery_date\":\"20190827\",\"scan_facility_zip\":\"12345      \",\"tracking_number_h001\":\"W938003272                    \",\"tracking_number_h002_cn\":\"\"}",
+		"RawRecordHash": "592afde9-d28e-3751-92bf-15e35c7af534",
+		"TransformedRecord": {
+			"destination_country": "US",
+			"events": [
+				{
+					"event_date": "2019-08-26T12:47:04-05:00",
+					"location": {
+						"city": "MAGIC BEACH",
+						"state": "FL",
+						"zip": "12345"
+					}
+				}
+			],
+			"guaranteed_delivery_date": "2019-08-27T00:00:00",
+			"tracking_number": "W938003272"
+		}
+	}
+]

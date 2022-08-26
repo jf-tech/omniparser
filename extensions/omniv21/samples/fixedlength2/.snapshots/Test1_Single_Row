@@ -1,0 +1,26 @@
+[
+	{
+		"RawRecord": "{\"DATE\":\"2019/01/31T12:34:56-0800\",\"HIGH_TEMP_C\":\"10.5\",\"LAT\":\" 37.7749\",\"LONG\":\"122.4194\",\"LOW_TEMP_F\":\"30.2\",\"WIND_DIR\":\" N\",\"WIND_SPEED_KMH\":\"31\"}",
+		"RawRecordHash": "96a5ae79-8a86-366a-aa48-434653bcf4f7",
+		"TransformedRecord": {
+			"date": "2019-01-31T12:34:56-08:00",
+			"high_temperature_fahrenheit": 50.9,
+			"latitude": 37.7749,
+			"longitude": 122.4194,
+			"low_temperature_fahrenheit": 30.2,
+			"wind": "North 19.26 mph"
+		}
+	},
+	{
+		"RawRecord": "{\"DATE\":\"2020/07/31T01:23:45-0500\",\"HIGH_TEMP_C\":\"  39\",\"LAT\":\" 32.7767\",\"LONG\":\" 96.7970\",\"LOW_TEMP_F\":\"  95\",\"WIND_DIR\":\"SE\",\"WIND_SPEED_KMH\":\"31\"}",
+		"RawRecordHash": "a700355d-f877-3971-85d1-bc6ce9a4f094",
+		"TransformedRecord": {
+			"date": "2020-07-31T01:23:45-05:00",
+			"high_temperature_fahrenheit": 102.2,
+			"latitude": 32.7767,
+			"longitude": 96.797,
+			"low_temperature_fahrenheit": 95,
+			"wind": "South East 19.26 mph"
+		}
+	}
+]
