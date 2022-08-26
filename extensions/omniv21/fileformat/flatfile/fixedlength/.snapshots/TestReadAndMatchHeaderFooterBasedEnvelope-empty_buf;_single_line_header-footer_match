@@ -1,0 +1,35 @@
+{
+	"Children": [
+		{
+			"Children": [
+				{
+					"Children": null,
+					"Data": "1",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": null,
+					"Parent": "(ElementNode C)",
+					"PrevSibling": null,
+					"Type": "TextNode"
+				}
+			],
+			"Data": "C",
+			"FirstChild": "(TextNode '1')",
+			"FormatSpecific": null,
+			"LastChild": "(TextNode '1')",
+			"NextSibling": null,
+			"Parent": "(ElementNode E)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		}
+	],
+	"Data": "E",
+	"FirstChild": "(ElementNode C)",
+	"FormatSpecific": null,
+	"LastChild": "(ElementNode C)",
+	"NextSibling": null,
+	"Parent": null,
+	"PrevSibling": null,
+	"Type": "ElementNode"
+}
