@@ -1,0 +1,58 @@
+{
+	"Children": [
+		{
+			"Children": [
+				{
+					"Children": null,
+					"Data": "world",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": null,
+					"Parent": "(ElementNode W)",
+					"PrevSibling": null,
+					"Type": "TextNode"
+				}
+			],
+			"Data": "W",
+			"FirstChild": "(TextNode 'world')",
+			"FormatSpecific": null,
+			"LastChild": "(TextNode 'world')",
+			"NextSibling": "(ElementNode C)",
+			"Parent": "(ElementNode test-envelope)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		},
+		{
+			"Children": [
+				{
+					"Children": null,
+					"Data": "c",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": null,
+					"Parent": "(ElementNode C)",
+					"PrevSibling": null,
+					"Type": "TextNode"
+				}
+			],
+			"Data": "C",
+			"FirstChild": "(TextNode 'c')",
+			"FormatSpecific": null,
+			"LastChild": "(TextNode 'c')",
+			"NextSibling": null,
+			"Parent": "(ElementNode test-envelope)",
+			"PrevSibling": "(ElementNode W)",
+			"Type": "ElementNode"
+		}
+	],
+	"Data": "test-envelope",
+	"FirstChild": "(ElementNode W)",
+	"FormatSpecific": null,
+	"LastChild": "(ElementNode C)",
+	"NextSibling": null,
+	"Parent": null,
+	"PrevSibling": null,
+	"Type": "ElementNode"
+}

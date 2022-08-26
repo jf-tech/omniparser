@@ -1,0 +1,58 @@
+{
+	"Children": [
+		{
+			"Children": [
+				{
+					"Children": null,
+					"Data": "1",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": null,
+					"Parent": "(ElementNode C1)",
+					"PrevSibling": null,
+					"Type": "TextNode"
+				}
+			],
+			"Data": "C1",
+			"FirstChild": "(TextNode '1')",
+			"FormatSpecific": null,
+			"LastChild": "(TextNode '1')",
+			"NextSibling": "(ElementNode C2)",
+			"Parent": "(ElementNode E)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		},
+		{
+			"Children": [
+				{
+					"Children": null,
+					"Data": "2",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": null,
+					"Parent": "(ElementNode C2)",
+					"PrevSibling": null,
+					"Type": "TextNode"
+				}
+			],
+			"Data": "C2",
+			"FirstChild": "(TextNode '2')",
+			"FormatSpecific": null,
+			"LastChild": "(TextNode '2')",
+			"NextSibling": null,
+			"Parent": "(ElementNode E)",
+			"PrevSibling": "(ElementNode C1)",
+			"Type": "ElementNode"
+		}
+	],
+	"Data": "E",
+	"FirstChild": "(ElementNode C1)",
+	"FormatSpecific": null,
+	"LastChild": "(ElementNode C2)",
+	"NextSibling": null,
+	"Parent": null,
+	"PrevSibling": null,
+	"Type": "ElementNode"
+}

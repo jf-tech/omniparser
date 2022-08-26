@@ -1,0 +1,39 @@
+{
+	"file_declaration": {
+		"envelopes": [
+			{
+				"name": "e1",
+				"type": "envelope_group",
+				"is_target": true,
+				"min": 1,
+				"max": 1,
+				"child_envelopes": [
+					{
+						"name": "e2",
+						"max": 5,
+						"columns": [
+							{
+								"name": "c1",
+								"start_pos": 1,
+								"length": 3
+							}
+						]
+					},
+					{
+						"name": "e2",
+						"header": "^ABC$",
+						"columns": [
+							{
+								"name": "c2",
+								"start_pos": 2,
+								"length": 5,
+								"line_pattern": "^H00"
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	"XPath": ".[c1 != 'skip']"
+}
