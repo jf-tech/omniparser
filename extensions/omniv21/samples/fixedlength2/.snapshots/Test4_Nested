@@ -1,0 +1,90 @@
+[
+	{
+		"RawRecord": "{\"SPU\":{\"SPT\":{\"terrory_id\":\"2136\"},\"publisher_name\":\"Publisher 10                         E 000000\"},\"title\":\"Song 1 - 1 Pub1/ 0 Wrt                                      \"}",
+		"RawRecordHash": "2fe6aabf-2ddf-3fd6-ae74-f595c529f9cb",
+		"TransformedRecord": {
+			"SPU": {
+				"SPT": {
+					"terrory_id": "2136"
+				},
+				"publisher_name": "Publisher 10                         E 000000"
+			},
+			"title": "Song 1 - 1 Pub1/ 0 Wrt                                      "
+		}
+	},
+	{
+		"RawRecord": "{\"SPU\":[{\"publisher_name\":\"Publisher 20                         E 000000\"},{\"SPT\":{\"terrory_id\":\"2136\"},\"publisher_name\":\"SAMPLE MEDIA MUSIC                   AM000000\"}],\"title\":\"Song 2 - 1 Pub2/ 0 Wrt // 1 SPU-AM                          \"}",
+		"RawRecordHash": "11af21e8-872e-3b9c-94ea-608bb1e4f541",
+		"TransformedRecord": {
+			"SPU": [
+				{
+					"publisher_name": "Publisher 20                         E 000000"
+				},
+				{
+					"SPT": {
+						"terrory_id": "2136"
+					},
+					"publisher_name": "SAMPLE MEDIA MUSIC                   AM000000"
+				}
+			],
+			"title": "Song 2 - 1 Pub2/ 0 Wrt // 1 SPU-AM                          "
+		}
+	},
+	{
+		"RawRecord": "{\"SPU\":{\"SPT\":{\"terrory_id\":\"2136\"},\"publisher_name\":\"Publisher 10                         E 000000\"},\"SWR\":{\"SWT\":{\"terrory_id\":\"2136\"},\"last_name\":\"Writer 100                                   \",\"writer_id\":\"Wrt100   \"},\"title\":\"Song 4 - 1 Pub1/ 1 Wrt1                                     \"}",
+		"RawRecordHash": "48b79f3a-6aca-3e49-b30d-ccf79af3766d",
+		"TransformedRecord": {
+			"SPU": {
+				"SPT": {
+					"terrory_id": "2136"
+				},
+				"publisher_name": "Publisher 10                         E 000000"
+			},
+			"SWR": {
+				"SWT": {
+					"terrory_id": "2136"
+				},
+				"last_name": "Writer 100                                   ",
+				"writer_id": "Wrt100   "
+			},
+			"title": "Song 4 - 1 Pub1/ 1 Wrt1                                     "
+		}
+	},
+	{
+		"RawRecord": "{\"SPU\":[{\"SPT\":{\"terrory_id\":\"2136\"},\"publisher_name\":\"Publisher 10                         E 000000\"},{\"SPT\":{\"terrory_id\":\"2136\"},\"publisher_name\":\"Publisher 50                         E 000000\"}],\"SWR\":[{\"SWT\":{\"terrory_id\":\"2136\"},\"last_name\":\"Writer 100                                   \",\"writer_id\":\"Wrt100   \"},{\"SWT\":{\"terrory_id\":\"2136\"},\"last_name\":\"Writer 500                                   \",\"writer_id\":\"Wrt500   \"}],\"title\":\"Song 5 - 2 Pub1,2 / 2 Wrt - 1 new 1 old                     \"}",
+		"RawRecordHash": "984402a3-3025-3617-9f5c-f6e0b96916a1",
+		"TransformedRecord": {
+			"SPU": [
+				{
+					"SPT": {
+						"terrory_id": "2136"
+					},
+					"publisher_name": "Publisher 10                         E 000000"
+				},
+				{
+					"SPT": {
+						"terrory_id": "2136"
+					},
+					"publisher_name": "Publisher 50                         E 000000"
+				}
+			],
+			"SWR": [
+				{
+					"SWT": {
+						"terrory_id": "2136"
+					},
+					"last_name": "Writer 100                                   ",
+					"writer_id": "Wrt100   "
+				},
+				{
+					"SWT": {
+						"terrory_id": "2136"
+					},
+					"last_name": "Writer 500                                   ",
+					"writer_id": "Wrt500   "
+				}
+			],
+			"title": "Song 5 - 2 Pub1,2 / 2 Wrt - 1 new 1 old                     "
+		}
+	}
+]

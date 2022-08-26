@@ -1,0 +1,78 @@
+[
+	{
+		"RawRecord": "{\"city_name_addressee\":\"NIEUWEGEIN\",\"country_code_addressee\":\"NE\",\"date_observation\":\"20191105\",\"observation_type\":\"J\",\"postal_code_addressee\":\"3436JA\",\"reason_for_observation\":\"10\",\"time_observation\":\"043523\",\"tracking_number\":\"3SDMNN0129791\",\"weight_in_grams\":\"19780\"}",
+		"RawRecordHash": "a287788f-785a-3cd0-bbd1-5fe8c6b07186",
+		"TransformedRecord": {
+			"carrier": "postnl",
+			"events": [
+				{
+					"event_date": "2019-11-05T04:35:23",
+					"location": {
+						"country": "NE",
+						"zip": "0000FF"
+					}
+				}
+			],
+			"tracking_number": "3SDMNN0129791",
+			"weight_in_kg": 19.78
+		}
+	},
+	{
+		"RawRecord": "{\"city_name_addressee\":\"'S-HERTOGENBOSCH\",\"country_code_addressee\":\"NL\",\"date_observation\":\"20191105\",\"delivery_date\":\"20160825\",\"observation_type\":\"M\",\"postal_code_addressee\":\"5211EK\",\"reason_for_observation\":\"02\",\"time_observation\":\"033000\",\"tracking_number\":\"3SDMNN0129552\",\"weight_in_grams\":\"19780\"}",
+		"RawRecordHash": "abc1fab4-7284-3363-8d29-cae063c76310",
+		"TransformedRecord": {
+			"carrier": "postnl",
+			"estimated_delivery_date": "2016-08-25T00:00:00",
+			"events": [
+				{
+					"event_date": "2019-11-05T03:30:00",
+					"location": {
+						"city": "'S-HERTOGENBOSCH",
+						"country": "NL",
+						"zip": "5211EK"
+					}
+				}
+			],
+			"tracking_number": "3SDMNN0129552",
+			"weight_in_kg": 19.78
+		}
+	},
+	{
+		"RawRecord": "{\"city_name_addressee\":\"RENKUM\",\"country_code_addressee\":\"NE\",\"date_observation\":\"20191105\",\"delivery_date\":\"20160825\",\"observation_type\":\"M\",\"postal_code_addressee\":\"6871ZS\",\"reason_for_observation\":\"02\",\"time_observation\":\"033000\",\"tracking_number\":\"3SDMNN0129857\",\"weight_in_grams\":\"1234\"}",
+		"RawRecordHash": "87021dbf-fc09-3c4c-bdb7-d8e55dab6457",
+		"TransformedRecord": {
+			"carrier": "postnl",
+			"estimated_delivery_date": "2016-08-25T00:00:00",
+			"events": [
+				{
+					"event_date": "2019-11-05T03:30:00",
+					"location": {
+						"country": "NE",
+						"zip": "0000FF"
+					}
+				}
+			],
+			"tracking_number": "3SDMNN0129857",
+			"weight_in_kg": 1.23
+		}
+	},
+	{
+		"RawRecord": "{\"city_name_addressee\":\"ROTTERDAM\",\"country_code_addressee\":\"NL\",\"date_observation\":\"20191105\",\"observation_type\":\"M\",\"postal_code_addressee\":\"3043ME\",\"reason_for_observation\":\"02\",\"time_observation\":\"033000\",\"tracking_number\":\"3SDMNN0129501\"}",
+		"RawRecordHash": "c03f86aa-65cf-3255-9ad2-6c57b22f55a8",
+		"TransformedRecord": {
+			"carrier": "postnl",
+			"events": [
+				{
+					"event_date": "2019-11-05T03:30:00",
+					"location": {
+						"city": "ROTTERDAM",
+						"country": "NL",
+						"zip": "3043ME"
+					}
+				}
+			],
+			"tracking_number": "3SDMNN0129501",
+			"weight_in_kg": 0
+		}
+	}
+]
