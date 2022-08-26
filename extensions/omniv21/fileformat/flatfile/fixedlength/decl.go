@@ -13,18 +13,22 @@ import (
 // ColumnDecl describes a column of an envelope.
 type ColumnDecl struct {
 	Name        string  `json:"name,omitempty"`
-	StartPos    int     `json:"start_pos,omitempty"` // 1-based. and rune-based.
-	Length      int     `json:"length,omitempty"`    // rune-based length.
+	StartPos    int     `json:"start_pos,omitempty"`  // 1-based. and rune-based.
+	Length      int     `json:"length,omitempty"`     // rune-based length.
+	LineIndex   *int    `json:"line_index,omitempty"` // 1-based.
 	LinePattern *string `json:"line_pattern,omitempty"`
 
 	linePatternRegexp *regexp.Regexp
 }
 
-func (c *ColumnDecl) lineMatch(line []byte) bool {
-	if c.linePatternRegexp == nil {
-		return true
+func (c *ColumnDecl) lineMatch(lineIndex int, line []byte) bool {
+	if c.LineIndex != nil {
+		return *c.LineIndex == lineIndex+1 // c.LineIndex is 1 based.
 	}
-	return c.linePatternRegexp.Match(line)
+	if c.linePatternRegexp != nil {
+		return c.linePatternRegexp.Match(line)
+	}
+	return true
 }
 
 func (c *ColumnDecl) lineToColumnValue(line []byte) string {
@@ -117,6 +121,9 @@ func (e *EnvelopeDecl) ChildDecls() []flatfile.RecDecl {
 }
 
 func (e *EnvelopeDecl) rowsBased() bool {
+	if e.Group() {
+		panic("envelope_group is neither rows based nor header/footer based")
+	}
 	// for header/footer based envelope, header must be specified; otherwise, it's rows based.
 	return e.Header == nil
 }

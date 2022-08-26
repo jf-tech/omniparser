@@ -132,16 +132,18 @@ func (r *HierarchyReader) Release(n *idr.Node) {
 
 // readRec tries to read/match unprocessed data against the passed-in record decl.
 func (r *HierarchyReader) readRec(recDecl RecDecl) (*idr.Node, error) {
-	// If the decl is a solid non-group decl, then we will ask RecReader to match and create IDR.
-	// If the decl is a group, then we'll only ask RecReader to match but not creating IDR - instead
-	// we'll create an IDR node for the group decl here.
+	// If the decl is a Group(), the matching should be using the recursive algorithm
+	// to match the first-heir-in-line non-group descendent decl. If matched, the returned
+	// IDR node should be of this group node. This logic is similar to the EDI segment
+	// matching logic, essentially a greedy algo:
+	// https://github.com/jf-tech/omniparser/blob/6802ed98d0e5325a6908ebbc6d2da0e4655ed125/extensions/omniv21/fileformat/edi/seg.go#L87
 	nonGroupDecl := recDecl
 	for nonGroupDecl.Group() && len(nonGroupDecl.ChildDecls()) > 0 {
 		nonGroupDecl = nonGroupDecl.ChildDecls()[0]
 	}
 	if nonGroupDecl.Group() {
-		// We must have a non-group solid record to perform the match; if not, it's a no
-		// match, thus returning nil for IDR and nil for error.
+		// We must have a non-group solid record to perform the match; if not, return
+		// nil for IDR, indicating no match, and nil for error.
 		return nil, nil
 	}
 	// Now we have a solid record to perform match, let's call RecReader to do that.

@@ -12,11 +12,13 @@ import (
 )
 
 func TestColumnDecl_LineMatch(t *testing.T) {
-	assert.True(t, (&ColumnDecl{}).lineMatch([]byte("test")))
+	assert.True(t, (&ColumnDecl{}).lineMatch(0, []byte("test")))
+	assert.False(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(0, []byte("test")))
+	assert.True(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(1, []byte("test")))
 	assert.False(t, (&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC.*$")}).
-		lineMatch([]byte("test")))
+		lineMatch(0, []byte("test")))
 	assert.True(t, (&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC.*$")}).
-		lineMatch([]byte("ABCDEFG")))
+		lineMatch(0, []byte("ABCDEFG")))
 }
 
 func TestColumnDecl_LineToColumnValue(t *testing.T) {
@@ -64,6 +66,9 @@ func TestEnvelopeDecl(t *testing.T) {
 	assert.Equal(t, e.childRecDecls, e.ChildDecls())
 
 	// rowsBased()
+	assert.PanicsWithValue(t, "envelope_group is neither rows based nor header/footer based",
+		func() { e.rowsBased() })
+	e.Type = strs.StrPtr(typeEnvelope)
 	assert.True(t, e.rowsBased())
 	e.Header = strs.StrPtr("^ABC$")
 	assert.False(t, e.rowsBased())
