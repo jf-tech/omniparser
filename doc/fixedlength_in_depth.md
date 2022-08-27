@@ -1,4 +1,11 @@
-# Fixed-Length Schema in Depth
+# Fixed-Length Schema in Depth (**DEPRECATED**)
+
+> Note: this version of `fixed-length` schema has been deprecated and superseded by
+> [`fixedlength2`](./fixedlength2_in_depth.md) schema. Its functionality and support
+> will continue but (incredibly easy)
+> [migration to `fixedlength2`](./fixedlength2_in_depth.md#migration-from-fixed-length-schemas)
+> is strongly recommended.
+>
 
 Fixed-length (sometimes also called fixed-width) schema has 3 parts: `parser_settings`, `file_declaration`,
 and `transform_declarations`. We've covered `parser_settings` in [Getting Started](./gettingstarted.md);

@@ -24,7 +24,7 @@ writing. Learn the concept and tricks in depth.
 - [Use of `custom_func`, Specially `javascript`](./doc/use_of_custom_funcs.md): An in depth look of how `custom_func`
 is used, specially the all mighty `javascript` (and `javascript_with_context`).
 - [CSV Schema in Depth](./doc/csv_in_depth.md): everything about schemas for CSV input.
-- [Fixed-Length Schema in Depth](./doc/fixedlength_in_depth.md): everything about schemas for fixed-length (e.g. TXT)
+- [Fixed-Length Schema in Depth](./doc/fixedlength2_in_depth.md): everything about schemas for fixed-length (e.g. TXT)
 input
 - [JSON/XML Schema in Depth](./doc/json_xml_in_depth.md): everything about schemas for JSON or XML input.
 - [EDI Schema in Depth](./doc/edi_in_depth.md): everything about schemas for EDI input.
@@ -32,11 +32,11 @@ input
 your code.
 
 References:
-- [Custom Functions](./doc/customfuncs.md): a complete reference of all built-in custom functions. 
+- [Custom Functions](./doc/customfuncs.md): a complete reference of all built-in custom functions.
 
 Examples:
 - [CSV Examples](extensions/omniv21/samples/csv)
-- [Fixed-Length Examples](extensions/omniv21/samples/fixedlength)
+- [Fixed-Length Examples](extensions/omniv21/samples/fixedlength2)
 - [JSON Examples](extensions/omniv21/samples/json)
 - [XML Examples](extensions/omniv21/samples/xml).
 - [EDI Examples](extensions/omniv21/samples/edi).
@@ -67,6 +67,7 @@ situations.
 - Golang 1.14 or later.
 
 ## Recent Major Feature Additions/Changes
+- 2022/8: Added `fixedlength2` file format that supersedes the original `fixed-length` format with support of hierarchical and nested envelopes.
 - 1.0.0 Released!
 - Added `Transform.RawRecord()` for caller of omniparser to access the raw ingested record.
 - Deprecated `custom_parse` in favor of `custom_func` (`custom_parse` is still usable for
@@ -78,16 +79,16 @@ back-compatibility, it is just removed from all public docs and samples).
     - Upgrade omni schema version to `omni.2.1` due a number of incompatible schema changes:
         - `'result_type'` -> `'type'`
         - `'ignore_error_and_return_empty_str` -> `'ignore_error'`
-        - `'keep_leading_trailing_space'` -> `'no_trim'` 
+        - `'keep_leading_trailing_space'` -> `'no_trim'`
     - Changed how we handle custom functions: previously we always use strings as in param type as well as result param
     type. Not anymore, all types are supported for custom function in and out params.
     - Changed the way how we package custom functions for extensions: previously we collect custom functions from all
     extensions and then pass all of them to the extension that is used; This feels weird, now changed to only the custom
     functions included in a particular extension are used in that extension.
-    - Deprecated/removed most of the custom functions in favor of using 'javascript'. 
+    - Deprecated/removed most of the custom functions in favor of using 'javascript'.
     - A number of package renaming.
 - Added CSV file format support in omniv2 handler.
-- Introduced IDR node cache for allocation recycling. 
+- Introduced IDR node cache for allocation recycling.
 - Introduced [IDR](./doc/idr.md) for in-memory data representation.
 - Added trie based high performance `times.SmartParse`.
 - Command line interface (one-off `transform` cmd or long-running http `server` mode).
