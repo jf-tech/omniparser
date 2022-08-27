@@ -21,7 +21,7 @@
                                         "child_envelopes": [
                                             {
                                                 "name": "SPT", "header": "^SPT",
-                                                "columns": [ { "name": "terrory_id", "start_pos": 51, "length": 4 } ]
+                                                "columns": [ { "name": "territory_id", "start_pos": 51, "length": 4 } ]
                                             }
                                         ]
                                     },
@@ -34,7 +34,7 @@
                                         "child_envelopes": [
                                             {
                                                 "name": "SWT", "header": "^SWT",
-                                                "columns": [ { "name": "terrory_id", "start_pos": 45, "length": 4 } ]
+                                                "columns": [ { "name": "territory_id", "start_pos": 45, "length": 4 } ]
                                             }
                                         ]
                                     }
