@@ -1,4 +1,4 @@
-- [Fixed-Length (`fixedlength2`) Schema in Depth](#fixed-length---fixed-ength2---schema-in-depth)
+- [Fixed-Length (`fixedlength2`) Schema in Depth](#fixed-length---fixedlength2---schema-in-depth)
   * [`envelope` Basics](#-envelope--basics)
   * [`envelope`s Hierarchy](#-envelope-s-hierarchy)
   * [`file_declaration` for `fixedlength2`](#-file-declaration--for--fixedlength2-)
