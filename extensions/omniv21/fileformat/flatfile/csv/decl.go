@@ -14,6 +14,10 @@ type ColumnDecl struct {
 	Name string `json:"name,omitempty"`
 }
 
+// Design note: given currently ColumnDecl contains only Name field, we could've simply
+// change RecordDecl.Columns into a []string. But in the future, if we ever need to add
+// anything to a column decl, we'd have to introduce a breaking schema change.
+
 const (
 	typeRecord = "record"
 	typeGroup  = "record_group"
