@@ -23,6 +23,11 @@ const (
 	typeGroup  = "record_group"
 )
 
+// RecordDecl describes an record of a csv/delimited input.
+// If Rows/Header/Footer are all nil, then it defaults to Rows = 1.
+// If Rows specified, then Header/Footer must be nil. (JSON schema validation will ensure this.)
+// If Header is specified, Rows must be nil. (JSON schema validation will ensure this.)
+// Footer is optional; If not specified, Header will be used for a single-line record matching.
 type RecordDecl struct {
 	Name     string        `json:"name,omitempty"`
 	Rows     *int          `json:"rows,omitempty"`
@@ -126,7 +131,7 @@ func toFlatFileRecDecls(rs []*RecordDecl) []flatfile.RecDecl {
 	return ret
 }
 
-// FileDecl describes CSV specific schema settings for omniparser reader.
+// FileDecl describes csv/delimited schema `file_declaration` setting.
 type FileDecl struct {
 	Delimiter           string        `json:"delimiter,omitempty"`
 	ReplaceDoubleQuotes bool          `json:"replace_double_quotes,omitempty"`
