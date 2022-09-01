@@ -76,7 +76,7 @@ type EnvelopeDecl struct {
 	Columns  []*ColumnDecl   `json:"columns,omitempty"`
 	Children []*EnvelopeDecl `json:"child_envelopes,omitempty"`
 
-	fqdn          string // fullly hierarchical name to the envelope.
+	fqdn          string // fully hierarchical name to the envelope.
 	childRecDecls []flatfile.RecDecl
 	headerRegexp  *regexp.Regexp
 	footerRegexp  *regexp.Regexp
