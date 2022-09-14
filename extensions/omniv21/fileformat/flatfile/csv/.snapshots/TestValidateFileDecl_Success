@@ -1,0 +1,23 @@
+([]*csv.ColumnDecl) (len=3) {
+  (*csv.ColumnDecl)({
+    Name: (string) (len=2) "c1",
+    Index: (*int)(1),
+    LineIndex: (*int)(1),
+    LinePattern: (*string)(<nil>),
+    linePatternRegexp: (*regexp.Regexp)(<nil>)
+  }),
+  (*csv.ColumnDecl)({
+    Name: (string) (len=2) "c2",
+    Index: (*int)(3),
+    LineIndex: (*int)(<nil>),
+    LinePattern: (*string)(<nil>),
+    linePatternRegexp: (*regexp.Regexp)(<nil>)
+  }),
+  (*csv.ColumnDecl)({
+    Name: (string) (len=2) "c3",
+    Index: (*int)(4),
+    LineIndex: (*int)(<nil>),
+    LinePattern: (*string)((len=3) "^C$"),
+    linePatternRegexp: (*regexp.Regexp)(^C$)
+  })
+}
