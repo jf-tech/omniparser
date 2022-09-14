@@ -11,6 +11,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestColumnDecl_LineMatch(t *testing.T) {
+	assert.True(t, (&ColumnDecl{}).lineMatch(0, line{}))
+	assert.False(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(0, line{}))
+	assert.True(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(1, line{}))
+	assert.False(t, (&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC.*$")}).
+		lineMatch(0, line{raw: "1234567"}))
+	assert.True(t, (&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC.*$")}).
+		lineMatch(0, line{raw: "ABCDEFG"}))
+}
+
+func TestColumnDecl_LineToColumnValue(t *testing.T) {
+	assert.Equal(t, "", (&ColumnDecl{Index: testlib.IntPtr(2)}).lineToColumnValue(
+		line{record: []string{"1"}})) // index out of range
+	assert.Equal(t, "", (&ColumnDecl{Index: testlib.IntPtr(0)}).lineToColumnValue(
+		line{record: []string{"1"}})) // index out of range
+	assert.Equal(t, "9", (&ColumnDecl{Index: testlib.IntPtr(5)}).lineToColumnValue(
+		line{record: []string{"1", "3", "5", "7", "9", "11"}})) // in range
+}
+
 func TestRecordDecl(t *testing.T) {
 	// DeclName()
 	r := &RecordDecl{Name: "r1"}
