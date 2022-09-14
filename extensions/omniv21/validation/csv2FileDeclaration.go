@@ -84,7 +84,10 @@ const (
             "items": {
                 "type": "object",
                 "properties": {
-                    "name": { "type": "string", "minLength": 1 }
+                    "name": { "type": "string", "minLength": 1 },
+                    "index": { "type": "integer", "minimum": 1 },
+                    "line_index": { "type": "integer", "minimum": 1 },
+                    "line_pattern": { "type": "string", "minLength": 1 }
                 },
                 "required": [ "name" ],
                 "additionalProperties": false

@@ -3,6 +3,7 @@ package csv
 import (
 	"testing"
 
+	"github.com/bradleyjkemp/cupaloy"
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/jf-tech/go-corelib/testlib"
 	"github.com/stretchr/testify/assert"
@@ -99,10 +100,36 @@ func TestValidateFileDecl_MinGreaterThanMax(t *testing.T) {
 	assert.Equal(t, `record/record_group 'A/B' has 'min' value 2 > 'max' value 1`, err.Error())
 }
 
+func TestValidateFileDecl_ColumnLineIndexAndLinePatternSameTime(t *testing.T) {
+	err := (&validateCtx{}).validateFileDecl(&FileDecl{
+		Records: []*RecordDecl{
+			{Name: "A", Columns: []*ColumnDecl{
+				{Name: "c", LineIndex: testlib.IntPtr(2), LinePattern: strs.StrPtr(".")}}},
+		},
+	})
+	assert.Error(t, err)
+	assert.Equal(t,
+		"record 'A' column 'c' cannot have both `line_index` and `line_pattern` specified at the same time",
+		err.Error())
+}
+
+func TestValidateFileDecl_InvalidColumnLinePattern(t *testing.T) {
+	err := (&validateCtx{}).validateFileDecl(&FileDecl{
+		Records: []*RecordDecl{
+			{Name: "A", Columns: []*ColumnDecl{
+				{Name: "c", LinePattern: strs.StrPtr("[invalid")}}},
+		},
+	})
+	assert.Error(t, err)
+	assert.Equal(t,
+		"record 'A' column 'c' has an invalid 'line_pattern' regexp '[invalid': error parsing regexp: missing closing ]: `[invalid`",
+		err.Error())
+}
+
 func TestValidateFileDecl_Success(t *testing.T) {
-	col1 := &ColumnDecl{Name: "c1"}
-	col2 := &ColumnDecl{Name: "c2"}
-	col3 := &ColumnDecl{Name: "c3"}
+	col1 := &ColumnDecl{Name: "c1", LineIndex: testlib.IntPtr(1)}
+	col2 := &ColumnDecl{Name: "c2", Index: testlib.IntPtr(3)}
+	col3 := &ColumnDecl{Name: "c3", LinePattern: strs.StrPtr("^C$")}
 	fd := &FileDecl{
 		Records: []*RecordDecl{
 			{
@@ -126,5 +153,5 @@ func TestValidateFileDecl_Success(t *testing.T) {
 	assert.Equal(t, 1, len(fd.Records[0].childRecDecls))
 	assert.Same(t, fd.Records[0].Children[0], fd.Records[0].childRecDecls[0].(*RecordDecl))
 	assert.Equal(t, "A/B", fd.Records[0].Children[0].fqdn)
-	assert.Equal(t, []*ColumnDecl{col1, col2, col3}, fd.Records[0].Children[0].Columns)
+	cupaloy.SnapshotT(t, fd.Records[0].Children[0].Columns)
 }

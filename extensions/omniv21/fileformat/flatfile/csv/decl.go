@@ -11,12 +11,30 @@ import (
 
 // ColumnDecl describes a column of an csv record column.
 type ColumnDecl struct {
-	Name string `json:"name,omitempty"`
+	Name        string  `json:"name,omitempty"`
+	Index       *int    `json:"index,omitempty"`        // 1-based. optional.
+	LineIndex   *int    `json:"line_index,omitempty"`   // 1-based. optional
+	LinePattern *string `json:"line_pattern,omitempty"` // optional
+
+	linePatternRegexp *regexp.Regexp
 }
 
-// Design note: given currently ColumnDecl contains only Name field, we could've simply
-// change RecordDecl.Columns into a []string. But in the future, if we ever need to add
-// anything to a column decl, we'd have to introduce a breaking schema change.
+func (c *ColumnDecl) lineMatch(lineIndex int, line line) bool {
+	if c.LineIndex != nil {
+		return *c.LineIndex == lineIndex+1 // c.LineIndex is 1 based.
+	}
+	if c.linePatternRegexp != nil {
+		return c.linePatternRegexp.MatchString(line.raw)
+	}
+	return true
+}
+
+func (c *ColumnDecl) lineToColumnValue(line line) string {
+	if *c.Index < 1 || *c.Index > len(line.record) {
+		return ""
+	}
+	return line.record[*c.Index-1]
+}
 
 const (
 	typeRecord = "record"
