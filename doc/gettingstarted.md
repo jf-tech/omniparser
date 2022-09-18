@@ -82,6 +82,8 @@ $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 Error: unable to perform schema validation: EOF
 ```
 Expected, given the `schema.json` is still empty.
+(Note, `-i input.csv` is optional; you can use standard IO pipe to feed the input into `cli.sh`:
+e.g. `cat input.csv | cli.sh transform -s schema.json`)
 
 Now we're ready to go!
 
