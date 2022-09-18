@@ -439,6 +439,7 @@ func TestLinesToNode(t *testing.T) {
 				{Name: "W", StartPos: 8, Length: 5, linePatternRegexp: regexp.MustCompile("^hello")},
 				{Name: "C", StartPos: 3, Length: 1, LineIndex: testlib.IntPtr(1)},
 				{Name: "0", StartPos: 1, Length: 1, linePatternRegexp: regexp.MustCompile("no-match")},
+				{Name: "A", StartPos: 1, Length: 1},
 			},
 		},
 	} {

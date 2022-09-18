@@ -3,6 +3,7 @@ package csv
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/jf-tech/go-corelib/maths"
 
@@ -19,17 +20,17 @@ type ColumnDecl struct {
 	linePatternRegexp *regexp.Regexp
 }
 
-func (c *ColumnDecl) lineMatch(lineIndex int, line line) bool {
+func (c *ColumnDecl) lineMatch(lineIndex int, line *line, delim string) bool {
 	if c.LineIndex != nil {
 		return *c.LineIndex == lineIndex+1 // c.LineIndex is 1 based.
 	}
 	if c.linePatternRegexp != nil {
-		return c.linePatternRegexp.MatchString(line.raw)
+		return matchLine(c.linePatternRegexp, line, delim)
 	}
 	return true
 }
 
-func (c *ColumnDecl) lineToColumnValue(line line) string {
+func (c *ColumnDecl) lineToColumnValue(line *line) string {
 	if *c.Index < 1 || *c.Index > len(line.record) {
 		return ""
 	}
@@ -121,21 +122,28 @@ func (r *RecordDecl) rows() int {
 	return *r.Rows
 }
 
-func (r *RecordDecl) matchHeader(line []byte) bool {
+func (r *RecordDecl) matchHeader(line *line, delim string) bool {
 	if r.headerRegexp == nil {
 		panic(fmt.Sprintf("record '%s' is not header/footer based", r.fqdn))
 	}
-	return r.headerRegexp.Match(line)
+	return matchLine(r.headerRegexp, line, delim)
 }
 
 // Footer is optional. If not specified, it always matches. Thus for a header/footer record,
 // if the footer isn't specified, it effectively becomes a single-row record matched by header,
 // given that after the header matches a line, matchFooter is called on the same line.
-func (r *RecordDecl) matchFooter(line []byte) bool {
+func (r *RecordDecl) matchFooter(line *line, delim string) bool {
 	if r.footerRegexp == nil {
 		return true
 	}
-	return r.footerRegexp.Match(line)
+	return matchLine(r.footerRegexp, line, delim)
+}
+
+func matchLine(re *regexp.Regexp, line *line, delim string) bool {
+	if line.raw == "" {
+		line.raw = strings.Join(line.record, delim)
+	}
+	return re.MatchString(line.raw)
 }
 
 func toFlatFileRecDecls(rs []*RecordDecl) []flatfile.RecDecl {

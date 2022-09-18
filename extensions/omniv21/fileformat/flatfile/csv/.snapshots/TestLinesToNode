@@ -4,46 +4,23 @@
 			"Children": [
 				{
 					"Children": null,
-					"Data": "world",
+					"Data": ":?>",
 					"FirstChild": null,
 					"FormatSpecific": null,
 					"LastChild": null,
 					"NextSibling": null,
-					"Parent": "(ElementNode W)",
+					"Parent": "(ElementNode c1)",
 					"PrevSibling": null,
 					"Type": "TextNode"
 				}
 			],
-			"Data": "W",
-			"FirstChild": "(TextNode 'world')",
+			"Data": "c1",
+			"FirstChild": "(TextNode ':?>')",
 			"FormatSpecific": null,
-			"LastChild": "(TextNode 'world')",
-			"NextSibling": "(ElementNode C)",
-			"Parent": "(ElementNode test-envelope)",
+			"LastChild": "(TextNode ':?>')",
+			"NextSibling": "(ElementNode c2)",
+			"Parent": "(ElementNode test)",
 			"PrevSibling": null,
-			"Type": "ElementNode"
-		},
-		{
-			"Children": [
-				{
-					"Children": null,
-					"Data": "c",
-					"FirstChild": null,
-					"FormatSpecific": null,
-					"LastChild": null,
-					"NextSibling": null,
-					"Parent": "(ElementNode C)",
-					"PrevSibling": null,
-					"Type": "TextNode"
-				}
-			],
-			"Data": "C",
-			"FirstChild": "(TextNode 'c')",
-			"FormatSpecific": null,
-			"LastChild": "(TextNode 'c')",
-			"NextSibling": "(ElementNode A)",
-			"Parent": "(ElementNode test-envelope)",
-			"PrevSibling": "(ElementNode W)",
 			"Type": "ElementNode"
 		},
 		{
@@ -55,25 +32,48 @@
 					"FormatSpecific": null,
 					"LastChild": null,
 					"NextSibling": null,
-					"Parent": "(ElementNode A)",
+					"Parent": "(ElementNode c2)",
 					"PrevSibling": null,
 					"Type": "TextNode"
 				}
 			],
-			"Data": "A",
+			"Data": "c2",
 			"FirstChild": "(TextNode 'a')",
 			"FormatSpecific": null,
 			"LastChild": "(TextNode 'a')",
+			"NextSibling": "(ElementNode c3)",
+			"Parent": "(ElementNode test)",
+			"PrevSibling": "(ElementNode c1)",
+			"Type": "ElementNode"
+		},
+		{
+			"Children": [
+				{
+					"Children": null,
+					"Data": "2",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": null,
+					"Parent": "(ElementNode c3)",
+					"PrevSibling": null,
+					"Type": "TextNode"
+				}
+			],
+			"Data": "c3",
+			"FirstChild": "(TextNode '2')",
+			"FormatSpecific": null,
+			"LastChild": "(TextNode '2')",
 			"NextSibling": null,
-			"Parent": "(ElementNode test-envelope)",
-			"PrevSibling": "(ElementNode C)",
+			"Parent": "(ElementNode test)",
+			"PrevSibling": "(ElementNode c2)",
 			"Type": "ElementNode"
 		}
 	],
-	"Data": "test-envelope",
-	"FirstChild": "(ElementNode W)",
+	"Data": "test",
+	"FirstChild": "(ElementNode c1)",
 	"FormatSpecific": null,
-	"LastChild": "(ElementNode A)",
+	"LastChild": "(ElementNode c3)",
 	"NextSibling": null,
 	"Parent": null,
 	"PrevSibling": null,

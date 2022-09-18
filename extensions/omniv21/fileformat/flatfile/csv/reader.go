@@ -1,7 +1,6 @@
-package fixedlength
+package csv
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"io"
@@ -15,26 +14,36 @@ import (
 
 type line struct {
 	lineNum int // 1-based
-	b       []byte
+	record  []string
+	raw     string
 }
 
 type reader struct {
 	inputName string
-	r         *bufio.Reader
+	fileDecl  *FileDecl
+	r         *ios.LineNumReportingCsvReader
 	hr        *flatfile.HierarchyReader
-	linesRead int    // total number of lines read in so far
 	linesBuf  []line // linesBuf contains all the unprocessed lines
 }
 
-// NewReader creates an FormatReader for fixed-length file format.
+// NewReader creates an FormatReader for csv file format.
 func NewReader(
 	inputName string, r io.Reader, decl *FileDecl, targetXPathExpr *xpath.Expr) *reader {
+	if decl.ReplaceDoubleQuotes {
+		r = ios.NewBytesReplacingReader(r, []byte(`"`), []byte(`'`))
+	}
+	csv := ios.NewLineNumReportingCsvReader(r)
+	delim := []rune(decl.Delimiter)
+	csv.Comma = delim[0]
+	csv.FieldsPerRecord = -1
+	csv.ReuseRecord = true
 	reader := &reader{
 		inputName: inputName,
-		r:         bufio.NewReader(r),
+		fileDecl:  decl,
+		r:         csv,
 	}
 	reader.hr = flatfile.NewHierarchyReader(
-		toFlatFileRecDecls(decl.Envelopes), reader, targetXPathExpr)
+		toFlatFileRecDecls(decl.Records), reader, targetXPathExpr)
 	return reader
 }
 
@@ -47,12 +56,12 @@ func (r *reader) Read() (*idr.Node, error) {
 		return n, nil
 	case flatfile.IsErrFewerThanMinOccurs(err):
 		e := err.(flatfile.ErrFewerThanMinOccurs)
-		envelopeDecl := e.RecDecl.(*EnvelopeDecl)
-		return nil, ErrInvalidFixedLength(r.fmtErrStr(r.unprocessedLineNum(),
-			"envelope/envelope_group '%s' needs min occur %d, but only got %d",
-			envelopeDecl.fqdn, envelopeDecl.MinOccurs(), e.ActualOcccurs))
+		decl := e.RecDecl.(*RecordDecl)
+		return nil, ErrInvalidCSV(r.fmtErrStr(r.unprocessedLineNum(),
+			"record/record_group '%s' needs min occur %d, but only got %d",
+			decl.fqdn, decl.MinOccurs(), e.ActualOcccurs))
 	case flatfile.IsErrUnexpectedData(err):
-		return nil, ErrInvalidFixedLength(r.fmtErrStr(r.unprocessedLineNum(), "unexpected data"))
+		return nil, ErrInvalidCSV(r.fmtErrStr(r.unprocessedLineNum(), "unexpected data"))
 	default:
 		return nil, err
 	}
@@ -75,15 +84,15 @@ func (r *reader) MoreUnprocessedData() (bool, error) {
 // node if asked to.
 func (r *reader) ReadAndMatch(
 	decl flatfile.RecDecl, createIDR bool) (matched bool, node *idr.Node, err error) {
-	envelopeDecl := decl.(*EnvelopeDecl)
-	if envelopeDecl.rowsBased() {
-		return r.readAndMatchRowsBasedEnvelope(envelopeDecl, createIDR)
+	recDecl := decl.(*RecordDecl)
+	if recDecl.rowsBased() {
+		return r.readAndMatchRowsBasedRecord(recDecl, createIDR)
 	}
-	return r.readAndMatchHeaderFooterBasedEnvelope(envelopeDecl, createIDR)
+	return r.readAndMatchHeaderFooterBasedRecord(recDecl, createIDR)
 }
 
-func (r *reader) readAndMatchRowsBasedEnvelope(
-	decl *EnvelopeDecl, createNode bool) (bool, *idr.Node, error) {
+func (r *reader) readAndMatchRowsBasedRecord(
+	decl *RecordDecl, createNode bool) (bool, *idr.Node, error) {
 	for len(r.linesBuf) < decl.rows() {
 		if err := r.readLine(); err != nil {
 			if err != io.EOF || len(r.linesBuf) == 0 {
@@ -109,20 +118,20 @@ func (r *reader) readAndMatchRowsBasedEnvelope(
 	return true, nil, nil
 }
 
-func (r *reader) readAndMatchHeaderFooterBasedEnvelope(
-	decl *EnvelopeDecl, createNode bool) (bool, *idr.Node, error) {
+func (r *reader) readAndMatchHeaderFooterBasedRecord(
+	decl *RecordDecl, createNode bool) (bool, *idr.Node, error) {
 	if len(r.linesBuf) <= 0 {
 		if err := r.readLine(); err != nil {
 			// io.EOF or not, since r.linesBuf is empty, we can directly return err.
 			return false, nil, err
 		}
 	}
-	if !decl.matchHeader(r.linesBuf[0].b) {
+	if !decl.matchHeader(&r.linesBuf[0], r.fileDecl.Delimiter) {
 		return false, nil, nil
 	}
 	i := 0 // we'll match the footer starting on the same line.
 	for {
-		if decl.matchFooter(r.linesBuf[i].b) {
+		if decl.matchFooter(&r.linesBuf[i], r.fileDecl.Delimiter) {
 			if createNode {
 				n := r.linesToNode(decl, i+1)
 				r.popFrontLinesBuf(i + 1)
@@ -148,40 +157,36 @@ func (r *reader) readAndMatchHeaderFooterBasedEnvelope(
 }
 
 func (r *reader) readLine() error {
-	for {
-		// note1: ios.ByteReadLine returns a ln with trailing '\n' (and/or '\r') dropped.
-		// note2: ios.ByteReadLine won't return io.EOF if ln returned isn't empty.
-		b, err := ios.ByteReadLine(r.r)
-		switch {
-		case err == io.EOF:
-			return io.EOF
-		case err != nil:
-			return ErrInvalidFixedLength(r.fmtErrStr(r.linesRead+1, err.Error()))
-		}
-		r.linesRead++
-		if len(b) > 0 {
-			r.linesBuf = append(r.linesBuf, line{lineNum: r.linesRead, b: b})
-			return nil
-		}
+	lineStart := r.r.LineNum() + 1
+	record, err := r.r.Read()
+	switch {
+	case err == io.EOF:
+		return io.EOF
+	case err != nil:
+		return ErrInvalidCSV(r.fmtErrStr(lineStart, err.Error()))
 	}
+	r.linesBuf = append(r.linesBuf, line{
+		lineNum: lineStart,
+		record:  record,
+	})
+	return nil
 }
 
-func (r *reader) linesToNode(decl *EnvelopeDecl, n int) *idr.Node {
+func (r *reader) linesToNode(decl *RecordDecl, n int) *idr.Node {
 	if len(r.linesBuf) < n {
-		panic(
-			fmt.Sprintf("linesBuf has %d lines but requested %d lines to convert",
-				len(r.linesBuf), n))
+		panic(fmt.Sprintf(
+			"linesBuf has %d lines but requested %d lines to convert", len(r.linesBuf), n))
 	}
 	node := idr.CreateNode(idr.ElementNode, decl.Name)
 	for col := range decl.Columns {
 		colDecl := decl.Columns[col]
 		for i := 0; i < n; i++ {
-			if !colDecl.lineMatch(i, r.linesBuf[i].b) {
+			if !colDecl.lineMatch(i, &(r.linesBuf[i]), r.fileDecl.Delimiter) {
 				continue
 			}
 			colNode := idr.CreateNode(idr.ElementNode, colDecl.Name)
 			idr.AddChild(node, colNode)
-			colVal := idr.CreateNode(idr.TextNode, colDecl.lineToColumnValue(r.linesBuf[i].b))
+			colVal := idr.CreateNode(idr.TextNode, colDecl.lineToColumnValue(&r.linesBuf[i]))
 			idr.AddChild(colNode, colVal)
 			break
 		}
@@ -206,7 +211,7 @@ func (r *reader) unprocessedLineNum() int {
 	if len(r.linesBuf) > 0 {
 		return r.linesBuf[0].lineNum
 	}
-	return r.linesRead + 1
+	return r.r.LineNum() + 1
 }
 
 // Release implements fileformat.FormatReader interface, releasing a finished IDR target node.
@@ -217,7 +222,7 @@ func (r *reader) Release(n *idr.Node) {
 // IsContinuableError implements fileformat..FormatReader interface, checking if an error is
 // fatal or not.
 func (r *reader) IsContinuableError(err error) bool {
-	return !IsErrInvalidFixedLength(err) && err != io.EOF
+	return !IsErrInvalidCSV(err) && err != io.EOF
 }
 
 // FmtErr implements errs.CtxAwareErr embedded in fileformat.FormatReader, formatting an error
@@ -231,17 +236,17 @@ func (r *reader) fmtErrStr(line int, format string, args ...interface{}) string 
 		r.inputName, line, fmt.Sprintf(format, args...))
 }
 
-// ErrInvalidFixedLength indicates the fixed-length content is corrupted or IO failure.
+// ErrInvalidCSV indicates the csv content is corrupted or IO failure.
 // This is a fatal, non-continuable error.
-type ErrInvalidFixedLength string
+type ErrInvalidCSV string
 
 // Error implements error interface.
-func (e ErrInvalidFixedLength) Error() string { return string(e) }
+func (e ErrInvalidCSV) Error() string { return string(e) }
 
-// IsErrInvalidFixedLength checks if the `err` is of ErrInvalidFixedLength type.
-func IsErrInvalidFixedLength(err error) bool {
+// IsErrInvalidCSV checks if the `err` is of ErrInvalidCSV type.
+func IsErrInvalidCSV(err error) bool {
 	switch err.(type) {
-	case ErrInvalidFixedLength:
+	case ErrInvalidCSV:
 		return true
 	default:
 		return false
