@@ -12,22 +12,25 @@ import (
 )
 
 func TestColumnDecl_LineMatch(t *testing.T) {
-	assert.True(t, (&ColumnDecl{}).lineMatch(0, line{}))
-	assert.False(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(0, line{}))
-	assert.True(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(1, line{}))
+	// no line_index/line_pattern, always match
+	assert.True(t, (&ColumnDecl{}).lineMatch(0, &line{}, ""))
+	assert.False(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(0, &line{}, ""))
+	assert.True(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(1, &line{}, ""))
 	assert.False(t, (&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC.*$")}).
-		lineMatch(0, line{raw: "1234567"}))
-	assert.True(t, (&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC.*$")}).
-		lineMatch(0, line{raw: "ABCDEFG"}))
+		lineMatch(0, &line{record: []string{"123", "456"}}, ","))
+	l := &line{record: []string{"ABC", "DEF"}}
+	assert.True(t,
+		(&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC\\|D.*$")}).lineMatch(0, l, "|"))
+	assert.Equal(t, "ABC|DEF", l.raw)
 }
 
 func TestColumnDecl_LineToColumnValue(t *testing.T) {
 	assert.Equal(t, "", (&ColumnDecl{Index: testlib.IntPtr(2)}).lineToColumnValue(
-		line{record: []string{"1"}})) // index out of range
+		&line{record: []string{"1"}})) // index out of range
 	assert.Equal(t, "", (&ColumnDecl{Index: testlib.IntPtr(0)}).lineToColumnValue(
-		line{record: []string{"1"}})) // index out of range
+		&line{record: []string{"1"}})) // index out of range
 	assert.Equal(t, "9", (&ColumnDecl{Index: testlib.IntPtr(5)}).lineToColumnValue(
-		line{record: []string{"1", "3", "5", "7", "9", "11"}})) // in range
+		&line{record: []string{"1", "3", "5", "7", "9", "11"}})) // in range
 }
 
 func TestRecordDecl(t *testing.T) {
@@ -82,16 +85,24 @@ func TestRecordDecl(t *testing.T) {
 
 	// matchHeader()
 	assert.PanicsWithValue(
-		t, "record 'r1' is not header/footer based", func() { r.matchHeader(nil) })
-	r.headerRegexp = regexp.MustCompile("^ABC$")
-	assert.False(t, r.matchHeader([]byte("ABCD")))
-	assert.True(t, r.matchHeader([]byte("ABC")))
+		t, "record 'r1' is not header/footer based", func() { r.matchHeader(&line{}, "") })
+	r.headerRegexp = regexp.MustCompile("^ABC,")
+	assert.False(t, r.matchHeader(&line{}, ","))
+	line := &line{record: []string{"ABC", "EFG"}}
+	assert.True(t, r.matchHeader(line, ","))
 
 	// matchFooter()
-	assert.True(t, r.matchFooter([]byte("ABCD")))
-	r.footerRegexp = regexp.MustCompile("^ABC$")
-	assert.False(t, r.matchFooter([]byte("ABCD")))
-	assert.True(t, r.matchFooter([]byte("ABC")))
+	assert.True(t, r.matchFooter(line, ","))
+	r.footerRegexp = regexp.MustCompile("^ABC,EF.*$")
+	assert.True(t, r.matchFooter(line, ","))
+}
+
+func TestMatchLine(t *testing.T) {
+	line := &line{record: []string{"1", "2"}}
+	assert.Equal(t, "", line.raw)
+	assert.False(t, matchLine(regexp.MustCompile("^1\\|2$"), line, ","))
+	assert.Equal(t, "1,2", line.raw)
+	assert.True(t, matchLine(regexp.MustCompile("^1,2$"), line, ","))
 }
 
 func TestToFlatFileRecDecls(t *testing.T) {

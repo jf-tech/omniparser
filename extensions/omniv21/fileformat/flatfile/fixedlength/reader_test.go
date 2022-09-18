@@ -112,13 +112,13 @@ func TestMoreUnprocessedData(t *testing.T) {
 			expErr:  "",
 		},
 		{
-			name:    "linesBuf empty; io error",
+			name:    "linesBuf empty, io error",
 			r:       testlib.NewMockReadCloser("io error", nil),
 			expMore: false,
 			expErr:  "input 'test-input' line 1: io error",
 		},
 		{
-			name:    "linesBuf empty; io.EOF",
+			name:    "linesBuf empty, io.EOF",
 			r:       strings.NewReader(""),
 			expMore: false,
 			expErr:  "",
@@ -163,7 +163,7 @@ func TestReadAndMatchRowsBasedEnvelope(t *testing.T) {
 		expLinesRemain int
 	}{
 		{
-			name:           "non-empty buf; io read err",
+			name:           "non-empty buf, io read err",
 			linesBuf:       []string{"line 1"},
 			r:              testlib.NewMockReadCloser("io error", nil),
 			decl:           &EnvelopeDecl{Rows: testlib.IntPtr(2)},
@@ -174,7 +174,7 @@ func TestReadAndMatchRowsBasedEnvelope(t *testing.T) {
 			expLinesRemain: 1,
 		},
 		{
-			name:           "empty buf; io.EOF",
+			name:           "empty buf, io.EOF",
 			linesBuf:       nil,
 			r:              strings.NewReader(""),
 			decl:           &EnvelopeDecl{Rows: testlib.IntPtr(2)},
@@ -185,7 +185,7 @@ func TestReadAndMatchRowsBasedEnvelope(t *testing.T) {
 			expLinesRemain: 0,
 		},
 		{
-			name:           "non-empty buf; io.EOF",
+			name:           "non-empty buf, io.EOF",
 			linesBuf:       []string{"line 1"},
 			r:              strings.NewReader(""),
 			decl:           &EnvelopeDecl{Rows: testlib.IntPtr(2)},
@@ -196,7 +196,7 @@ func TestReadAndMatchRowsBasedEnvelope(t *testing.T) {
 			expLinesRemain: 1,
 		},
 		{
-			name:     "non-empty buf; no read; match; create IDR",
+			name:     "non-empty buf, no read, match, create IDR",
 			linesBuf: []string{"line 1", "line 2", "line 3"},
 			r:        strings.NewReader(""),
 			decl: &EnvelopeDecl{
@@ -214,7 +214,7 @@ func TestReadAndMatchRowsBasedEnvelope(t *testing.T) {
 			expLinesRemain: 1,
 		},
 		{
-			name:     "empty buf; read; match; no IDR",
+			name:     "empty buf, read, match, no IDR",
 			linesBuf: nil,
 			r:        strings.NewReader("line 1\n"),
 			decl:     &EnvelopeDecl{
@@ -269,7 +269,7 @@ func TestReadAndMatchHeaderFooterBasedEnvelope(t *testing.T) {
 		expLinesRemain int
 	}{
 		{
-			name:           "empty buf; io read err",
+			name:           "empty buf, io read err",
 			linesBuf:       nil,
 			r:              testlib.NewMockReadCloser("io error", nil),
 			decl:           nil,
@@ -280,7 +280,7 @@ func TestReadAndMatchHeaderFooterBasedEnvelope(t *testing.T) {
 			expLinesRemain: 0,
 		},
 		{
-			name:           "non-empty buf; header not match",
+			name:           "non-empty buf, header not match",
 			linesBuf:       []string{"line 1"},
 			r:              testlib.NewMockReadCloser("io error", nil), // shouldn't be called
 			decl:           &EnvelopeDecl{headerRegexp: regexp.MustCompile("^header")},
@@ -291,7 +291,7 @@ func TestReadAndMatchHeaderFooterBasedEnvelope(t *testing.T) {
 			expLinesRemain: 1,
 		},
 		{
-			name:     "empty buf; single line header/footer match",
+			name:     "empty buf, single line header/footer match",
 			linesBuf: nil,
 			r:        strings.NewReader("line 1"),
 			decl: &EnvelopeDecl{
@@ -306,7 +306,7 @@ func TestReadAndMatchHeaderFooterBasedEnvelope(t *testing.T) {
 			expLinesRemain: 0,
 		},
 		{
-			name:     "1-line buf; 3-line header/footer match",
+			name:     "1-line buf, 3-line header/footer match",
 			linesBuf: []string{"ABCEFG"},
 			r:        strings.NewReader("hello\n123456\n"),
 			decl: &EnvelopeDecl{
@@ -327,7 +327,7 @@ func TestReadAndMatchHeaderFooterBasedEnvelope(t *testing.T) {
 			expLinesRemain: 3, // it's a match, but no idr created, so the lines remain cached
 		},
 		{
-			name:     "1-line buf; header matches, footer line read io error",
+			name:     "1-line buf, header matches, footer line read io error",
 			linesBuf: []string{"ABCEFG"},
 			r:        testlib.NewMockReadCloser("io error", nil),
 			decl: &EnvelopeDecl{
@@ -341,7 +341,7 @@ func TestReadAndMatchHeaderFooterBasedEnvelope(t *testing.T) {
 			expLinesRemain: 1,
 		},
 		{
-			name:     "1-line buf; header matches, footer line read io.EOF",
+			name:     "1-line buf, header matches, footer line read io.EOF",
 			linesBuf: []string{"ABCEFG"},
 			r:        strings.NewReader(""),
 			decl: &EnvelopeDecl{
@@ -439,6 +439,7 @@ func TestLinesToNode(t *testing.T) {
 				{Name: "W", StartPos: 8, Length: 5, linePatternRegexp: regexp.MustCompile("^hello")},
 				{Name: "C", StartPos: 3, Length: 1, LineIndex: testlib.IntPtr(1)},
 				{Name: "0", StartPos: 1, Length: 1, linePatternRegexp: regexp.MustCompile("no-match")},
+				{Name: "A", StartPos: 1, Length: 1},
 			},
 		},
 	} {
