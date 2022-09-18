@@ -67,7 +67,7 @@ situations.
 - Golang 1.14 or later.
 
 ## Recent Major Feature Additions/Changes
-- 2022/9: 1.0.2 released: added `fixedlength2` file format that supersedes the original `fixed-length` format with support of hierarchical and nested envelopes.
+- 2022/9: 1.0.3 released: added `fixedlength2` file format that supersedes the original `fixed-length` format with support of hierarchical and nested envelopes.
 - 1.0.0 Released!
 - Added `Transform.RawRecord()` for caller of omniparser to access the raw ingested record.
 - Deprecated `custom_parse` in favor of `custom_func` (`custom_parse` is still usable for
