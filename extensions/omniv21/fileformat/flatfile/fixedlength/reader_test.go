@@ -65,7 +65,7 @@ func TestRead(t *testing.T) {
 			err:  io.EOF.Error(),
 		},
 		{
-			name: "e4 min occurs not satisified",
+			name: "e4 min occurs not satisfied",
 			r:    strings.NewReader("e2h\ne2b:1\ne2t\n1-line\n2-line\n3-line\n"),
 			err:  "input 'test-input' line 6: envelope/envelope_group 'e1/e4' needs min occur 1, but only got 0",
 		},
