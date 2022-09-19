@@ -13,9 +13,9 @@ import (
 )
 
 type line struct {
-	lineNum int // 1-based
-	record  []string
-	raw     string
+	lineNum                int // 1-based
+	recordStart, recordNum int // positional references into reader.records[] slice.
+	raw                    string
 }
 
 type reader struct {
@@ -24,6 +24,7 @@ type reader struct {
 	r         *ios.LineNumReportingCsvReader
 	hr        *flatfile.HierarchyReader
 	linesBuf  []line // linesBuf contains all the unprocessed lines
+	records   []string
 }
 
 // NewReader creates an FormatReader for csv file format.
@@ -36,6 +37,10 @@ func NewReader(
 	delim := []rune(decl.Delimiter)
 	csv.Comma = delim[0]
 	csv.FieldsPerRecord = -1
+	// While csv.ReuseRecord = true minimize encoding/csv.Reader slice allocations,
+	// It does make our multi-line caching a bit trickier. Since the csv.Reader.Read()
+	// returned []string slice will be reused, we have to have our own slice to copy
+	// those record string references down: reader.records[].
 	csv.ReuseRecord = true
 	reader := &reader{
 		inputName: inputName,
@@ -126,12 +131,12 @@ func (r *reader) readAndMatchHeaderFooterBasedRecord(
 			return false, nil, err
 		}
 	}
-	if !decl.matchHeader(&r.linesBuf[0], r.fileDecl.Delimiter) {
+	if !decl.matchHeader(&r.linesBuf[0], r.records, r.fileDecl.Delimiter) {
 		return false, nil, nil
 	}
 	i := 0 // we'll match the footer starting on the same line.
 	for {
-		if decl.matchFooter(&r.linesBuf[i], r.fileDecl.Delimiter) {
+		if decl.matchFooter(&r.linesBuf[i], r.records, r.fileDecl.Delimiter) {
 			if createNode {
 				n := r.linesToNode(decl, i+1)
 				r.popFrontLinesBuf(i + 1)
@@ -165,9 +170,12 @@ func (r *reader) readLine() error {
 	case err != nil:
 		return ErrInvalidCSV(r.fmtErrStr(lineStart, err.Error()))
 	}
+	start, num := len(r.records), len(record)
+	r.records = append(r.records, record...)
 	r.linesBuf = append(r.linesBuf, line{
-		lineNum: lineStart,
-		record:  record,
+		lineNum:     lineStart,
+		recordStart: start,
+		recordNum:   num,
 	})
 	return nil
 }
@@ -181,12 +189,13 @@ func (r *reader) linesToNode(decl *RecordDecl, n int) *idr.Node {
 	for col := range decl.Columns {
 		colDecl := decl.Columns[col]
 		for i := 0; i < n; i++ {
-			if !colDecl.lineMatch(i, &(r.linesBuf[i]), r.fileDecl.Delimiter) {
+			if !colDecl.lineMatch(i, &(r.linesBuf[i]), r.records, r.fileDecl.Delimiter) {
 				continue
 			}
 			colNode := idr.CreateNode(idr.ElementNode, colDecl.Name)
 			idr.AddChild(node, colNode)
-			colVal := idr.CreateNode(idr.TextNode, colDecl.lineToColumnValue(&r.linesBuf[i]))
+			colVal := idr.CreateNode(
+				idr.TextNode, colDecl.lineToColumnValue(&r.linesBuf[i], r.records))
 			idr.AddChild(colNode, colVal)
 			break
 		}
@@ -200,11 +209,20 @@ func (r *reader) popFrontLinesBuf(n int) {
 			"less lines (%d) in r.linesBuf than requested pop front count (%d)",
 			len(r.linesBuf), n))
 	}
-	newLen := len(r.linesBuf) - n
-	for i := 0; i < newLen; i++ {
-		r.linesBuf[i] = r.linesBuf[i+n]
+
+	recordShift := 0
+	for i := 0; i < n; i++ {
+		recordShift += r.linesBuf[i].recordNum
 	}
-	r.linesBuf = r.linesBuf[:newLen]
+	copy(r.records, r.records[recordShift:])
+	r.records = r.records[:len(r.records)-recordShift]
+
+	newLinesBufLen := len(r.linesBuf) - n
+	for i := 0; i < newLinesBufLen; i++ {
+		r.linesBuf[i] = r.linesBuf[i+n]
+		r.linesBuf[i].recordStart -= recordShift
+	}
+	r.linesBuf = r.linesBuf[:newLinesBufLen]
 }
 
 func (r *reader) unprocessedLineNum() int {

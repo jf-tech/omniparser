@@ -13,24 +13,26 @@ import (
 
 func TestColumnDecl_LineMatch(t *testing.T) {
 	// no line_index/line_pattern, always match
-	assert.True(t, (&ColumnDecl{}).lineMatch(0, &line{}, ""))
-	assert.False(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(0, &line{}, ""))
-	assert.True(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(1, &line{}, ""))
+	assert.True(t, (&ColumnDecl{}).lineMatch(0, &line{}, nil, ""))
+	assert.False(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(0, &line{}, nil, ""))
+	assert.True(t, (&ColumnDecl{LineIndex: testlib.IntPtr(2)}).lineMatch(1, &line{}, nil, ""))
 	assert.False(t, (&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC.*$")}).
-		lineMatch(0, &line{record: []string{"123", "456"}}, ","))
-	l := &line{record: []string{"ABC", "DEF"}}
+		lineMatch(0, &line{recordStart: 0, recordNum: 2}, []string{"123", "456"}, ","))
+	l := &line{recordStart: 0, recordNum: 2}
 	assert.True(t,
-		(&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC\\|D.*$")}).lineMatch(0, l, "|"))
+		(&ColumnDecl{linePatternRegexp: regexp.MustCompile("^ABC\\|D.*$")}).lineMatch(
+			0, l, []string{"ABC", "DEF"}, "|"))
 	assert.Equal(t, "ABC|DEF", l.raw)
 }
 
 func TestColumnDecl_LineToColumnValue(t *testing.T) {
 	assert.Equal(t, "", (&ColumnDecl{Index: testlib.IntPtr(2)}).lineToColumnValue(
-		&line{record: []string{"1"}})) // index out of range
+		&line{recordNum: 1}, nil)) // index out of range
 	assert.Equal(t, "", (&ColumnDecl{Index: testlib.IntPtr(0)}).lineToColumnValue(
-		&line{record: []string{"1"}})) // index out of range
-	assert.Equal(t, "9", (&ColumnDecl{Index: testlib.IntPtr(5)}).lineToColumnValue(
-		&line{record: []string{"1", "3", "5", "7", "9", "11"}})) // in range
+		&line{recordNum: 1}, nil)) // index out of range
+	assert.Equal(t, "6", (&ColumnDecl{Index: testlib.IntPtr(5)}).lineToColumnValue(
+		&line{recordStart: 1, recordNum: 7},                    // "2" .. "8"
+		[]string{"1", "2", "3", "4", "5", "6", "7", "8", "9"})) // in range
 }
 
 func TestRecordDecl(t *testing.T) {
@@ -85,24 +87,25 @@ func TestRecordDecl(t *testing.T) {
 
 	// matchHeader()
 	assert.PanicsWithValue(
-		t, "record 'r1' is not header/footer based", func() { r.matchHeader(&line{}, "") })
+		t, "record 'r1' is not header/footer based", func() { r.matchHeader(&line{}, nil, "") })
 	r.headerRegexp = regexp.MustCompile("^ABC,")
-	assert.False(t, r.matchHeader(&line{}, ","))
-	line := &line{record: []string{"ABC", "EFG"}}
-	assert.True(t, r.matchHeader(line, ","))
+	assert.False(t, r.matchHeader(&line{}, nil, ","))
+	line := &line{recordStart: 1, recordNum: 2}
+	assert.True(t, r.matchHeader(line, []string{"123", "ABC", "EFG"}, ","))
 
 	// matchFooter()
-	assert.True(t, r.matchFooter(line, ","))
+	assert.True(t, r.matchFooter(line, nil, ",")) // if `footer` not specified, always match.
 	r.footerRegexp = regexp.MustCompile("^ABC,EF.*$")
-	assert.True(t, r.matchFooter(line, ","))
+	assert.True(t, r.matchFooter(line, []string{"123", "ABC", "EFG"}, ","))
 }
 
 func TestMatchLine(t *testing.T) {
-	line := &line{record: []string{"1", "2"}}
+	records := []string{"0", "1", "2", "3"}
+	line := &line{recordStart: 1, recordNum: 2} // "1", "2"
 	assert.Equal(t, "", line.raw)
-	assert.False(t, matchLine(regexp.MustCompile("^1\\|2$"), line, ","))
+	assert.False(t, matchLine(regexp.MustCompile("^1\\|2$"), line, records, ","))
 	assert.Equal(t, "1,2", line.raw)
-	assert.True(t, matchLine(regexp.MustCompile("^1,2$"), line, ","))
+	assert.True(t, matchLine(regexp.MustCompile("^1,2$"), line, records, ","))
 }
 
 func TestToFlatFileRecDecls(t *testing.T) {

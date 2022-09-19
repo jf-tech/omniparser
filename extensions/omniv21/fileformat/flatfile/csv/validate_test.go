@@ -148,8 +148,10 @@ func TestValidateFileDecl_Success(t *testing.T) {
 	err := (&validateCtx{}).validateFileDecl(fd)
 	assert.NoError(t, err)
 	assert.Equal(t, "A", fd.Records[0].fqdn)
-	assert.True(t, fd.Records[0].matchHeader(&line{raw: "A_BEGIN"}, ","))
-	assert.True(t, fd.Records[0].matchFooter(&line{raw: "A_END"}, ","))
+	assert.True(t,
+		fd.Records[0].matchHeader(&line{recordStart: 0, recordNum: 1}, []string{"A_BEGIN"}, ","))
+	assert.True(t,
+		fd.Records[0].matchFooter(&line{recordStart: 0, recordNum: 1}, []string{"A_END"}, ","))
 	assert.Equal(t, 1, len(fd.Records[0].childRecDecls))
 	assert.Same(t, fd.Records[0].Children[0], fd.Records[0].childRecDecls[0].(*RecordDecl))
 	assert.Equal(t, "A/B", fd.Records[0].Children[0].fqdn)

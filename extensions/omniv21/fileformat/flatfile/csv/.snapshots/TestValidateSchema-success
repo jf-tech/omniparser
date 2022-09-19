@@ -1,0 +1,38 @@
+{
+	"file_declaration": {
+		"delimiter": ",",
+		"records": [
+			{
+				"name": "e1",
+				"type": "record_group",
+				"is_target": true,
+				"min": 1,
+				"max": 1,
+				"child_records": [
+					{
+						"name": "e2",
+						"max": 5,
+						"columns": [
+							{
+								"name": "c1",
+								"index": 2
+							}
+						]
+					},
+					{
+						"name": "e2",
+						"header": "^ABC$",
+						"columns": [
+							{
+								"name": "c2",
+								"index": 1,
+								"line_pattern": "^H00"
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	"XPath": ".[c1 != 'skip']"
+}
