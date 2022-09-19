@@ -152,6 +152,7 @@ func TestReadAndMatchRowsBasedRecord(t *testing.T) {
 	for _, test := range []struct {
 		name           string
 		linesBuf       []line
+		records        []string
 		r              io.Reader
 		decl           *RecordDecl
 		createIDR      bool
@@ -162,7 +163,8 @@ func TestReadAndMatchRowsBasedRecord(t *testing.T) {
 	}{
 		{
 			name:           "non-empty buf, io read err",
-			linesBuf:       []line{{record: []string{"line 1"}}},
+			linesBuf:       []line{{recordStart: 0, recordNum: 1}},
+			records:        []string{"line 1"},
 			r:              testlib.NewMockReadCloser("io error", nil),
 			decl:           &RecordDecl{Rows: testlib.IntPtr(2)},
 			createIDR:      false,
@@ -174,6 +176,7 @@ func TestReadAndMatchRowsBasedRecord(t *testing.T) {
 		{
 			name:           "empty buf, io.EOF",
 			linesBuf:       nil,
+			records:        nil,
 			r:              strings.NewReader(""),
 			decl:           &RecordDecl{Rows: testlib.IntPtr(2)},
 			createIDR:      false,
@@ -184,7 +187,8 @@ func TestReadAndMatchRowsBasedRecord(t *testing.T) {
 		},
 		{
 			name:           "non-empty buf, io.EOF",
-			linesBuf:       []line{{record: []string{"line 1"}}},
+			linesBuf:       []line{{recordStart: 0, recordNum: 1}},
+			records:        []string{"line 1"},
 			r:              strings.NewReader(""),
 			decl:           &RecordDecl{Rows: testlib.IntPtr(2)},
 			createIDR:      false,
@@ -196,9 +200,15 @@ func TestReadAndMatchRowsBasedRecord(t *testing.T) {
 		{
 			name: "non-empty buf, no read, match, create IDR",
 			linesBuf: []line{
-				{record: []string{"line 1", "one"}},
-				{record: []string{"line 2", "two"}},
-				{record: []string{"line 3", "three"}}},
+				{recordStart: 0, recordNum: 2},
+				{recordStart: 2, recordNum: 2},
+				{recordStart: 4, recordNum: 2},
+			},
+			records: []string{
+				"line 1", "one",
+				"line 2", "two",
+				"line 3", "three",
+			},
 			r: testlib.NewMockReadCloser("io error", nil), // shouldn't be called
 			decl: &RecordDecl{
 				Name: "E",
@@ -217,6 +227,7 @@ func TestReadAndMatchRowsBasedRecord(t *testing.T) {
 		{
 			name:     "empty buf, read, match, no IDR",
 			linesBuf: nil,
+			records:  nil,
 			r:        strings.NewReader("line 1\n"),
 			decl:     &RecordDecl{
 				// Rows == nil, use default value 1
@@ -234,6 +245,7 @@ func TestReadAndMatchRowsBasedRecord(t *testing.T) {
 				fileDecl:  &FileDecl{Delimiter: ","},
 				r:         ios.NewLineNumReportingCsvReader(test.r),
 				linesBuf:  test.linesBuf,
+				records:   test.records,
 			}
 			matched, node, err := r.readAndMatchRowsBasedRecord(test.decl, test.createIDR)
 			assert.Equal(t, test.expMatch, matched)
@@ -258,6 +270,7 @@ func TestReadAndMatchHeaderFooterBasedRecord(t *testing.T) {
 	for _, test := range []struct {
 		name           string
 		linesBuf       []line
+		records        []string
 		r              io.Reader
 		decl           *RecordDecl
 		createIDR      bool
@@ -269,6 +282,7 @@ func TestReadAndMatchHeaderFooterBasedRecord(t *testing.T) {
 		{
 			name:           "empty buf, io read err",
 			linesBuf:       nil,
+			records:        nil,
 			r:              testlib.NewMockReadCloser("io error", nil),
 			decl:           nil,
 			createIDR:      false,
@@ -279,7 +293,8 @@ func TestReadAndMatchHeaderFooterBasedRecord(t *testing.T) {
 		},
 		{
 			name:           "non-empty buf, header not match",
-			linesBuf:       []line{{record: []string{"line 1"}}},
+			linesBuf:       []line{{recordStart: 0, recordNum: 1}},
+			records:        []string{"line 1"},
 			r:              testlib.NewMockReadCloser("io error", nil), // shouldn't be called
 			decl:           &RecordDecl{headerRegexp: regexp.MustCompile("^no matched")},
 			createIDR:      false,
@@ -291,6 +306,7 @@ func TestReadAndMatchHeaderFooterBasedRecord(t *testing.T) {
 		{
 			name:     "empty buf, single line header/footer match",
 			linesBuf: nil,
+			records:  nil,
 			r:        strings.NewReader("line 1"),
 			decl: &RecordDecl{
 				Name:         "E",
@@ -305,7 +321,8 @@ func TestReadAndMatchHeaderFooterBasedRecord(t *testing.T) {
 		},
 		{
 			name:     "1-line buf, 3-line header/footer match",
-			linesBuf: []line{{record: []string{"ABCEFG"}}},
+			linesBuf: []line{{recordStart: 0, recordNum: 1}},
+			records:  []string{"ABCEFG"},
 			r:        strings.NewReader("hello\n123456\n"),
 			decl: &RecordDecl{
 				Name: "E",
@@ -325,7 +342,8 @@ func TestReadAndMatchHeaderFooterBasedRecord(t *testing.T) {
 		},
 		{
 			name:     "1-line buf, header matches, footer line read io error",
-			linesBuf: []line{{record: []string{"ABCEFG"}}},
+			linesBuf: []line{{recordStart: 0, recordNum: 1}},
+			records:  []string{"ABCEFG"},
 			r:        testlib.NewMockReadCloser("io error", nil),
 			decl: &RecordDecl{
 				headerRegexp: regexp.MustCompile("^ABC"),
@@ -339,7 +357,8 @@ func TestReadAndMatchHeaderFooterBasedRecord(t *testing.T) {
 		},
 		{
 			name:     "1-line buf, header matches, footer line read io.EOF",
-			linesBuf: []line{{record: []string{"ABCEFG"}}},
+			linesBuf: []line{{recordStart: 0, recordNum: 1}},
+			records:  []string{"ABCEFG"},
 			r:        strings.NewReader(""),
 			decl: &RecordDecl{
 				headerRegexp: regexp.MustCompile("^ABC"),
@@ -358,6 +377,7 @@ func TestReadAndMatchHeaderFooterBasedRecord(t *testing.T) {
 				fileDecl:  &FileDecl{Delimiter: ","},
 				r:         ios.NewLineNumReportingCsvReader(test.r),
 				linesBuf:  test.linesBuf,
+				records:   test.records,
 			}
 			matched, node, err := r.readAndMatchHeaderFooterBasedRecord(test.decl, test.createIDR)
 			assert.Equal(t, test.expMatch, matched)
@@ -384,9 +404,14 @@ func TestLinesToNode(t *testing.T) {
 		"linesBuf has 0 lines but requested 3 lines to convert",
 		func() { r.linesToNode(&RecordDecl{}, 3) })
 	r.linesBuf = []line{
-		{lineNum: 1, record: []string{"1", "2", "3"}},
-		{lineNum: 2, record: []string{"a", "b"}},
-		{lineNum: 3, record: []string{"#$%^&", "*()", ":?>", "~!@"}},
+		{lineNum: 1, recordStart: 0, recordNum: 3},
+		{lineNum: 2, recordStart: 3, recordNum: 2},
+		{lineNum: 3, recordStart: 5, recordNum: 4},
+	}
+	r.records = []string{
+		"1", "2", "3",
+		"a", "b",
+		"#$%^&", "*()", ":?>", "~!@",
 	}
 	cupaloy.SnapshotT(t, idr.JSONify1(r.linesToNode(
 		&RecordDecl{
@@ -406,10 +431,17 @@ func TestLinesToNode(t *testing.T) {
 
 func TestPopFrontLinesBuf(t *testing.T) {
 	r := &reader{}
-	r.linesBuf = make([]line, 3, 10)
-	r.linesBuf[0] = line{lineNum: 10, raw: "a"}
-	r.linesBuf[1] = line{lineNum: 11, raw: "b"}
-	r.linesBuf[2] = line{lineNum: 12, raw: "c"}
+	r.linesBuf = make([]line, 0, 10)
+	r.linesBuf = append(r.linesBuf, []line{
+		{lineNum: 10, recordStart: 0, recordNum: 3},
+		{lineNum: 11, recordStart: 3, recordNum: 2},
+		{lineNum: 12, recordStart: 5, recordNum: 4},
+	}...)
+	r.records = []string{
+		"a", "b", "c",
+		"1", "2",
+		"#", "$", "%", "^",
+	}
 	assert.PanicsWithValue(t,
 		"less lines (3) in r.linesBuf than requested pop front count (5)",
 		func() { r.popFrontLinesBuf(5) })
@@ -418,7 +450,10 @@ func TestPopFrontLinesBuf(t *testing.T) {
 	r.popFrontLinesBuf(2)
 	assert.Equal(t, 1, len(r.linesBuf))
 	assert.Equal(t, 10, cap(r.linesBuf))
-	assert.Equal(t, line{lineNum: 12, raw: "c"}, r.linesBuf[0])
+	assert.Equal(t, line{lineNum: 12, recordStart: 0, recordNum: 4}, r.linesBuf[0])
+	assert.Equal(t, 4, len(r.records))
+	assert.Equal(t, 9, cap(r.records))
+	assert.Equal(t, []string{"#", "$", "%", "^"}, r.records)
 }
 
 func TestIsContinuableError(t *testing.T) {
