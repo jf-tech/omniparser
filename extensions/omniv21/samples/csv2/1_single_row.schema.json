@@ -1,0 +1,90 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "csv2"
+    },
+    "file_declaration": {
+        "delimiter": "|",
+        "replace_double_quotes": true,
+        "records": [
+            {
+                "min": 1, "max": 1,
+                "header": "^DATE|HIGH TEMP C|LOW TEMP F|WIND DIR|WIND SPEED KMH|NOTE|LAT|LONG|UV INDEX$"
+            },
+            {
+                "is_target": true,
+                "columns": [
+                    { "name": "DATE" },
+                    { "name": "HIGH_TEMP_C" },
+                    { "name": "LOW_TEMP_F" },
+                    { "name": "WIND_DIR" },
+                    { "name": "WIND_SPEED_KMH" },
+                    { "name": "NOTE" },
+                    { "name": "LAT" },
+                    { "name": "LONG" },
+                    { "name": "UV_INDEX" }
+                ]
+            }
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "xpath": ".[DATE != 'N/A']" ,"object": {
+            "uv_index": {
+                "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const":  "uv.split('/').map(function(s){return s.trim();}).filter(function(s){return !!s;})" },
+                        { "const": "uv" }, { "xpath": "UV_INDEX" }
+                    ]
+                }
+            },
+            "date": { "custom_func": {
+                "name": "dateTimeToRFC3339",
+                "args": [
+                    { "xpath": "DATE" },
+                    { "const": "", "_comment": "input timezone" },
+                    { "const": "", "_comment": "output timezone" }
+                ]
+            }},
+            "high_temperature_fahrenheit": { "xpath": "HIGH_TEMP_C", "template": "template_c_to_f" },
+            "low_temperature_fahrenheit": {
+                "custom_func": {
+                    "name": "javascript",
+                    "args": [
+                        { "const": "Math.floor(low_temp_f * 10) / 10" },
+                        { "const": "low_temp_f" }, { "xpath": "LOW_TEMP_F", "type": "float" }
+                    ]
+                }
+            },
+            "wind": { "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const": "win_dir + ' ' + Math.floor(kmh * 0.621371 * 100) / 100 + ' mph'" },
+                    { "const": "win_dir" }, { "xpath": "WIND_DIR", "template": "wind_acronym_mapping" },
+                    { "const": "kmh" }, { "xpath": "WIND_SPEED_KMH", "type": "float" }
+                ]
+            }},
+            "latitude": { "xpath": "LAT", "type": "float" },
+            "longitude": { "xpath": "LONG", "type": "float" },
+            "note": { "xpath": "NOTE" }
+        }},
+        "template_c_to_f": {
+            "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const": "Math.floor((temp_c * 9 / 5 + 32) * 10) / 10" },
+                    { "const": "temp_c" }, { "xpath": ".", "type": "float" }
+                ]
+            }
+        },
+        "wind_acronym_mapping": {
+            "custom_func": {
+                "name": "javascript",
+                "args": [
+                    { "const": "dir=='N'?'North':dir=='NE'?'North East':dir=='E'?'East':dir=='SE'?'South East':dir=='S'?'South':dir=='SW'?'South West':dir=='W'?'West':dir=='NW'?'North West':'Tornado'"},
+                    { "const": "dir" }, { "xpath": "." }
+                ]
+            }
+        }
+    }
+}

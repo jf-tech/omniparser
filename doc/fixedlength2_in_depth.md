@@ -1,21 +1,22 @@
-- [Fixed-Length (`fixedlength2`) Schema in Depth](#fixed-length---fixedlength2---schema-in-depth)
-  * [`envelope` Basics](#-envelope--basics)
-  * [`envelope`s Hierarchy](#-envelope-s-hierarchy)
-  * [`file_declaration` for `fixedlength2`](#-file-declaration--for--fixedlength2-)
-  * [Sample 1: `file_declaration` for Repeated Single-Row `envelope`](#sample-1---file-declaration--for-repeated-single-row--envelope-)
-  * [Sample 2: `file_declaration` for Repeated Multi Fixed-Number-of-Rows `envelope`](#sample-2---file-declaration--for-repeated-multi-fixed-number-of-rows--envelope-)
-  * [Sample 3: `file_declaration` for Repeated Variable Length `envelope` Bounded by `header`/`footer`](#sample-3---file-declaration--for-repeated-variable-length--envelope--bounded-by--header---footer-)
-  * [Sample 4: `file_declaration` for Nested Hierarchical `envelope`s with Different Types](#sample-4---file-declaration--for-nested-hierarchical--envelope-s-with-different-types)
-  * [Fixed-Length IDR Structure](#fixed-length-idr-structure)
-  * [Migration from `fixed-length` Schemas](#migration-from--fixed-length--schemas)
+- [Fixed-Length (`fixedlength2`) Schema in Depth](#fixed-length-fixedlength2-schema-in-depth)
+  - [`envelope` Basics](#envelope-basics)
+  - [`envelope`s Hierarchy](#envelopes-hierarchy)
+  - [`file_declaration` for `fixedlength2`](#file_declaration-for-fixedlength2)
+  - [Sample 1: `file_declaration` for Repeated Single-Row `envelope`](#sample-1-file_declaration-for-repeated-single-row-envelope)
+  - [Sample 2: `file_declaration` for Repeated Multi Fixed-Number-of-Rows `envelope`](#sample-2-file_declaration-for-repeated-multi-fixed-number-of-rows-envelope)
+  - [Sample 3: `file_declaration` for Repeated Variable Length `envelope` Bounded by `header`/`footer`](#sample-3-file_declaration-for-repeated-variable-length-envelope-bounded-by-headerfooter)
+  - [Sample 4: `file_declaration` for Nested Hierarchical `envelope`s with Different Types](#sample-4-file_declaration-for-nested-hierarchical-envelopes-with-different-types)
+  - [Fixed-Length IDR Structure](#fixed-length-idr-structure)
+  - [Migration from `'fixed-length'` Schemas](#migration-from-fixed-length-schemas)
+
 
 # Fixed-Length (`fixedlength2`) Schema in Depth
 
 > Note: With the introduction of `fixedlength2` schema, the old `fixed-length` schema is now
 > considered **_deprecated_**. It will continue to work, and its [documentation](./fixedlength_in_depth.md)
-> remains but it will not be primarily linked from the homepage [README.md](../README.md). There
-> is a [migration](#migration-from--fixed-length--schemas) section near the end of this page to
-illustrate the simple schema migration steps from `fixed-length` to `fixedlength2`.
+> remains but it will not be directly linked from the homepage [README.md](../README.md). There
+> is a [migration](#migration-from--fixed-length--schemas) section near the end of this page
+> to illustrate the simple schema migration steps from `fixed-length` to `fixedlength2`.
 
 Fixed-length (sometimes also called fixed-width) schema has 3 parts: `parser_settings`, `file_declaration`,
 and `transform_declarations`. We've covered `parser_settings` in [Getting Started](./gettingstarted.md);
@@ -382,7 +383,7 @@ child `envelope`, `SPT` and `SWT`, respectively.
 
 See [here](./idr.md#fixed-length-mostly-txt) for more details.
 
-## Migration from `fixed-length` Schemas
+## Migration from `'fixed-length'` Schemas
 
 If one looks at the documentation for the old `fixed-length` schema
 [here](./fixedlength_in_depth.md), you notice `fixed-length` and `fixedlength2` schemas are really

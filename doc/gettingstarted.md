@@ -10,14 +10,14 @@ and by the CLI tool.
 - [`github.com/jf-tech/omniparser`](https://github.com/jf-tech/omniparser) cloned (assuming the clone
 location is: `~/dev/jf-tech/omniparser/`)
 - The guide assumes Mac OS or Linux dev environment. If you're on Windows, you need make minor
-adjustments from the bash commands posted below. 
+adjustments from the bash commands posted below.
 
 ## The Input
 We'll use a simple CSV input for this guide. We have separate pages that go into details about other
 input formats.
 
 Consider the following CSV input (simplified and changed from the full example
-[here](../extensions/omniv21/samples/csv/1_weather_data_csv.input.csv)):
+[here](../extensions/omniv21/samples/csv2/1_single_row.input.csv)):
 
 ```
                     DATE|HIGH TEMP C|LOW TEMP F|WIND DIR|WIND SPEED KMH
@@ -78,7 +78,7 @@ $ touch schema.json
 Use any editor to cut & paste the CSV content from [The Input](#the-input) into `input.csv`, and
 now run omniparser CLI from `~/Downloads/omniparser/guide/`:
 ```
-$ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json 
+$ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 Error: unable to perform schema validation: EOF
 ```
 Expected, given the `schema.json` is still empty.
@@ -96,13 +96,16 @@ This is the common part of all omniparser schemas, the header `parser_settings`:
 {
     "parser_settings": {
         "version": "omni.2.1",
-        "file_format_type": "csv"
+        "file_format_type": "csv2"
     }
 }
 ```
+(Note, `"csv2"` has replaced the deprecated `"csv"` schema, see more details in
+[CSV Schema in Depth](./csv2_in_depth.md).)
+
 It's self-explanatory. Now let's run the CLI again:
 ```
-$ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json 
+$ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 Error: schema 'schema.json' validation failed: (root): transform_declarations is required
 ```
 
@@ -117,7 +120,7 @@ transformation. Let's add an empty `transform_declarations` for now:
 {
     "parser_settings": {
         "version": "omni.2.1",
-        "file_format_type": "csv"
+        "file_format_type": "csv2"
     },
     "transform_declarations": {}
 }
@@ -132,7 +135,7 @@ Let's add an empty `FINAL_OUTPUT` in:
 {
     "parser_settings": {
         "version": "omni.2.1",
-        "file_format_type": "csv"
+        "file_format_type": "csv2"
     },
     "transform_declarations": {
         "FINAL_OUTPUT": {}
@@ -161,13 +164,13 @@ section, e.g. JSON and XML inputs need no `file_declaration` in their schemas.)
 
 For CSV, we need to define the following settings:
 - What's the delimiter character, comma or something else?
-- Is there a header in the CSV input that defines the names of each column? If no, what each column
-should be called during ingestion and transformation?
-- Where do the actual data lines begin?
+- Is there a header row in the CSV input that defines the names of each column? If yes, do we want
+to check and verify all the column names, or can we ignore the header row; if no, what each column
+should be called during the data row ingestion and transformation?
 
 For this guide example, the settings are:
 - delimiter is `|`
-- Yes there is a header line with all the columns names defined.
+- Yes there is a header line with all the columns names defined, and we'd like to verify them.
 - The actual data lines start at line 2. (Line number is 1-based.)
 
 Let's add these:
@@ -175,18 +178,24 @@ Let's add these:
 {
     "parser_settings": {
         "version": "omni.2.1",
-        "file_format_type": "csv"
+        "file_format_type": "csv2"
     },
     "file_declaration": {
         "delimiter": "|",
-        "header_row_index": 1,
-        "data_row_index": 2,
-        "columns": [
-            { "name": "DATE" },
-            { "name": "HIGH TEMP C" },
-            { "name": "LOW TEMP F" },
-            { "name": "WIND DIR" },
-            { "name": "WIND SPEED KMH" }
+        "records": [
+            {
+                "header": "^DATE|HIGH TEMP C|LOW TEMP F|WIND DIR|WIND SPEED KMH$",
+                "min": 1, "max": 1
+            },
+            {
+                "columns": [
+                    { "name": "DATE" },
+                    { "name": "HIGH TEMP C" },
+                    { "name": "LOW TEMP F" },
+                    { "name": "WIND DIR" },
+                    { "name": "WIND SPEED KMH" }
+                ]
+            }
         ]
     },
     "transform_declarations": {
@@ -195,7 +204,66 @@ Let's add these:
 }
 ```
 
+The `records` part needs a little bit explanation:
+- It says there are two different types of records in the file, the first one is the header
+record, and second one is the data record.
+- For the header record, it has a `header` property, which contains a regexp pattern
+to match the actual header row in the input file. This is how we can match and make sure
+the header row is exactly what we expected. Note the header record also has two properties:
+`min`, `max`. They together specify there could be one and only one header row. Note `min`, if
+missing, is defaulted to 0, and `max`, if missing, is defaulted to `-1` which means unlimited.
+- For the data record, it defines the columns with which we will extract data from each line in the
+input file. Note the data record doesn't explicitly define `min` and `max`, thus we are expecting
+to see 0 or multiple (unlimited) lines of data rows from the input file.
+
 Run the CLI again:
+```
+$ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
+[
+	null
+]
+```
+
+Better, at least no more error message, but `null`? That's no good.
+
+It turns out we need to tell omniparser which of the two records is the one we want to ingest and
+transform. Kinda make sense, doesn't it? :)
+
+To do so, simply putting `"is_target": true` to the date record:
+
+```
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "csv2"
+    },
+    "file_declaration": {
+        "delimiter": "|",
+        "records": [
+            {
+                "header": "^DATE|HIGH TEMP C|LOW TEMP F|WIND DIR|WIND SPEED KMH$",
+                "min": 1, "max": 1
+            },
+            {
+                "is_target": true,
+                "columns": [
+                    { "name": "DATE" },
+                    { "name": "HIGH TEMP C" },
+                    { "name": "LOW TEMP F" },
+                    { "name": "WIND DIR" },
+                    { "name": "WIND SPEED KMH" }
+                ]
+            }
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": {}
+    }
+}
+```
+
+Run cli, we got this:
+
 ```
 $ ~/dev/jf-tech/omniparser/cli.sh transform -i input.csv -s schema.json
 [
@@ -253,26 +321,33 @@ queries later in transformation:
 </>
 ```
 Note XML/XPath don't like element name containing spaces. While IDR doesn't care about names with
-spaces, XPath queries used in transforms do care and will break. So we'd like to **assign some
-XPath friendly column name aliases in our schema, if the raw column names containing special chars**:
+spaces, XPath queries used in transforms do care and will break. So we'd like to assign some
+XPath friendly column names in our schema (replacing space with `'_'`):
 
 Let's make small modifications to our schema:
 ```
 {
     "parser_settings": {
         "version": "omni.2.1",
-        "file_format_type": "csv"
+        "file_format_type": "csv2"
     },
     "file_declaration": {
         "delimiter": "|",
-        "header_row_index": 1,
-        "data_row_index": 2,
-        "columns": [
-            { "name": "DATE" },
-            { "name": "HIGH TEMP C", "alias": "HIGH_TEMP_C" },
-            { "name": "LOW TEMP F", "alias": "LOW_TEMP_F" },
-            { "name": "WIND DIR", "alias": "WIND_DIR" },
-            { "name": "WIND SPEED KMH", "alias": "WIND_SPEED_KMH" }
+        "records": [
+            {
+                "header": "^DATE|HIGH TEMP C|LOW TEMP F|WIND DIR|WIND SPEED KMH$",
+                "min": 1, "max": 1
+            },
+            {
+                "is_target": true,
+                "columns": [
+                    { "name": "DATE" },
+                    { "name": "HIGH_TEMP_C" },
+                    { "name": "LOW_TEMP_F" },
+                    { "name": "WIND_DIR" },
+                    { "name": "WIND_SPEED_KMH" }
+                ]
+            }
         ]
     },
     "transform_declarations": {
@@ -634,7 +709,7 @@ by one.
     Math.floor(kmh * 0.621371 * 100) / 100
     ```
     (Several uses of `Math.floor(...*100/100)` throughout this page is to limit the number of decimal
-    places to be more human readable.) 
+    places to be more human readable.)
 
 Put 1) and 2) together, we can have the new transform schema look like this:
 ```
@@ -739,18 +814,25 @@ for {
 {
     "parser_settings": {
         "version": "omni.2.1",
-        "file_format_type": "csv"
+        "file_format_type": "csv2"
     },
     "file_declaration": {
         "delimiter": "|",
-        "header_row_index": 1,
-        "data_row_index": 2,
-        "columns": [
-            { "name": "DATE" },
-            { "name": "HIGH TEMP C", "alias": "HIGH_TEMP_C" },
-            { "name": "LOW TEMP F", "alias": "LOW_TEMP_F" },
-            { "name": "WIND DIR", "alias": "WIND_DIR" },
-            { "name": "WIND SPEED KMH", "alias": "WIND_SPEED_KMH" }
+        "records": [
+            {
+                "header": "^DATE|HIGH TEMP C|LOW TEMP F|WIND DIR|WIND SPEED KMH$",
+                "min": 1, "max": 1
+            },
+            {
+                "is_target": true,
+                "columns": [
+                    { "name": "DATE" },
+                    { "name": "HIGH_TEMP_C" },
+                    { "name": "LOW_TEMP_F" },
+                    { "name": "WIND_DIR" },
+                    { "name": "WIND_SPEED_KMH" }
+                ]
+            }
         ]
     },
     "transform_declarations": {
@@ -808,7 +890,7 @@ for {
         break
     }
     if err != nil { ... }
-    // output contains a []byte of the ingested and transformed record. 
+    // output contains a []byte of the ingested and transformed record.
 }
 ```
 

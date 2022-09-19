@@ -197,7 +197,7 @@ filtering, thus enabling processing arbitrarily large inputs.
 
 ## CSV Reader
 
-Use [`NewReader()`](../extensions/omniv21/fileformat/csv/reader.go) to create a CSV reader that does
+Use [`NewReader()`](../extensions/omniv21/fileformat/flatfile/csv/reader.go) to create a CSV reader that does
 - header column validation
 - header/data row jumping
 - XPath based data row filtering
@@ -205,18 +205,18 @@ Use [`NewReader()`](../extensions/omniv21/fileformat/csv/reader.go) to create a 
 - Context-aware error message
 
 For more reader specific settings/configurations, check
-[CSV in Depth](./csv_in_depth.md#csv-file_declaration) page.
+[CSV in Depth](./csv2_in_depth.md#csv-file_declaration) page.
 
 ## Fixed-Length Reader
 
-Use [`NewReader()`](../extensions/omniv21/fileformat/fixedlength/reader.go) to create a fixed-length
+Use [`NewReader()`](../extensions/omniv21/fileformat/flatfile/fixedlength/reader.go) to create a fixed-length
 reader that does
 - row based or header/footer based envelope parsing
 - XPath based data row filtering
 - Context-aware error message
 
 For more reader specific settings/configurations, check
-[Fixed-Length in Depth](./fixedlength_in_depth.md) page.
+[Fixed-Length in Depth](./fixedlength2_in_depth.md) page.
 
 ## Full EDI Reader
 
