@@ -31,7 +31,7 @@ and `'boolean'`. Not specifying `type` tells omniparser to keep whatever type of
 2. Variable Argument List
 
     Look at the following transform example (adapted from
-    [here](../extensions/omniv21/samples/fixedlength/2_multi_rows.schema.json)):
+    [here](../extensions/omniv21/samples/fixedlength2/2_multi_rows.schema.json)):
     ```
     "event_datetime": { "custom_func": {
         "name": "concat",
@@ -49,7 +49,7 @@ and `'boolean'`. Not specifying `type` tells omniparser to keep whatever type of
 
     Arguments of a `custom_func` transform can also be `custom_func`, thus enabling chaining and
     composability. Look at the following example (adapted from
-    [here](../extensions/omniv21/samples/fixedlength/2_multi_rows.schema.json)):
+    [here](../extensions/omniv21/samples/fixedlength2/2_multi_rows.schema.json)):
     ```
     "event_date_template": { "custom_func": {
         "name": "dateTimeToRFC3339",
@@ -107,7 +107,7 @@ which the most important, flexible and powerful one is `javascript` (and its sib
 Omniparser uses https://github.com/dop251/goja, a native Golang ECMAScript implementation thus **free of
 external C/C++ lib dependencies**.
 
-A simple example (adapted from [here](../extensions/omniv21/samples/csv/1_weather_data_csv.schema.json)):
+A simple example (adapted from [here](../extensions/omniv21/samples/csv2/1_single_row.schema.json)):
 ```
 "temp_in_f": { "custom_func": {
     "name": "javascript",
@@ -130,7 +130,7 @@ in the `custom_func` transform to force a type conversion.
 If there is any exception thrown in the script, `javascript` transform will fail with an error. If the
 result from the script is `NaN`, `null`, `Infinity` or `Undefined`, the transform will fail with an error.
 
-Another example (adapted from [here](../extensions/omniv21/samples/csv/1_weather_data_csv.schema.json)):
+Another example (adapted from [here](../extensions/omniv21/samples/csv2/1_single_row.schema.json)):
 ```
 "uv_index": { "custom_func": {
     "name": "javascript",
@@ -220,7 +220,7 @@ If any of the argument tranforms return error, or the custom function itself fai
 relayed out, unless `ignore_error` is specified.
 
 Look at the following example (adapted from
-[here](../extensions/omniv21/samples/fixedlength/2_multi_rows.schema.json)):
+[here](../extensions/omniv21/samples/fixedlength2/2_multi_rows.schema.json)):
 ```
 "event_date_template": { "custom_func": {
     "name": "dateTimeToRFC3339",

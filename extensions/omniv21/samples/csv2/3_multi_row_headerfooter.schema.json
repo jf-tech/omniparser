@@ -1,0 +1,27 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "csv2"
+    },
+    "file_declaration": {
+        "delimiter": ",",
+        "records": [
+            {
+                "header": "^B$", "footer": "^E$",
+                "columns": [
+                    { "name": "COL1", "line_pattern": "^[0-9]" },
+                    { "name": "COL2", "line_pattern": "^[0-9]" },
+                    { "name": "COL3", "line_pattern": "^[0-9]" },
+                    { "name": "COL4", "line_pattern": "^[0-9]" }
+            ]}
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "object": {
+          "col1": { "xpath": "COL1" },
+          "col2": { "xpath": "COL2" },
+          "col3": { "xpath": "COL3" },
+          "col4": { "xpath": "COL4" }
+        }}
+    }
+}

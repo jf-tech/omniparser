@@ -1,0 +1,27 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "csv2"
+    },
+    "file_declaration": {
+        "delimiter": ",",
+        "records": [
+            {
+                "rows": 2,
+                "columns": [
+                    { "name": "COL1", "index": 3, "line_index": 1 },
+                    { "name": "COL2", "index": 4, "line_index": 1 },
+                    { "name": "COL3", "index": 1, "line_index": 2 },
+                    { "name": "COL4", "index": 2, "line_index": 2 }
+            ]}
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "object": {
+          "col1": { "xpath": "COL1" },
+          "col2": { "xpath": "COL2" },
+          "col3": { "xpath": "COL3" },
+          "col4": { "xpath": "COL4" }
+        }}
+    }
+}

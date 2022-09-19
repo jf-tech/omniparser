@@ -1,0 +1,46 @@
+[
+	{
+		"RawRecord": "{\"D\":[{\"DESTINATION\":\"OL7 0PZ\",\"EVENT_CODE\":\"EVPPA\",\"EVENT_LOCATION\":\"Post Office at AL4 9RB\",\"ITEM_ID\":\"XF460080188GB\"},{\"DESTINATION\":\"OL7 0PZ\",\"EVENT_CODE\":\"EVPPA\",\"EVENT_LOCATION\":\"Post Office at CO3 4RZ\",\"ITEM_ID\":\"XF460080259GB\"}],\"DATE\":\"20200504\",\"TIME\":\"085048\",\"WIRE_NUM\":\"WJ84\"}",
+		"RawRecordHash": "a7367e2b-8014-3a7b-9ffc-da4c682e0790",
+		"TransformedRecord": {
+			"items": [
+				{
+					"destination": "OL7 0PZ",
+					"event_code": "EVPPA",
+					"event_loc": "Post Office at AL4 9RB",
+					"id": "XF460080188GB"
+				},
+				{
+					"destination": "OL7 0PZ",
+					"event_code": "EVPPA",
+					"event_loc": "Post Office at CO3 4RZ",
+					"id": "XF460080259GB"
+				}
+			],
+			"wire_number": "WJ84",
+			"wire_time": "2020-05-04T08:50:48"
+		}
+	},
+	{
+		"RawRecord": "{\"D\":[{\"DESTINATION\":\"OL7 0PZ\",\"EVENT_CODE\":\"EVPPA\",\"EVENT_LOCATION\":\"Post Office at AL4 9RB\",\"ITEM_ID\":\"XF460080456GB\"},{\"DESTINATION\":\"OL7 0PZ\",\"EVENT_CODE\":\"EVPPA\",\"EVENT_LOCATION\":\"Post Office at CO3 4RZ\",\"ITEM_ID\":\"XF460080758GB\"}],\"DATE\":\"20200505\",\"TIME\":\"100248\",\"WIRE_NUM\":\"WJ85\"}",
+		"RawRecordHash": "345554f8-d49d-33c1-b9d0-ef2d562601bb",
+		"TransformedRecord": {
+			"items": [
+				{
+					"destination": "OL7 0PZ",
+					"event_code": "EVPPA",
+					"event_loc": "Post Office at AL4 9RB",
+					"id": "XF460080456GB"
+				},
+				{
+					"destination": "OL7 0PZ",
+					"event_code": "EVPPA",
+					"event_loc": "Post Office at CO3 4RZ",
+					"id": "XF460080758GB"
+				}
+			],
+			"wire_number": "WJ85",
+			"wire_time": "2020-05-05T10:02:48"
+		}
+	}
+]

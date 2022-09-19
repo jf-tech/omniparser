@@ -1,4 +1,9 @@
-# CSV Schema in Depth
+# CSV Schema in Depth (**DEPRECATED**)
+
+> Note: this version of `csv` schema has been deprecated and superseded by
+> [`csv2`](./csv2_in_depth.md) schema. Its functionality and support will continue but (incredibly
+> easy) [migration to `csv2`](./csv2_in_depth.md#migration-from-csv-schemas) is strongly recommended.
+>
 
 CSV (comma separated values) schema covers any delimiter (so not just comma) based flat file format. A
 complete `"omni.2.1"` CSV schema has 3 parts: `parser_settings`, `file_declaration`, and
@@ -27,7 +32,7 @@ Full `file_declaration` schema looks as follows:
 ```
 
 - `delimiter`: self-explanatory.
-    - Note 1: the delimiter doesn't have to be of a single character.
+    - Note 1: the delimiter must be of a single character.
     - Note 2: the delimiter doesn't have to be limited to ASCII character(s), utf8 is supported.
 
 - `replace_double_quotes`: omniparser will replace any occurrences of double quotes `"` with single

@@ -23,7 +23,7 @@ writing. Learn the concept and tricks in depth.
 - [All About Transforms](./doc/transforms.md): everything about `transform_declarations`.
 - [Use of `custom_func`, Specially `javascript`](./doc/use_of_custom_funcs.md): An in depth look of how `custom_func`
 is used, specially the all mighty `javascript` (and `javascript_with_context`).
-- [CSV Schema in Depth](./doc/csv_in_depth.md): everything about schemas for CSV input.
+- [CSV Schema in Depth](./doc/csv2_in_depth.md): everything about schemas for CSV input.
 - [Fixed-Length Schema in Depth](./doc/fixedlength2_in_depth.md): everything about schemas for fixed-length (e.g. TXT)
 input
 - [JSON/XML Schema in Depth](./doc/json_xml_in_depth.md): everything about schemas for JSON or XML input.
@@ -35,7 +35,7 @@ References:
 - [Custom Functions](./doc/customfuncs.md): a complete reference of all built-in custom functions.
 
 Examples:
-- [CSV Examples](extensions/omniv21/samples/csv)
+- [CSV Examples](extensions/omniv21/samples/csv2)
 - [Fixed-Length Examples](extensions/omniv21/samples/fixedlength2)
 - [JSON Examples](extensions/omniv21/samples/json)
 - [XML Examples](extensions/omniv21/samples/xml).
@@ -67,6 +67,7 @@ situations.
 - Golang 1.14 or later.
 
 ## Recent Major Feature Additions/Changes
+- added `csv2` file format that supersedes the original `csv` format with support of hierarchical and nested records.
 - 2022/9: 1.0.3 released: added `fixedlength2` file format that supersedes the original `fixed-length` format with support of hierarchical and nested envelopes.
 - 1.0.0 Released!
 - Added `Transform.RawRecord()` for caller of omniparser to access the raw ingested record.

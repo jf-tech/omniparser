@@ -1,0 +1,57 @@
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "csv2"
+    },
+    "file_declaration": {
+        "delimiter": ",",
+        "records": [
+            {
+                "name": "H", "header": "^H,", "is_target": true,
+                "columns": [
+                    { "name": "WIRE_NUM", "index": 2 },
+                    { "name": "DATE", "index": 3 },
+                    { "name": "TIME", "index": 4 }
+                ],
+                "child_records": [
+                    {
+                        "name": "D", "header": "^D,", "min": 1,
+                        "columns": [
+                            { "name": "ITEM_ID", "index": 3 },
+                            { "name": "DESTINATION", "index": 5 },
+                            { "name": "EVENT_LOCATION", "index": 6 },
+                            { "name": "EVENT_CODE", "index": 7 }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "transform_declarations": {
+        "FINAL_OUTPUT": { "object": {
+            "wire_number": { "xpath": "WIRE_NUM" },
+            "wire_time": { "xpath": ".", "template": "wire_date_time_template" },
+            "items": { "array": [ { "xpath": "D", "object": {
+                "id": { "xpath": "ITEM_ID"},
+                "destination": { "xpath": "DESTINATION"},
+                "event_loc": { "xpath": "EVENT_LOCATION"},
+                "event_code": { "xpath": "EVENT_CODE"}
+            }}]}
+        }},
+        "wire_date_time_template": { "custom_func": {
+            "name": "dateTimeToRFC3339",
+            "args": [
+                { "custom_func": {
+                    "name": "concat",
+                    "args": [
+                        { "xpath": "DATE" },
+                        { "const": "T" },
+                        { "xpath": "TIME" }
+                    ]
+                }},
+                { "const": "", "_comment": "input timezone" },
+                { "const": "", "_comment": "output timezone" }
+            ]
+        }}
+    }
+}

@@ -12,7 +12,7 @@ inherited/adapted from, modified based on, and inspired by works done in https:/
 and https://github.com/antchfx/xpath. Thank you very much!
 
 The basic building block of an IDR is a `Node` and an IDR is in fact a `Node` tree. Each `Node` has
-two parts (see actual code [here](./node.go)):
+two parts (see actual code [here](../idr/node.go)):
 ```
 type Node struct {
 	ID int64
@@ -157,7 +157,7 @@ corresponding `ElementNode` parent.
 
 ## CSV (aka delimited)
 
-Here is a sample CSV (adapted from [this sample](../extensions/omniv21/samples/csv/1_weather_data_csv.input.csv)):
+Here is a sample CSV (adapted from [this sample](../extensions/omniv21/samples/csv2/1_single_row.input.csv)):
 ```
 DATE|HIGH TEMP C|LOW TEMP F|WIND DIR|WIND SPEED KMH|NOTE|LAT|LONG|UV INDEX
 2019/01/31T12:34:56-0800|10.5|30.2|N|33|note 1|37.7749|122.4194|12/4/6
@@ -185,7 +185,8 @@ Node(Type: DocumentNode)
     Node(Type: ElementNode, Data: "UV_INDEX")
         Node(Type: TextNode, Data: "12/4/6")
 ```
-Note some of the `ElementNode.Data` values are from its [schema](../extensions/omniv21/samples/csv/1_weather_data_csv.schema.json)
+Note some of the `ElementNode.Data` values are from its
+[schema](../extensions/omniv21/samples/csv2/1_single_row.schema.json)
 to avoid column name containing space, which isn't xpath query friendly.
 
 ## EDI
@@ -201,7 +202,7 @@ N4*HAMMER*AB*T0C1Z0*CA
 ```
 
 Note EDI content, while itself is "flat", is inherently hierarchical (like XML) and its hierarchical structure
-needs to be described in an accompanying schema. For this example, here is a snippet of the 
+needs to be described in an accompanying schema. For this example, here is a snippet of the
 [related schema](../extensions/omniv21/samples/edi/1_canadapost_edi_214.schema.json):
 
 ```
@@ -256,8 +257,8 @@ in the EDI content.
 In fixed-length files, we have the concept of an 'envelope'. An envelope can contain a single line of text, or a fixed
 number of consecutive lines, or multiple lines grouped together by a header and a footer. An envelope is the basic unit
 of record which the fixed-length reader returns to the parser.
- 
-Here is a sample single-line-envelope TXT (adapted from [this sample](../extensions/omniv21/samples/fixedlength/1_single_row.input.txt)):
+
+Here is a sample single-line-envelope TXT (adapted from [this sample](../extensions/omniv21/samples/fixedlength2/1_single_row.input.txt)):
 ```
 ...
 2019/01/31T12:34:56-0800 10.5 30.2  N 33  37.7749 122.4194
