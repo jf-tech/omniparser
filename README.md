@@ -83,8 +83,8 @@ back-compatibility, it is just removed from all public docs and samples).
         - `'keep_leading_trailing_space'` -> `'no_trim'`
     - Changed how we handle custom functions: previously we always use strings as in param type as well as result param
     type. Not anymore, all types are supported for custom function in and out params.
-    - Changed the way how we package custom functions for extensions: previously we collect custom functions from all
-    extensions and then pass all of them to the extension that is used; This feels weird, now changed to only the custom
+    - Changed the way we package custom functions for extensions: previously we collected custom functions from all
+    extensions and then passed all of them to the extension that is used; this feels weird, now only the custom
     functions included in a particular extension are used in that extension.
     - Deprecated/removed most of the custom functions in favor of using 'javascript'.
     - A number of package renaming.
