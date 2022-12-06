@@ -48,7 +48,7 @@ In the example folders above you will find pairs of input files and their schema
 
 ## Online Playground
 
-Use https://omniparser.herokuapp.com/ (may need to wait for a few seconds for heroku instance to wake up)
+Use [The Playground](https://omniparser-prod-omniparser-qd0sj4.mo2.mogenius.io/)  (may need to wait for a few seconds for instance to wake up)
 for trying out schemas and inputs, yours or existing samples, to see how ingestion and transform work.
 
 ![](./cli/cmd/web/playground-demo.gif)
