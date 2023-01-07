@@ -9,9 +9,14 @@ Omniparser is a native Golang ETL parser that ingests input data of various form
 XML, EDI/X12/EDIFACT, JSON**, and custom formats) in streaming fashion and transforms data into desired JSON output
 based on a schema written in JSON.
 
-**Please kindly consider sponsoring the project to fund future development and issue resolutions**: https://github.com/sponsors/jf-tech
-
 Min Golang Version: 1.14
+
+## Licenses and Sponsorship
+Omniparser is publicly available under [MIT License](./LICENSE).
+[Individual and corporate sponsorships](https://github.com/sponsors/jf-tech/) are welcome and gratefully
+appreciated, and will be listed in the [SPONSORS](./sponsors/SPONSORS.md) page.
+[Company-level sponsors](https://github.com/sponsors/jf-tech/) get additional benefits and supports
+granted in the [COMPANY LICENSE](./sponsors/COMPANY_LICENSE.md).
 
 ## Documentation
 
