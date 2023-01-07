@@ -5,7 +5,7 @@ Copyright (c) 2023 - present [JF Technology](https://github.com/jf-tech)
 ## Licensing Information
 
 In addition to the terms and conditions mentioned in the [main license](../LICENSE), your
-company is entitled to the following when sponsorship is active:
+company is entitled to the following when company level sponsorship is active:
 
 | Item | - |
 | ---------------------------------- | --- |
