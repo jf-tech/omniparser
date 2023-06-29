@@ -27,7 +27,7 @@ const (
                 }
             },
             "required": [ "segment_delimiter", "element_delimiter", "segment_declarations" ],
-            "additionalProperties": true
+            "additionalProperties": false
         }
     },
     "required": [ "file_declaration" ],
@@ -49,10 +49,11 @@ const (
                             "index": { "type": "integer", "minimum": 1 },
                             "component_index": { "type": "integer", "minimum": 1 },
                             "empty_if_missing": { "type": "boolean","$comment": "deprecated, use 'default'" },
-                            "default": { "type": "string" }
+                            "default": { "type": "string" },
+                            "_comment": { "$ref": "#/definitions/value_comment" }
                         },
                         "required": [ "name", "index" ],
-                        "additionalProperties": true
+                        "additionalProperties": false
                     }
                 },
                 "child_segments": {
@@ -60,11 +61,13 @@ const (
                     "items": {
                       "$ref": "#/definitions/segment_declaration_type"
                     }
-                }
+                },
+                "_comment": { "$ref": "#/definitions/value_comment" }
             },
             "required": [ "name" ],
-            "additionalProperties": true
-        }
+            "additionalProperties": false
+        },
+        "value_comment": { "type": "string" }
     }
 }
 `
