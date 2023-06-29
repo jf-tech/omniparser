@@ -12,6 +12,7 @@
                 "child_segments": [
                     {
                         "name": "GS",
+                        "_comment": "functional group",
                         "child_segments": [
                             {
                                 "name": "scanInfo", "type": "segment_group", "min": 0, "max": -1, "is_target": true,
@@ -26,7 +27,7 @@
                                     {
                                         "name": "N4",
                                         "elements": [
-                                            { "name": "cityName", "index": 1 },
+                                            { "name": "cityName", "index": 1, "_comment": "E19" },
                                             { "name": "provinceCode", "index": 2 },
                                             { "name": "postalCode", "index": 3 },
                                             { "name": "countryCode", "index": 4 }

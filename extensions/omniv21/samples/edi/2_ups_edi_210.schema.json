@@ -14,6 +14,7 @@
                 "child_segments": [
                     {
                         "name": "GS",
+                        "_comment": "functional group",
                         "child_segments": [
                             {
                                 "name": "invoiceInfo", "type": "segment_group", "min": 0, "max": -1, "is_target": true,
@@ -74,7 +75,7 @@
                                                 "elements": [
                                                     { "name": "refIdQualifier_N901", "index": 1 },
                                                     { "name": "refId_N902", "index": 2, "default": "" },
-                                                    { "name": "date", "index": 4, "default": "" },
+                                                    { "name": "date", "index": 4, "default": "", "_comment": "YYYYMMDD"},
                                                     { "name": "product_code_C04004", "index": 7, "component_index": 4, "default": "" }
                                                 ]
                                             },
