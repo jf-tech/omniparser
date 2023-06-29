@@ -20,7 +20,7 @@
                 }
             },
             "required": [ "segment_delimiter", "element_delimiter", "segment_declarations" ],
-            "additionalProperties": false
+            "additionalProperties": true
         }
     },
     "required": [ "file_declaration" ],
@@ -45,7 +45,7 @@
                             "default": { "type": "string" }
                         },
                         "required": [ "name", "index" ],
-                        "additionalProperties": false
+                        "additionalProperties": true
                     }
                 },
                 "child_segments": {
@@ -56,7 +56,7 @@
                 }
             },
             "required": [ "name" ],
-            "additionalProperties": false
+            "additionalProperties": true
         }
     }
 }

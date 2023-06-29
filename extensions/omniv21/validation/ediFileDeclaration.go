@@ -27,7 +27,7 @@ const (
                 }
             },
             "required": [ "segment_delimiter", "element_delimiter", "segment_declarations" ],
-            "additionalProperties": false
+            "additionalProperties": true
         }
     },
     "required": [ "file_declaration" ],
@@ -52,7 +52,7 @@ const (
                             "default": { "type": "string" }
                         },
                         "required": [ "name", "index" ],
-                        "additionalProperties": false
+                        "additionalProperties": true
                     }
                 },
                 "child_segments": {
@@ -63,7 +63,7 @@ const (
                 }
             },
             "required": [ "name" ],
-            "additionalProperties": false
+            "additionalProperties": true
         }
     }
 }
