@@ -6,4 +6,6 @@
 
 - Entos LLC
 
+- ![HealthSherpa](resources/HealthSherpa.png)
+
 ### Generous Individual Backers
