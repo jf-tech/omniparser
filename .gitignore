@@ -20,3 +20,6 @@ op
 
 # Coverage
 coverage.txt
+
+# Misc
+.DS_Store
