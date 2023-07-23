@@ -108,22 +108,22 @@ func Test4_Nested(t *testing.T) {
 	tests[test4_Nested].doTest(t)
 }
 
-// Benchmark1_Single_Row-8      	   25898	     45728 ns/op	   28169 B/op	     647 allocs/op
+// Benchmark1_Single_Row-8      	   25951	     45776 ns/op	   28213 B/op	     645 allocs/op
 func Benchmark1_Single_Row(b *testing.B) {
 	tests[test1_Single_Row].doBenchmark(b)
 }
 
-// Benchmark2_Multi_Rows-8      	   15338	     78273 ns/op	   30179 B/op	     618 allocs/op
+// Benchmark2_Multi_Rows-8      	   18583	     64240 ns/op	   34056 B/op	     636 allocs/op
 func Benchmark2_Multi_Rows(b *testing.B) {
 	tests[test2_Multi_Rows].doBenchmark(b)
 }
 
-// Benchmark3_Header_Footer-8   	    6390	    178301 ns/op	   76571 B/op	    1501 allocs/op
+// Benchmark3_Header_Footer-8   	    7306	    158797 ns/op	   78666 B/op	    1587 allocs/op
 func Benchmark3_Header_Footer(b *testing.B) {
 	tests[test3_Header_Footer].doBenchmark(b)
 }
 
-// Benchmark4_Nested-8          	   10000	    107948 ns/op	   78986 B/op	    1535 allocs/op
+// Benchmark4_Nested-8          	   10000	    107955 ns/op	   80929 B/op	    1515 allocs/op
 func Benchmark4_Nested(b *testing.B) {
 	tests[test4_Nested].doBenchmark(b)
 }
