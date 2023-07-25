@@ -1,7 +1,167 @@
 {
 	"Records": [
-		"{'e1':'0','e2':'1','e3':'2'}",
-		"{'e1':'3','e2':'4','e3':'5'}"
+		{
+			"Children": [
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "0",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(ElementNode e1)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "e1",
+					"FirstChild": "(TextNode '0')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode '0')",
+					"NextSibling": "(ElementNode e2)",
+					"Parent": "(ElementNode ISA)",
+					"PrevSibling": null,
+					"Type": "ElementNode"
+				},
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "1",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(ElementNode e2)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "e2",
+					"FirstChild": "(TextNode '1')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode '1')",
+					"NextSibling": "(ElementNode e3)",
+					"Parent": "(ElementNode ISA)",
+					"PrevSibling": "(ElementNode e1)",
+					"Type": "ElementNode"
+				},
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "2",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(ElementNode e3)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "e3",
+					"FirstChild": "(TextNode '2')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode '2')",
+					"NextSibling": null,
+					"Parent": "(ElementNode ISA)",
+					"PrevSibling": "(ElementNode e2)",
+					"Type": "ElementNode"
+				}
+			],
+			"Data": "ISA",
+			"FirstChild": "(ElementNode e1)",
+			"FormatSpecific": null,
+			"LastChild": "(ElementNode e3)",
+			"NextSibling": null,
+			"Parent": "(ElementNode isa_group)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		},
+		{
+			"Children": [
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "3",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(ElementNode e1)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "e1",
+					"FirstChild": "(TextNode '3')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode '3')",
+					"NextSibling": "(ElementNode e2)",
+					"Parent": "(ElementNode ISA)",
+					"PrevSibling": null,
+					"Type": "ElementNode"
+				},
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "4",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(ElementNode e2)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "e2",
+					"FirstChild": "(TextNode '4')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode '4')",
+					"NextSibling": "(ElementNode e3)",
+					"Parent": "(ElementNode ISA)",
+					"PrevSibling": "(ElementNode e1)",
+					"Type": "ElementNode"
+				},
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "5",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(ElementNode e3)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "e3",
+					"FirstChild": "(TextNode '5')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode '5')",
+					"NextSibling": null,
+					"Parent": "(ElementNode ISA)",
+					"PrevSibling": "(ElementNode e2)",
+					"Type": "ElementNode"
+				}
+			],
+			"Data": "ISA",
+			"FirstChild": "(ElementNode e1)",
+			"FormatSpecific": null,
+			"LastChild": "(ElementNode e3)",
+			"NextSibling": null,
+			"Parent": "(ElementNode isa_group)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		}
 	],
 	"FinalErr": "EOF"
 }

@@ -30,8 +30,9 @@ func j1NodePtrName(n *Node) *string {
 	}
 }
 
-// j1NodeToInterface converts *Node into an interface{} suitable for json marshaling used in JSONify1.
-func j1NodeToInterface(n *Node) interface{} {
+// J1NodeToInterface translates an *idr.Node and its subtree into a JSON-marshaling friendly
+// interface{} that includes all the idr.Node internal fields, including tree pointers.
+func J1NodeToInterface(n *Node) interface{} {
 	m := make(map[string]interface{})
 	m["Parent"] = j1NodePtrName(n.Parent)
 	m["FirstChild"] = j1NodePtrName(n.FirstChild)
@@ -43,7 +44,7 @@ func j1NodeToInterface(n *Node) interface{} {
 	m["FormatSpecific"] = n.FormatSpecific
 	var children []interface{}
 	for child := n.FirstChild; child != nil; child = child.NextSibling {
-		children = append(children, j1NodeToInterface(child))
+		children = append(children, J1NodeToInterface(child))
 	}
 	m["Children"] = children
 	return m
@@ -51,5 +52,5 @@ func j1NodeToInterface(n *Node) interface{} {
 
 // JSONify1 json marshals a *Node verbatim. Mostly used in test for snapshotting.
 func JSONify1(n *Node) string {
-	return jsons.BPM(j1NodeToInterface(n))
+	return jsons.BPM(J1NodeToInterface(n))
 }

@@ -1,6 +1,16 @@
 {
 	"Records": [
-		"{}"
+		{
+			"Children": null,
+			"Data": "ISA",
+			"FirstChild": null,
+			"FormatSpecific": null,
+			"LastChild": null,
+			"NextSibling": null,
+			"Parent": "(DocumentNode)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		}
 	],
 	"FinalErr": "input 'test' at segment no.2 (char[13,13]): segment 'UNKNOWN' is either not declared in schema or appears in an invalid order"
 }

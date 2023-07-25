@@ -103,23 +103,26 @@ func (r *ediReader) rawSegToNode(segDecl *SegDecl) (*idr.Node, error) {
 		panic("unprocessedRawSeg is not valid")
 	}
 	n := idr.CreateNode(idr.ElementNode, segDecl.Name)
-	rawElems := r.unprocessedRawSeg.Elems
 	for _, elemDecl := range segDecl.Elems {
-		rawElemIndex := 0
-		for ; rawElemIndex < len(rawElems); rawElemIndex++ {
-			if rawElems[rawElemIndex].ElemIndex == elemDecl.Index &&
-				rawElems[rawElemIndex].CompIndex == elemDecl.compIndex() {
-				break
+		found := false
+		for _, rawElem := range r.unprocessedRawSeg.Elems {
+			if rawElem.ElemIndex == elemDecl.Index && rawElem.CompIndex == elemDecl.compIndex() {
+				elemN := idr.CreateNode(idr.ElementNode, elemDecl.Name)
+				idr.AddChild(n, elemN)
+				data := string(strs.ByteUnescape(rawElem.Data, r.releaseChar.b, true))
+				elemV := idr.CreateNode(idr.TextNode, data)
+				idr.AddChild(elemN, elemV)
+				found = true
 			}
 		}
-		if rawElemIndex < len(rawElems) || elemDecl.EmptyIfMissing || elemDecl.Default != nil {
+		if found {
+			continue
+		}
+		if elemDecl.EmptyIfMissing || elemDecl.Default != nil {
 			elemN := idr.CreateNode(idr.ElementNode, elemDecl.Name)
 			idr.AddChild(n, elemN)
 			data := ""
-			if rawElemIndex < len(rawElems) {
-				data = string(strs.ByteUnescape(rawElems[rawElemIndex].Data, r.releaseChar.b, true))
-				rawElemIndex++
-			} else if elemDecl.Default != nil {
+			if elemDecl.Default != nil {
 				data = *elemDecl.Default
 			}
 			elemV := idr.CreateNode(idr.TextNode, data)

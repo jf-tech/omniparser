@@ -202,7 +202,8 @@ func (ctx *ctx) nodeToInterface(n *Node) interface{} {
 	}
 }
 
-// J2NodeToInterface translate an *idr.Node and its subtree into a JSON-marshaling friendly interface{}.
+// J2NodeToInterface translates an *idr.Node and its subtree into a JSON-marshaling friendly
+// interface{} that does not include any idr.Node internal fields, such as tree pointers.
 func J2NodeToInterface(n *Node, useJSONType bool) interface{} {
 	return (&ctx{useJSONType: useJSONType}).nodeToInterface(n)
 }

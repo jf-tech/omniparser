@@ -281,6 +281,45 @@ func TestGetUnprocessedRawSeg(t *testing.T) {
 				{rawSeg: RawSeg{}, err: io.EOF.Error()},
 			},
 		},
+		{
+			name:  "| seg-delim; multi-seg; no comp-delim; ^ rep-delim; ? release-char",
+			input: strings.NewReader("seg1*^e11^e12^*e2|seg2*e3?^|"),
+			decl: FileDecl{
+				SegDelim:    "|",
+				ElemDelim:   "*",
+				RepDelim:    strs.StrPtr("^"),
+				ReleaseChar: strs.StrPtr("?"),
+			},
+			expected: []result{
+				{
+					rawSeg: RawSeg{
+						valid: true,
+						Name:  "seg1",
+						Raw:   []byte("seg1*^e11^e12^*e2|"),
+						Elems: []RawSegElem{
+							{ElemIndex: 0, CompIndex: 1, Data: []byte("seg1")},
+							{ElemIndex: 1, CompIndex: 1, Data: []byte("")},
+							{ElemIndex: 1, CompIndex: 1, Data: []byte("e11")},
+							{ElemIndex: 1, CompIndex: 1, Data: []byte("e12")},
+							{ElemIndex: 1, CompIndex: 1, Data: []byte("")},
+							{ElemIndex: 2, CompIndex: 1, Data: []byte("e2")},
+						},
+					},
+				},
+				{
+					rawSeg: RawSeg{
+						valid: true,
+						Name:  "seg2",
+						Raw:   []byte("seg2*e3?^|"),
+						Elems: []RawSegElem{
+							{ElemIndex: 0, CompIndex: 1, Data: []byte("seg2")},
+							{ElemIndex: 1, CompIndex: 1, Data: []byte("e3?^")},
+						},
+					},
+				},
+				{rawSeg: RawSeg{}, err: io.EOF.Error()},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			reader, err := NewReader("test", test.input, &test.decl, "")
@@ -673,6 +712,31 @@ func TestRead(t *testing.T) {
 			readerCreationErr: "",
 		},
 		{
+			name:  "1 seg decl with rep-delim, success",
+			input: "DMG*D8*19910512*M*M*:RET:2135-2^:RET:2106-3~",
+			declJSON: `
+				{
+					"segment_delimiter": "~",
+					"element_delimiter": "*",
+					"component_delimiter": ":",
+					"repetition_delimiter": "^",
+					"segment_declarations": [
+						{
+							"name": "DMG",
+							"is_target": true,
+							"elements": [
+								{ "name": "d8", "index": 1 },
+								{ "name": "d_date", "index": 2 },
+								{ "name": "d_cat", "index": 5, "component_index": 2 },
+								{ "name": "d_code", "index": 5, "component_index": 3 }
+							]
+						}
+					]
+				}`,
+			xpath:             "",
+			readerCreationErr: "",
+		},
+		{
 			name:  "2 seg groups, filtered target, success",
 			input: "ISA*0*1*2|\nISA*3*4*5|\nISA*6*7*8|\r\nIEA*6|\n",
 			declJSON: `
@@ -824,7 +888,7 @@ func TestRead(t *testing.T) {
 						{
 							"name": "ISA",
 							"is_target": true,
-                            "min": 0
+							"min": 0
 						}
 					]
 				}`,
@@ -870,7 +934,7 @@ func TestRead(t *testing.T) {
 				return
 			}
 			assert.NoError(t, err)
-			var records []string
+			var records []interface{}
 			var finalErr error
 			for {
 				n, err := reader.Read()
@@ -878,11 +942,11 @@ func TestRead(t *testing.T) {
 					finalErr = err
 					break
 				}
-				records = append(records, strings.ReplaceAll(idr.JSONify2(n), `"`, `'`))
+				records = append(records, idr.J1NodeToInterface(n))
 			}
 			cupaloy.SnapshotT(t, jsons.BPM(
 				struct {
-					Records  []string
+					Records  []interface{}
 					FinalErr string
 				}{
 					Records: records,

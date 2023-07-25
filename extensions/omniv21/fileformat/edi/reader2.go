@@ -48,8 +48,9 @@ type RawSeg struct {
 }
 
 const (
-	defaultElemsPerSeg  = 32
-	defaultCompsPerElem = 8
+	defaultElemsPerSeg  = 32 // default # of elements per segment
+	defaultCompsPerElem = 8  // default # of components per element
+	defaultRepsPerElem  = 4  // default # of repetitions per element
 )
 
 func newRawSeg() RawSeg {
@@ -112,6 +113,7 @@ type NonValidatingReader struct {
 	segDelim           strPtrByte
 	elemDelim          strPtrByte
 	compDelim          strPtrByte
+	repDelim           strPtrByte
 	releaseChar        strPtrByte
 	runeBegin, runeEnd int
 	segCount           int
@@ -121,7 +123,6 @@ type NonValidatingReader struct {
 // Read returns a raw segment of an EDI document. Note all the []byte are not a copy, so READONLY,
 // no modification.
 func (r *NonValidatingReader) Read() (RawSeg, error) {
-	resetRawSeg(&r.rawSeg)
 	var token []byte
 	for r.scanner.Scan() {
 		b := r.scanner.Bytes()
@@ -149,10 +150,17 @@ func (r *NonValidatingReader) Read() (RawSeg, error) {
 	if token == nil {
 		return RawSeg{}, io.EOF
 	}
-	// From now on, the important thing is to operate on token (of []byte) without modification and without
-	// allocation to keep performance.
-	r.rawSeg.Raw = token
-	// First we need to drop the trailing segment delimiter.
+	if err = r.readToken(token, &r.rawSeg); err != nil {
+		return RawSeg{}, err
+	}
+	return r.rawSeg, nil
+}
+
+func (r *NonValidatingReader) readToken(token []byte, rawSeg *RawSeg) error {
+	resetRawSeg(rawSeg)
+	// Remember the token is a reference into the actual scanner, so do not modify.
+	rawSeg.Raw = token
+	// First we need to "drop" the trailing segment delimiter.
 	noSegDelim := token[:len(token)-len(r.segDelim.b)]
 	// In rare occasions, input uses '\n' as segment delimiter, but '\r' somehow
 	// gets included as well (more common in business platform running on Windows)
@@ -161,36 +169,46 @@ func (r *NonValidatingReader) Read() (RawSeg, error) {
 		noSegDelim = noSegDelim[:len(noSegDelim)-utf8.RuneLen('\r')]
 	}
 	for i, elem := range strs.ByteSplitWithEsc(noSegDelim, r.elemDelim.b, r.releaseChar.b, defaultElemsPerSeg) {
-		if len(r.compDelim.b) == 0 {
-			// if we don't have comp delimiter, treat the entire element as one component.
-			r.rawSeg.Elems = append(
-				r.rawSeg.Elems,
-				RawSegElem{
-					// while (element) index in schema starts with 1, it actually refers to the first element
-					// AFTER the seg name element, thus we can use i as ElemIndex directly.
-					ElemIndex: i,
-					// comp_index always starts with 1
-					CompIndex: 1,
-					Data:      elem,
-				})
-			continue
+		// If an element value contains repetition delimiters, that value is really a concatenation
+		// of multiple element values.
+		var elemVals [][]byte
+		if len(r.repDelim.b) != 0 {
+			elemVals = strs.ByteSplitWithEsc(elem, r.repDelim.b, r.releaseChar.b, defaultRepsPerElem)
+		} else {
+			elemVals = [][]byte{elem}
 		}
-		for j, comp := range strs.ByteSplitWithEsc(elem, r.compDelim.b, r.releaseChar.b, defaultCompsPerElem) {
-			r.rawSeg.Elems = append(
-				r.rawSeg.Elems,
-				RawSegElem{
-					ElemIndex: i,
-					CompIndex: j + 1,
-					Data:      comp,
-				})
+		for _, elemVal := range elemVals {
+			if len(r.compDelim.b) == 0 {
+				// if we don't have comp delimiter, treat the entire element as one component.
+				rawSeg.Elems = append(
+					rawSeg.Elems,
+					RawSegElem{
+						// while (element) index in schema starts with 1, it actually refers to the first element
+						// AFTER the seg name element, thus we can use i as ElemIndex directly.
+						ElemIndex: i,
+						// comp_index always starts with 1
+						CompIndex: 1,
+						Data:      elemVal,
+					})
+				continue
+			}
+			for j, comp := range strs.ByteSplitWithEsc(elemVal, r.compDelim.b, r.releaseChar.b, defaultCompsPerElem) {
+				rawSeg.Elems = append(
+					rawSeg.Elems,
+					RawSegElem{
+						ElemIndex: i,
+						CompIndex: j + 1,
+						Data:      comp,
+					})
+			}
 		}
 	}
-	if len(r.rawSeg.Elems) == 0 || len(r.rawSeg.Elems[0].Data) == 0 {
-		return RawSeg{}, ErrInvalidEDI("missing segment name")
+	if len(rawSeg.Elems) == 0 || len(rawSeg.Elems[0].Data) == 0 {
+		return ErrInvalidEDI("missing segment name")
 	}
-	r.rawSeg.Name = string(r.rawSeg.Elems[0].Data)
-	r.rawSeg.valid = true
-	return r.rawSeg, nil
+	rawSeg.Name = string(rawSeg.Elems[0].Data)
+	rawSeg.valid = true
+	return nil
 }
 
 // RuneBegin returns the current reader's beginning rune position.
@@ -213,6 +231,7 @@ func NewNonValidatingReader(r io.Reader, decl *FileDecl) *NonValidatingReader {
 	segDelim := newStrPtrByte(&decl.SegDelim)
 	elemDelim := newStrPtrByte(&decl.ElemDelim)
 	compDelim := newStrPtrByte(decl.CompDelim)
+	repDelim := newStrPtrByte(decl.RepDelim)
 	releaseChar := newStrPtrByte(decl.ReleaseChar)
 	if decl.IgnoreCRLF {
 		r = ios.NewBytesReplacingReader(r, crBytes, nil)
@@ -224,6 +243,7 @@ func NewNonValidatingReader(r io.Reader, decl *FileDecl) *NonValidatingReader {
 		segDelim:    segDelim,
 		elemDelim:   elemDelim,
 		compDelim:   compDelim,
+		repDelim:    repDelim,
 		releaseChar: releaseChar,
 		runeBegin:   1,
 		runeEnd:     1,

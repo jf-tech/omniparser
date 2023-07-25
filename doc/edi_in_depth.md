@@ -87,6 +87,7 @@ A full EDI schema `file_declaration` is as follows:
     "segment_delimiter": "<segment delimiter>",                     <== required
     "element_delimiter": "<element delimiter>",                     <== required
     "component_delimiter": "<component delimiter>",                 <== optional
+    "repetition_delimiter": "<repetition delimiter>",               <== optional
     "release_character": "<release character>",                     <== optional
     "ignore_crlf": true/false,                                      <== optional
     "segment_declarations": [
@@ -125,6 +126,15 @@ standards call for a single ASCII character as `element_delimiter`, omniparser a
 - `component_delimiter`: delimiter to further separate an element data into several component pieces.
 `component_delimiter` in omniparser allows UTF-8 string. This is optional, and if not specified, you
 can treat each element as of a single component.
+
+- `repetition_delimiter`: delimiter to separate multiple data instances for an element. For example,
+if `^` is the repetition delimiter for a segment `DMG*D8*19690815*M**A^B^C^D~`, then the last
+element has 4 pieces of data: `A`, `B`, `C`, and `D`. Any element without `repetition_delimiter`
+present has essentially one piece of data; similarly, if `^` is the repetition delimiter for a
+segment `CLM*A37YH556*500***11:B:1^12:B:2~`, the last element has 2 pieces of data: `11:B:1` and
+`12:B:2`, each of which is further delimited by a `component_delimiter` `:`. Note, since
+`repetition_delimiter` creates multiple pieces of data under the same element name in the schema,
+in most cases the suitable construct type in `transform_declarations` is `array`.
 
 - `release_character`: an optional escape character for delimiters. Imagine a piece of element data
 contains a `*` which happens to be `element_delimiter`. Without escaping, parser would treat that `*`
@@ -550,7 +560,7 @@ And we can add the transform reference into the `FINAL_OUTPUT` directly:
 ```
 Run cli we have:
 ```
-$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json 
+$ cli.sh transform -i 2_ups_edi_210.input.txt -s test.schema.json
 [
 	{
 		"invoice_number": "0000001808WW308"

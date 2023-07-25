@@ -39,7 +39,6 @@ var tests = []testCase{
 		schemaFile: "./2_multi_rows.schema.json",
 		inputFile:  "./2_multi_rows.input.txt",
 	},
-
 	{
 		// test3_Header_Footer
 		schemaFile: "./3_header_footer.schema.json",

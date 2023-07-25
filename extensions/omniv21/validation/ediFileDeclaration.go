@@ -17,6 +17,7 @@ const (
                 "segment_delimiter": { "type": "string", "minLength": 1 },
                 "element_delimiter": { "type": "string", "minLength": 1 },
                 "component_delimiter": { "type": "string", "minLength": 1 },
+                "repetition_delimiter": { "type": "string", "minLength": 1 },
                 "release_character": { "type": "string", "minLength": 1 },
                 "ignore_crlf": { "type": "boolean" },
                 "segment_declarations": {
@@ -70,5 +71,6 @@ const (
         "value_comment": { "type": "string" }
     }
 }
+
 `
 )
