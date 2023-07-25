@@ -1,7 +1,73 @@
 {
 	"Records": [
-		"{'IEA':{},'ISA':{}}",
-		"{'IEA':{},'ISA':{}}"
+		{
+			"Children": [
+				{
+					"Children": null,
+					"Data": "ISA",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": "(ElementNode IEA)",
+					"Parent": "(ElementNode group1)",
+					"PrevSibling": null,
+					"Type": "ElementNode"
+				},
+				{
+					"Children": null,
+					"Data": "IEA",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": null,
+					"Parent": "(ElementNode group1)",
+					"PrevSibling": "(ElementNode ISA)",
+					"Type": "ElementNode"
+				}
+			],
+			"Data": "group1",
+			"FirstChild": "(ElementNode ISA)",
+			"FormatSpecific": null,
+			"LastChild": "(ElementNode IEA)",
+			"NextSibling": null,
+			"Parent": "(DocumentNode)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		},
+		{
+			"Children": [
+				{
+					"Children": null,
+					"Data": "ISA",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": "(ElementNode IEA)",
+					"Parent": "(ElementNode group1)",
+					"PrevSibling": null,
+					"Type": "ElementNode"
+				},
+				{
+					"Children": null,
+					"Data": "IEA",
+					"FirstChild": null,
+					"FormatSpecific": null,
+					"LastChild": null,
+					"NextSibling": null,
+					"Parent": "(ElementNode group1)",
+					"PrevSibling": "(ElementNode ISA)",
+					"Type": "ElementNode"
+				}
+			],
+			"Data": "group1",
+			"FirstChild": "(ElementNode ISA)",
+			"FormatSpecific": null,
+			"LastChild": "(ElementNode IEA)",
+			"NextSibling": null,
+			"Parent": "(ElementNode #root)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		}
 	],
 	"FinalErr": "EOF"
 }
