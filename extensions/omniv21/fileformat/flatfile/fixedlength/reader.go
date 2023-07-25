@@ -14,8 +14,9 @@ import (
 )
 
 type line struct {
-	lineNum int // 1-based
-	b       []byte
+	lineNum int    // 1-based
+	b       []byte // either a copy of a line content or a direct ref into bufio.Reader.
+	copied  bool   // see notes in reader.readLine()
 }
 
 type reader struct {
@@ -148,9 +149,37 @@ func (r *reader) readAndMatchHeaderFooterBasedEnvelope(
 }
 
 func (r *reader) readLine() error {
+	// https://github.com/jf-tech/omniparser/issues/213
+	//
+	// If we're dealing with multi-lined envelope (either by rows or by header/footer), this
+	// readLine() will be called several times, thus whatever ios.ByteReadLine, which uses
+	// bufio.Reader underneath, returns in a previous call may be potentially be invalidated due to
+	// bufio.Reader's internal buf rollover. If we read the previous line directly, it would cause
+	// corruption.
+	//
+	// To fix the problem the easiest solution would be simply copying the return []byte from
+	// ios.ByteReadLine every single time. But for files with single-line envelope, which are the
+	// vast majority cases, this copy becomes unnecessary and burdensome on gc. So the trick is to
+	// has a flag on reader.linesBuf's last element to tell if it contains a reference into the
+	// bufio.Reader's internal buffer, or it's a copy. Every time before we call bufio.Reader read,
+	// we check reader.liensBuf's last element flag, if it is not a copy, then we will turn it into
+	// a copy.
+	//
+	// This way, we optimize for the vast majority cases without
+	// needing allocations, and avoid any potential corruptions in the multi-lined envelope cases.
+	linesBufLen := len(r.linesBuf)
+	if linesBufLen > 0 && !r.linesBuf[linesBufLen-1].copied {
+		cp := make([]byte, len(r.linesBuf[linesBufLen-1].b))
+		copy(cp, r.linesBuf[linesBufLen-1].b)
+		r.linesBuf[linesBufLen-1].b = cp
+		r.linesBuf[linesBufLen-1].copied = true
+	}
 	for {
-		// note1: ios.ByteReadLine returns a ln with trailing '\n' (and/or '\r') dropped.
-		// note2: ios.ByteReadLine won't return io.EOF if ln returned isn't empty.
+		// note1: ios.ByteReadLine returns a line with trailing '\n' (and/or '\r') dropped.
+		// note2: ios.ByteReadLine won't return io.EOF if line returned isn't empty.
+		// note3: ios.ByteReadLine's returned []byte is merely pointing into the bufio.Reader's
+		//        internal buffer, thus the content will be invalided if ios.ByteReadLine is called
+		//        again. Caution!
 		b, err := ios.ByteReadLine(r.r)
 		switch {
 		case err == io.EOF:

@@ -412,6 +412,37 @@ func TestReadLine(t *testing.T) {
 	assert.Equal(t, line{lineNum: 45, b: []byte("a new line")}, r.linesBuf[2])
 }
 
+func TestReadLineMultiCalls(t *testing.T) {
+	// See more details about the bug: https://github.com/jf-tech/omniparser/issues/213
+	r := &reader{inputName: "test-input"}
+	// construct a two-line input, and total length of the two line input is longer than
+	// the bufio.Reader's internal buffer. Note bufio.Reader has a minReadBufferSize at 16.
+	r.r = bufio.NewReaderSize(strings.NewReader("0123456789\nabcdefghijklmnopq\n!@#"), 16)
+	// First read should be completely normal and fine.
+	err := r.readLine()
+	assert.NoError(t, err)
+	assert.Equal(t, 1, r.linesRead)
+	assert.Equal(t, 1, len(r.linesBuf))
+	assert.Equal(t, line{lineNum: 1, b: []byte("0123456789"), copied: false}, r.linesBuf[0])
+	// Now the second read, if we didn't do any copying of the first line result, the first line
+	// would have become corrupted since the bufio.Reader's tiny internal buffer gets overwritten
+	// by the new line data. With the fix, both lines in the linesBuf should be without corruption.
+	err = r.readLine()
+	assert.NoError(t, err)
+	assert.Equal(t, 2, r.linesRead)
+	assert.Equal(t, 2, len(r.linesBuf))
+	assert.Equal(t, line{lineNum: 1, b: []byte("0123456789"), copied: true}, r.linesBuf[0])
+	assert.Equal(t, line{lineNum: 2, b: []byte("abcdefghijklmnopq"), copied: false}, r.linesBuf[1])
+	// 3rd line reading
+	err = r.readLine()
+	assert.NoError(t, err)
+	assert.Equal(t, 3, r.linesRead)
+	assert.Equal(t, 3, len(r.linesBuf))
+	assert.Equal(t, line{lineNum: 1, b: []byte("0123456789"), copied: true}, r.linesBuf[0])
+	assert.Equal(t, line{lineNum: 2, b: []byte("abcdefghijklmnopq"), copied: true}, r.linesBuf[1])
+	assert.Equal(t, line{lineNum: 3, b: []byte("!@#"), copied: false}, r.linesBuf[2])
+}
+
 func TestLinesToNode(t *testing.T) {
 	for _, test := range []struct {
 		name     string
