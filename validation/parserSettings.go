@@ -19,7 +19,8 @@ const (
                 "encoding": {
                     "type": "string",
                     "enum": [ "utf-8", "iso-8859-1", "windows-1252" ]
-                }
+                },
+                "ndjson": { "type": "boolean" }
             },
             "required": [ "version", "file_format_type" ],
             "additionalProperties": false

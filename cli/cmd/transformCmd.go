@@ -86,6 +86,11 @@ func doTransform() error {
 		if err != nil {
 			return "", err
 		}
+
+		if schema.Header().ParserSettings.NDJSON {
+			return string(b), nil
+		}
+
 		return strings.Join(
 			strs.NoErrMapSlice(
 				strings.Split(jsons.BPJ(string(b)), "\n"),
@@ -95,13 +100,27 @@ func doTransform() error {
 
 	record, err := doOne()
 	if err == io.EOF {
-		fmt.Println("[]")
+		if schema.Header().ParserSettings.NDJSON {
+			fmt.Println("")
+		} else {
+			fmt.Println("[]")
+		}
 		return nil
 	}
 	if err != nil {
 		return err
 	}
-	fmt.Printf("[\n%s", record)
+
+	start := "[\n%s"
+	middle := ",\n%s"
+	end := "\n]"
+	if schema.Header().ParserSettings.NDJSON {
+		start = "%s"
+		middle = "\n%s"
+		end = ""
+	}
+
+	fmt.Printf(start, record)
 	for {
 		record, err = doOne()
 		if err == io.EOF {
@@ -110,8 +129,8 @@ func doTransform() error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(",\n%s", record)
+		fmt.Printf(middle, record)
 	}
-	fmt.Println("\n]")
+	fmt.Println(end)
 	return nil
 }

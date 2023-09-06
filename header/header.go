@@ -15,6 +15,7 @@ type ParserSettings struct {
 	Version        string  `json:"version,omitempty"`
 	FileFormatType string  `json:"file_format_type,omitempty"`
 	Encoding       *string `json:"encoding,omitempty"`
+	NDJSON         bool    `json:"ndjson,omitempty"`
 }
 
 const (
