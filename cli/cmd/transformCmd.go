@@ -31,6 +31,7 @@ var (
 	}
 	schema string
 	input  string
+	ndjson bool
 )
 
 func init() {
@@ -39,6 +40,8 @@ func init() {
 
 	transformCmd.Flags().StringVarP(
 		&input, "input", "i", "", "input file (optional; if not specified, stdin/pipe is used)")
+	transformCmd.Flags().BoolVarP(
+		&ndjson, "ndjson", "", false, "change the output format to ndjson")
 }
 
 func openFile(label string, filepath string) (io.ReadCloser, error) {
@@ -87,7 +90,7 @@ func doTransform() error {
 			return "", err
 		}
 
-		if schema.Header().ParserSettings.NDJSON {
+		if ndjson {
 			return string(b), nil
 		}
 
@@ -100,7 +103,7 @@ func doTransform() error {
 
 	record, err := doOne()
 	if err == io.EOF {
-		if schema.Header().ParserSettings.NDJSON {
+		if ndjson {
 			fmt.Println("")
 		} else {
 			fmt.Println("[]")
@@ -114,7 +117,7 @@ func doTransform() error {
 	start := "[\n%s"
 	middle := ",\n%s"
 	end := "\n]"
-	if schema.Header().ParserSettings.NDJSON {
+	if ndjson {
 		start = "%s"
 		middle = "\n%s"
 		end = ""
