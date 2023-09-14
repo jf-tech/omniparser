@@ -65,16 +65,18 @@ const (
 // If Header is specified, Rows must be nil. (JSON schema validation will ensure this.)
 // Footer is optional; If not specified, Header will be used for a single-line envelope matching.
 type EnvelopeDecl struct {
-	Name     string          `json:"name,omitempty"`
-	Rows     *int            `json:"rows,omitempty"`
-	Header   *string         `json:"header,omitempty"`
-	Footer   *string         `json:"footer,omitempty"`
-	Type     *string         `json:"type,omitempty"`
-	IsTarget bool            `json:"is_target,omitempty"`
-	Min      *int            `json:"min,omitempty"`
-	Max      *int            `json:"max,omitempty"`
-	Columns  []*ColumnDecl   `json:"columns,omitempty"`
-	Children []*EnvelopeDecl `json:"child_envelopes,omitempty"`
+	Name      string          `json:"name,omitempty"`
+	Rows      *int            `json:"rows,omitempty"`
+	Header    *string         `json:"header,omitempty"`
+	HeaderNeg bool            `json:"header_negative_match,omitempty"`
+	Footer    *string         `json:"footer,omitempty"`
+	FooterNeg bool            `json:"footer_negative_match,omitempty"`
+	Type      *string         `json:"type,omitempty"`
+	IsTarget  bool            `json:"is_target,omitempty"`
+	Min       *int            `json:"min,omitempty"`
+	Max       *int            `json:"max,omitempty"`
+	Columns   []*ColumnDecl   `json:"columns,omitempty"`
+	Children  []*EnvelopeDecl `json:"child_envelopes,omitempty"`
 
 	fqdn          string // fully hierarchical name to the envelope.
 	childRecDecls []flatfile.RecDecl
@@ -143,7 +145,7 @@ func (e *EnvelopeDecl) matchHeader(line []byte) bool {
 	if e.headerRegexp == nil {
 		panic(fmt.Sprintf("envelope '%s' is not header/footer based", e.fqdn))
 	}
-	return e.headerRegexp.Match(line)
+	return e.headerRegexp.Match(line) != e.HeaderNeg
 }
 
 // Footer is optional. If not specified, it always matches. Thus for a header/footer envelope,
@@ -153,7 +155,7 @@ func (e *EnvelopeDecl) matchFooter(line []byte) bool {
 	if e.footerRegexp == nil {
 		return true
 	}
-	return e.footerRegexp.Match(line)
+	return e.footerRegexp.Match(line) != e.FooterNeg
 }
 
 func toFlatFileRecDecls(es []*EnvelopeDecl) []flatfile.RecDecl {

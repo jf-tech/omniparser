@@ -68,7 +68,9 @@ const (
             "properties": {
                 "name": { "type": "string", "minLength": 1 },
                 "header": { "type": "string", "minLength": 1 },
+                "header_negative_match": { "type": "boolean" },
                 "footer": { "type": "string", "minLength": 1 },
+                "footer_negative_match": { "type": "boolean" },
                 "type": { "const": "record" },
                 "is_target": { "type": "boolean" },
                 "min": { "type": "integer", "minimum": 0 },
