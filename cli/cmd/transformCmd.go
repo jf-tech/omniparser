@@ -41,7 +41,7 @@ func init() {
 	transformCmd.Flags().StringVarP(
 		&input, "input", "i", "", "input file (optional; if not specified, stdin/pipe is used)")
 	transformCmd.Flags().BoolVarP(
-		&ndjson, "ndjson", "", false, "change the output format to ndjson")
+		&ndjson, "stream", "", false, "change the output format to ndjson")
 }
 
 func openFile(label string, filepath string) (io.ReadCloser, error) {
@@ -90,13 +90,14 @@ func doTransform() error {
 			return "", err
 		}
 
+		s := string(b)
 		if ndjson {
-			return string(b), nil
+			return s, nil
 		}
 
 		return strings.Join(
 			strs.NoErrMapSlice(
-				strings.Split(jsons.BPJ(string(b)), "\n"),
+				strings.Split(jsons.BPJ(s), "\n"),
 				func(s string) string { return "\t" + s }),
 			"\n"), nil
 	}
@@ -114,16 +115,16 @@ func doTransform() error {
 		return err
 	}
 
-	start := "[\n%s"
-	middle := ",\n%s"
-	end := "\n]"
+	lparen := "[\n%s"
+	delim := ",\n%s"
+	rparen := "\n]"
 	if ndjson {
-		start = "%s"
-		middle = "\n%s"
-		end = ""
+		lparen = "%s"
+		delim = "\n%s"
+		rparen = ""
 	}
 
-	fmt.Printf(start, record)
+	fmt.Printf(lparen, record)
 	for {
 		record, err = doOne()
 		if err == io.EOF {
@@ -132,8 +133,8 @@ func doTransform() error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(middle, record)
+		fmt.Printf(delim, record)
 	}
-	fmt.Println(end)
+	fmt.Println(rparen)
 	return nil
 }
