@@ -104,9 +104,7 @@ func doTransform() error {
 
 	record, err := doOne()
 	if err == io.EOF {
-		if stream {
-			fmt.Println("")
-		} else {
+		if !stream {
 			fmt.Println("[]")
 		}
 		return nil
