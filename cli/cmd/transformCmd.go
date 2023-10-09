@@ -31,6 +31,7 @@ var (
 	}
 	schema string
 	input  string
+	stream bool
 )
 
 func init() {
@@ -39,6 +40,8 @@ func init() {
 
 	transformCmd.Flags().StringVarP(
 		&input, "input", "i", "", "input file (optional; if not specified, stdin/pipe is used)")
+	transformCmd.Flags().BoolVarP(
+		&stream, "stream", "", false, "if specified, each record will be a standalone/full JSON blob and printed out immediately once transform is done")
 }
 
 func openFile(label string, filepath string) (io.ReadCloser, error) {
@@ -86,22 +89,40 @@ func doTransform() error {
 		if err != nil {
 			return "", err
 		}
+
+		s := string(b)
+		if stream {
+			return s, nil
+		}
+
 		return strings.Join(
 			strs.NoErrMapSlice(
-				strings.Split(jsons.BPJ(string(b)), "\n"),
+				strings.Split(jsons.BPJ(s), "\n"),
 				func(s string) string { return "\t" + s }),
 			"\n"), nil
 	}
 
 	record, err := doOne()
 	if err == io.EOF {
-		fmt.Println("[]")
+		if !stream {
+			fmt.Println("[]")
+		}
 		return nil
 	}
 	if err != nil {
 		return err
 	}
-	fmt.Printf("[\n%s", record)
+
+	lparen := "[\n%s"
+	delim := ",\n%s"
+	rparen := "\n]"
+	if stream {
+		lparen = "%s"
+		delim = "\n%s"
+		rparen = ""
+	}
+
+	fmt.Printf(lparen, record)
 	for {
 		record, err = doOne()
 		if err == io.EOF {
@@ -110,8 +131,8 @@ func doTransform() error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf(",\n%s", record)
+		fmt.Printf(delim, record)
 	}
-	fmt.Println("\n]")
+	fmt.Println(rparen)
 	return nil
 }
