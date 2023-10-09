@@ -41,7 +41,7 @@ func init() {
 	transformCmd.Flags().StringVarP(
 		&input, "input", "i", "", "input file (optional; if not specified, stdin/pipe is used)")
 	transformCmd.Flags().BoolVarP(
-		&stream, "stream", "", false, "change the output format to ndjson")
+		&stream, "stream", "", false, "if specified, each record will be a standalone/full JSON blob and printed out immediately once transform is done")
 }
 
 func openFile(label string, filepath string) (io.ReadCloser, error) {
