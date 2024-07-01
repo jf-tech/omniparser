@@ -1,4 +1,4 @@
-FROM golang:1.14
+FROM golang:1.16
 WORKDIR /omniparser
 COPY . .
 # when Dockerfile building in heroku, .git isn't available (removed by heroku slug compiler)

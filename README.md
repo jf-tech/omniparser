@@ -9,7 +9,7 @@ Omniparser is a native Golang ETL parser that ingests input data of various form
 XML, EDI/X12/EDIFACT, JSON**, and custom formats) in streaming fashion and transforms data into desired JSON output
 based on a schema written in JSON.
 
-Min Golang Version: 1.14
+Min Golang Version: 1.16
 
 ## Licenses and Sponsorship
 Omniparser is publicly available under [MIT License](./LICENSE).
@@ -69,7 +69,7 @@ As for now (2023/03/14), all of our previous free docker hosting solutions went 
 situations.
 
 ## Requirements
-- Golang 1.14 or later.
+- Golang 1.16 or later.
 
 ## Recent Major Feature Additions/Changes
 - 2022/09: v1.0.4 released: added `csv2` file format that supersedes the original `csv` format with support of hierarchical and nested records.
