@@ -6,7 +6,7 @@ and by the CLI tool.
 
 ## Prerequisites and Notes
 
-- Golang 1.14 installed.
+- Golang 1.16 installed.
 - [`github.com/jf-tech/omniparser`](https://github.com/jf-tech/omniparser) cloned (assuming the clone
 location is: `~/dev/jf-tech/omniparser/`)
 - The guide assumes Mac OS or Linux dev environment. If you're on Windows, you need make minor

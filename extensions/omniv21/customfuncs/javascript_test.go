@@ -60,6 +60,13 @@ func TestJavaScript(t *testing.T) {
 			err:      "",
 			expected: "one-2",
 		},
+		{
+			name:     "#issue-221: verify ES6 String.prototype.replaceAll() implementation",
+			js:       "\"tic tac toe\".replaceAll('t', 'b');",
+			args:     nil,
+			err:      "",
+			expected: "bic bac boe",
+		},
 		// all error cases
 		{
 			name:     "num of args wrong",
@@ -79,7 +86,7 @@ func TestJavaScript(t *testing.T) {
 			name:     "javascript throws",
 			js:       "throw 'failure';",
 			args:     nil,
-			err:      "failure at <eval>:1:7(1)",
+			err:      "failure at <eval>:1:1(1)",
 			expected: nil,
 		},
 		{
@@ -157,10 +164,10 @@ func TestJavaScriptClearVarsAfterRunProgram(t *testing.T) {
 }
 
 // go test -bench=. -benchmem -benchtime=30s
-// BenchmarkJavaScriptWithNoCache-8             	  225940	    160696 ns/op	  136620 B/op	    1698 allocs/op
-// BenchmarkJavaScriptWithCache-8               	22289469	      1612 ns/op	     140 B/op	       9 allocs/op
-// BenchmarkConcurrentJavaScriptWithNoCache-8   	    1479	  24486799 ns/op	27331471 B/op	  339793 allocs/op
-// BenchmarkConcurrentJavaScriptWithCache-8     	   69219	    517898 ns/op	   34722 B/op	    1952 allocs/op
+// BenchmarkJavaScriptWithNoCache-8             	  371036	     96020 ns/op	  149597 B/op	    1860 allocs/op
+// BenchmarkJavaScriptWithCache-8               	36966369	       976.9 ns/op	     177 B/op	       8 allocs/op
+// BenchmarkConcurrentJavaScriptWithNoCache-8   	    3368	  10797315 ns/op	29926101 B/op	  372172 allocs/op
+// BenchmarkConcurrentJavaScriptWithCache-8     	  199069	    181978 ns/op	   36569 B/op	    1750 allocs/op
 
 var (
 	benchTitles  = []string{"", "Dr", "Sir"}
