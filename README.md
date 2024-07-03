@@ -72,6 +72,7 @@ situations.
 - Golang 1.16 or later.
 
 ## Recent Major Feature Additions/Changes
+- 2024/06: v1.0.5 released: **upgraded minimum go version to 1.16**; enabled full ES6 feature support in javascript custom function.
 - 2022/09: v1.0.4 released: added `csv2` file format that supersedes the original `csv` format with support of hierarchical and nested records.
 - 2022/09: v1.0.3 released: added `fixedlength2` file format that supersedes the original `fixed-length` format with support of hierarchical and nested envelopes.
 - 1.0.0 Released!
