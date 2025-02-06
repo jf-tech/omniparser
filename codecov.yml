@@ -1,0 +1,3 @@
+ignore:
+  - "extensions/omniv21/samples"  # samples need no coverage
+  - "validation/gen" # generated code needs no coverage
