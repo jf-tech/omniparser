@@ -13,6 +13,7 @@ import (
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
 	v21validation "github.com/jf-tech/omniparser/extensions/omniv21/validation"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/validation"
 )
 
@@ -97,7 +98,10 @@ func (f *csvFileFormat) validateColumns(columns []Column) error {
 }
 
 func (f *csvFileFormat) CreateFormatReader(
-	name string, r io.Reader, runtime interface{}) (fileformat.FormatReader, error) {
+	_ header.Header,
+	name string,
+	r io.Reader,
+	runtime interface{}) (fileformat.FormatReader, error) {
 	csv := runtime.(*csvFormatRuntime)
 	return NewReader(name, r, csv.Decl, csv.XPath)
 }

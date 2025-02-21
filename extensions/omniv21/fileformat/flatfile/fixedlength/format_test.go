@@ -12,6 +12,7 @@ import (
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/idr"
 )
 
@@ -269,6 +270,7 @@ func TestCreateFormatReader(t *testing.T) {
 			&transform.Decl{XPath: finalOutputXPath})
 		assert.NoError(t, err)
 		reader, err := format.CreateFormatReader(
+			header.Header{},
 			"test-input",
 			strings.NewReader("abcd\n1234\n"),
 			runtime)
@@ -286,6 +288,7 @@ func TestCreateFormatReader(t *testing.T) {
 
 	// test CreateFormatReader called with invalid target xpath.
 	reader, err := NewFixedLengthFileFormat("test-schema").CreateFormatReader(
+		header.Header{},
 		"test-input",
 		strings.NewReader("abcd\n1234\n"),
 		&fixedLengthFormatRuntime{XPath: "["})

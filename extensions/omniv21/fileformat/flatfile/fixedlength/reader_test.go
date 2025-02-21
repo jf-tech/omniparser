@@ -12,6 +12,7 @@ import (
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/jf-tech/go-corelib/testlib"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/idr"
 	"github.com/stretchr/testify/assert"
 )
@@ -81,7 +82,7 @@ func TestRead(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			r, err := format.CreateFormatReader("test-input", test.r, rt)
+			r, err := format.CreateFormatReader(header.Header{}, "test-input", test.r, rt)
 			assert.NoError(t, err)
 			n, err := r.Read()
 			if strs.IsStrNonBlank(test.err) {

@@ -13,6 +13,7 @@ import (
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/idr"
 )
 
@@ -157,6 +158,7 @@ func TestValidateSchema(t *testing.T) {
 
 func TestCreateFormatReader(t *testing.T) {
 	r, err := NewCSVFileFormat("test").CreateFormatReader(
+		header.Header{},
 		"test-input",
 		strings.NewReader(
 			lf("A|B|C")+

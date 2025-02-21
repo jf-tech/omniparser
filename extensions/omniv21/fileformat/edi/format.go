@@ -13,6 +13,7 @@ import (
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
 	v21validation "github.com/jf-tech/omniparser/extensions/omniv21/validation"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/validation"
 )
 
@@ -74,7 +75,10 @@ func (f *ediFileFormat) validateFileDecl(decl *FileDecl) error {
 }
 
 func (f *ediFileFormat) CreateFormatReader(
-	name string, r io.Reader, runtime interface{}) (fileformat.FormatReader, error) {
+	_ header.Header,
+	name string,
+	r io.Reader,
+	runtime interface{}) (fileformat.FormatReader, error) {
 	edi := runtime.(*ediFormatRuntime)
 	return NewReader(name, r, edi.Decl, edi.XPath)
 }

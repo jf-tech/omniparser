@@ -19,7 +19,8 @@ const (
                 "encoding": {
                     "type": "string",
                     "enum": [ "utf-8", "iso-8859-1", "windows-1252" ]
-                }
+                },
+                "debug": { "type": "integer", "minimum": 0 }
             },
             "required": [ "version", "file_format_type" ],
             "additionalProperties": false

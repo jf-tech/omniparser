@@ -14,6 +14,7 @@ import (
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
 	v21validation "github.com/jf-tech/omniparser/extensions/omniv21/validation"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/validation"
 )
 
@@ -76,7 +77,10 @@ func (f *csvFormat) validateFileDecl(decl *FileDecl) error {
 }
 
 func (f *csvFormat) CreateFormatReader(
-	name string, r io.Reader, runtime interface{}) (fileformat.FormatReader, error) {
+	schemaHeader header.Header,
+	name string,
+	r io.Reader,
+	runtime interface{}) (fileformat.FormatReader, error) {
 	rt := runtime.(*csvFormatRuntime)
 	targetXPathExpr, err := func() (*xpath.Expr, error) {
 		if rt.XPath == "" || rt.XPath == "." {
@@ -87,7 +91,7 @@ func (f *csvFormat) CreateFormatReader(
 	if err != nil {
 		return nil, f.FmtErr("xpath '%s' on 'FINAL_OUTPUT' is invalid: %s", rt.XPath, err.Error())
 	}
-	return NewReader(name, r, rt.Decl, targetXPathExpr), nil
+	return NewReader(schemaHeader, name, r, rt.Decl, targetXPathExpr), nil
 }
 
 func (f *csvFormat) FmtErr(format string, args ...interface{}) error {

@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/antchfx/xpath"
 	"github.com/jf-tech/go-corelib/ios"
 
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat/flatfile"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/idr"
 )
 
@@ -18,18 +20,28 @@ type line struct {
 	raw                    string
 }
 
+const (
+	debug          = "__debug"
+	debug_line_num = "line_num"
+)
+
 type reader struct {
-	inputName string
-	fileDecl  *FileDecl
-	r         *ios.LineNumReportingCsvReader
-	hr        *flatfile.HierarchyReader
-	linesBuf  []line // linesBuf contains all the unprocessed lines
-	records   []string
+	schemaHeader header.Header
+	inputName    string
+	fileDecl     *FileDecl
+	r            *ios.LineNumReportingCsvReader
+	hr           *flatfile.HierarchyReader
+	linesBuf     []line // linesBuf contains all the unprocessed lines
+	records      []string
 }
 
 // NewReader creates an FormatReader for csv file format.
 func NewReader(
-	inputName string, r io.Reader, decl *FileDecl, targetXPathExpr *xpath.Expr) *reader {
+	schemaHeader header.Header,
+	inputName string,
+	r io.Reader,
+	decl *FileDecl,
+	targetXPathExpr *xpath.Expr) *reader {
 	if decl.ReplaceDoubleQuotes {
 		r = ios.NewBytesReplacingReader(r, []byte(`"`), []byte(`'`))
 	}
@@ -43,9 +55,10 @@ func NewReader(
 	// those record string references down: reader.records[].
 	csv.ReuseRecord = true
 	reader := &reader{
-		inputName: inputName,
-		fileDecl:  decl,
-		r:         csv,
+		schemaHeader: schemaHeader,
+		inputName:    inputName,
+		fileDecl:     decl,
+		r:            csv,
 	}
 	reader.hr = flatfile.NewHierarchyReader(
 		toFlatFileRecDecls(decl.Records), reader, targetXPathExpr)
@@ -186,6 +199,7 @@ func (r *reader) linesToNode(decl *RecordDecl, n int) *idr.Node {
 			"linesBuf has %d lines but requested %d lines to convert", len(r.linesBuf), n))
 	}
 	node := idr.CreateNode(idr.ElementNode, decl.Name)
+	r.insertDebugInfo(node)
 	for col := range decl.Columns {
 		colDecl := decl.Columns[col]
 		for i := 0; i < n; i++ {
@@ -201,6 +215,18 @@ func (r *reader) linesToNode(decl *RecordDecl, n int) *idr.Node {
 		}
 	}
 	return node
+}
+
+func (r *reader) insertDebugInfo(node *idr.Node) {
+	if r.schemaHeader.ParserSettings.Debug == 0 {
+		return
+	}
+	debugNode := idr.CreateNode(idr.ElementNode, debug)
+	idr.AddChild(node, debugNode)
+	lineNumNode := idr.CreateNode(idr.ElementNode, debug_line_num)
+	idr.AddChild(debugNode, lineNumNode)
+	lineNumValNode := idr.CreateNode(idr.TextNode, strconv.Itoa(r.linesBuf[0].lineNum))
+	idr.AddChild(lineNumNode, lineNumValNode)
 }
 
 func (r *reader) popFrontLinesBuf(n int) {

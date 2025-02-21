@@ -10,6 +10,7 @@ import (
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/header"
 )
 
 const (
@@ -46,7 +47,10 @@ func (p *jsonLogFileFormat) ValidateSchema(
 }
 
 func (p *jsonLogFileFormat) CreateFormatReader(
-	name string, r io.Reader, runtime interface{}) (fileformat.FormatReader, error) {
+	_ header.Header,
+	name string,
+	r io.Reader,
+	runtime interface{}) (fileformat.FormatReader, error) {
 	return NewReader(name, r, runtime.(string))
 }
 

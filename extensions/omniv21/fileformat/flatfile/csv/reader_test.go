@@ -14,6 +14,7 @@ import (
 	"github.com/jf-tech/go-corelib/ios"
 	"github.com/jf-tech/go-corelib/strs"
 	"github.com/jf-tech/go-corelib/testlib"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/idr"
 	"github.com/stretchr/testify/assert"
 )
@@ -25,6 +26,7 @@ func lf(s string) string {
 func TestRead(t *testing.T) {
 	for _, test := range []struct {
 		name        string
+		debug       int
 		fileDecl    string
 		targetXPath string
 		input       io.Reader
@@ -72,7 +74,8 @@ func TestRead(t *testing.T) {
 			},
 		},
 		{
-			name: "multiple records",
+			name:  "multiple records",
+			debug: 1,
 			fileDecl: `{
 				"delimiter": ",",
 				"records": [
@@ -125,7 +128,9 @@ func TestRead(t *testing.T) {
 				targetXPathExpr, err = caches.GetXPathExpr(test.targetXPath)
 				assert.NoError(t, err)
 			}
-			r := NewReader("test-input", test.input, &fd, targetXPathExpr)
+			r := NewReader(
+				header.Header{ParserSettings: header.ParserSettings{Debug: test.debug}},
+				"test-input", test.input, &fd, targetXPathExpr)
 			var nodes []string
 			for _, expErr := range test.expErrs {
 				node, err := r.Read()

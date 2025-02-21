@@ -13,6 +13,7 @@ import (
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/idr"
 )
 
@@ -308,6 +309,7 @@ func TestValidateSchema(t *testing.T) {
 
 func TestCreateFormatReader(t *testing.T) {
 	r, err := NewFixedLengthFileFormat("test").CreateFormatReader(
+		header.Header{},
 		"test",
 		strings.NewReader("abcd\n1234\n"),
 		&fixedLengthFormatRuntime{

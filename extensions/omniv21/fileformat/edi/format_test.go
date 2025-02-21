@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/idr"
 )
 
@@ -172,7 +173,8 @@ func TestCreateFormatReader(t *testing.T) {
 	}`
 	rt, err := format.ValidateSchema(fileFormatEDI, []byte(fileDecl), &transform.Decl{XPath: strs.StrPtr(".")})
 	assert.NoError(t, err)
-	reader, err := format.CreateFormatReader("test", strings.NewReader("ISA*e1*e2*e3\nISA*e4*e5*e6\n"), rt)
+	reader, err := format.CreateFormatReader(
+		header.Header{}, "test", strings.NewReader("ISA*e1*e2*e3\nISA*e4*e5*e6\n"), rt)
 	assert.NoError(t, err)
 	n, err := reader.Read()
 	assert.NoError(t, err)

@@ -11,6 +11,7 @@ import (
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/idr"
 )
 
@@ -74,6 +75,7 @@ func TestValidateSchema(t *testing.T) {
 
 func TestCreateFormatReader(t *testing.T) {
 	r, err := NewXMLFileFormat("test-schema").CreateFormatReader(
+		header.Header{},
 		"test-input",
 		strings.NewReader(`<A><B>data1</B><B>skip</B><B>data2</B></A>`),
 		"/A/B[.!='skip']")
@@ -96,7 +98,8 @@ func TestCreateFormatReader(t *testing.T) {
 		assert.Nil(t, n3)
 	})
 
-	r, err = NewXMLFileFormat("test-schema").CreateFormatReader("test-input", strings.NewReader(""), "[invalid")
+	r, err = NewXMLFileFormat("test-schema").CreateFormatReader(
+		header.Header{}, "test-input", strings.NewReader(""), "[invalid")
 	assert.Error(t, err)
 	assert.Equal(t, `invalid xpath '[invalid', err: expression must evaluate to a node-set`, err.Error())
 	assert.Nil(t, r)

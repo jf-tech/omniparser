@@ -1,7 +1,8 @@
 {
     "parser_settings": {
         "version": "omni.2.1",
-        "file_format_type": "csv2"
+        "file_format_type": "csv2",
+        "debug": 1
     },
     "file_declaration": {
         "delimiter": "|",
@@ -29,6 +30,7 @@
     },
     "transform_declarations": {
         "FINAL_OUTPUT": { "xpath": ".[DATE != 'N/A']" ,"object": {
+            "__debug_line_num": { "xpath": "__debug/line_num" },
             "uv_index": {
                 "custom_func": {
                     "name": "javascript",

@@ -10,6 +10,7 @@ import (
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/header"
 )
 
 const (
@@ -41,7 +42,10 @@ func (f *xmlFileFormat) ValidateSchema(format string, _ []byte, finalOutputDecl 
 }
 
 func (f *xmlFileFormat) CreateFormatReader(
-	name string, r io.Reader, runtime interface{}) (fileformat.FormatReader, error) {
+	_ header.Header,
+	name string,
+	r io.Reader,
+	runtime interface{}) (fileformat.FormatReader, error) {
 	return NewReader(name, r, runtime.(string))
 }
 

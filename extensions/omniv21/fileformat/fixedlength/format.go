@@ -14,6 +14,7 @@ import (
 	"github.com/jf-tech/omniparser/extensions/omniv21/fileformat"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
 	v21validation "github.com/jf-tech/omniparser/extensions/omniv21/validation"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/validation"
 )
 
@@ -128,7 +129,10 @@ func (f *fixedLengthFileFormat) validateColumns(cols []*ColumnDecl) error {
 }
 
 func (f *fixedLengthFileFormat) CreateFormatReader(
-	name string, r io.Reader, runtime interface{}) (fileformat.FormatReader, error) {
+	_ header.Header,
+	name string,
+	r io.Reader,
+	runtime interface{}) (fileformat.FormatReader, error) {
 	rt := runtime.(*fixedLengthFormatRuntime)
 	return NewReader(name, r, rt.Decl, rt.XPath)
 }

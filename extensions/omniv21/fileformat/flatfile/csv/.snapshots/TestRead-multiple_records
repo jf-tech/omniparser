@@ -3,6 +3,41 @@
 		{
 			"Children": [
 				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "1",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(ElementNode line_num)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "line_num",
+					"FirstChild": "(TextNode '1')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode '1')",
+					"NextSibling": null,
+					"Parent": "(ElementNode __debug)",
+					"PrevSibling": null,
+					"Type": "ElementNode"
+				}
+			],
+			"Data": "__debug",
+			"FirstChild": "(ElementNode line_num)",
+			"FormatSpecific": null,
+			"LastChild": "(ElementNode line_num)",
+			"NextSibling": "(ElementNode r1c1)",
+			"Parent": "(ElementNode r1)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		},
+		{
+			"Children": [
+				{
 					"Children": null,
 					"Data": "v1",
 					"FirstChild": null,
@@ -20,7 +55,7 @@
 			"LastChild": "(TextNode 'v1')",
 			"NextSibling": "(ElementNode r1c2)",
 			"Parent": "(ElementNode r1)",
-			"PrevSibling": null,
+			"PrevSibling": "(ElementNode __debug)",
 			"Type": "ElementNode"
 		},
 		{
@@ -48,7 +83,7 @@
 		}
 	],
 	"Data": "r1",
-	"FirstChild": "(ElementNode r1c1)",
+	"FirstChild": "(ElementNode __debug)",
 	"FormatSpecific": null,
 	"LastChild": "(ElementNode r1c2)",
 	"NextSibling": null,
@@ -58,6 +93,41 @@
 },
 {
 	"Children": [
+		{
+			"Children": [
+				{
+					"Children": [
+						{
+							"Children": null,
+							"Data": "3",
+							"FirstChild": null,
+							"FormatSpecific": null,
+							"LastChild": null,
+							"NextSibling": null,
+							"Parent": "(ElementNode line_num)",
+							"PrevSibling": null,
+							"Type": "TextNode"
+						}
+					],
+					"Data": "line_num",
+					"FirstChild": "(TextNode '3')",
+					"FormatSpecific": null,
+					"LastChild": "(TextNode '3')",
+					"NextSibling": null,
+					"Parent": "(ElementNode __debug)",
+					"PrevSibling": null,
+					"Type": "ElementNode"
+				}
+			],
+			"Data": "__debug",
+			"FirstChild": "(ElementNode line_num)",
+			"FormatSpecific": null,
+			"LastChild": "(ElementNode line_num)",
+			"NextSibling": "(ElementNode r1c1)",
+			"Parent": "(ElementNode r1)",
+			"PrevSibling": null,
+			"Type": "ElementNode"
+		},
 		{
 			"Children": [
 				{
@@ -78,12 +148,12 @@
 			"LastChild": "(TextNode '')",
 			"NextSibling": null,
 			"Parent": "(ElementNode r1)",
-			"PrevSibling": null,
+			"PrevSibling": "(ElementNode __debug)",
 			"Type": "ElementNode"
 		}
 	],
 	"Data": "r1",
-	"FirstChild": "(ElementNode r1c1)",
+	"FirstChild": "(ElementNode __debug)",
 	"FormatSpecific": null,
 	"LastChild": "(ElementNode r1c1)",
 	"NextSibling": null,

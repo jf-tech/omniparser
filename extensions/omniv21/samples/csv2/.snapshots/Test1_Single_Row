@@ -1,8 +1,9 @@
 [
 	{
-		"RawRecord": "{\"DATE\":\"2019/01/31T12:34:56-0800\",\"HIGH_TEMP_C\":\"10.5\",\"LAT\":\"37.7749\",\"LONG\":\"122.4194\",\"LOW_TEMP_F\":\"30.2\",\"NOTE\":\"note 1\",\"UV_INDEX\":\"12/4/6\",\"WIND_DIR\":\"N\",\"WIND_SPEED_KMH\":\"33\"}",
-		"RawRecordHash": "24a341e6-bdac-3319-ac76-7354d42a7402",
+		"RawRecord": "{\"DATE\":\"2019/01/31T12:34:56-0800\",\"HIGH_TEMP_C\":\"10.5\",\"LAT\":\"37.7749\",\"LONG\":\"122.4194\",\"LOW_TEMP_F\":\"30.2\",\"NOTE\":\"note 1\",\"UV_INDEX\":\"12/4/6\",\"WIND_DIR\":\"N\",\"WIND_SPEED_KMH\":\"33\",\"__debug\":{\"line_num\":\"2\"}}",
+		"RawRecordHash": "25e5f4d9-4b1b-3038-9b06-7fbaa622dd33",
 		"TransformedRecord": {
+			"__debug_line_num": "2",
 			"date": "2019-01-31T12:34:56-08:00",
 			"high_temperature_fahrenheit": 50.9,
 			"latitude": 37.7749,
@@ -18,9 +19,10 @@
 		}
 	},
 	{
-		"RawRecord": "{\"DATE\":\"2020/07/31T01:23:45-0500\",\"HIGH_TEMP_C\":\"39\",\"LAT\":\"32.7767\",\"LONG\":\"96.7970\",\"LOW_TEMP_F\":\"95\",\"NOTE\":\"' note with bad quotes\",\"UV_INDEX\":\"9/5/6\",\"WIND_DIR\":\"SE\",\"WIND_SPEED_KMH\":\"8\"}",
-		"RawRecordHash": "dba160be-3cfe-3efc-a891-f76461c37c08",
+		"RawRecord": "{\"DATE\":\"2020/07/31T01:23:45-0500\",\"HIGH_TEMP_C\":\"39\",\"LAT\":\"32.7767\",\"LONG\":\"96.7970\",\"LOW_TEMP_F\":\"95\",\"NOTE\":\"' note with bad quotes\",\"UV_INDEX\":\"9/5/6\",\"WIND_DIR\":\"SE\",\"WIND_SPEED_KMH\":\"8\",\"__debug\":{\"line_num\":\"4\"}}",
+		"RawRecordHash": "7da1f5c3-9cde-35d7-8c48-3ac8cf900328",
 		"TransformedRecord": {
+			"__debug_line_num": "4",
 			"date": "2020-07-31T01:23:45-05:00",
 			"high_temperature_fahrenheit": 102.2,
 			"latitude": 32.7767,
@@ -36,9 +38,10 @@
 		}
 	},
 	{
-		"RawRecord": "{\"DATE\":\"2030/11/22T20:18:00-0500\",\"HIGH_TEMP_C\":\"15.5\",\"LAT\":\"39.0997\",\"LONG\":\"94.5786\",\"LOW_TEMP_F\":\"17\",\"NOTE\":\"note 3\",\"UV_INDEX\":\"10/3/4\",\"WIND_DIR\":\"X\",\"WIND_SPEED_KMH\":\"180\"}",
-		"RawRecordHash": "fcdd707d-1ed4-3641-aca3-b0df568b1084",
+		"RawRecord": "{\"DATE\":\"2030/11/22T20:18:00-0500\",\"HIGH_TEMP_C\":\"15.5\",\"LAT\":\"39.0997\",\"LONG\":\"94.5786\",\"LOW_TEMP_F\":\"17\",\"NOTE\":\"note 3\",\"UV_INDEX\":\"10/3/4\",\"WIND_DIR\":\"X\",\"WIND_SPEED_KMH\":\"180\",\"__debug\":{\"line_num\":\"5\"}}",
+		"RawRecordHash": "d33d434a-f28c-355f-8de2-0ed8859fb0e7",
 		"TransformedRecord": {
+			"__debug_line_num": "5",
 			"date": "2030-11-22T20:18:00-05:00",
 			"high_temperature_fahrenheit": 59.9,
 			"latitude": 39.0997,

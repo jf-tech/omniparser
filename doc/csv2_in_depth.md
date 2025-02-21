@@ -486,6 +486,27 @@ Then the output for the above sample input will be:
 ]
 ```
 
+## Debug Info
+If debug information is desired to be added into each record's IDR therefore becoming available for
+`transform_declarations` use, one can specify `"debug": 1` in `parser_settings` section of the schema:
+```
+{
+    "parser_settings": {
+        "version": "omni.2.1",
+        "file_format_type": "csv2",
+        "debug": 1
+    },
+    ...
+}
+```
+If the `csv2` parser detects `"debug": 1` setting, it will add the following debug info into the
+current record's IDR structure:
+
+- xpath: `__debug/line_num`: contains the starting line number in the CSV file of the current
+record.
+
+Check this [sample](../extensions/omniv21/samples/csv2/1_single_row.schema.json) for usage pattern.
+
 ## Migration from `'csv'` Schemas
 
 If one looks at the documentation for the old `csv` schema [here](./csv_in_depth.md), you notice

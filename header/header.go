@@ -10,11 +10,13 @@ import (
 // ParserSettings defines the common header (and its JSON format) for all schemas across all schema handlers.
 // It contains vital information about which handler a schema wants to use, and what file format the input
 // stream is of (e.g. fixed-length txt, CSV/TSV, XML, JSON, EDI, etc). Optionally, it specifies the expected
-// encoding scheme for the input streams this schema is used for.
+// encoding scheme for the input streams this schema is used for, as well as other auxiliary but global
+// parser settings.
 type ParserSettings struct {
 	Version        string  `json:"version,omitempty"`
 	FileFormatType string  `json:"file_format_type,omitempty"`
 	Encoding       *string `json:"encoding,omitempty"`
+	Debug          int     `json:"debug,omitempty"`
 }
 
 const (

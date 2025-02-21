@@ -5,6 +5,7 @@ import (
 
 	"github.com/jf-tech/omniparser/errs"
 	"github.com/jf-tech/omniparser/extensions/omniv21/transform"
+	"github.com/jf-tech/omniparser/header"
 	"github.com/jf-tech/omniparser/idr"
 )
 
@@ -18,7 +19,10 @@ type FileFormat interface {
 
 	// CreateFormatReader creates an FormatReader which reads records of input data for this file format.
 	CreateFormatReader(
-		inputName string, input io.Reader, formatRuntime interface{}) (FormatReader, error)
+		schemaHeader header.Header,
+		inputName string,
+		input io.Reader,
+		formatRuntime interface{}) (FormatReader, error)
 }
 
 // FormatReader is an interface for reading a specific input format in omni schema handler. We'll have

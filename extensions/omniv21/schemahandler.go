@@ -115,7 +115,7 @@ type schemaHandler struct {
 }
 
 func (h *schemaHandler) NewIngester(ctx *transformctx.Ctx, input io.Reader) (schemahandler.Ingester, error) {
-	reader, err := h.fileFormat.CreateFormatReader(ctx.InputName, input, h.formatRuntime)
+	reader, err := h.fileFormat.CreateFormatReader(h.ctx.Header, ctx.InputName, input, h.formatRuntime)
 	if err != nil {
 		return nil, err
 	}

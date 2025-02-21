@@ -34,21 +34,26 @@ func (f testFileFormat) ValidateSchema(_ string, _ []byte, _ *transform.Decl) (i
 }
 
 func (f testFileFormat) CreateFormatReader(
-	inputName string, input io.Reader, runtime interface{}) (fileformat.FormatReader, error) {
+	schemaHeader header.Header,
+	inputName string,
+	input io.Reader,
+	runtime interface{}) (fileformat.FormatReader, error) {
 	if f.createFormatReaderErr != nil {
 		return nil, f.createFormatReaderErr
 	}
 	return testFormatReader{
-		inputName: inputName,
-		input:     input,
-		runtime:   runtime,
+		schemaHeader: schemaHeader,
+		inputName:    inputName,
+		input:        input,
+		runtime:      runtime,
 	}, nil
 }
 
 type testFormatReader struct {
-	inputName string
-	input     io.Reader
-	runtime   interface{}
+	schemaHeader header.Header
+	inputName    string
+	input        io.Reader
+	runtime      interface{}
 }
 
 func (r testFormatReader) Read() (*idr.Node, error)            { panic("implement me") }
@@ -237,6 +242,7 @@ func TestCreateHandler_CustomParseFuncs_Success(t *testing.T) {
 
 func TestNewIngester_CustomFileFormat_Failure(t *testing.T) {
 	ip, err := (&schemaHandler{
+		ctx: &schemahandler.CreateCtx{},
 		fileFormat: testFileFormat{
 			createFormatReaderErr: errors.New("failed to create reader"),
 		},
