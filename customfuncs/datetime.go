@@ -132,7 +132,7 @@ func DateTimeToEpoch(_ *transformctx.Ctx, datetime, fromTZ, unit string) (string
 	}
 	switch unit {
 	case epochUnitMilliseconds:
-		return strconv.FormatInt(t.UnixNano()/int64(time.Millisecond), 10), nil
+		return strconv.FormatInt(t.Unix()*1000+int64(t.Nanosecond())/int64(time.Millisecond), 10), nil
 	case epochUnitSeconds:
 		return strconv.FormatInt(t.Unix(), 10), nil
 	default:
@@ -166,7 +166,7 @@ func EpochToDateTimeRFC3339(_ *transformctx.Ctx, epoch, unit string, tz ...strin
 	case epochUnitSeconds:
 		t = time.Unix(n, 0)
 	case epochUnitMilliseconds:
-		t = time.Unix(0, n*(int64(time.Millisecond)))
+		t = time.Unix(n/1000, n%1000*int64(time.Millisecond))
 	default:
 		return "", fmt.Errorf("unknown epoch unit '%s'", unit)
 	}

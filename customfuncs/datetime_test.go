@@ -268,6 +268,42 @@ func TestDateTimeToEpoch(t *testing.T) {
 			err:      "",
 			expected: "1600796096",
 		},
+		{
+			name:     "milliseconds at year one",
+			datetime: "0001-01-01T00:00:00Z",
+			unit:     epochUnitMilliseconds,
+			expected: "-62135596800000",
+		},
+		{
+			name:     "milliseconds before nanosecond range",
+			datetime: "1600-01-01T00:00:00.123Z",
+			unit:     epochUnitMilliseconds,
+			expected: "-11676095999877",
+		},
+		{
+			name:     "milliseconds after nanosecond range",
+			datetime: "2500-01-01T00:00:00.456Z",
+			unit:     epochUnitMilliseconds,
+			expected: "16725225600456",
+		},
+		{
+			name:     "milliseconds at last RFC3339 year",
+			datetime: "9999-12-31T23:59:59.999Z",
+			unit:     epochUnitMilliseconds,
+			expected: "253402300799999",
+		},
+		{
+			name:     "fractional milliseconds before epoch",
+			datetime: "1969-12-31T23:59:59.999999999Z",
+			unit:     epochUnitMilliseconds,
+			expected: "-1",
+		},
+		{
+			name:     "fractional milliseconds after epoch",
+			datetime: "1970-01-01T00:00:00.123456789Z",
+			unit:     epochUnitMilliseconds,
+			expected: "123",
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			result, err := DateTimeToEpoch(nil, test.datetime, test.fromTZ, test.unit)
@@ -347,6 +383,43 @@ func TestEpochToDateTimeRFC3339(t *testing.T) {
 			tz:       []string{"America/Los_Angeles"},
 			err:      "",
 			expected: "2009-02-13T15:31:30-08:00",
+		},
+		{
+			name:     "milliseconds at year one",
+			epoch:    "-62135596800000",
+			unit:     epochUnitMilliseconds,
+			expected: "0001-01-01T00:00:00Z",
+		},
+		{
+			name:     "milliseconds before nanosecond range",
+			epoch:    "-11676095999877",
+			unit:     epochUnitMilliseconds,
+			expected: "1600-01-01T00:00:00Z",
+		},
+		{
+			name:     "milliseconds after nanosecond range",
+			epoch:    "16725225600456",
+			unit:     epochUnitMilliseconds,
+			expected: "2500-01-01T00:00:00Z",
+		},
+		{
+			name:     "milliseconds at last RFC3339 year",
+			epoch:    "253402300799999",
+			unit:     epochUnitMilliseconds,
+			expected: "9999-12-31T23:59:59Z",
+		},
+		{
+			name:     "milliseconds just before epoch",
+			epoch:    "-1",
+			unit:     epochUnitMilliseconds,
+			expected: "1969-12-31T23:59:59Z",
+		},
+		{
+			name:     "early date with timezone",
+			epoch:    "-11676095999877",
+			unit:     epochUnitMilliseconds,
+			tz:       []string{"Etc/GMT-2"},
+			expected: "1600-01-01T02:00:00+02:00",
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
